@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="prototype">
+    <file alias="upArrowMarker">up_arrow_marker.png</file>
+    <file alias="arrowDown">path162.png</file>
+  </qresource>
+</RCC>
