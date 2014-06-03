@@ -9,6 +9,12 @@ APPLICATION_ROOT = os.path.dirname(
     os.path.realpath(__file__)
 )
 
+RESOURCE_ROOT_PATH = os.path.join(
+    os.environ.get(
+        'RESOURCEPATH',
+        APPLICATION_ROOT
+    ), 'resources'
+)
 
 class ApplicationWindow(QtGui.QMainWindow):
 
@@ -25,7 +31,7 @@ class ApplicationWindow(QtGui.QMainWindow):
         QtGui.QApplication.setQuitOnLastWindowClosed(False)
 
         self.logoIcon = QtGui.QIcon(
-            '{0}/resources/images/logo.png'.format(APPLICATION_ROOT)
+            '{0}/logo.png'.format(RESOURCE_ROOT_PATH)
         )
 
         self._initTray()
