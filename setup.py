@@ -29,7 +29,7 @@ setup(
     version='0.1.0',
     description='Core for ftrack connect.',
     long_description=open(readme_path).read(),
-    keywords='ftrack, publish',
+    keywords='ftrack, connect, publish',
     url='https://bitbucket.org/ftrack/ftrack-connect',
     author='ftrack',
     author_email='support@ftrack.com',

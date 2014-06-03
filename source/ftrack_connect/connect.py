@@ -10,7 +10,7 @@ APPLICATION_ROOT = os.path.dirname(
 )
 
 
-class ApplicationWindow(QtGui.QWidget):
+class ApplicationWindow(QtGui.QMainWindow):
 
     def __init__(self, *args, **kwargs):
         super(ApplicationWindow, self).__init__(*args, **kwargs)
@@ -24,7 +24,17 @@ class ApplicationWindow(QtGui.QWidget):
 
         QtGui.QApplication.setQuitOnLastWindowClosed(False)
 
+        self.logoIcon = QtGui.QIcon(
+            '{0}/resources/images/logo.png'.format(APPLICATION_ROOT)
+        )
+
         self._initTray()
+
+        self.setWindowTitle('ftrack connect')
+        self.resize(300, 500)
+        self.move(50, 50)
+
+        self.setWindowIcon(self.logoIcon)
 
     def _initTray(self):
         self.trayMenu = self._initTrayMenu()
@@ -35,15 +45,8 @@ class ApplicationWindow(QtGui.QWidget):
             self.trayMenu
         )
 
-        logoIcon = QtGui.QIcon(
-            '{0}/resources/images/logo.png'.format(APPLICATION_ROOT)
-        )
-
-        self.tray.setIcon(logoIcon)
+        self.tray.setIcon(self.logoIcon)
         self.tray.show()
-
-        self.resize(300, 500)
-        self.move(50, 50)
 
     def _initTrayMenu(self):
 
