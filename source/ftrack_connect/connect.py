@@ -2,8 +2,11 @@
 # :copyright: Copyright (c) 2014 ftrack
 
 import os
+import sys
 
 from PySide import QtGui
+
+from tabwidget import TabWidget
 
 APPLICATION_ROOT = os.path.dirname(
     os.path.realpath(__file__)
@@ -35,6 +38,9 @@ class ApplicationWindow(QtGui.QMainWindow):
         self.move(50, 50)
 
         self.setWindowIcon(self.logoIcon)
+
+        self.tabPanel = TabWidget()
+        self.setCentralWidget(self.tabPanel)
 
     def _initTray(self):
         self.trayMenu = self._initTrayMenu()
