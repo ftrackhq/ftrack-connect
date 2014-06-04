@@ -17,6 +17,7 @@ RESOURCE_ROOT_PATH = os.path.join(
 )
 
 class ApplicationWindow(QtGui.QMainWindow):
+    '''Main window class for ftrack connect.'''
 
     def __init__(self, *args, **kwargs):
         super(ApplicationWindow, self).__init__(*args, **kwargs)
@@ -43,6 +44,7 @@ class ApplicationWindow(QtGui.QMainWindow):
         self.setWindowIcon(self.logoIcon)
 
     def _initTray(self):
+        '''Initialise and add application icon to system tray.'''
         self.trayMenu = self._initTrayMenu()
 
         self.tray = QtGui.QSystemTrayIcon(self)
@@ -55,7 +57,7 @@ class ApplicationWindow(QtGui.QMainWindow):
         self.tray.show()
 
     def _initTrayMenu(self):
-
+        '''Return a menu for system tray.'''
         menu = QtGui.QMenu(self)
 
         quitAction = QtGui.QAction(
@@ -75,6 +77,7 @@ class ApplicationWindow(QtGui.QMainWindow):
         return menu
 
     def focus(self):
+        '''Focus and bring the window to top.'''
         self.activateWindow()
         self.show()
         self.raise_()

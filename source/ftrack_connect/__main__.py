@@ -7,7 +7,7 @@ import sys
 
 from PySide import QtGui, QtCore
 
-from connect import ApplicationWindow
+from ftrack_connect.core import ApplicationWindow
 
 
 def main(arguments=None):
