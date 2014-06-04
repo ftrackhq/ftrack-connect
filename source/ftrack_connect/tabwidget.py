@@ -7,4 +7,4 @@ from PySide import QtGui
 class TabWidget(QtGui.QTabWidget):
     def __init__(self, *args, **kwargs):
         '''Instantiate the tab widget.'''
-        QtGui.QTabWidget.__init__(self, *args, **kwargs)
+        super(TabWidget, self).__init__(*args, **kwargs)
