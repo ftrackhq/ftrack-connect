@@ -5,6 +5,8 @@ import os
 
 from PySide import QtGui
 
+from ftrack_connect.tabwidget import TabWidget
+
 APPLICATION_ROOT = os.path.dirname(
     os.path.realpath(__file__)
 )
@@ -45,6 +47,9 @@ class ApplicationWindow(QtGui.QMainWindow):
         self.move(50, 50)
 
         self.setWindowIcon(self.logoIcon)
+
+        self.tabPanel = TabWidget()
+        self.setCentralWidget(self.tabPanel)
 
     def _initialiseTray(self):
         '''Initialise and add application icon to system tray.'''
