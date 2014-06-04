@@ -2,11 +2,10 @@
 # :copyright: Copyright (c) 2014 ftrack
 
 import os
-import sys
 
 from PySide import QtGui
 
-from tabwidget import TabWidget
+from ftrack_connect.tabwidget import TabWidget
 
 APPLICATION_ROOT = os.path.dirname(
     os.path.realpath(__file__)
