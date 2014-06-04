@@ -88,6 +88,9 @@ class ApplicationWindow(QtGui.QMainWindow):
 
     def _discoverPlugins(self):
         '''Find and load tab plugins in search paths.'''
+        #: TODO: Add discover functionality and search paths.
+        
+        # Add publisher as a plugin.
         from ftrack_connect.publisher.core import register
         register(self)
 
