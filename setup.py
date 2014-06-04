@@ -44,7 +44,10 @@ PY2APP_OPTIONS = {
     ],
     'iconfile': 'logo.icns',
     'use_pythonpath': True,
-    'dist_dir': DIST_FOLDER
+    'dist_dir': DIST_FOLDER,
+    'plist': {
+        'LSUIElement': True
+    }
 }
 
 setup(
