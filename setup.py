@@ -6,6 +6,18 @@ import os
 from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
 
+ROOT_FOLDER = os.path.dirname(
+    os.path.realpath(__file__)
+)
+
+DIST_FOLDER = os.path.join(
+    ROOT_FOLDER, 'dist', 'ftrack-connect'
+)
+
+RESOURCE_FOLDER = os.path.join(
+    ROOT_FOLDER, 'source', 'ftrack_connect', 'resources'
+)
+
 
 class PyTest(TestCommand):
     '''Pytest command.'''
@@ -23,6 +35,20 @@ class PyTest(TestCommand):
 
 readme_path = os.path.join(os.path.dirname(__file__), 'README.rst')
 packages_path = os.path.join(os.path.dirname(__file__), 'source')
+
+PY2APP_OPTIONS = {
+    'argv_emulation': False,
+    'includes': [
+        'PySide.QtCore',
+        'PySide.QtGui',
+    ],
+    'iconfile': 'logo.icns',
+    'use_pythonpath': True,
+    'dist_dir': DIST_FOLDER,
+    'plist': {
+        'LSUIElement': True
+    }
+}
 
 setup(
     name='ftrack-connect',
@@ -43,5 +69,13 @@ setup(
     cmdclass={
         'test': PyTest
     },
+    app=['source/ftrack_connect/__main__.py'],
+    options={
+        'py2app': PY2APP_OPTIONS
+    },
+    data_files=[
+        ('', [RESOURCE_FOLDER]),
+    ],
+    setup_requires=['py2app'],
     zip_safe=False
 )

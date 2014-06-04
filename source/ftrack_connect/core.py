@@ -12,26 +12,36 @@ APPLICATION_ROOT = os.path.dirname(
     os.path.realpath(__file__)
 )
 
+# RESOURCEPATH environment variable is set by py2app/py2exe applications.
+RESOURCE_ROOT_PATH = os.path.join(
+    os.environ.get(
+        'RESOURCEPATH',
+        APPLICATION_ROOT
+    ), 'resources'
+)
+
+
+class ConnectError(Exception):
+    '''Base ftrack connect error.'''
+    pass
+
 
 class ApplicationWindow(QtGui.QMainWindow):
+    '''Main window class for ftrack connect.'''
 
     def __init__(self, *args, **kwargs):
         super(ApplicationWindow, self).__init__(*args, **kwargs)
 
         if not QtGui.QSystemTrayIcon.isSystemTrayAvailable():
-            QtGui.QMessageBox.critical(
-                None, 'Systray',
-                'I couldnt detect any system tray on this system.'
-            )
-            sys.exit(1)
+            raise ConnectError('No system tray located.')
 
         QtGui.QApplication.setQuitOnLastWindowClosed(False)
 
         self.logoIcon = QtGui.QIcon(
-            '{0}/resources/images/logo.png'.format(APPLICATION_ROOT)
+            '{0}/logo.png'.format(RESOURCE_ROOT_PATH)
         )
 
-        self._initTray()
+        self._initialiseTray()
 
         self.setWindowTitle('ftrack connect')
         self.resize(300, 500)
@@ -42,8 +52,9 @@ class ApplicationWindow(QtGui.QMainWindow):
         self.tabPanel = TabWidget()
         self.setCentralWidget(self.tabPanel)
 
-    def _initTray(self):
-        self.trayMenu = self._initTrayMenu()
+    def _initialiseTray(self):
+        '''Initialise and add application icon to system tray.'''
+        self.trayMenu = self._createTrayMenu()
 
         self.tray = QtGui.QSystemTrayIcon(self)
 
@@ -54,8 +65,8 @@ class ApplicationWindow(QtGui.QMainWindow):
         self.tray.setIcon(self.logoIcon)
         self.tray.show()
 
-    def _initTrayMenu(self):
-
+    def _createTrayMenu(self):
+        '''Return a menu for system tray.'''
         menu = QtGui.QMenu(self)
 
         quitAction = QtGui.QAction(
@@ -75,6 +86,7 @@ class ApplicationWindow(QtGui.QMainWindow):
         return menu
 
     def focus(self):
+        '''Focus and bring the window to top.'''
         self.activateWindow()
         self.show()
         self.raise_()
