@@ -92,7 +92,7 @@ class ApplicationWindow(QtGui.QMainWindow):
         register(self)
 
     def add(self, widget, name=None):
-        '''Add *widget* as tab.
+        '''Add *widget* as tab with *name*.
 
         If *name* is None the name will be collected from the widget.
 
