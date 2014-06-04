@@ -51,6 +51,8 @@ class ApplicationWindow(QtGui.QMainWindow):
         self.tabPanel = TabWidget()
         self.setCentralWidget(self.tabPanel)
 
+        self._discoverPlugins()
+
     def _initialiseTray(self):
         '''Initialise and add application icon to system tray.'''
         self.trayMenu = self._createTrayMenu()
@@ -83,6 +85,27 @@ class ApplicationWindow(QtGui.QMainWindow):
         menu.addAction(quitAction)
 
         return menu
+
+    def _discoverPlugins(self):
+        '''Find and load tab plugins in search paths.'''
+        #: TODO: Add discover functionality and search paths.
+        
+        # Add publisher as a plugin.
+        from ftrack_connect.publisher.core import register
+        register(self)
+
+    def add(self, widget, name=None):
+        '''Add *widget* as tab with *name*.
+
+        If *name* is None the name will be collected from the widget.
+
+        '''
+        if name is None:
+            name = widget.getName()
+
+        self.tabPanel.addTab(
+            widget, name
+        )
 
     def focus(self):
         '''Focus and bring the window to top.'''
