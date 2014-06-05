@@ -46,6 +46,10 @@ class Publisher(QtGui.QWidget):
         layout.addRow('Linked to', linkedTo)
         self.entityChanged.connect(linkedTo.setEntity)
 
+        # Add version description component.
+        versionDescriptionComponent = QtGui.QTextEdit()
+        layout.addRow('Description', versionDescriptionComponent)
+
         # TODO: Remove this call when it is possible to select or start
         # publisher with an entity.
         self.setEntity(ftrack.Task('d547547a-66de-11e1-bdb8-f23c91df25eb'))
