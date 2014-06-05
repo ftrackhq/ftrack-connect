@@ -7,7 +7,7 @@ from PySide import QtGui, QtCore
 import ftrack
 
 
-def async(f):
+def asynchronous(f):
     '''Decorator to make a method asynchronous using its own thread.'''
     def wrapper(*args, **kwargs):
         thread = threading.Thread(target=f, args=args, kwargs=kwargs)
@@ -24,10 +24,7 @@ def register(connect):
 class Publisher(QtGui.QWidget):
     '''Base widget for ftrack connect publisher plugin.'''
 
-    def getName(self):
-        '''Return name of widget.'''
-        return 'Publisher'
-
+    # Add signal for when the entity is changed.
     entityChanged = QtCore.Signal(object)
 
     def __init__(self, *args, **kwargs):
@@ -41,6 +38,9 @@ class Publisher(QtGui.QWidget):
         layout = QtGui.QFormLayout()
         self.layout().addLayout(layout)
 
+        # Local import to avoid circular.
+        from component.linked_to import LinkedToComponent
+
         # Add linked to component and connect to entitychange signal.
         linkedTo = LinkedToComponent()
         layout.addRow('Linked to', linkedTo)
@@ -49,6 +49,10 @@ class Publisher(QtGui.QWidget):
         # TODO: Remove this call when it is possible to select or start
         # publisher with an entity.
         self.setEntity(ftrack.Task('d547547a-66de-11e1-bdb8-f23c91df25eb'))
+
+    def getName(self):
+        '''Return name of widget.'''
+        return 'Publisher'
 
     def addWidget(self, widget):
         '''Add *widget* to internal layout.'''
@@ -59,26 +63,3 @@ class Publisher(QtGui.QWidget):
         '''Set the entity for the publisher.'''
         self.entity = entity
         self.entityChanged.emit(entity)
-
-
-class LinkedToComponent(QtGui.QLineEdit):
-    '''Linked to entity component.'''
-
-    def __init__(self, *args, **kwargs):
-        '''Instantiate the linked to component.'''
-        super(LinkedToComponent, self).__init__(*args, **kwargs)
-        self.setReadOnly(True)
-
-    @async
-    def setEntity(self, entity):
-        '''Set the entity for this component.'''
-        names = []
-        for parent in entity.getParents():
-            if isinstance(parent, ftrack.Show):
-                names.append(parent.getFullName())
-            else:
-                names.append(parent.getName())
-
-        # Reverse names since project should be first.
-        names.reverse()
-        self.setText(' / '.join(names))
