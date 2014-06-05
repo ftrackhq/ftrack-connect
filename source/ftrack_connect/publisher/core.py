@@ -40,7 +40,7 @@ class Publisher(QtGui.QWidget):
 
         # Local import to avoid circular.
         from component.linked_to import LinkedToComponent
-        from component.asset_selector import AssetSelectorComponent
+        from component.asset_type_selector import AssetTypeSelectorComponent
 
         # Add linked to component and connect to entityChanged signal.
         linkedTo = LinkedToComponent()
@@ -48,7 +48,7 @@ class Publisher(QtGui.QWidget):
         self.entityChanged.connect(linkedTo.setEntity)
 
         # Add asset selector.
-        assetSelector = AssetSelectorComponent()
+        assetSelector = AssetTypeSelectorComponent()
         layout.addRow('Asset type', assetSelector)
 
         # TODO: Remove this call when it is possible to select or start

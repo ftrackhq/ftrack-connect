@@ -7,12 +7,12 @@ import ftrack
 from ..core import asynchronous
 
 
-class AssetSelectorComponent(QtGui.QComboBox):
+class AssetTypeSelectorComponent(QtGui.QComboBox):
     '''Asset selector component.'''
 
     def __init__(self, *args, **kwargs):
         '''Instantiate the asset selector.'''
-        super(AssetSelectorComponent, self).__init__(*args, **kwargs)
+        super(AssetTypeSelectorComponent, self).__init__(*args, **kwargs)
         self.loadAssetTypes()
 
     @asynchronous
