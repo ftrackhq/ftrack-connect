@@ -40,11 +40,20 @@ class Publisher(QtGui.QWidget):
 
         # Local import to avoid circular.
         from component.linked_to import LinkedToComponent
+        from component.asset_type_selector import AssetTypeSelectorComponent
 
         # Add linked to component and connect to entityChanged signal.
         linkedTo = LinkedToComponent()
         layout.addRow('Linked to', linkedTo)
         self.entityChanged.connect(linkedTo.setEntity)
+
+        # Add asset selector.
+        assetSelector = AssetTypeSelectorComponent()
+        layout.addRow('Asset type', assetSelector)
+
+        # Add version description component.
+        versionDescriptionComponent = QtGui.QTextEdit()
+        layout.addRow('Description', versionDescriptionComponent)
 
         # TODO: Remove this call when it is possible to select or start
         # publisher with an entity.
