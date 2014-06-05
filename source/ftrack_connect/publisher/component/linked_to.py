@@ -17,7 +17,7 @@ class LinkedToComponent(QtGui.QLineEdit):
 
     @asynchronous
     def setEntity(self, entity):
-        '''Set the entity for this component.'''
+        '''Set the *entity* for this component.'''
         names = []
         for parent in entity.getParents():
             if isinstance(parent, ftrack.Show):

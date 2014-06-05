@@ -41,7 +41,7 @@ class Publisher(QtGui.QWidget):
         # Local import to avoid circular.
         from component.linked_to import LinkedToComponent
 
-        # Add linked to component and connect to entitychange signal.
+        # Add linked to component and connect to entityChanged signal.
         linkedTo = LinkedToComponent()
         layout.addRow('Linked to', linkedTo)
         self.entityChanged.connect(linkedTo.setEntity)
@@ -60,6 +60,6 @@ class Publisher(QtGui.QWidget):
         layout.addWidget(widget)
 
     def setEntity(self, entity):
-        '''Set the entity for the publisher.'''
+        '''Set the *entity* for the publisher.'''
         self.entity = entity
         self.entityChanged.emit(entity)
