@@ -41,7 +41,7 @@ class Publisher(QtGui.QWidget):
         layout = QtGui.QFormLayout()
         self.layout().addLayout(layout)
 
-        # Add linked to component and connect to entitychange signal.
+        # Add linked to component and connect to entitychanged signal.
         linkedTo = LinkedToComponent()
         layout.addRow('Linked to', linkedTo)
         self.entityChanged.connect(linkedTo.setEntity)
