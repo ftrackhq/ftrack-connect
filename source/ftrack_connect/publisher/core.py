@@ -6,6 +6,8 @@ import threading
 from PySide import QtGui, QtCore
 import ftrack
 
+from component.browse import BrowseComponent
+
 
 def asynchronous(f):
     '''Decorator to make a method asynchronous using its own thread.'''
@@ -33,6 +35,9 @@ class Publisher(QtGui.QWidget):
         self.setLayout(
             QtGui.QVBoxLayout()
         )
+
+        browser = BrowseComponent(text='Browse')
+        self.addWidget(browser)
 
         # Create form layout to keep track of publish form items.
         layout = QtGui.QFormLayout()
