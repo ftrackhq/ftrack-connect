@@ -41,7 +41,7 @@ class Publisher(QtGui.QWidget):
         layout = QtGui.QFormLayout()
         self.layout().addLayout(layout)
 
-        # Add linked to component and connect to entitychanged signal.
+        # Add linked to component and connect to entityChanged signal.
         linkedTo = LinkedToComponent()
         layout.addRow('Linked to', linkedTo)
         self.entityChanged.connect(linkedTo.setEntity)
@@ -56,7 +56,7 @@ class Publisher(QtGui.QWidget):
         layout.addWidget(widget)
 
     def setEntity(self, entity):
-        '''Set the entity for the publisher.'''
+        '''Set the *entity* for the publisher.'''
         self.entity = entity
         self.entityChanged.emit(entity)
 
@@ -71,7 +71,7 @@ class LinkedToComponent(QtGui.QLineEdit):
 
     @async
     def setEntity(self, entity):
-        '''Set the entity for this component.'''
+        '''Set the *entity* for this component.'''
         names = []
         for parent in entity.getParents():
             if isinstance(parent, ftrack.Show):
