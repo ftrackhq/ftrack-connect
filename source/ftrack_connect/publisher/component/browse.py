@@ -2,8 +2,6 @@
 # :copyright: Copyright (c) 2014 ftrack
 
 from PySide import QtGui, QtCore
-from harmony.ui.widget import filesystem_path
-
 from harmony.ui.filesystem_browser import FilesystemBrowser
 
 
