@@ -51,6 +51,10 @@ class Publisher(QtGui.QWidget):
         assetSelector = AssetTypeSelectorComponent()
         layout.addRow('Asset type', assetSelector)
 
+        # Add version description component.
+        versionDescriptionComponent = QtGui.QTextEdit()
+        layout.addRow('Description', versionDescriptionComponent)
+
         # TODO: Remove this call when it is possible to select or start
         # publisher with an entity.
         self.setEntity(ftrack.Task('d547547a-66de-11e1-bdb8-f23c91df25eb'))
