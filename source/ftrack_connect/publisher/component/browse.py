@@ -26,7 +26,7 @@ class BrowseComponent(QtGui.QPushButton):
         self.clicked.connect(self._browse)
 
     def _browse(self):
-        '''Show browse dialog and populate value with result.'''
+        '''Show browse dialog and emit fileSelected signal on file select.'''
         if self._dialog.exec_():
             selected = self._dialog.selected()
             if selected:
