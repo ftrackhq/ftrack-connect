@@ -2,6 +2,7 @@
 # :copyright: Copyright (c) 2014 ftrack
 
 import threading
+import time
 
 from PySide import QtGui, QtCore
 import ftrack
@@ -23,7 +24,7 @@ def register(connect):
     connect.add(publisher, publisher.getName())
 
 
-class Publisher(QtGui.QWidget):
+class Publisher(QtGui.QStackedWidget):
     '''Base widget for ftrack connect publisher plugin.'''
 
     # Add signal for when the entity is changed.
@@ -32,48 +33,42 @@ class Publisher(QtGui.QWidget):
     def __init__(self, *args, **kwargs):
         '''Instantiate the publisher widget.'''
         super(Publisher, self).__init__(*args, **kwargs)
-        self.setLayout(
-            QtGui.QVBoxLayout()
+
+        # Inline to avoid circular import
+        from view.publish import PublishView
+        self.publishView = PublishView(parent=self)
+        self.addWidget(
+            self.publishView
         )
 
-        browser = BrowseComponent(text='Browse')
-        self.addWidget(browser)
+        # Inline to avoid circular import
+        from view.loading import LoadingView
+        loadingView = LoadingView(parent=self)
+        self.addWidget(
+            loadingView
+        )
 
-        # Create form layout to keep track of publish form items.
-        layout = QtGui.QFormLayout()
-        self.layout().addLayout(layout)
+        self.publishView.publishStarted.connect(self._toggleView)
 
-        # Local import to avoid circular.
-        from component.linked_to import LinkedToComponent
-        from component.asset_type_selector import AssetTypeSelectorComponent
+        self.publishView.publishStarted.connect(loadingView.setLoadingMode)
+        self.publishView.publishFinished.connect(loadingView.setDoneMode)
+        self.publishView.publishFailed.connect(loadingView.setDoneMode)
 
-        # Add linked to component and connect to entityChanged signal.
-        linkedTo = LinkedToComponent()
-        layout.addRow('Linked to', linkedTo)
-        self.entityChanged.connect(linkedTo.setEntity)
-
-        # Add asset selector.
-        assetSelector = AssetTypeSelectorComponent()
-        layout.addRow('Asset type', assetSelector)
-
-        # Add version description component.
-        versionDescriptionComponent = QtGui.QTextEdit()
-        layout.addRow('Description', versionDescriptionComponent)
-
-        # TODO: Remove this call when it is possible to select or start
-        # publisher with an entity.
-        self.setEntity(ftrack.Task('d547547a-66de-11e1-bdb8-f23c91df25eb'))
+        loadingView.loadingDone.connect(self._toggleView)
 
     def getName(self):
         '''Return name of widget.'''
-        return 'Publisher'
+        return 'Publish'
 
-    def addWidget(self, widget):
-        '''Add *widget* to internal layout.'''
-        layout = self.layout()
-        layout.addWidget(widget)
+    def _toggleView(self):
+        if self.currentIndex() == 0:
+            self.setCurrentIndex(1)
+        else:
+            self.setCurrentIndex(0)
 
     def setEntity(self, entity):
         '''Set the *entity* for the publisher.'''
         self.entity = entity
         self.entityChanged.emit(entity)
+
+        self.publishView.setEntity(entity)
