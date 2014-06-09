@@ -9,6 +9,7 @@ import ftrack
 
 from ..component.linked_to import LinkedToComponent
 from ..component.asset_type_selector import AssetTypeSelectorComponent
+from ..component.browse import BrowseComponent
 from ..core import asynchronous
 
 
@@ -27,6 +28,9 @@ class PublishView(QtGui.QWidget):
         publishLayout = QtGui.QVBoxLayout()
 
         self.setLayout(publishLayout)
+
+        browser = BrowseComponent(text='Browse')
+        publishLayout.addWidget(browser)
 
         # Create form layout to keep track of publish form items.
         formLayout = QtGui.QFormLayout()

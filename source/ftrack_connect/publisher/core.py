@@ -6,8 +6,7 @@ import time
 
 from PySide import QtGui, QtCore
 import ftrack
-
-from component.browse import BrowseComponent
+from ftrack_connect.core import ConnectError
 
 
 def asynchronous(f):
@@ -69,7 +68,7 @@ class Publisher(QtGui.QStackedWidget):
 
     def setEntity(self, entity):
         '''Set the *entity* for the publisher.'''
-        self.entity = entity
+        self._entity = entity
         self.entityChanged.emit(entity)
 
         self.publishView.setEntity(entity)
