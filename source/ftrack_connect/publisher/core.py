@@ -97,6 +97,8 @@ class Publisher(QtGui.QWidget):
 
         versionDescription = self.versionDescriptionComponent.toPlainText()
 
+        # ftrack does not support having Tasks as parent for Assets.
+        # Therefore get parent shot/sequence etc.
         if entity.getObjectType() == 'Task':
             taskId = entity.getId()
             entity = entity.getParent()
