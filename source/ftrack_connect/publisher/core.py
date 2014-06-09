@@ -2,7 +2,6 @@
 # :copyright: Copyright (c) 2014 ftrack
 
 import threading
-import uuid
 
 from PySide import QtGui, QtCore
 import ftrack
@@ -29,8 +28,9 @@ class Publisher(QtGui.QWidget):
     # Add signal for when the entity is changed.
     entityChanged = QtCore.Signal(object)
 
-    publishStarted = QtCore.Signal(str)
-    publishFinished = QtCore.Signal(str)
+    publishStarted = QtCore.Signal()
+    publishFinished = QtCore.Signal()
+    publishFailed = QtCore.Signal()
 
     def __init__(self, *args, **kwargs):
         '''Instantiate the publisher widget.'''
@@ -87,6 +87,8 @@ class Publisher(QtGui.QWidget):
 
     def publish(self):
         '''Gather all data in publisher and publish version with components.'''
+        self.publishStarted.emit()
+
         entity = self._entity
 
         assetType = self.assetSelector.itemData(
@@ -99,8 +101,18 @@ class Publisher(QtGui.QWidget):
             taskId = entity.getId()
             entity = entity.getParent()
 
+        defaultLocation = ftrack.pickLocation()
+
+        # TODO: Get components from components widget.
+        components = []
+        for component in components:
+            component['locations'] = [
+                defaultLocation
+            ]
+
         self._publish(
-            entity, assetType, versionDescription, taskId, components=[]
+            entity, assetType, versionDescription,
+            taskId, components=components
         )
 
     @asynchronous
@@ -117,13 +129,12 @@ class Publisher(QtGui.QWidget):
 
         '''
         if not assetType:
+            self.publishFailed.emit()
             raise ConnectError('No asset type found')
 
         if not entity:
+            self.publishFailed.emit()
             raise ConnectError('No entity found')
-
-        publishId = uuid.uuid1()
-        self.publishStarted.emit(publishId)
 
         if components is None:
             components = []
@@ -136,11 +147,16 @@ class Publisher(QtGui.QWidget):
             versionDescription, taskId
         )
 
-        for component in components:
-            component = version.createComponent(path=filePath, location=None)
-            for location in component.get('locations', []):
+        for componentData in components:
+            component = version.createComponent(
+                componentData.get('name', None),
+                path=componentData.get('filePath'),
+                location=None
+            )
+
+            for location in componentData.get('locations', []):
                 location.addComponent(component)
 
         version.publish()
 
-        self.publishFinished.emit(publishId)
+        self.publishFinished.emit()
