@@ -1,8 +1,6 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-import time
-
 from PySide import QtGui
 from PySide import QtCore
 import ftrack
@@ -139,5 +137,4 @@ class PublishView(QtGui.QWidget):
 
         version.publish()
 
-        time.sleep(2)
         self.publishFinished.emit()
