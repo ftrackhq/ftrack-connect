@@ -7,6 +7,8 @@ from PySide import QtGui, QtCore
 import ftrack
 from ftrack_connect.core import ConnectError
 
+from component.browse import BrowseComponent
+
 
 def asynchronous(f):
     '''Decorator to make a method asynchronous using its own thread.'''
@@ -40,6 +42,9 @@ class Publisher(QtGui.QWidget):
         self.setLayout(
             self.publishLayout
         )
+
+        browser = BrowseComponent(text='Browse')
+        self.addWidget(browser)
 
         # Create form layout to keep track of publish form items.
         layout = QtGui.QFormLayout()

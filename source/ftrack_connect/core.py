@@ -53,6 +53,8 @@ class ApplicationWindow(QtGui.QMainWindow):
 
         self._discoverPlugins()
 
+        self.focus()
+
     def _initialiseTray(self):
         '''Initialise and add application icon to system tray.'''
         self.trayMenu = self._createTrayMenu()
@@ -89,7 +91,7 @@ class ApplicationWindow(QtGui.QMainWindow):
     def _discoverPlugins(self):
         '''Find and load tab plugins in search paths.'''
         #: TODO: Add discover functionality and search paths.
-        
+
         # Add publisher as a plugin.
         from ftrack_connect.publisher.core import register
         register(self)
