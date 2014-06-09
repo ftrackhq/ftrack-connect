@@ -50,9 +50,9 @@ class Publisher(QtGui.QStackedWidget):
 
         self.publishView.publishStarted.connect(self._toggleView)
 
-        self.publishView.publishStarted.connect(loadingView.setLoadingMode)
-        self.publishView.publishFinished.connect(loadingView.setDoneMode)
-        self.publishView.publishFailed.connect(loadingView.setDoneMode)
+        self.publishView.publishStarted.connect(loadingView.setLoadingState)
+        self.publishView.publishFinished.connect(loadingView.setDoneState)
+        self.publishView.publishFailed.connect(loadingView.setDoneState)
 
         loadingView.loadingDone.connect(self._toggleView)
 
@@ -61,6 +61,7 @@ class Publisher(QtGui.QStackedWidget):
         return 'Publish'
 
     def _toggleView(self):
+        '''Toggle between first and second widget.'''
         if self.currentIndex() == 0:
             self.setCurrentIndex(1)
         else:

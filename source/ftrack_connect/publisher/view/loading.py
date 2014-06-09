@@ -6,13 +6,14 @@ from PySide import QtCore
 
 
 class LoadingView(QtGui.QWidget):
-
+    '''Loading and progress view for ftrack connect Publisher.'''
     loadingDone = QtCore.Signal()
 
     loadingText = 'Crunching..'
     doneText = 'All done!'
 
     def __init__(self, parent=None):
+        '''Initiate loading view.'''
         super(LoadingView, self).__init__(parent)
         loadingLayout = QtGui.QVBoxLayout()
 
@@ -30,13 +31,15 @@ class LoadingView(QtGui.QWidget):
 
         self.setLayout(loadingLayout)
 
-    def setDoneMode(self):
+    def setDoneState(self):
+        '''Set view in done state.'''
         self.textLabel.setText(
             self.doneText
         )
         self.doneButton.setEnabled(True)
 
-    def setLoadingMode(self):
+    def setLoadingState(self):
+        '''Set view in loading state.'''
         self.textLabel.setText(
             self.loadingText
         )

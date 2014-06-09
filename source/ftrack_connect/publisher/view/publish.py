@@ -13,7 +13,7 @@ from ..core import asynchronous
 
 
 class PublishView(QtGui.QWidget):
-
+    '''Publish view for ftrack connect Publisher.'''
     entityChanged = QtCore.Signal(object)
 
     publishStarted = QtCore.Signal()
