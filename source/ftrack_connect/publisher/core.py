@@ -34,6 +34,15 @@ class Publisher(QtGui.QStackedWidget):
         super(Publisher, self).__init__(*args, **kwargs)
 
         # Inline to avoid circular import
+        from view.idle import BlockingIdleView
+        idleView = BlockingIdleView(
+            parent=self, text='Select task in ftrack to start publisher.'
+        )
+        self.addWidget(
+            idleView
+        )
+
+        # Inline to avoid circular import
         from view.publish import PublishView
         self.publishView = PublishView(parent=self)
         self.addWidget(
@@ -47,24 +56,31 @@ class Publisher(QtGui.QStackedWidget):
             loadingView
         )
 
-        self.publishView.publishStarted.connect(self._toggleView)
+        self.publishView.publishStarted.connect(
+            lambda: self._setView(loadingView)
+        )
 
         self.publishView.publishStarted.connect(loadingView.setLoadingState)
         self.publishView.publishFinished.connect(loadingView.setDoneState)
         self.publishView.publishFailed.connect(loadingView.setDoneState)
 
-        loadingView.loadingDone.connect(self._toggleView)
+        loadingView.loadingDone.connect(
+            lambda: self._setView(idleView)
+        )
+
+        self.entityChanged.connect(
+            lambda: self._setView(self.publishView)
+        )
+
+        self._dummySetEntity()
 
     def getName(self):
         '''Return name of widget.'''
         return 'Publish'
 
-    def _toggleView(self):
-        '''Toggle between first and second widget.'''
-        if self.currentIndex() == 0:
-            self.setCurrentIndex(1)
-        else:
-            self.setCurrentIndex(0)
+    def _setView(self, view):
+        '''Set active widget of the publisher.'''
+        self.setCurrentWidget(view)
 
     def setEntity(self, entity):
         '''Set the *entity* for the publisher.'''
@@ -72,3 +88,10 @@ class Publisher(QtGui.QStackedWidget):
         self.entityChanged.emit(entity)
 
         self.publishView.setEntity(entity)
+
+    @asynchronous
+    def _dummySetEntity(self):
+        # TODO: Remove this call when it is possible to select or start
+        # publisher with an entity.
+        time.sleep(3)
+        self.setEntity(ftrack.Task('d547547a-66de-11e1-bdb8-f23c91df25eb'))

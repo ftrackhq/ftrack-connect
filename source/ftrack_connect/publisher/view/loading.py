@@ -9,17 +9,19 @@ class LoadingView(QtGui.QWidget):
     '''Loading and progress view for ftrack connect Publisher.'''
     loadingDone = QtCore.Signal()
 
-    loadingText = 'Crunching..'
-    doneText = 'All done!'
-
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, loadingText='Crunching', doneText='Done!'):
         '''Initiate loading view.'''
         super(LoadingView, self).__init__(parent)
+
+        self.loadingText = loadingText
+        self.doneText = doneText
+
         loadingLayout = QtGui.QVBoxLayout()
 
-        self.textLabel = QtGui.QLabel('Crunching..')
+        self.textLabel = QtGui.QLabel(self.loadingText)
         loadingLayout.addWidget(
-            self.textLabel
+            self.textLabel,
+            alignment=QtCore.Qt.AlignCenter
         )
 
         self.doneButton = QtGui.QPushButton(text='Close')
@@ -27,7 +29,10 @@ class LoadingView(QtGui.QWidget):
 
         self.doneButton.clicked.connect(self.loadingDone.emit)
 
-        loadingLayout.addWidget(self.doneButton)
+        loadingLayout.addWidget(
+            self.doneButton,
+            alignment=QtCore.Qt.AlignCenter
+        )
 
         self.setLayout(loadingLayout)
 

@@ -47,10 +47,6 @@ class PublishView(QtGui.QWidget):
         self.versionDescriptionComponent = QtGui.QTextEdit()
         formLayout.addRow('Description', self.versionDescriptionComponent)
 
-        # TODO: Remove this call when it is possible to select or start
-        # publisher with an entity.
-        self.setEntity(ftrack.Task('d547547a-66de-11e1-bdb8-f23c91df25eb'))
-
         publishButton = QtGui.QPushButton(text='Publish')
         publishButton.clicked.connect(self.publish)
 
