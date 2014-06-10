@@ -6,6 +6,7 @@ import os
 from PySide import QtGui
 
 from ftrack_connect.tabwidget import TabWidget
+from ftrack_connect import resource_rc
 
 APPLICATION_ROOT = os.path.dirname(
     os.path.realpath(__file__)
@@ -37,7 +38,7 @@ class ApplicationWindow(QtGui.QMainWindow):
         QtGui.QApplication.setQuitOnLastWindowClosed(False)
 
         self.logoIcon = QtGui.QIcon(
-            '{0}/logo.png'.format(RESOURCE_ROOT_PATH)
+            QtGui.QPixmap(':/{0}.png'.format('ftrack-logo'))
         )
 
         self._initialiseTray()
