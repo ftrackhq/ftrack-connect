@@ -6,7 +6,6 @@ import time
 
 from PySide import QtGui, QtCore
 import ftrack
-from ftrack_connect.core import ConnectError
 
 
 def asynchronous(f):
