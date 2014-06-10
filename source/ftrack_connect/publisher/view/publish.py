@@ -85,13 +85,14 @@ class PublishView(QtGui.QWidget):
             ]
 
         self._publish(
-            entity, assetType, versionDescription,
-            taskId, components=components
+            entity=entity, assetType=assetType,
+            versionDescription=versionDescription, taskId=taskId,
+            components=components
         )
 
     @asynchronous
     def _publish(
-        self, entity=None, assetType=None,
+        self, entity=None, assetName=None, assetType=None,
         versionDescription='', taskId=None, components=None
     ):
         '''Get or create an asset of *assetType* on *entity*.
@@ -110,11 +111,14 @@ class PublishView(QtGui.QWidget):
             self.publishFailed.emit()
             raise ConnectError('No entity found')
 
+        if assetName is None:
+            assetName = assetType.getName()
+
         if components is None:
             components = []
 
         asset = entity.createAsset(
-            assetType.getName(), assetType.getShort(), taskId
+            assetName, assetType.getShort(), taskId
         )
 
         version = asset.createVersion(
