@@ -4,6 +4,7 @@
 from PySide import QtGui
 from PySide import QtCore
 import ftrack
+from ftrack_connect.core import ConnectError
 
 from ..component.linked_to import LinkedToComponent
 from ..component.asset_type_selector import AssetTypeSelectorComponent
