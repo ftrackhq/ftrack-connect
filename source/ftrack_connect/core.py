@@ -84,6 +84,12 @@ class ApplicationWindow(QtGui.QMainWindow):
             triggered=self.focus
         )
 
+        styleAction = QtGui.QAction(
+            'Change theme', self,
+            triggered=self._changeTheme
+        )
+        menu.addAction(styleAction)
+
         menu.addAction(focusAction)
         menu.addSeparator()
         menu.addAction(quitAction)
@@ -98,8 +104,20 @@ class ApplicationWindow(QtGui.QMainWindow):
         from ftrack_connect.publisher.core import register
         register(self)
 
-    def _setupStyle(self, theme='light'):
+    def _changeTheme(self):
+        '''Change active application theme.'''
+        if not hasattr(self, '_theme'):
+            self._theme = 'light'
 
+        if self._theme == 'dark':
+            self._theme = 'light'
+        else:
+            self._theme = 'dark'
+
+        self._setupStyle(self._theme)
+
+    def _setupStyle(self, theme='light'):
+        '''Set up application style using *theme*.'''
         QtGui.QApplication.setStyle('cleanlooks')
 
         # Load font
