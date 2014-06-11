@@ -6,8 +6,6 @@ import getpass
 from PySide import QtCore
 import ftrack
 
-ftrack.setup()
-
 
 class TopicThread(QtCore.QThread):
     '''Thread to subscribe to ftrack topics hub.'''
