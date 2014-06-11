@@ -1,0 +1,75 @@
+$input-background: $white;
+$input-border-color: darken($input-background, 10%);
+$input-border-color-focus: $brand-primary;
+$input-padding: 4px;
+$input-border-radius: 2px;
+
+/** Form elements */
+QLabel {
+    font-family: $font-family-base;
+    color: $text-color;
+}
+
+QLineEdit {
+    border: 1px solid $input-border-color;
+    border-radius: 2px;
+    padding: $input-padding;
+    background: $input-background;
+    selection-background-color: $input-border-color;
+    font-family: $font-family-base;
+    color: $text-color;
+}
+
+QLineEdit:focus {
+    border: 1px solid $input-border-color-focus;
+}
+
+QTextEdit {
+    border: 1px solid $input-border-color;
+    border-radius: 2px;
+    padding: $input-padding;
+    background: $input-background;
+    selection-background-color: $input-border-color;
+    font-family: $font-family-base; 
+    color: $text-color;
+}
+QTextEdit:focus {
+    border: 1px solid $input-border-color-focus;
+}
+
+QComboBox {
+    border: 1px solid $input-border-color;
+    border-radius: 2px;
+    padding: $input-padding;
+    background: $input-background;
+    selection-background-color: $input-border-color;
+    font-family: $font-family-base;
+    color: $text-color;
+}
+
+QComboBox:focus {
+    border: 1px solid $input-border-color-focus;
+}
+
+QComboBox::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 15px;
+    border: 0;
+}
+
+QComboBox QAbstractItemView {
+    background: $input-background;
+    color: $text-color;
+    border: 0;
+    outline: 0;
+}
+
+QComboBox QAbstractItemView::item {
+    padding: $input-padding 0;
+}
+
+QComboBox QAbstractItemView::item:selected {
+    background-color: $gray-lighter;
+    color: $text-color;
+}
