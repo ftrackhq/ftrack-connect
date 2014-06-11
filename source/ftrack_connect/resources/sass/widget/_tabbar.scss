@@ -11,9 +11,11 @@ QTabWidget::pane {
 QTabWidget::tab-bar {
     background: $white;
 }
+
 QTabBar {
     background: $white;
 }
+
 QTabBar::tab {
     background: $white;
     padding: 8px 10px;

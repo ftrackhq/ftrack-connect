@@ -5,6 +5,7 @@ QScrollBar:vertical {
     width: 12px;    
     margin: 0;
 }
+
 QScrollBar::handle:vertical {
     border: 0;
     border-radius: 4px;
@@ -19,6 +20,7 @@ QScrollBar::add-line:vertical {
     subcontrol-position: bottom;
     subcontrol-origin: margin;
 }
+
 QScrollBar::sub-line:vertical {
     border: 0;
     height: 0;
