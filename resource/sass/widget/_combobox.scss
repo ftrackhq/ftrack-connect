@@ -1,18 +1,4 @@
 /** Combo Box. */
-QComboBox {
-    border: 1px solid $input-border-color;
-    border-radius: 2px;
-    padding: $input-padding;
-    background: $input-background;
-    selection-background-color: $input-border-color;
-    font-family: $font-family-base;
-    color: $text-color;
-}
-
-QComboBox:focus {
-    border: 1px solid $input-border-color-focus;
-}
-
 QComboBox::drop-down {
     subcontrol-origin: padding;
     subcontrol-position: top right;

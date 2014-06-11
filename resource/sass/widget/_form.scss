@@ -4,7 +4,9 @@ QLabel {
     color: $text-color;
 }
 
-QLineEdit {
+QLineEdit,
+QTextEdit,
+QComboBox {
     border: 1px solid $input-border-color;
     border-radius: 2px;
     padding: $input-padding;
@@ -12,22 +14,12 @@ QLineEdit {
     selection-background-color: $input-border-color;
     font-family: $font-family-base;
     color: $text-color;
-}
 
-QLineEdit:focus {
-    border: 1px solid $input-border-color-focus;
-}
+    &:hover {
+        border-color: darken($input-border-color, 5%);
+    }
 
-QTextEdit {
-    border: 1px solid $input-border-color;
-    border-radius: 2px;
-    padding: $input-padding;
-    background: $input-background;
-    selection-background-color: $input-border-color;
-    font-family: $font-family-base; 
-    color: $text-color;
-}
-
-QTextEdit:focus {
-    border: 1px solid $input-border-color-focus;
+    &:focus {
+        border: 1px solid $input-border-color-focus;
+    }
 }
