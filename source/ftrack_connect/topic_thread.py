@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-import os
+import getpass
 
 from PySide import QtCore
 import ftrack
@@ -29,8 +29,10 @@ class TopicThread(QtCore.QThread):
     def run(self):
         '''Subscribe to ftrack.connect events and run the thread.'''
 
+        # getpass.getuser is used to reflect how the ftrack api get the current
+        # user.
         currentUser = ftrack.User(
-            os.environ['LOGNAME']
+            getpass.getuser()
         )
 
         self._currentUserId = currentUser.getId()
