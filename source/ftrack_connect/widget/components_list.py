@@ -1,6 +1,8 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
+import harmony.ui.filesystem_browser
+
 import ftrack_connect.widget.component
 import ftrack_connect.widget.item_list
 
@@ -15,10 +17,25 @@ class ComponentsList(ftrack_connect.widget.item_list.ItemList):
     def __init__(self, parent=None):
         '''Initialise widget with *parent*.'''
         super(ComponentsList, self).__init__(
-            widgetFactory=ftrack_connect.widget.component.Component,
+            widgetFactory=self._createComponentWidget,
             widgetItem=lambda widget: widget.value(),
             parent=parent
         )
+
+        # Use common browser widget for every component.
+        self._browser = harmony.ui.filesystem_browser.FilesystemBrowser(
+            parent=self
+        )
+        self._browser.setMinimumSize(900, 500)
+
+    def _createComponentWidget(self, item):
+        '''Return component widget for *item*.'''
+        options = {}
+        if item is not None:
+            options = {}
+
+        options.setdefault('browser', self._browser)
+        return ftrack_connect.widget.component.Component(**options)
 
     def onAddButtonClick(self):
         '''Handle add button click.'''
@@ -28,4 +45,4 @@ class ComponentsList(ftrack_connect.widget.item_list.ItemList):
         widget = self._list.widgetAt(row)
 
         # TODO: Use signals.
-        #widget.onBrowse()
+        widget.browse()
