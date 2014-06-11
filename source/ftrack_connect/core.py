@@ -129,7 +129,7 @@ class ApplicationWindow(QtGui.QMainWindow):
                 )
             )
 
-        method(eventData.get('entity'))
+        method(**eventData)
 
     def _onWidgetRequestFocus(self, widget):
         '''Switch tab to *widget* and bring application to front.'''
