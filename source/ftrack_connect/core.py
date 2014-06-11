@@ -16,7 +16,8 @@ RESOURCE_ROOT_PATH = os.path.join(
     os.environ.get(
         'RESOURCEPATH',
         APPLICATION_ROOT
-    ), 'resource'
+    ),
+    '..', '..', 'resource'
 )
 
 

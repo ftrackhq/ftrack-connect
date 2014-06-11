@@ -3,6 +3,6 @@
 @function theme-image($filename) {
 
 	// TODO: Replace path with QT Resource path
-	$url: 'source/ftrack_connect/resource/image/#{$theme}/#{$filename}';
+	$url: 'resource/image/#{$theme}/#{$filename}';
 	@return url($url);
 }
