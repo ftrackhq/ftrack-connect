@@ -8,10 +8,10 @@ from ..core import asynchronous
 
 
 class AssetTypeSelectorComponent(QtGui.QComboBox):
-    '''Asset selector component.'''
+    '''Asset type selector component.'''
 
     def __init__(self, *args, **kwargs):
-        '''Instantiate the asset selector.'''
+        '''Instantiate the asset type selector.'''
         super(AssetTypeSelectorComponent, self).__init__(*args, **kwargs)
         self.loadAssetTypes()
 
