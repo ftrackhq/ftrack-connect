@@ -1,0 +1,86 @@
+# :coding: utf-8
+# :copyright: Copyright (c) 2014 ftrack
+
+from PySide import QtGui
+
+
+class List(QtGui.QTableWidget):
+    '''Manage a list of widgets.'''
+
+    def __init__(self, parent=None):
+        '''Initialise widget with *parent*.'''
+        super(List, self).__init__(parent=parent)
+
+        self._widgetColumn = 0
+
+        self.setColumnCount(1)
+        self.setSelectionBehavior(
+            QtGui.QAbstractItemView.SelectRows
+        )
+        self.setSelectionMode(
+            QtGui.QAbstractItemView.ExtendedSelection
+        )
+        self.setVerticalScrollMode(
+            QtGui.QAbstractItemView.ScrollPerPixel
+        )
+        self.verticalHeader().hide()
+        self.verticalHeader().setResizeMode(
+            QtGui.QHeaderView.ResizeToContents
+        )
+        self.horizontalHeader().setStretchLastSection(True)
+        self.horizontalHeader().hide()
+
+    def count(self):
+        '''Return count of widgets in list.'''
+        return self.rowCount()
+
+    def addWidget(self, widget, row=None):
+        '''Add *widget* to list at *row*.'''
+        if row is None:
+            row = self.count()
+
+        self.insertRow(row)
+        self.setCellWidget(row, self._widgetColumn, widget)
+
+        self.resizeRowToContents(row)
+
+    def removeWidget(self, row):
+        '''Remove and delete widget at *row*.'''
+        # self.removeCellWidget(row, self._widgetColumn)
+        self.removeRow(row)
+
+    def indexOfWidget(self, widget):
+        '''Return row of *widget* in list or None if not present.'''
+        index = None
+
+        for row in range(self.count()):
+            candidateWidget = self.widgetAt(row)
+            if candidateWidget == widget:
+                index = row
+                break
+
+        return index
+
+    def widgets(self):
+        '''Return list of widgets.'''
+        widgets = []
+        for row in range(self.count()):
+            widget = self.widgetAt(row)
+            widgets.append(widget)
+
+        return widgets
+
+    def widgetAt(self, row):
+        '''Return widget at *row*.'''
+        return self.cellWidget(row, self._widgetColumn)
+
+    def selected(self):
+        '''Return currently selected rows.'''
+        selectionModel = self.selectionModel()
+        indexes = selectionModel.selectedRows(self._widgetColumn)
+
+        rows = []
+        for index in indexes:
+            rows.append(index.row())
+
+        return rows
