@@ -39,11 +39,13 @@ class ApplicationWindow(QtGui.QMainWindow):
         self.logoIcon = QtGui.QIcon(
             '{0}/logo.png'.format(RESOURCE_ROOT_PATH)
         )
+        self._setupStyle()
 
         self._initialiseTray()
 
+        self.setObjectName('app-window')
         self.setWindowTitle('ftrack connect')
-        self.resize(300, 500)
+        self.resize(350, 500)
         self.move(50, 50)
 
         self.setWindowIcon(self.logoIcon)
@@ -95,6 +97,21 @@ class ApplicationWindow(QtGui.QMainWindow):
         # Add publisher as a plugin.
         from ftrack_connect.publisher.core import register
         register(self)
+
+    def _setupStyle(self, theme='light'):
+
+        QtGui.QApplication.setStyle('cleanlooks')
+
+        # Load font
+        QtGui.QFontDatabase.addApplicationFont(
+            '{0}/fonts/OpenSans-Regular.ttf'.format(RESOURCE_ROOT_PATH)
+        )
+
+        # Load stylesheet
+        styleSheetString = open(
+            '{0}/style-{1}.css'.format(RESOURCE_ROOT_PATH, theme), 'r'
+        ).read()
+        self.setStyleSheet(styleSheetString)
 
     def add(self, widget, name=None):
         '''Add *widget* as tab with *name*.
