@@ -63,6 +63,7 @@ class PublishView(QtGui.QWidget):
         self.publishStarted.emit()
 
         entity = self._entity
+        taskId = None
 
         assetType = self.assetSelector.itemData(
             self.assetSelector.currentIndex()
