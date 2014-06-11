@@ -16,7 +16,7 @@ RESOURCE_ROOT_PATH = os.path.join(
     os.environ.get(
         'RESOURCEPATH',
         APPLICATION_ROOT
-    ), 'resources'
+    ), 'resource'
 )
 
 
@@ -43,7 +43,7 @@ class ApplicationWindow(QtGui.QMainWindow):
 
         self._initialiseTray()
 
-        self.setObjectName('app-window')
+        self.setObjectName('ftrack-connect-window')
         self.setWindowTitle('ftrack connect')
         self.resize(350, 500)
         self.move(50, 50)
@@ -122,12 +122,12 @@ class ApplicationWindow(QtGui.QMainWindow):
 
         # Load font
         QtGui.QFontDatabase.addApplicationFont(
-            '{0}/fonts/OpenSans-Regular.ttf'.format(RESOURCE_ROOT_PATH)
+            '{0}/font/open_sans_regular.ttf'.format(RESOURCE_ROOT_PATH)
         )
 
         # Load stylesheet
         styleSheetString = open(
-            '{0}/style-{1}.css'.format(RESOURCE_ROOT_PATH, theme), 'r'
+            '{0}/style_{1}.css'.format(RESOURCE_ROOT_PATH, theme), 'r'
         ).read()
         self.setStyleSheet(styleSheetString)
 

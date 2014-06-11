@@ -4,15 +4,15 @@ Stylesheets
 Structure
 ----------
 
-The files `style-light.scss` and `style-dark.scss` are compiled (using Compass)
-to the two QSS stylesheets `style-light.css` and `style-dark.css`. The only
-difference between the theme files should be which of the two `_colors-` files
+The files `style_light.scss` and `style_dark.scss` are compiled (using Compass)
+to the two QSS stylesheets `style_light.css` and `style_dark.css`. The only
+difference between the theme files should be which of the two `_colors_` files
 they include.
 
 _variables.scss
 	Contains common variables, such as fonts and sizes.
 
-_colors-*
+_colors_*
 	Contains theme-specific color variables.
 
 widget
