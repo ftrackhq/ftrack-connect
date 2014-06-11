@@ -78,8 +78,6 @@ class Publisher(QtGui.QStackedWidget):
             lambda: self._setView(self.publishView)
         )
 
-        #self._dummySetEntity()
-
     def getName(self):
         '''Return name of widget.'''
         return 'Publish'
@@ -99,10 +97,3 @@ class Publisher(QtGui.QStackedWidget):
         entity = ftrack.Task(entityData.get('entityId'))
         self.setEntity(entity)
         self.requestFocus.emit(self)
-
-    @asynchronous
-    def _dummySetEntity(self):
-        # TODO: Remove this call when it is possible to select or start
-        # publisher with an entity.
-        time.sleep(3)
-        self.setEntity(ftrack.Task('d547547a-66de-11e1-bdb8-f23c91df25eb'))
