@@ -49,6 +49,7 @@ class PublishView(QtGui.QWidget):
         formLayout.addRow('Description', self.versionDescriptionComponent)
 
         publishButton = QtGui.QPushButton(text='Publish')
+        publishButton.setObjectName('primary')
         publishButton.clicked.connect(self.publish)
 
         publishLayout.addWidget(publishButton, alignment=QtCore.Qt.AlignCenter)
