@@ -37,11 +37,11 @@ class Publisher(QtGui.QStackedWidget):
 
         # Inline to avoid circular import
         from view.idle import BlockingIdleView
-        idleView = BlockingIdleView(
+        self.idleView = BlockingIdleView(
             parent=self, text='Select task in ftrack to start publisher.'
         )
         self.addWidget(
-            idleView
+            self.idleView
         )
 
         # Inline to avoid circular import
@@ -53,38 +53,52 @@ class Publisher(QtGui.QStackedWidget):
 
         # Inline to avoid circular import
         from view.loading import LoadingView
-        loadingView = LoadingView(parent=self)
+        self.loadingView = LoadingView(parent=self)
         self.addWidget(
-            loadingView
+            self.loadingView
         )
 
         self.publishView.publishStarted.connect(
-            lambda: self._setView(loadingView)
+            self._onPublishStarted
         )
 
-        self.publishView.publishStarted.connect(loadingView.setLoadingState)
-        self.publishView.publishFinished.connect(loadingView.setDoneState)
-        self.publishView.publishFailed.connect(loadingView.setDoneState)
+        self.publishView.publishFinished.connect(self.loadingView.setDoneState)
+        self.publishView.publishFailed.connect(self.loadingView.setDoneState)
 
-        loadingView.loadingDone.connect(
-            lambda: self._setView(idleView)
-        )
-
-        loadingView.loadingDone.connect(
-            lambda: self.requestClose.emit(self)
+        self.loadingView.loadingDone.connect(
+            self._onLoadingDone
         )
 
         self.entityChanged.connect(
-            lambda: self._setView(self.publishView)
+            self._onEntityChanged
         )
 
-    def getName(self):
-        '''Return name of widget.'''
-        return 'Publish'
+    def _onPublishStarted(self):
+        '''Callback for publish started signal.'''
+        self.loadingView.setLoadingState()
+        self._setView(self.loadingView)
+
+    def _onEntityChanged(self):
+        '''Callback for entityChanged signal.'''
+        self._setView(
+            self.publishView
+        )
+
+    def _onLoadingDone(self):
+        '''Callback for loadingDone signal.'''
+        self._setView(
+            self.idleView
+        )
+
+        self.requestClose.emit(self)
 
     def _setView(self, view):
         '''Set active widget of the publisher.'''
         self.setCurrentWidget(view)
+
+    def getName(self):
+        '''Return name of widget.'''
+        return 'Publish'
 
     def setEntity(self, entity):
         '''Set the *entity* for the publisher.'''
