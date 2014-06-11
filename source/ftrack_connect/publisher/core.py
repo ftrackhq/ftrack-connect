@@ -93,7 +93,10 @@ class Publisher(QtGui.QStackedWidget):
 
         self.publishView.setEntity(entity)
 
-    def start(self, entityData):
-        entity = ftrack.Task(entityData.get('entityId'))
+    def start(self, entity, **kwargs):
+        entity = ftrack.Task(
+            entity.get('entityId')
+        )
+
         self.setEntity(entity)
         self.requestFocus.emit(self)
