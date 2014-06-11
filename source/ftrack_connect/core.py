@@ -108,11 +108,12 @@ class ApplicationWindow(QtGui.QMainWindow):
         `ConnectError` if no plugin is found or if action is missing on plugin.
 
         '''
-        pluginName = eventData.get('plugin', None)
-        method = eventData.get('action', None)
+        pluginName = eventData.get('plugin')
+        method = eventData.get('action')
 
-        plugin = self.plugins.get(pluginName, None)
-        if plugin is None:
+        try:
+            plugin = self.plugins[pluginName]
+        except KeyError:
             raise ConnectError(
                 'Plugin "{0}" not found.'.format(
                     pluginName
@@ -130,12 +131,12 @@ class ApplicationWindow(QtGui.QMainWindow):
 
         method(eventData.get('entity'))
 
-    def _widgetRequestFocus(self, widget):
+    def _onWidgetRequestFocus(self, widget):
         '''Switch tab to *widget* and bring application to front.'''
         self.tabPanel.setCurrentWidget(widget)
         self.focus()
 
-    def _widgetRequestClose(self, widget):
+    def _onWidgetRequestClose(self, widget):
         '''Hide application upon *widget* request.'''
         self.hide()
 
@@ -154,8 +155,8 @@ class ApplicationWindow(QtGui.QMainWindow):
 
         self.plugins[name.lower()] = widget
 
-        widget.requestFocus.connect(self._widgetRequestFocus)
-        widget.requestClose.connect(self._widgetRequestClose)
+        widget.requestFocus.connect(self._onWidgetRequestFocus)
+        widget.requestClose.connect(self._onWidgetRequestClose)
 
     def focus(self):
         '''Focus and bring the window to top.'''
