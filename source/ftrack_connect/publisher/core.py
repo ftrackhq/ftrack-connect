@@ -28,6 +28,9 @@ class Publisher(QtGui.QStackedWidget):
     # Add signal for when the entity is changed.
     entityChanged = QtCore.Signal(object)
 
+    requestFocus = QtCore.Signal(object)
+    requestClose = QtCore.Signal(object)
+
     def __init__(self, *args, **kwargs):
         '''Instantiate the publisher widget.'''
         super(Publisher, self).__init__(*args, **kwargs)
@@ -67,11 +70,15 @@ class Publisher(QtGui.QStackedWidget):
             lambda: self._setView(idleView)
         )
 
+        loadingView.loadingDone.connect(
+            lambda: self.requestClose.emit(self)
+        )
+
         self.entityChanged.connect(
             lambda: self._setView(self.publishView)
         )
 
-        self._dummySetEntity()
+        #self._dummySetEntity()
 
     def getName(self):
         '''Return name of widget.'''
@@ -87,6 +94,11 @@ class Publisher(QtGui.QStackedWidget):
         self.entityChanged.emit(entity)
 
         self.publishView.setEntity(entity)
+
+    def start(self, entityData):
+        entity = ftrack.Task(entityData.get('entityId'))
+        self.setEntity(entity)
+        self.requestFocus.emit(self)
 
     @asynchronous
     def _dummySetEntity(self):
