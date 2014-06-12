@@ -13,6 +13,8 @@ class AssetTypeSelectorComponent(QtGui.QComboBox):
     def __init__(self, *args, **kwargs):
         '''Instantiate the asset type selector.'''
         super(AssetTypeSelectorComponent, self).__init__(*args, **kwargs)
+        itemDelegate = QtGui.QStyledItemDelegate()
+        self.setItemDelegate(itemDelegate)
         self.loadAssetTypes()
 
     @asynchronous
