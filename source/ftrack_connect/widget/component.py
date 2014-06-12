@@ -1,6 +1,8 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
+import os
+
 from PySide import QtGui, QtCore
 import harmony.ui.filesystem_browser
 
@@ -80,7 +82,19 @@ class Component(QtGui.QWidget):
 
                 self.resourceIdentifierEdit.setText(resourceIdentifier)
                 if not self.componentName():
-                    self.setComponentName(resourceIdentifier)
+                    self.setComponentName(
+                        self._computeComponentName(resourceIdentifier)
+                    )
+
+    def _computeComponentName(self, resourceIdentifier):
+        '''Compute a relevant component name using *resourceIdentifier*.'''
+        name = os.path.basename(resourceIdentifier)
+        if not name:
+            name = resourceIdentifier
+        else:
+            name = os.path.splitext(name)[0]
+
+        return name
 
     def componentName(self):
         '''Return current component name.'''
