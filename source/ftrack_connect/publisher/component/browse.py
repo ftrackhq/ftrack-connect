@@ -6,6 +6,7 @@ from harmony.ui.filesystem_browser import FilesystemBrowser
 
 
 class BrowseComponent(QtGui.QPushButton):
+    '''File browser component.'''
 
     fileSelected = QtCore.Signal(object)
 
