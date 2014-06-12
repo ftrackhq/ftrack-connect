@@ -79,15 +79,15 @@ class Component(QtGui.QWidget):
             selected = self.browser.selected()
             if selected:
                 resourceIdentifier = selected[0]
-
                 self.resourceIdentifierEdit.setText(resourceIdentifier)
+
                 if not self.componentName():
                     self.setComponentName(
                         self._computeComponentName(resourceIdentifier)
                     )
 
     def _computeComponentName(self, resourceIdentifier):
-        '''Compute a relevant component name using *resourceIdentifier*.'''
+        '''Return a relevant component name using *resourceIdentifier*.'''
         name = os.path.basename(resourceIdentifier)
         if not name:
             name = resourceIdentifier
