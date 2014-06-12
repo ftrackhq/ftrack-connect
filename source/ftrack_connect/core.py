@@ -124,8 +124,8 @@ class ApplicationWindow(QtGui.QMainWindow):
             method = getattr(plugin, method)
         except AttributeError:
             raise ConnectError(
-                'Method "{0}" not found on {0} plugin.'.format(
-                    method, pluginName
+                'Method "{0}" not found on "{1}" plugin({2}).'.format(
+                    method, pluginName, plugin
                 )
             )
 
