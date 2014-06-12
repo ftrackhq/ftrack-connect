@@ -62,8 +62,9 @@ class Publisher(QtGui.QStackedWidget):
             self._onPublishStarted
         )
 
-        self.publishView.publishFinished.connect(self.loadingView.setDoneState)
-        self.publishView.publishFailed.connect(self.loadingView.setDoneState)
+        self.publishView.publishFinished.connect(
+            self._onPublishFinished
+        )
 
         self.loadingView.loadingDone.connect(
             self._onLoadingDone
@@ -72,6 +73,10 @@ class Publisher(QtGui.QStackedWidget):
         self.entityChanged.connect(
             self._onEntityChanged
         )
+
+    def _onPublishFinished(self, success):
+        '''Callback for publish finished signal.'''
+        self.loadingView.setDoneState()
 
     def _onPublishStarted(self):
         '''Callback for publish started signal.'''

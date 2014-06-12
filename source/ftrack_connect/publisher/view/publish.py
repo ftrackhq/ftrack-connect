@@ -17,8 +17,7 @@ class PublishView(QtGui.QWidget):
     entityChanged = QtCore.Signal(object)
 
     publishStarted = QtCore.Signal()
-    publishFinished = QtCore.Signal()
-    publishFailed = QtCore.Signal()
+    publishFinished = QtCore.Signal(bool)
 
     def __init__(self, parent):
         '''Initiate a publish view.'''
@@ -105,11 +104,11 @@ class PublishView(QtGui.QWidget):
 
         '''
         if not assetType:
-            self.publishFailed.emit()
+            self.publishFinished.emit(False)
             raise ConnectError('No asset type found')
 
         if not entity:
-            self.publishFailed.emit()
+            self.publishFinished.emit(False)
             raise ConnectError('No entity found')
 
         if assetName is None:
@@ -138,4 +137,4 @@ class PublishView(QtGui.QWidget):
 
         version.publish()
 
-        self.publishFinished.emit()
+        self.publishFinished.emit(True)
