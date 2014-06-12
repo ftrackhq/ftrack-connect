@@ -28,17 +28,20 @@ class Publisher(QtGui.QStackedWidget):
     # Add signal for when the entity is changed.
     entityChanged = QtCore.Signal(object)
 
+    requestFocus = QtCore.Signal(object)
+    requestClose = QtCore.Signal(object)
+
     def __init__(self, *args, **kwargs):
         '''Instantiate the publisher widget.'''
         super(Publisher, self).__init__(*args, **kwargs)
 
         # Inline to avoid circular import
         from view.idle import BlockingIdleView
-        idleView = BlockingIdleView(
+        self.idleView = BlockingIdleView(
             parent=self, text='Select task in ftrack to start publisher.'
         )
         self.addWidget(
-            idleView
+            self.idleView
         )
 
         # Inline to avoid circular import
@@ -50,36 +53,57 @@ class Publisher(QtGui.QStackedWidget):
 
         # Inline to avoid circular import
         from view.loading import LoadingView
-        loadingView = LoadingView(parent=self)
+        self.loadingView = LoadingView(parent=self)
         self.addWidget(
-            loadingView
+            self.loadingView
         )
 
         self.publishView.publishStarted.connect(
-            lambda: self._setView(loadingView)
+            self._onPublishStarted
         )
 
-        self.publishView.publishStarted.connect(loadingView.setLoadingState)
-        self.publishView.publishFinished.connect(loadingView.setDoneState)
-        self.publishView.publishFailed.connect(loadingView.setDoneState)
+        self.publishView.publishFinished.connect(
+            self._onPublishFinished
+        )
 
-        loadingView.loadingDone.connect(
-            lambda: self._setView(idleView)
+        self.loadingView.loadingDone.connect(
+            self._onLoadingDone
         )
 
         self.entityChanged.connect(
-            lambda: self._setView(self.publishView)
+            self._onEntityChanged
         )
 
-        self._dummySetEntity()
+    def _onPublishFinished(self, success):
+        '''Callback for publish finished signal.'''
+        self.loadingView.setDoneState()
 
-    def getName(self):
-        '''Return name of widget.'''
-        return 'Publish'
+    def _onPublishStarted(self):
+        '''Callback for publish started signal.'''
+        self.loadingView.setLoadingState()
+        self._setView(self.loadingView)
+
+    def _onEntityChanged(self):
+        '''Callback for entityChanged signal.'''
+        self._setView(
+            self.publishView
+        )
+
+    def _onLoadingDone(self):
+        '''Callback for loadingDone signal.'''
+        self._setView(
+            self.idleView
+        )
+
+        self.requestClose.emit(self)
 
     def _setView(self, view):
         '''Set active widget of the publisher.'''
         self.setCurrentWidget(view)
+
+    def getName(self):
+        '''Return name of widget.'''
+        return 'Publish'
 
     def setEntity(self, entity):
         '''Set the *entity* for the publisher.'''
@@ -88,9 +112,11 @@ class Publisher(QtGui.QStackedWidget):
 
         self.publishView.setEntity(entity)
 
-    @asynchronous
-    def _dummySetEntity(self):
-        # TODO: Remove this call when it is possible to select or start
-        # publisher with an entity.
-        time.sleep(3)
-        self.setEntity(ftrack.Task('d547547a-66de-11e1-bdb8-f23c91df25eb'))
+    def start(self, entity, **kwargs):
+        '''Set the *entity* on publisher and request to start the publisher.'''
+        entity = ftrack.Task(
+            entity.get('entityId')
+        )
+
+        self.setEntity(entity)
+        self.requestFocus.emit(self)
