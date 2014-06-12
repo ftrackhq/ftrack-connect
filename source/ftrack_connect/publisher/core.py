@@ -113,6 +113,7 @@ class Publisher(QtGui.QStackedWidget):
         self.publishView.setEntity(entity)
 
     def start(self, entity, **kwargs):
+        '''Set the *entity* on publisher and request to start the publisher.'''
         entity = ftrack.Task(
             entity.get('entityId')
         )
