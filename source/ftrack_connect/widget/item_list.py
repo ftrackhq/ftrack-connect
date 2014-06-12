@@ -28,30 +28,30 @@ class ItemList(QtGui.QFrame):
         self.setFrameStyle(QtGui.QFrame.StyledPanel | QtGui.QFrame.NoFrame)
 
         # List
-        self._list = ftrack_connect.widget.list.List()
-        self.layout().addWidget(self._list, stretch=1)
+        self.list = ftrack_connect.widget.list.List()
+        self.layout().addWidget(self.list, stretch=1)
 
         # Footer (item list controls)
-        self._footer = QtGui.QFrame()
-        self._footer.setLayout(QtGui.QHBoxLayout())
-        self._footer.layout().addStretch(1)
+        self.footer = QtGui.QFrame()
+        self.footer.setLayout(QtGui.QHBoxLayout())
+        self.footer.layout().addStretch(1)
 
-        self._addButton = QtGui.QPushButton('Add')
-        self._addButton.setToolTip('Add a new item to the list.')
+        self.addButton = QtGui.QPushButton('Add')
+        self.addButton.setToolTip('Add a new item to the list.')
         plusIcon = QtGui.QPixmap(':icon_add')
-        self._addButton.setIcon(plusIcon)
-        self._addButton.setIconSize(plusIcon.size())
-        self._footer.layout().addWidget(self._addButton)
+        self.addButton.setIcon(plusIcon)
+        self.addButton.setIconSize(plusIcon.size())
+        self.footer.layout().addWidget(self.addButton)
 
-        self._removeButton = QtGui.QPushButton('Remove')
-        self._removeButton.setToolTip('Remove selected items from list.')
+        self.removeButton = QtGui.QPushButton('Remove')
+        self.removeButton.setToolTip('Remove selected items from list.')
         minusIcon = QtGui.QPixmap(':icon_remove')
-        self._removeButton.setIcon(minusIcon)
-        self._removeButton.setIconSize(minusIcon.size())
-        self._footer.layout().addWidget(self._removeButton)
+        self.removeButton.setIcon(minusIcon)
+        self.removeButton.setIconSize(minusIcon.size())
+        self.footer.layout().addWidget(self.removeButton)
 
-        self._footer.layout().setContentsMargins(0, 0, 0, 0)
-        self.layout().addWidget(self._footer)
+        self.footer.layout().setContentsMargins(0, 0, 0, 0)
+        self.layout().addWidget(self.footer)
 
         self.layout().setContentsMargins(5, 5, 5, 5)
 
@@ -61,31 +61,31 @@ class ItemList(QtGui.QFrame):
             QtGui.QSizePolicy.MinimumExpanding
         )
 
-        self._removeButton.setDisabled(True)
+        self.removeButton.setDisabled(True)
 
         # Connect signals
-        self._addButton.clicked.connect(self.onAddButtonClick)
-        self._removeButton.clicked.connect(self.onRemoveButtonClick)
+        self.addButton.clicked.connect(self.onAddButtonClick)
+        self.removeButton.clicked.connect(self.onRemoveButtonClick)
 
-        selectionModel = self._list.selectionModel()
+        selectionModel = self.list.selectionModel()
         selectionModel.selectionChanged.connect(self.onSelectionChanged)
 
     def onSelectionChanged(self, selected, deselected):
         '''Handle change in selection.'''
-        rows = self._list.selected()
+        rows = self.list.selected()
         if rows:
-            self._removeButton.setEnabled(True)
+            self.removeButton.setEnabled(True)
         else:
-            self._removeButton.setEnabled(False)
+            self.removeButton.setEnabled(False)
 
     def onAddButtonClick(self):
         '''Handle add button click.'''
-        row = self._list.count()
+        row = self.list.count()
         self.addItem(None, row)
 
     def onRemoveButtonClick(self):
         '''Handle remove button click.'''
-        rows = self._list.selected()
+        rows = self.list.selected()
 
         # Remove in reverse order to avoid incorrect index.
         rows = sorted(rows, reverse=True)
@@ -95,18 +95,18 @@ class ItemList(QtGui.QFrame):
     def addItem(self, item, row=None):
         '''Add *item* at *row*.'''
         widget = self.widgetFactory(item)
-        self._list.addWidget(widget, row)
+        self.list.addWidget(widget, row)
 
     def removeItem(self, row):
         '''Remove item at *row*.'''
-        self._list.removeWidget(row)
+        self.list.removeWidget(row)
 
     def indexOfItem(self, item):
         '''Return row of *item* in list or None if not present.'''
         index = None
 
         for row in range(self.count()):
-            widget = self._list.widgetAt(row)
+            widget = self.list.widgetAt(row)
             if self.widgetItem(widget) == item:
                 index = row
                 break
@@ -117,12 +117,12 @@ class ItemList(QtGui.QFrame):
         '''Return list of items.'''
         items = []
         for row in range(self.count()):
-            widget = self._list.widgetAt(row)
+            widget = self.list.widgetAt(row)
             items.append(self.widgetItem(widget))
 
         return items
 
     def itemAt(self, row):
         '''Return item at *row*.'''
-        widget = self._list.widgetAt(row)
+        widget = self.list.widgetAt(row)
         return self.widgetItem(widget)

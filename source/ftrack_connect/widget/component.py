@@ -16,52 +16,52 @@ class Component(QtGui.QWidget):
         self.setLayout(QtGui.QVBoxLayout())
         labelWidth = 60
 
-        self._componentNameLayout = QtGui.QHBoxLayout()
+        self.componentNameLayout = QtGui.QHBoxLayout()
 
-        self._componentNameLabel = QtGui.QLabel('Name')
-        self._componentNameLabel.setFixedWidth(labelWidth)
-        self._componentNameLabel.setAlignment(
+        self.componentNameLabel = QtGui.QLabel('Name')
+        self.componentNameLabel.setFixedWidth(labelWidth)
+        self.componentNameLabel.setAlignment(
             QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter
         )
-        self._componentNameLayout.addWidget(self._componentNameLabel, stretch=0)
+        self.componentNameLayout.addWidget(self.componentNameLabel, stretch=0)
 
-        self._componentNameEdit = QtGui.QLineEdit()
-        self._componentNameEdit.setPlaceholderText('Enter component name')
-        self._componentNameLayout.addWidget(self._componentNameEdit)
-        self.layout().addLayout(self._componentNameLayout)
+        self.componentNameEdit = QtGui.QLineEdit()
+        self.componentNameEdit.setPlaceholderText('Enter component name')
+        self.componentNameLayout.addWidget(self.componentNameEdit)
+        self.layout().addLayout(self.componentNameLayout)
 
-        self._resourceIdentifierLayout = QtGui.QHBoxLayout()
+        self.resourceIdentifierLayout = QtGui.QHBoxLayout()
 
-        self._resourceIdentifierLabel = QtGui.QLabel('Path')
-        self._resourceIdentifierLabel.setFixedWidth(labelWidth)
-        self._resourceIdentifierLabel.setAlignment(
+        self.resourceIdentifierLabel = QtGui.QLabel('Path')
+        self.resourceIdentifierLabel.setFixedWidth(labelWidth)
+        self.resourceIdentifierLabel.setAlignment(
             QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter
         )
-        self._resourceIdentifierLayout.addWidget(
-            self._resourceIdentifierLabel, stretch=0
+        self.resourceIdentifierLayout.addWidget(
+            self.resourceIdentifierLabel, stretch=0
         )
 
-        self._resourceIdentifierEdit = QtGui.QLineEdit()
-        self._resourceIdentifierEdit.setPlaceholderText(
+        self.resourceIdentifierEdit = QtGui.QLineEdit()
+        self.resourceIdentifierEdit.setPlaceholderText(
             'Enter component resource identifier'
         )
-        self._resourceIdentifierLayout.addWidget(self._resourceIdentifierEdit)
+        self.resourceIdentifierLayout.addWidget(self.resourceIdentifierEdit)
 
-        self._browseButton = QtGui.QPushButton('Browse')
-        self._browseButton.setToolTip('Browse for path.')
-        self._resourceIdentifierLayout.addWidget(self._browseButton, stretch=0)
+        self.browseButton = QtGui.QPushButton('Browse')
+        self.browseButton.setToolTip('Browse for path.')
+        self.resourceIdentifierLayout.addWidget(self.browseButton, stretch=0)
 
-        self.layout().addLayout(self._resourceIdentifierLayout)
+        self.layout().addLayout(self.resourceIdentifierLayout)
 
-        self._browseButton.clicked.connect(self.browse)
+        self.browseButton.clicked.connect(self.browse)
 
         if browser:
-            self._browser = browser
+            self.browser = browser
         else:
-            self._browser = harmony.ui.filesystem_browser.FilesystemBrowser(
+            self.browser = harmony.ui.filesystem_browser.FilesystemBrowser(
                 parent=self
             )
-            self._browser.setMinimumSize(900, 500)
+            self.browser.setMinimumSize(900, 500)
 
         # Set initial values.
         self.setComponentName(componentName)
@@ -71,29 +71,29 @@ class Component(QtGui.QWidget):
         '''Show browse dialog and populate value with result.'''
         currentResourceIdentifier = self.resourceIdentifier()
         if currentResourceIdentifier:
-            self._browser.setLocation(currentResourceIdentifier)
+            self.browser.setLocation(currentResourceIdentifier)
 
-        if self._browser.exec_():
-            selected = self._browser.selected()
+        if self.browser.exec_():
+            selected = self.browser.selected()
             if selected:
                 resourceIdentifier = selected[0]
 
-                self._resourceIdentifierEdit.setText(resourceIdentifier)
+                self.resourceIdentifierEdit.setText(resourceIdentifier)
                 if not self.componentName():
                     self.setComponentName(resourceIdentifier)
 
     def componentName(self):
         '''Return current component name.'''
-        return self._componentNameEdit.text()
+        return self.componentNameEdit.text()
 
     def setComponentName(self, componentName):
         '''Set *componentName*.'''
-        self._componentNameEdit.setText(componentName)
+        self.componentNameEdit.setText(componentName)
 
     def resourceIdentifier(self):
         '''Return current resource identifier.'''
-        return self._resourceIdentifierEdit.text()
+        return self.resourceIdentifierEdit.text()
 
     def setResourceIdentifier(self, resourceIdentifier):
         '''Set *resourceIdentifier*.'''
-        self._resourceIdentifierEdit.setText(resourceIdentifier)
+        self.resourceIdentifierEdit.setText(resourceIdentifier)
