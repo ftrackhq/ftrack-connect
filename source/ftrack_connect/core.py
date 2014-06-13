@@ -4,24 +4,11 @@
 import os
 
 from PySide import QtGui
+from PySide import QtCore
 
 from ftrack_connect.tabwidget import TabWidget
 from ftrack_connect import resource_rc
 from ftrack_connect.topic_thread import TopicThread
-
-
-APPLICATION_ROOT = os.path.dirname(
-    os.path.realpath(__file__)
-)
-
-# RESOURCEPATH environment variable is set by py2app/py2exe applications.
-RESOURCE_ROOT_PATH = os.path.join(
-    os.environ.get(
-        'RESOURCEPATH',
-        APPLICATION_ROOT
-    ),
-    '..', '..', 'resource'
-)
 
 
 class ConnectError(Exception):
@@ -169,13 +156,16 @@ class ApplicationWindow(QtGui.QMainWindow):
 
         # Load font
         QtGui.QFontDatabase.addApplicationFont(
-            '{0}/font/open_sans_regular.ttf'.format(RESOURCE_ROOT_PATH)
+            ':/font/open_sans_regular.ttf'
         )
 
-        # Load stylesheet
-        styleSheetString = open(
-            '{0}/style_{1}.css'.format(RESOURCE_ROOT_PATH, theme), 'r'
-        ).read()
+        file = QtCore.QFile(':/style/style_{0}.css'.format(theme))
+        file.open(
+            QtCore.QFile.ReadOnly | QtCore.QFile.Text
+        )
+        stream = QtCore.QTextStream(file)
+        styleSheetString = stream.readAll()
+
         self.setStyleSheet(styleSheetString)
 
     def add(self, widget, name=None):

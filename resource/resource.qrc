@@ -1,0 +1,18 @@
+<RCC>
+	<qresource>
+		<file>ftrack-logo.png</file>
+	</qresource>
+	<qresource prefix="style">
+	    <file>style_light.css</file>
+		<file>style_dark.css</file>
+	</qresource>
+	<qresource prefix="font">
+		<file>font/open_sans_regular.ttf</file>
+	</qresource>
+	<qresource prefix="image/dark">
+		<file>image/dark/selected_tab.png</file>
+	</qresource>
+	<qresource prefix="image/light">
+		<file>image/light/selected_tab.png</file>
+	</qresource>
+</RCC>

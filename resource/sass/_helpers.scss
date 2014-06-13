@@ -3,6 +3,6 @@
 @function theme-image($filename) {
 
 	// TODO: Replace path with QT Resource path
-	$url: 'resource/image/#{$theme}/#{$filename}';
+	$url: ':/image/#{$theme}/#{$filename}';
 	@return url($url);
 }
