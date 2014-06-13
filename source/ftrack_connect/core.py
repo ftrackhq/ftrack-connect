@@ -6,6 +6,7 @@ import os
 from PySide import QtGui
 
 from ftrack_connect.tabwidget import TabWidget
+from ftrack_connect.topic_thread import TopicThread
 
 APPLICATION_ROOT = os.path.dirname(
     os.path.realpath(__file__)
@@ -42,6 +43,8 @@ class ApplicationWindow(QtGui.QMainWindow):
         )
         self._setupStyle()
 
+        self.plugins = {}
+
         self._initialiseTray()
 
         self.setObjectName('ftrack-connect-window')
@@ -56,7 +59,9 @@ class ApplicationWindow(QtGui.QMainWindow):
 
         self._discoverPlugins()
 
-        self.focus()
+        self.topicThread = TopicThread()
+        self.topicThread.ftrackConnectEvent.connect(self._routeEvent)
+        self.topicThread.start()
 
     def _initialiseTray(self):
         '''Initialise and add application icon to system tray.'''
@@ -105,6 +110,45 @@ class ApplicationWindow(QtGui.QMainWindow):
         from ftrack_connect.publisher.core import register
         register(self)
 
+    def _routeEvent(self, eventData):
+        '''Route websocket event to publisher plugin based on *eventData*.
+
+        *eventData* should contain 'plugin' and 'action'. Will raise
+        `ConnectError` if no plugin is found or if action is missing on plugin.
+
+        '''
+        pluginName = eventData.get('plugin')
+        method = eventData.get('action')
+
+        try:
+            plugin = self.plugins[pluginName]
+        except KeyError:
+            raise ConnectError(
+                'Plugin "{0}" not found.'.format(
+                    pluginName
+                )
+            )
+
+        try:
+            method = getattr(plugin, method)
+        except AttributeError:
+            raise ConnectError(
+                'Method "{0}" not found on "{1}" plugin({2}).'.format(
+                    method, pluginName, plugin
+                )
+            )
+
+        method(**eventData)
+
+    def _onWidgetRequestFocus(self, widget):
+        '''Switch tab to *widget* and bring application to front.'''
+        self.tabPanel.setCurrentWidget(widget)
+        self.focus()
+
+    def _onWidgetRequestClose(self, widget):
+        '''Hide application upon *widget* request.'''
+        self.hide()
+
     def _changeTheme(self):
         '''Change active application theme.'''
         if not hasattr(self, '_theme'):
@@ -144,6 +188,11 @@ class ApplicationWindow(QtGui.QMainWindow):
         self.tabPanel.addTab(
             widget, name
         )
+
+        self.plugins[name.lower()] = widget
+
+        widget.requestFocus.connect(self._onWidgetRequestFocus)
+        widget.requestClose.connect(self._onWidgetRequestClose)
 
     def focus(self):
         '''Focus and bring the window to top.'''
