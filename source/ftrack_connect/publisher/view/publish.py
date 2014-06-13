@@ -29,7 +29,7 @@ class PublishView(QtGui.QWidget):
         self.setLayout(publishLayout)
 
         browser = BrowseComponent(text='Browse')
-        publishLayout.addWidget(browser)
+        publishLayout.addWidget(browser, alignment=QtCore.Qt.AlignCenter)
 
         # Create form layout to keep track of publish form items.
         formLayout = QtGui.QFormLayout()
@@ -49,9 +49,10 @@ class PublishView(QtGui.QWidget):
         formLayout.addRow('Description', self.versionDescriptionComponent)
 
         publishButton = QtGui.QPushButton(text='Publish')
+        publishButton.setObjectName('primary')
         publishButton.clicked.connect(self.publish)
 
-        publishLayout.addWidget(publishButton)
+        publishLayout.addWidget(publishButton, alignment=QtCore.Qt.AlignCenter)
 
     def setEntity(self, entity):
         '''Set the *entity* for the view.'''
