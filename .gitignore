@@ -24,6 +24,12 @@ pip-log.txt
 .coverage
 .tox
 
+# Build files
+/resource/*.css
+
+# Caches
+.sass-cache/
+
 # Development
 .project
 .pydevproject
