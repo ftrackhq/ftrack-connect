@@ -14,8 +14,8 @@ class BrowseComponent(QtGui.QPushButton):
         '''Initialise browser component.'''
         super(BrowseComponent, self).__init__(*args, **kwargs)
         self.setToolTip('Browse for file(s).')
-
-        self._dialog = FilesystemBrowser()
+        self.setObjectName('publisher-browsebutton')
+        self._dialog = FilesystemBrowser(parent=self)
         self._dialog.setMinimumSize(900, 500)
 
         self._setupConnections()
