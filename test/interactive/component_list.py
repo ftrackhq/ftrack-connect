@@ -19,6 +19,12 @@ def main(arguments=None):
     dialog = ftrack_connect.widget.components_list.ComponentsList()
     dialog.resize(800, 400)
     dialog.show()
+    dialog.addItem({
+        'resourceIdentifier': '/path/to/file.png'
+    })
+    dialog.addItem({
+        'resourceIdentifier': '/path/to/sequence.%04d.png [1-20]'
+    })
 
     sys.exit(application.exec_())
 

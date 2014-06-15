@@ -1,14 +1,16 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-import harmony.ui.filesystem_browser
+import functools
+
+from PySide import QtGui
 
 import ftrack_connect.widget.component
 import ftrack_connect.widget.item_list
 
 
 class ComponentsList(ftrack_connect.widget.item_list.ItemList):
-    '''List components with support for dynamic addition and removal.
+    '''List components.
 
     The component list is managed using an internal model.
 
@@ -21,28 +23,40 @@ class ComponentsList(ftrack_connect.widget.item_list.ItemList):
             widgetItem=lambda widget: widget.value(),
             parent=parent
         )
-
-        # Use common browser widget for every component.
-        self.browser = harmony.ui.filesystem_browser.FilesystemBrowser(
-            parent=self
+        self.list.setSelectionMode(
+            QtGui.QAbstractItemView.NoSelection
         )
-        self.browser.setMinimumSize(900, 500)
 
     def _createComponentWidget(self, item):
-        '''Return component widget for *item*.'''
-        options = {}
-        if item is not None:
-            options = {}
+        '''Return component widget for *item*.
 
-        options.setdefault('browser', self.browser)
-        return ftrack_connect.widget.component.Component(**options)
+        *item* should be a mapping of keyword arguments to pass to
+        :py:class:`ftrack_connect.widget.component.Component`.
 
-    def onAddButtonClick(self):
-        '''Handle add button click.'''
-        super(ComponentsList, self).onAddButtonClick()
+        '''
+        if item is None:
+            item = {}
 
-        row = self.list.count() - 1
+        return ftrack_connect.widget.component.Component(**item)
+
+    def addItem(self, item, row=None):
+        '''Add *item* at *row*.
+
+        If *row* is not specified, then append item to end of list.
+
+        '''
+        if row is None:
+            row = self.count()
+
+        super(ComponentsList, self).addItem(item, row=row)
         widget = self.list.widgetAt(row)
 
-        # TODO: Use signals.
-        widget.browse()
+        # Connect remove action.
+        widget.removeAction.triggered.connect(
+            functools.partial(self._removeComponent, widget)
+        )
+
+    def _removeComponent(self, widget):
+        '''Remove component represented by *widget*.'''
+        row = self.list.indexOfWidget(widget)
+        self.removeItem(row)

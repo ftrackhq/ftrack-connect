@@ -31,28 +31,6 @@ class ItemList(QtGui.QFrame):
         self.list = ftrack_connect.widget.list.List()
         self.layout().addWidget(self.list, stretch=1)
 
-        # Footer (item list controls)
-        self.footer = QtGui.QFrame()
-        self.footer.setLayout(QtGui.QHBoxLayout())
-        self.footer.layout().addStretch(1)
-
-        self.addButton = QtGui.QPushButton('Add')
-        self.addButton.setToolTip('Add a new item to the list.')
-        plusIcon = QtGui.QPixmap(':icon_add')
-        self.addButton.setIcon(plusIcon)
-        self.addButton.setIconSize(plusIcon.size())
-        self.footer.layout().addWidget(self.addButton)
-
-        self.removeButton = QtGui.QPushButton('Remove')
-        self.removeButton.setToolTip('Remove selected items from list.')
-        minusIcon = QtGui.QPixmap(':icon_remove')
-        self.removeButton.setIcon(minusIcon)
-        self.removeButton.setIconSize(minusIcon.size())
-        self.footer.layout().addWidget(self.removeButton)
-
-        self.footer.layout().setContentsMargins(0, 0, 0, 0)
-        self.layout().addWidget(self.footer)
-
         self.layout().setContentsMargins(5, 5, 5, 5)
 
         # Allow growing with container.
@@ -61,39 +39,15 @@ class ItemList(QtGui.QFrame):
             QtGui.QSizePolicy.MinimumExpanding
         )
 
-        self.removeButton.setDisabled(True)
-
-        # Connect signals
-        self.addButton.clicked.connect(self.onAddButtonClick)
-        self.removeButton.clicked.connect(self.onRemoveButtonClick)
-
-        selectionModel = self.list.selectionModel()
-        selectionModel.selectionChanged.connect(self.onSelectionChanged)
-
-    def onSelectionChanged(self, selected, deselected):
-        '''Handle change in selection.'''
-        rows = self.list.selected()
-        if rows:
-            self.removeButton.setEnabled(True)
-        else:
-            self.removeButton.setEnabled(False)
-
-    def onAddButtonClick(self):
-        '''Handle add button click.'''
-        row = self.list.count()
-        self.addItem(None, row)
-
-    def onRemoveButtonClick(self):
-        '''Handle remove button click.'''
-        rows = self.list.selected()
-
-        # Remove in reverse order to avoid incorrect index.
-        rows = sorted(rows, reverse=True)
-        for row in rows:
-            self.removeItem(row)
+    def count(self):
+        '''Return count of items in list.'''
+        return self.list.count()
 
     def addItem(self, item, row=None):
         '''Add *item* at *row*.'''
+        if row is None:
+            row = self.count()
+
         widget = self.widgetFactory(item)
         self.list.addWidget(widget, row)
 
