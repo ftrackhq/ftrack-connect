@@ -46,7 +46,7 @@ class List(QtGui.QTableWidget):
 
     def removeWidget(self, row):
         '''Remove and delete widget at *row*.'''
-        # self.removeCellWidget(row, self._widgetColumn)
+        self.removeCellWidget(row, self._widgetColumn)
         self.removeRow(row)
 
     def indexOfWidget(self, widget):
