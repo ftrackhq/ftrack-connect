@@ -7,7 +7,7 @@ from PySide import QtGui
 from PySide import QtCore
 
 from ftrack_connect.tabwidget import TabWidget
-from ftrack_connect import resource_rc
+from ftrack_connect import resource
 from ftrack_connect.topic_thread import TopicThread
 
 

@@ -38,3 +38,4 @@ pip-log.txt
 resource_rc.py
 resource/stylesheets/style_dark.css
 resource/stylesheets/style_light.css
+resource.py
