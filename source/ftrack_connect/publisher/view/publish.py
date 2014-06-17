@@ -27,17 +27,19 @@ class PublishView(QtGui.QWidget):
 
         self.setLayout(publishLayout)
 
-        browser = BrowseComponent(text='Browse')
-        publishLayout.addWidget(browser, alignment=QtCore.Qt.AlignCenter)
+        self.browser = BrowseComponent(text='Browse')
+        publishLayout.addWidget(
+            self.browser, alignment=QtCore.Qt.AlignCenter
+        )
 
         # Create form layout to keep track of publish form items.
         formLayout = QtGui.QFormLayout()
         publishLayout.addLayout(formLayout)
 
         # Add linked to component and connect to entityChanged signal.
-        linkedTo = LinkedToComponent()
-        formLayout.addRow('Linked to', linkedTo)
-        self.entityChanged.connect(linkedTo.setEntity)
+        self.linkedTo = LinkedToComponent()
+        formLayout.addRow('Linked to', self.linkedTo)
+        self.entityChanged.connect(self.linkedTo.setEntity)
 
         # Add asset selector.
         self.assetSelector = AssetTypeSelectorComponent()
@@ -52,6 +54,13 @@ class PublishView(QtGui.QWidget):
         publishButton.clicked.connect(self.publish)
 
         publishLayout.addWidget(publishButton, alignment=QtCore.Qt.AlignCenter)
+
+    def clear(self):
+        '''Clear the publish view to it's initial state.'''
+        self.assetSelector.setCurrentIndex(-1)
+        self.versionDescriptionComponent.clear()
+        self.linkedTo.clear()
+        self.browser.clear()
 
     def setEntity(self, entity):
         '''Set the *entity* for the view.'''
