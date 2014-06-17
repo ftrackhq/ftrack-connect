@@ -56,6 +56,7 @@ class PublishView(QtGui.QWidget):
         publishLayout.addWidget(publishButton, alignment=QtCore.Qt.AlignCenter)
 
     def clear(self):
+        '''Clear the publish view to it's initial state.'''
         self.assetSelector.setCurrentIndex(-1)
         self.versionDescriptionComponent.clear()
         self.linkedTo.clear()
