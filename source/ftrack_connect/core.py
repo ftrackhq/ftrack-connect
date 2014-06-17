@@ -159,7 +159,7 @@ class ApplicationWindow(QtGui.QMainWindow):
             ':/font/open_sans_regular.ttf'
         )
 
-        file = QtCore.QFile(':/style/style_{0}.css'.format(theme))
+        file = QtCore.QFile(':/style/{0}'.format(theme))
         file.open(
             QtCore.QFile.ReadOnly | QtCore.QFile.Text
         )
