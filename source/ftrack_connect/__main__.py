@@ -8,7 +8,7 @@ import sys
 from PySide import QtGui, QtCore
 import ftrack
 
-from ftrack_connect.core import ApplicationWindow
+from ftrack_connect.application import MainWindow
 
 
 def main(arguments=None):
@@ -40,7 +40,7 @@ def main(arguments=None):
     ftrack.setup()
 
     application = QtGui.QApplication('ftrack-connect')
-    connectWindow = ApplicationWindow()
+    connectWindow = MainWindow()
 
     return application.exec_()
 

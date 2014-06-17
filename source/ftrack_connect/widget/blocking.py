@@ -5,12 +5,12 @@ from PySide import QtGui
 from PySide import QtCore
 
 
-class BlockingIdleView(QtGui.QWidget):
+class Blocking(QtGui.QWidget):
     '''Idle view for ftrack connect Publisher.'''
 
     def __init__(self, parent=None, text=''):
         '''Initiate idle view.'''
-        super(BlockingIdleView, self).__init__(parent)
+        super(Blocking, self).__init__(parent)
         layout = QtGui.QVBoxLayout()
 
         self.idleText = text

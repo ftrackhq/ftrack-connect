@@ -5,14 +5,14 @@ from PySide import QtGui, QtCore
 from harmony.ui.filesystem_browser import FilesystemBrowser
 
 
-class BrowseComponent(QtGui.QPushButton):
-    '''File browser component.'''
+class BrowseButton(QtGui.QPushButton):
+    '''File browser widget.'''
 
     fileSelected = QtCore.Signal(object)
 
     def __init__(self, *args, **kwargs):
-        '''Initialise browser component.'''
-        super(BrowseComponent, self).__init__(*args, **kwargs)
+        '''Initialise browser widget.'''
+        super(BrowseButton, self).__init__(*args, **kwargs)
         self.setToolTip('Browse for file(s).')
         self.setObjectName('publisher-browsebutton')
         self._dialog = FilesystemBrowser(parent=self)

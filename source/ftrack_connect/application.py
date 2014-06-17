@@ -27,11 +27,11 @@ class ConnectError(Exception):
     pass
 
 
-class ApplicationWindow(QtGui.QMainWindow):
+class MainWindow(QtGui.QMainWindow):
     '''Main window class for ftrack connect.'''
 
     def __init__(self, *args, **kwargs):
-        super(ApplicationWindow, self).__init__(*args, **kwargs)
+        super(MainWindow, self).__init__(*args, **kwargs)
 
         if not QtGui.QSystemTrayIcon.isSystemTrayAvailable():
             raise ConnectError('No system tray located.')
@@ -62,6 +62,8 @@ class ApplicationWindow(QtGui.QMainWindow):
         self.topicThread = TopicThread()
         self.topicThread.ftrackConnectEvent.connect(self._routeEvent)
         self.topicThread.start()
+
+        self.focus()
 
     def _initialiseTray(self):
         '''Initialise and add application icon to system tray.'''
@@ -107,7 +109,7 @@ class ApplicationWindow(QtGui.QMainWindow):
         #: TODO: Add discover functionality and search paths.
 
         # Add publisher as a plugin.
-        from ftrack_connect.publisher.core import register
+        from ftrack_connect.publisher import register
         register(self)
 
     def _routeEvent(self, eventData):

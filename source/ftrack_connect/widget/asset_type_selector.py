@@ -4,15 +4,15 @@
 from PySide import QtGui
 import ftrack
 
-from ..core import asynchronous
+from ..publisher import asynchronous
 
 
-class AssetTypeSelectorComponent(QtGui.QComboBox):
-    '''Asset type selector component.'''
+class AssetTypeSelector(QtGui.QComboBox):
+    '''Asset type selector widget.'''
 
     def __init__(self, *args, **kwargs):
         '''Instantiate the asset type selector.'''
-        super(AssetTypeSelectorComponent, self).__init__(*args, **kwargs)
+        super(AssetTypeSelector, self).__init__(*args, **kwargs)
         itemDelegate = QtGui.QStyledItemDelegate()
         self.setItemDelegate(itemDelegate)
         self.loadAssetTypes()

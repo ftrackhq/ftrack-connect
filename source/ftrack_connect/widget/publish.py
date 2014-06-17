@@ -6,14 +6,14 @@ from PySide import QtCore
 import ftrack
 from ftrack_connect.core import ConnectError
 
-from ..component.linked_to import LinkedToComponent
-from ..component.asset_type_selector import AssetTypeSelectorComponent
-from ..component.browse import BrowseComponent
-from ..core import asynchronous
+from linked_to import LinkedTo
+from asset_type_selector import AssetTypeSelector
+from browse import BrowseButton
+from ..publisher import asynchronous
 
 
-class PublishView(QtGui.QWidget):
-    '''Publish view for ftrack connect Publisher.'''
+class Publish(QtGui.QWidget):
+    '''Publish widget for ftrack connect Publisher.'''
     entityChanged = QtCore.Signal(object)
 
     publishStarted = QtCore.Signal()
@@ -21,26 +21,26 @@ class PublishView(QtGui.QWidget):
 
     def __init__(self, parent):
         '''Initiate a publish view.'''
-        super(PublishView, self).__init__(parent)
+        super(Publish, self).__init__(parent)
 
-        publishLayout = QtGui.QVBoxLayout()
+        layout = QtGui.QVBoxLayout()
 
-        self.setLayout(publishLayout)
+        self.setLayout(layout)
 
-        browser = BrowseComponent(text='Browse')
-        publishLayout.addWidget(browser, alignment=QtCore.Qt.AlignCenter)
+        browser = BrowseButton(text='Browse')
+        layout.addWidget(browser, alignment=QtCore.Qt.AlignCenter)
 
         # Create form layout to keep track of publish form items.
         formLayout = QtGui.QFormLayout()
-        publishLayout.addLayout(formLayout)
+        layout.addLayout(formLayout)
 
         # Add linked to component and connect to entityChanged signal.
-        linkedTo = LinkedToComponent()
+        linkedTo = LinkedTo()
         formLayout.addRow('Linked to', linkedTo)
         self.entityChanged.connect(linkedTo.setEntity)
 
         # Add asset selector.
-        self.assetSelector = AssetTypeSelectorComponent()
+        self.assetSelector = AssetTypeSelector()
         formLayout.addRow('Asset type', self.assetSelector)
 
         # Add version description component.
@@ -51,7 +51,7 @@ class PublishView(QtGui.QWidget):
         publishButton.setObjectName('primary')
         publishButton.clicked.connect(self.publish)
 
-        publishLayout.addWidget(publishButton, alignment=QtCore.Qt.AlignCenter)
+        layout.addWidget(publishButton, alignment=QtCore.Qt.AlignCenter)
 
     def setEntity(self, entity):
         '''Set the *entity* for the view.'''
