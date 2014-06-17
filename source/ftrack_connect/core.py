@@ -28,7 +28,7 @@ class ApplicationWindow(QtGui.QMainWindow):
         QtGui.QApplication.setQuitOnLastWindowClosed(False)
 
         self.logoIcon = QtGui.QIcon(
-            QtGui.QPixmap(':/{0}.png'.format('ftrack-logo'))
+            QtGui.QPixmap(':/ftrack-logo.png')
         )
         self._setupStyle()
 
