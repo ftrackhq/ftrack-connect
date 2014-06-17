@@ -5,8 +5,7 @@ import argparse
 import logging
 import sys
 
-from PySide import QtGui, QtCore
-import ftrack
+from PySide import QtGui
 
 from ftrack_connect.core import ApplicationWindow
 
@@ -36,8 +35,6 @@ def main(arguments=None):
     namespace = parser.parse_args(arguments)
 
     logging.basicConfig(level=loggingLevels[namespace.verbosity])
-
-    ftrack.setup()
 
     application = QtGui.QApplication('ftrack-connect')
     connectWindow = ApplicationWindow()
