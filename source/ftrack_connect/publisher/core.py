@@ -2,10 +2,12 @@
 # :copyright: Copyright (c) 2014 ftrack
 
 import threading
-import time
+import signal
 
 from PySide import QtGui, QtCore
 import ftrack
+
+signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 
 def asynchronous(f):

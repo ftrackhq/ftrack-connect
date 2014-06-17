@@ -23,8 +23,10 @@ class Component(QtGui.QWidget):
         self.layout().addWidget(self.componentNameEdit)
 
         removeIcon = os.path.join(
-            os.path.dirname(__file__), '..', 'resources', 'logo.png'
+            os.path.dirname(__file__), '..', '..', '..', 'resource', 'image',
+            'light', 'trash.png'
         )
+
         self.removeAction = QtGui.QAction(
             QtGui.QIcon(removeIcon), 'Remove', self.componentNameEdit
         )
@@ -39,6 +41,13 @@ class Component(QtGui.QWidget):
         # Set initial values.
         self.setComponentName(componentName)
         self.setResourceIdentifier(resourceIdentifier)
+
+    def value(self):
+        '''Return dictionary with component data.'''
+        return {
+            'componentName': self.componentName(),
+            'resourceIdentifier': self.resourceIdentifier()
+        }
 
     def computeComponentName(self, resourceIdentifier):
         '''Return a relevant component name using *resourceIdentifier*.'''

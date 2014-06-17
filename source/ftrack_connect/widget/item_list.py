@@ -1,13 +1,15 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-from PySide import QtGui
+from PySide import QtGui, QtCore
 
 import ftrack_connect.widget.list
 
 
 class ItemList(QtGui.QFrame):
     '''Manage a list of items represented by widgets.'''
+
+    itemsChanged = QtCore.Signal()
 
     def __init__(self, widgetFactory, widgetItem, parent=None):
         '''Initialise widget with *parent*.
@@ -33,12 +35,6 @@ class ItemList(QtGui.QFrame):
 
         self.layout().setContentsMargins(5, 5, 5, 5)
 
-        # Allow growing with container.
-        self.setSizePolicy(
-            QtGui.QSizePolicy.MinimumExpanding,
-            QtGui.QSizePolicy.MinimumExpanding
-        )
-
     def count(self):
         '''Return count of items in list.'''
         return self.list.count()
@@ -50,10 +46,12 @@ class ItemList(QtGui.QFrame):
 
         widget = self.widgetFactory(item)
         self.list.addWidget(widget, row)
+        self.itemsChanged.emit()
 
     def removeItem(self, row):
         '''Remove item at *row*.'''
         self.list.removeWidget(row)
+        self.itemsChanged.emit()
 
     def indexOfItem(self, item):
         '''Return row of *item* in list or None if not present.'''

@@ -49,7 +49,7 @@ class ApplicationWindow(QtGui.QMainWindow):
 
         self.setObjectName('ftrack-connect-window')
         self.setWindowTitle('ftrack connect')
-        self.resize(350, 500)
+        self.resize(350, 600)
         self.move(50, 50)
 
         self.setWindowIcon(self.logoIcon)

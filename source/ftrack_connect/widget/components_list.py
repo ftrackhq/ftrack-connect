@@ -26,6 +26,10 @@ class ComponentsList(ftrack_connect.widget.item_list.ItemList):
         self.list.setSelectionMode(
             QtGui.QAbstractItemView.NoSelection
         )
+        self.list.setShowGrid(False)
+
+        self.label = QtGui.QLabel('Components')
+        self.layout().insertWidget(0, self.label)
 
     def _createComponentWidget(self, item):
         '''Return component widget for *item*.
