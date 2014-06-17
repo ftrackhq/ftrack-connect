@@ -122,10 +122,10 @@ class Publisher(QtGui.QStackedWidget):
     def start(self, entity, **kwargs):
         '''Clear state, set the *entity* and request to start the publisher.'''
         self.clear()
+        self.setFocus(QtCore.Qt.OtherFocusReason)
 
         entity = ftrack.Task(
             entity.get('entityId')
         )
-
         self.setEntity(entity)
         self.requestFocus.emit(self)
