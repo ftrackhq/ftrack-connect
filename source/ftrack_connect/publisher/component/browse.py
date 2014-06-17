@@ -30,3 +30,6 @@ class BrowseComponent(QtGui.QPushButton):
             selected = self._dialog.selected()
             if selected:
                 self.fileSelected.emit(selected[0])
+
+    def clear(self):
+        self._dialog.setLocation('')

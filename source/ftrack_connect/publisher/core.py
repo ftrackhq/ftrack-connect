@@ -95,11 +95,18 @@ class Publisher(QtGui.QStackedWidget):
             self.idleView
         )
 
+        self.clear()
+
         self.requestClose.emit(self)
 
     def _setView(self, view):
         '''Set active widget of the publisher.'''
         self.setCurrentWidget(view)
+
+    def clear(self):
+        '''Reset the publisher to it's initial state.'''
+        self._entity = None
+        self.publishView.clear()
 
     def getName(self):
         '''Return name of widget.'''
