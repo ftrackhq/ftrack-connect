@@ -15,9 +15,8 @@ RESOURCE_DEST_PATH = os.path.join(
 )
 
 
-def build():
+def main():
     '''Compile scss to css and generate PySide resouce file.'''
-
     os.chdir(SCSS_BUILD_PATH)
     subprocess.call(['compass', 'compile'])
 
@@ -33,4 +32,4 @@ def build():
 
 
 if __name__ == '__main__':
-    build()
+    main()
