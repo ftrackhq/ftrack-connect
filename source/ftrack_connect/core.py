@@ -21,11 +21,6 @@ RESOURCE_ROOT_PATH = os.path.join(
     '..', '..', 'resource'
 )
 
-# Configure settings.
-QtCore.QCoreApplication.setOrganizationName('ftrack')
-QtCore.QCoreApplication.setOrganizationDomain('ftrack.com')
-QtCore.QCoreApplication.setApplicationName('connect')
-
 
 class ConnectError(Exception):
     '''Base ftrack connect error.'''
@@ -63,6 +58,7 @@ class ApplicationWindow(QtGui.QMainWindow):
 
         self.setWindowIcon(self.logoIcon)
 
+        self.loginWidget = None
         self.login()
 
     def login(self):
@@ -86,7 +82,7 @@ class ApplicationWindow(QtGui.QMainWindow):
 
     def showLoginWidget(self):
         '''Show the login widget.'''
-        if not hasattr(self, 'loginWidget'):
+        if self.loginWidget is None:
             self.loginWidget = Login()
             self.setCentralWidget(self.loginWidget)
             self.loginWidget.login.connect(self.loginWithCredentials)
@@ -112,13 +108,13 @@ class ApplicationWindow(QtGui.QMainWindow):
             import ftrack
 
             # Force update the url of the server in case it was already set.
-            ftrack.xmlServer.__init__(url + "/client/", False)
+            ftrack.xmlServer.__init__('{url}/client/'.format(url=url), False)
 
-        except Exception as e:
+        except Exception as error:
 
             # Catch connection error since ftrack module will connect on load.
-            if str(e).find('Unable to connect on') >= 0:
-                self.loginError.emit(str(e))
+            if str(error).find('Unable to connect on') >= 0:
+                self.loginError.emit(str(error))
 
             # Reraise the error.
             raise
@@ -126,8 +122,8 @@ class ApplicationWindow(QtGui.QMainWindow):
         # Access ftrack to validate login details.
         try:
             ftrack.getUUID()
-        except ftrack.FTrackError as e:
-            self.loginError.emit(str(e))
+        except ftrack.FTrackError as error:
+            self.loginError.emit(str(error))
         else:
             # Store login details in settings.
             settings = QtCore.QSettings()

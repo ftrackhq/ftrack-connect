@@ -37,6 +37,8 @@ def main(arguments=None):
     logging.basicConfig(level=loggingLevels[namespace.verbosity])
 
     application = QtGui.QApplication('ftrack-connect')
+    application.setOrganizationName('ftrack')
+    application.setOrganizationDomain('ftrack.com')
     connectWindow = ApplicationWindow()
 
     return application.exec_()
