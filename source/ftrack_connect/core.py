@@ -93,6 +93,10 @@ class ApplicationWindow(QtGui.QMainWindow):
             self.loginError.connect(self.loginWidget.loginError.emit)
             self.focus()
 
+            # Set focus on the login widget to remove any focus from its child
+            # widgets.
+            self.loginWidget.setFocus()
+
     def loginWithCredentials(self, url, username, apiKey):
         '''Connect to *url* with *username* and *apiKey*.
 
