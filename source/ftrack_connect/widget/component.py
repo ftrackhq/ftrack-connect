@@ -6,6 +6,7 @@ import os
 from PySide import QtGui
 
 import ftrack_connect.widget.line_edit
+import ftrack_connect.widget.label
 
 
 class Component(QtGui.QWidget):
@@ -35,7 +36,7 @@ class Component(QtGui.QWidget):
             self.removeAction
         )
 
-        self.resourceInformation = QtGui.QLabel()
+        self.resourceInformation = ftrack_connect.widget.label.Label()
         self.layout().addWidget(self.resourceInformation)
 
         # Set initial values.
