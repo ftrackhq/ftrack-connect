@@ -40,6 +40,8 @@ def main(arguments=None):
     ftrack.setup()
 
     application = QtGui.QApplication('ftrack-connect')
+    application.setQuitOnLastWindowClosed(False)
+
     connectWindow = ftrack_connect.application.MainWindow()
 
     return application.exec_()

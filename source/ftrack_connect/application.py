@@ -32,8 +32,6 @@ class MainWindow(QtGui.QMainWindow):
         if not QtGui.QSystemTrayIcon.isSystemTrayAvailable():
             raise ConnectError('No system tray located.')
 
-        QtGui.QApplication.setQuitOnLastWindowClosed(False)
-
         self.logoIcon = QtGui.QIcon(
             '{0}/logo.png'.format(RESOURCE_ROOT_PATH)
         )
