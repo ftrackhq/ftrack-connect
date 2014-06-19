@@ -110,6 +110,9 @@ class ApplicationWindow(QtGui.QMainWindow):
             # Force update the url of the server in case it was already set.
             ftrack.xmlServer.__init__('{url}/client/'.format(url=url), False)
 
+            # Force update topic hub since it will set the url on initialise.
+            ftrack.TOPICS.__init__()
+
         except Exception as error:
 
             # Catch connection error since ftrack module will connect on load.
