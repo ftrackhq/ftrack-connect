@@ -154,11 +154,12 @@ class ApplicationWindow(QtGui.QMainWindow):
         '''Set up application style using *theme*.'''
         QtGui.QApplication.setStyle('cleanlooks')
 
-        # Load font
+        # Load main font file
         QtGui.QFontDatabase.addApplicationFont(
             ':/font/main'
         )
 
+        # Load main stylesheet
         file = QtCore.QFile(':/style/{0}'.format(theme))
         file.open(
             QtCore.QFile.ReadOnly | QtCore.QFile.Text
