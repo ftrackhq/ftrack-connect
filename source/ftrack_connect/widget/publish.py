@@ -4,12 +4,12 @@
 from PySide import QtGui
 from PySide import QtCore
 import ftrack
-from ftrack_connect.core import ConnectError
 
 from linked_to import LinkedTo
 from asset_type_selector import AssetTypeSelector
 from browse import BrowseButton
 from ..publisher import asynchronous
+from ..error import ConnectError
 
 
 class Publish(QtGui.QWidget):

@@ -5,8 +5,9 @@ import os
 
 from PySide import QtGui
 
-from ftrack_connect.tabwidget import TabWidget
-from ftrack_connect.topic_thread import TopicThread
+from tabwidget import TabWidget
+from topic_thread import TopicThread
+from error import ConnectError
 
 APPLICATION_ROOT = os.path.dirname(
     os.path.realpath(__file__)
@@ -20,11 +21,6 @@ RESOURCE_ROOT_PATH = os.path.join(
     ),
     '..', '..', 'resource'
 )
-
-
-class ConnectError(Exception):
-    '''Base ftrack connect error.'''
-    pass
 
 
 class MainWindow(QtGui.QMainWindow):
