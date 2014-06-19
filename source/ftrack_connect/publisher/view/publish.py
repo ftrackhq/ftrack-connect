@@ -28,9 +28,9 @@ class PublishView(QtGui.QWidget):
 
         self.setLayout(publishLayout)
 
-        browser = BrowseComponent(text='Browse files')
-        publishLayout.addWidget(browser, alignment=QtCore.Qt.AlignCenter)
-        browser.fileSelected.connect(self._onFileSelected)
+        self.browser = BrowseComponent(text='Browse files')
+        publishLayout.addWidget(self.browser, alignment=QtCore.Qt.AlignCenter)
+        self.browser.fileSelected.connect(self._onFileSelected)
 
         # Create a components list widget.
         self.componentsList = ComponentsList()
@@ -48,9 +48,9 @@ class PublishView(QtGui.QWidget):
         publishLayout.addLayout(formLayout, stretch=0)
 
         # Add linked to component and connect to entityChanged signal.
-        linkedTo = LinkedToComponent()
-        formLayout.addRow('Linked to', linkedTo)
-        self.entityChanged.connect(linkedTo.setEntity)
+        self.linkedTo = LinkedToComponent()
+        formLayout.addRow('Linked to', self.linkedTo)
+        self.entityChanged.connect(self.linkedTo.setEntity)
 
         # Add asset selector.
         self.assetSelector = AssetTypeSelectorComponent()
@@ -80,6 +80,13 @@ class PublishView(QtGui.QWidget):
         self.componentsList.addItem({
             'resourceIdentifier': filePath
         })
+
+    def clear(self):
+        '''Clear the publish view to it's initial state.'''
+        self.assetSelector.setCurrentIndex(-1)
+        self.versionDescriptionComponent.clear()
+        self.linkedTo.clear()
+        self.browser.clear()
 
     def setEntity(self, entity):
         '''Set the *entity* for the view.'''

@@ -30,3 +30,7 @@ class BrowseComponent(QtGui.QPushButton):
             selected = self._dialog.selected()
             if selected:
                 self.fileSelected.emit(selected[0])
+
+    def clear(self):
+        '''Clear the browser to it's initial state.'''
+        self._dialog.setLocation('')

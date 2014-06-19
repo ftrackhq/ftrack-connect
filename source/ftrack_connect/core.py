@@ -4,10 +4,10 @@
 import os
 import signal
 
-from PySide import QtGui
+from PySide import QtGui, QtCore
 
 from ftrack_connect.tabwidget import TabWidget
-from ftrack_connect.topic_thread import TopicThread
+from ftrack_connect.widget.login import Login
 
 APPLICATION_ROOT = os.path.dirname(
     os.path.realpath(__file__)
@@ -35,7 +35,11 @@ class ConnectError(Exception):
 class ApplicationWindow(QtGui.QMainWindow):
     '''Main window class for ftrack connect.'''
 
+    # Signal to be used when login fails.
+    loginError = QtCore.Signal(object)
+
     def __init__(self, *args, **kwargs):
+        '''Initialise the main application window.'''
         super(ApplicationWindow, self).__init__(*args, **kwargs)
 
         if not QtGui.QSystemTrayIcon.isSystemTrayAvailable():
@@ -59,11 +63,96 @@ class ApplicationWindow(QtGui.QMainWindow):
 
         self.setWindowIcon(self.logoIcon)
 
+        self.loginWidget = None
+        self.login()
+
+    def login(self):
+        '''Login using stored credentials or ask user for them.'''
+
+        # Get settings from store.
+        settings = QtCore.QSettings()
+        server = settings.value('login/server', None)
+        username = settings.value('login/username', None)
+        apiKey = settings.value('login/apikey', None)
+
+        # If missing any of the settings bring up login dialog.
+        if None in (server, username, apiKey):
+            self.showLoginWidget()
+        else:
+            # Show login screen on login error.
+            self.loginError.connect(self.showLoginWidget)
+
+            # Try to login.
+            self.loginWithCredentials(server, username, apiKey)
+
+    def showLoginWidget(self):
+        '''Show the login widget.'''
+        if self.loginWidget is None:
+            self.loginWidget = Login()
+            self.setCentralWidget(self.loginWidget)
+            self.loginWidget.login.connect(self.loginWithCredentials)
+            self.loginError.connect(self.loginWidget.loginError.emit)
+            self.focus()
+
+            # Set focus on the login widget to remove any focus from its child
+            # widgets.
+            self.loginWidget.setFocus()
+
+    def loginWithCredentials(self, url, username, apiKey):
+        '''Connect to *url* with *username* and *apiKey*.
+
+        loginError will be emitted if this fails.
+
+        '''
+        os.environ['FTRACK_SERVER'] = url
+        os.environ['LOGNAME'] = username
+        os.environ['FTRACK_APIKEY'] = apiKey
+
+        # Import ftrack module and catch any errors.
+        try:
+            import ftrack
+
+            # Force update the url of the server in case it was already set.
+            ftrack.xmlServer.__init__('{url}/client/'.format(url=url), False)
+
+            # Force update topic hub since it will set the url on initialise.
+            ftrack.TOPICS.__init__()
+
+        except Exception as error:
+
+            # Catch connection error since ftrack module will connect on load.
+            if str(error).find('Unable to connect on') >= 0:
+                self.loginError.emit(str(error))
+
+            # Reraise the error.
+            raise
+
+        # Access ftrack to validate login details.
+        try:
+            ftrack.getUUID()
+        except ftrack.FTrackError as error:
+            self.loginError.emit(str(error))
+        else:
+            # Store login details in settings.
+            settings = QtCore.QSettings()
+            settings.setValue('login/server', url)
+            settings.setValue('login/username', username)
+            settings.setValue('login/apikey', apiKey)
+
+            self.configureConnectAndDiscoverPlugins()
+
+    def configureConnectAndDiscoverPlugins(self):
+        '''Configure connect and load plugins.'''
+
+        # Local import to avoid connection errors.
+        import ftrack
+        ftrack.setup()
         self.tabPanel = TabWidget()
         self.setCentralWidget(self.tabPanel)
 
         self._discoverPlugins()
 
+        from ftrack_connect.topic_thread import TopicThread
         self.topicThread = TopicThread()
         self.topicThread.ftrackConnectEvent.connect(self._routeEvent)
         self.topicThread.start()
