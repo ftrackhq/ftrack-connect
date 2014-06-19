@@ -30,13 +30,13 @@ class PublishView(QtGui.QWidget):
 
         browser = BrowseComponent(text='Browse files')
         publishLayout.addWidget(browser, alignment=QtCore.Qt.AlignCenter)
-        browser.fileSelected.connect(self.onFileSelected)
+        browser.fileSelected.connect(self._onFileSelected)
 
         # Create a components list widget.
         self.componentsList = ComponentsList()
         self.componentsList.setObjectName('publisher-componentlist')
         self.componentsList.itemsChanged.connect(
-            self.onComponentListItemsChanged
+            self._onComponentListItemsChanged
         )
         publishLayout.addWidget(
             self.componentsList, stretch=1
@@ -64,24 +64,27 @@ class PublishView(QtGui.QWidget):
         publishButton.setObjectName('primary')
         publishButton.clicked.connect(self.publish)
 
-        publishLayout.addWidget(publishButton, alignment=QtCore.Qt.AlignCenter, stretch=0)
+        publishLayout.addWidget(
+            publishButton, alignment=QtCore.Qt.AlignCenter, stretch=0
+        )
 
-    def onComponentListItemsChanged(self):
+    def _onComponentListItemsChanged(self):
+        '''Callback for component changed signal.'''
         if self.componentsList.count():
             self.componentsList.show()
         else:
             self.componentsList.hide()
 
-    def setEntity(self, entity):
-        '''Set the *entity* for the view.'''
-        self._entity = entity
-        self.entityChanged.emit(entity)
-
-    def onFileSelected(self, filePath):
+    def _onFileSelected(self, filePath):
         '''Callback for Browser file selected signal.'''
         self.componentsList.addItem({
             'resourceIdentifier': filePath
         })
+
+    def setEntity(self, entity):
+        '''Set the *entity* for the view.'''
+        self._entity = entity
+        self.entityChanged.emit(entity)
 
     def publish(self):
         '''Gather all data in publisher and publish version with components.'''
