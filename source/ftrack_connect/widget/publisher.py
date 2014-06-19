@@ -5,9 +5,9 @@ from PySide import QtGui
 from PySide import QtCore
 import ftrack
 
-from linked_to import LinkedTo
+from entity_path import EntityPath
 from asset_type_selector import AssetTypeSelector
-from browse import BrowseButton
+from browse_button import BrowseButton
 from ..asynchronous import asynchronous
 from ..error import ConnectError
 
@@ -21,7 +21,7 @@ class Publisher(QtGui.QWidget):
 
     def __init__(self, parent):
         '''Initiate a publish view.'''
-        super(Publish, self).__init__(parent)
+        super(Publisher, self).__init__(parent)
 
         layout = QtGui.QVBoxLayout()
 
@@ -35,9 +35,9 @@ class Publisher(QtGui.QWidget):
         layout.addLayout(formLayout)
 
         # Add linked to component and connect to entityChanged signal.
-        linkedTo = LinkedTo()
-        formLayout.addRow('Linked to', linkedTo)
-        self.entityChanged.connect(linkedTo.setEntity)
+        entityPath = EntityPath()
+        formLayout.addRow('Linked to', entityPath)
+        self.entityChanged.connect(entityPath.setEntity)
 
         # Add asset selector.
         self.assetSelector = AssetTypeSelector()

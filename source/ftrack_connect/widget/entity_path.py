@@ -7,12 +7,12 @@ import ftrack
 from ..asynchronous import asynchronous
 
 
-class LinkedTo(QtGui.QLineEdit):
-    '''Linked to entity widget.'''
+class EntityPath(QtGui.QLineEdit):
+    '''Entity path widget.'''
 
     def __init__(self, *args, **kwargs):
-        '''Instantiate the linked to widget.'''
-        super(LinkedTo, self).__init__(*args, **kwargs)
+        '''Instantiate the entity path widget.'''
+        super(EntityPath, self).__init__(*args, **kwargs)
         self.setReadOnly(True)
 
     @asynchronous

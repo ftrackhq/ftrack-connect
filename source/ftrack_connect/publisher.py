@@ -27,8 +27,8 @@ class Publisher(QtGui.QStackedWidget):
         super(Publisher, self).__init__(*args, **kwargs)
 
         # Inline to avoid circular import
-        from .widget.blocking import Blocking
-        self.idleView = Blocking(
+        from .widget.blocking_indicator import BlockingIndicator
+        self.idleView = BlockingIndicator(
             parent=self, text='Select task in ftrack to start publisher.'
         )
         self.addWidget(
@@ -36,14 +36,14 @@ class Publisher(QtGui.QStackedWidget):
         )
 
         # Inline to avoid circular import
-        from .widget.publisher import Publisher
+        from .widget.publisher import Publisher as Publish
         self.publishView = Publish(parent=self)
         self.addWidget(
             self.publishView
         )
 
         # Inline to avoid circular import
-        from .widget.loading import LoadingIndicator
+        from .widget.loading_indicator import LoadingIndicator
         self.loadingView = LoadingIndicator(parent=self)
         self.addWidget(
             self.loadingView
