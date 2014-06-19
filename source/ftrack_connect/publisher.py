@@ -36,7 +36,7 @@ class Publisher(QtGui.QStackedWidget):
         )
 
         # Inline to avoid circular import
-        from .widget.publish import Publish
+        from .widget.publisher import Publisher
         self.publishView = Publish(parent=self)
         self.addWidget(
             self.publishView

@@ -12,7 +12,7 @@ from ..asynchronous import asynchronous
 from ..error import ConnectError
 
 
-class Publish(QtGui.QWidget):
+class Publisher(QtGui.QWidget):
     '''Publish widget for ftrack connect Publisher.'''
     entityChanged = QtCore.Signal(object)
 
