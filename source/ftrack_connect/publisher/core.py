@@ -2,7 +2,6 @@
 # :copyright: Copyright (c) 2014 ftrack
 
 import threading
-import time
 
 from PySide import QtGui, QtCore
 import ftrack

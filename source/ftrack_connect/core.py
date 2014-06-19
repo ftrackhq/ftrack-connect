@@ -2,6 +2,7 @@
 # :copyright: Copyright (c) 2014 ftrack
 
 import os
+import signal
 
 from PySide import QtGui
 
@@ -20,6 +21,10 @@ RESOURCE_ROOT_PATH = os.path.join(
     ),
     '..', '..', 'resource'
 )
+
+
+# Enable ctrl+c to quit application when started from command line.
+signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 
 class ConnectError(Exception):
@@ -49,7 +54,7 @@ class ApplicationWindow(QtGui.QMainWindow):
 
         self.setObjectName('ftrack-connect-window')
         self.setWindowTitle('ftrack connect')
-        self.resize(350, 500)
+        self.resize(350, 600)
         self.move(50, 50)
 
         self.setWindowIcon(self.logoIcon)
