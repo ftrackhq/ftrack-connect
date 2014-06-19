@@ -8,7 +8,7 @@ import ftrack
 from linked_to import LinkedTo
 from asset_type_selector import AssetTypeSelector
 from browse import BrowseButton
-from ..publisher import asynchronous
+from ..asynchronous import asynchronous
 from ..error import ConnectError
 
 

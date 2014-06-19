@@ -4,7 +4,7 @@
 from PySide import QtGui
 import ftrack
 
-from ..publisher import asynchronous
+from ..asynchronous import asynchronous
 
 
 class LinkedTo(QtGui.QLineEdit):
