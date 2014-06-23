@@ -35,6 +35,4 @@ pip-log.txt
 .pydevproject
 .settings
 .idea/
-resource/stylesheets/style_dark.css
-resource/stylesheets/style_light.css
-resource.py
+source/ftrack_connect/resource.py
