@@ -11,6 +11,7 @@
     </qresource>
     <qresource prefix='image/light'>
         <file alias='selectedTab'>image/light/selected_tab.png</file>
+        <file alias='trash'>image/light/trash.png</file>
     </qresource>
     <qresource prefix='image/dark'>
         <file alias='selectedTab'>image/dark/selected_tab.png</file>

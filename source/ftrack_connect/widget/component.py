@@ -23,10 +23,9 @@ class Component(QtGui.QWidget):
 
         self.layout().addWidget(self.componentNameEdit)
 
-        #: TODO: Should be using resource file instead.
-        removeIcon = os.path.join(
-            os.path.dirname(__file__), '..', '..', '..', 'resource', 'image',
-            'light', 'trash.png'
+        #: TODO: Add theme support.
+        removeIcon = QtGui.QIcon(
+            QtGui.QPixmap(':/image/light/trash')
         )
 
         self.removeAction = QtGui.QAction(
