@@ -10,6 +10,7 @@ from ..component.linked_to import LinkedToComponent
 from ..component.asset_type_selector import AssetTypeSelectorComponent
 from ..component.browse import BrowseComponent
 from ..core import asynchronous
+from ...widget.components_list import ComponentsList
 
 
 class PublishView(QtGui.QWidget):
@@ -27,17 +28,29 @@ class PublishView(QtGui.QWidget):
 
         self.setLayout(publishLayout)
 
-        browser = BrowseComponent(text='Browse')
-        publishLayout.addWidget(browser, alignment=QtCore.Qt.AlignCenter)
+        self.browser = BrowseComponent(text='Browse files')
+        publishLayout.addWidget(self.browser, alignment=QtCore.Qt.AlignCenter)
+        self.browser.fileSelected.connect(self._onFileSelected)
+
+        # Create a components list widget.
+        self.componentsList = ComponentsList()
+        self.componentsList.setObjectName('publisher-componentlist')
+        self.componentsList.itemsChanged.connect(
+            self._onComponentListItemsChanged
+        )
+        publishLayout.addWidget(
+            self.componentsList, stretch=1
+        )
+        self.componentsList.hide()
 
         # Create form layout to keep track of publish form items.
         formLayout = QtGui.QFormLayout()
-        publishLayout.addLayout(formLayout)
+        publishLayout.addLayout(formLayout, stretch=0)
 
         # Add linked to component and connect to entityChanged signal.
-        linkedTo = LinkedToComponent()
-        formLayout.addRow('Linked to', linkedTo)
-        self.entityChanged.connect(linkedTo.setEntity)
+        self.linkedTo = LinkedToComponent()
+        formLayout.addRow('Linked to', self.linkedTo)
+        self.entityChanged.connect(self.linkedTo.setEntity)
 
         # Add asset selector.
         self.assetSelector = AssetTypeSelectorComponent()
@@ -51,7 +64,29 @@ class PublishView(QtGui.QWidget):
         publishButton.setObjectName('primary')
         publishButton.clicked.connect(self.publish)
 
-        publishLayout.addWidget(publishButton, alignment=QtCore.Qt.AlignCenter)
+        publishLayout.addWidget(
+            publishButton, alignment=QtCore.Qt.AlignCenter, stretch=0
+        )
+
+    def _onComponentListItemsChanged(self):
+        '''Callback for component changed signal.'''
+        if self.componentsList.count():
+            self.componentsList.show()
+        else:
+            self.componentsList.hide()
+
+    def _onFileSelected(self, filePath):
+        '''Callback for Browser file selected signal.'''
+        self.componentsList.addItem({
+            'resourceIdentifier': filePath
+        })
+
+    def clear(self):
+        '''Clear the publish view to it's initial state.'''
+        self.assetSelector.setCurrentIndex(-1)
+        self.versionDescriptionComponent.clear()
+        self.linkedTo.clear()
+        self.browser.clear()
 
     def setEntity(self, entity):
         '''Set the *entity* for the view.'''
@@ -63,6 +98,7 @@ class PublishView(QtGui.QWidget):
         self.publishStarted.emit()
 
         entity = self._entity
+        taskId = None
 
         assetType = self.assetSelector.itemData(
             self.assetSelector.currentIndex()
@@ -78,12 +114,13 @@ class PublishView(QtGui.QWidget):
 
         defaultLocation = ftrack.pickLocation()
 
-        # TODO: Get components from components widget.
         components = []
-        for component in components:
-            component['locations'] = [
-                defaultLocation
-            ]
+        for component in self.componentsList.items():
+            components.append({
+                'locations': [defaultLocation],
+                'name': component['componentName'],
+                'filePath': component['resourceIdentifier']
+            })
 
         self._publish(
             entity=entity, assetType=assetType,
