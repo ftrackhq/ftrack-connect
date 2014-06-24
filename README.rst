@@ -36,6 +36,15 @@ Dependencies
 
 * `Python <http://python.org>`_ >= 2.6, < 3
 * `PySide <http://qt-project.org/wiki/PySide>`_ >= 1.1.0, < 2
+
+    .. note::
+
+        On Windows, PySide does not always put the required ``pyside-rcc``
+        runtime in an accessible place. If you encounter build errors when
+        installing, try adding the location of ``pyside-rcc`` to your ``PATH``::
+
+        $ set "PATH=C:\Python27\Lib\site-packages\PySide\;%PATH%"
+
 * `pyScss <https://github.com/Kronuz/pyScss>`_ >= 1.2.0, < 2
 * `Harmony <https://github.com/4degrees/harmony/>`_
 
