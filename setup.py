@@ -42,33 +42,41 @@ class BuildResources(Command):
             ROOT_FOLDER, 'source', 'ftrack_connect', 'resource.py'
         )
 
-
     def run(self):
         '''Run build.'''
-        compassCommand = 'compass'
-        if os.name in ('nt',):
-            compassCommand += '.bat'
+        try:
+            import scss
+        except ImportError:
+            print('Error compiling sass files. Could not import "scss". '
+                  'Check you have the pyScss Python package installed.')
+            raise SystemExit()
+
+        compiler = scss.Scss(
+            search_paths=[self.sass_path]
+        )
+
+        themes = [
+            'style_light',
+            'style_dark'
+        ]
+        for theme in themes:
+            scss_source = os.path.join(self.sass_path, '{0}.scss'.format(theme))
+            css_target = os.path.join(self.css_path, '{0}.css'.format(theme))
+
+            compiled = compiler.compile(
+                scss_file=scss_source
+            )
+            with open(css_target, 'w') as file_handle:
+                file_handle.write(compiled)
+                print('Compiled {0}'.format(css_target))
 
         try:
             subprocess.check_call([
-                compassCommand,
-                'compile',
-                '--sass-dir', self.sass_path,
-                '--css-dir', self.css_path
+                'pyside-rcc',
+                '-o',
+                self.resource_target_path,
+                self.resource_source_path
             ])
-        except (subprocess.CalledProcessError, OSError):
-            print('Error compiling sass files. Is Compass installed?')
-            raise SystemExit()
-
-        try:
-            subprocess.check_call(
-                [
-                    'pyside-rcc',
-                    '-o',
-                    self.resource_target_path,
-                    self.resource_source_path
-                ]
-            )
         except subprocess.CalledProcessError as error:
             if error.returncode == 2:
                 print(
