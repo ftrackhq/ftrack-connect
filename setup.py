@@ -27,6 +27,8 @@ DIST_FOLDER = os.path.join(
 class BuildResources(Command):
     '''Build additional resources.'''
 
+    user_options = []
+
     def initialize_options(self):
         pass
 
