@@ -27,8 +27,7 @@ You can clone the public repository::
 Or download the
 `zipball <https://bitbucket.org/ftrack/ftrack-connect/get/master.zip>`_
 
-Once you have a copy of the source, you can embed it in your Python package,
-or install it into your site-packages::
+Once you have a copy of the source you can install it into your site-packages::
 
     $ python setup.py install
 
