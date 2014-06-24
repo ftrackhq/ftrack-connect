@@ -86,13 +86,13 @@ class BuildResources(Command):
                 self.resource_target_path,
                 self.resource_source_path
             ])
-        except subprocess.CalledProcessError as error:
-            if error.returncode == 2:
-                print(
-                    'Error compiling resource.py using pyside-rcc.'
-                    'See ftrack connect README for more information.'
-                )
-            raise SystemExit(error.returncode)
+        except (subprocess.CalledProcessError, OSError):
+            print(
+                'Error compiling resource.py using pyside-rcc. Possibly '
+                'pyside-rcc could not be found. You might need to manually add '
+                'it to your PATH. See README for more information.'
+            )
+            raise SystemExit()
 
 
 class Build(BuildCommand):
