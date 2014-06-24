@@ -23,7 +23,7 @@ class Component(QtGui.QWidget):
 
         self.layout().addWidget(self.componentNameEdit)
 
-        #: TODO: Add theme support.
+        # TODO: Add theme support.
         removeIcon = QtGui.QIcon(
             QtGui.QPixmap(':/image/light/trash')
         )

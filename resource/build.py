@@ -10,8 +10,12 @@ SCSS_BUILD_PATH = os.path.join(
     BUILD_SCRIPT_PATH, 'sass'
 )
 
-RESOURCE_DEST_PATH = os.path.join(
-    BUILD_SCRIPT_PATH, '..', 'source', 'ftrack_connect'
+RESOURCE_DESTINATION_PATH = os.path.join(
+    BUILD_SCRIPT_PATH, '..', 'source', 'ftrack_connect', 'resource.py'
+)
+
+RESOURCE_QRC_PATH = os.path.join(
+    BUILD_SCRIPT_PATH, 'resource.qrc'
 )
 
 
@@ -25,11 +29,11 @@ def main():
         [
             'pyside-rcc',
             '-o',
-            '{0}/resource.py'.format(RESOURCE_DEST_PATH),
-            '{0}/resource.qrc'.format(BUILD_SCRIPT_PATH)
+            RESOURCE_DESTINATION_PATH,
+            RESOURCE_QRC_PATH
         ]
     )
 
 
 if __name__ == '__main__':
-    main()
+    raise SystemExit(main())
