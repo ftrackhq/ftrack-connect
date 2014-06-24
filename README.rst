@@ -4,32 +4,51 @@ ftrack connect
 
 Core for ftrack connect.
 
-***********************
-Development environment
-***********************
+Installation
+============
 
-Mac OS X
-========
+.. highlight:: bash
 
-Installing package and PySide
------------------------------
+Installation is simple with `pip <http://www.pip-installer.org/>`_::
 
-1. Make sure you have homebrew installed (http://brew.sh/)
-2. Install PySide dependecies: ``brew install qt cmake``
-3. Create & activate a new virtualenv (e.g. mkvirtualenv ftrack-connect)
-4. Install PySide in your virtualenv: ``pip install -U PySide`` (This will take a while)
-5. Install the ftrack-connect package: ``pip install .``
+    $ pip install git+git@bitbucket.org:ftrack/ftrack-connect.git
 
-Compile style and resource
---------------------------
+.. note::
 
-1. Install Ruby and Compass (http://compass-style.org/install/)
-2. Build with ``python build.py``
+    This project is not yet available on PyPi.
 
-Run ftrack connect
-------------------
+Alternatively, you may wish to build manually from the source.
 
-1. ``python -m ftrack_connect``.
+You can clone the public repository::
+
+    $ git clone git@bitbucket.org:ftrack/ftrack-connect.git
+
+Or download the
+`zipball <https://bitbucket.org/ftrack/ftrack-connect/get/master.zip>`_
+
+Once you have a copy of the source, you can embed it in your Python package,
+or install it into your site-packages::
+
+    $ python setup.py install
+
+Dependencies
+------------
+
+* `Python <http://python.org>`_ >= 2.6, < 3
+* `PySide <http://qt-project.org/wiki/PySide>`_ >= 1.1.0, < 2
+* `pyScss <https://github.com/Kronuz/pyScss>`_ >= 1.2.0, < 2
+* `Harmony <https://github.com/4degrees/harmony/>`_
+
+For testing:
+
+* `Pytest <http://pytest.org>`_  >= 2.3.5
+
+Usage
+=====
+
+Run the service::
+
+    $ python -m ftrack_connect
 
 *************
 Documentation
