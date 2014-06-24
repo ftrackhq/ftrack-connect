@@ -23,7 +23,12 @@ RESOURCE_QRC_PATH = os.path.join(
 def main():
     '''Compile scss to css and generate PySide resouce file.'''
     os.chdir(SCSS_BUILD_PATH)
-    code = subprocess.call(['compass', 'compile'])
+
+    compassCommand = 'compass'
+    if os.name in ('nt',):
+        compassCommand += '.bat'
+
+    code = subprocess.call([compassCommand, 'compile'])
     if code != 0:
         sys.exit(code)
 
