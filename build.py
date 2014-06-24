@@ -29,21 +29,30 @@ def main():
         compassCommand += '.bat'
 
     code = subprocess.call([compassCommand, 'compile'])
+
     if code != 0:
-        sys.exit(code)
+        raise SystemExit(code)
 
     os.chdir(BUILD_SCRIPT_PATH)
-    code = subprocess.call(
-        [
-            'pyside-rcc',
-            '-o',
-            RESOURCE_DESTINATION_PATH,
-            RESOURCE_QRC_PATH
-        ]
-    )
-    if code != 0:
-        sys.exit(code)
+    try:
+        code = subprocess.call(
+            [
+                'pyside-rcc',
+                '-o',
+                RESOURCE_DESTINATION_PATH,
+                RESOURCE_QRC_PATH
+            ]
+        )
+    except WindowsError as error:
+        if error.returncode == 2:
+            print(
+                'Error compiling resource.py using pyside-rcc.',
+                'See ftrack connect README for more information.'
+            )
+        raise
 
+    if code != 0:
+        raise SystemExit(code)
 
 if __name__ == '__main__':
     raise SystemExit(main())
