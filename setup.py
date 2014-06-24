@@ -1,6 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
+import sys
 import os
 
 from setuptools import setup, find_packages
@@ -35,20 +36,32 @@ class PyTest(TestCommand):
 
 readme_path = os.path.join(os.path.dirname(__file__), 'README.rst')
 packages_path = os.path.join(os.path.dirname(__file__), 'source')
+options = {}
+setup_requires = [
+    'pyScss >= 1.2.0, < 2'
+]
 
-PY2APP_OPTIONS = {
-    'argv_emulation': False,
-    'includes': [
-        'PySide.QtCore',
-        'PySide.QtGui',
-    ],
-    'iconfile': 'logo.icns',
-    'use_pythonpath': True,
-    'dist_dir': DIST_FOLDER,
-    'plist': {
-        'LSUIElement': True
+
+# Platform specific configuration.
+if sys.platform.lower() == 'darwin':
+    setup_requires.append('py2app')
+
+    PY2APP_OPTIONS = {
+        'argv_emulation': False,
+        'includes': [
+            'PySide.QtCore',
+            'PySide.QtGui',
+        ],
+        'iconfile': 'logo.icns',
+        'use_pythonpath': True,
+        'dist_dir': DIST_FOLDER,
+        'plist': {
+            'LSUIElement': True
+        }
     }
-}
+
+    options['py2app'] = PY2APP_OPTIONS
+
 
 setup(
     name='ftrack-connect',
@@ -70,12 +83,10 @@ setup(
         'test': PyTest
     },
     app=['source/ftrack_connect/__main__.py'],
-    options={
-        'py2app': PY2APP_OPTIONS
-    },
+    options=options,
     data_files=[
         ('', [RESOURCE_FOLDER]),
     ],
-    setup_requires=['py2app'],
+    setup_requires=setup_requires,
     zip_safe=False
 )
