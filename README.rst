@@ -31,6 +31,10 @@ Once you have a copy of the source you can install it into your site-packages::
 
     $ python setup.py install
 
+Or just build locally and manage yourself::
+
+    $ python setup.py build
+
 Dependencies
 ============
 
