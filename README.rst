@@ -16,7 +16,7 @@ Installing package and PySide
 
 1. Make sure you have homebrew installed (http://brew.sh/)
 2. Install PySide dependecies: ``brew install qt cmake``
-3. Create & activate a new virtualenv (e.g. mkvirtualenv ftrack-connect)
+3. Create & activate a new virtualenv (https://virtualenv.pypa.io)
 4. Install PySide in your virtualenv: ``pip install -U PySide`` (This will take a while)
 5. Install the ftrack-connect package: ``pip install .``
 
