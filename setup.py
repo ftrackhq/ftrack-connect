@@ -3,6 +3,7 @@
 
 import sys
 import os
+import subprocess
 
 from setuptools import setup, find_packages, Command
 from distutils.command.build import build as BuildCommand
@@ -14,12 +15,12 @@ ROOT_FOLDER = os.path.dirname(
     os.path.realpath(__file__)
 )
 
-DIST_FOLDER = os.path.join(
-    ROOT_FOLDER, 'dist', 'ftrack-connect'
+RESOURCE_FOLDER = os.path.join(
+    ROOT_FOLDER, 'resource'
 )
 
-RESOURCE_FOLDER = os.path.join(
-    ROOT_FOLDER, 'source', 'ftrack_connect', 'resources'
+DIST_FOLDER = os.path.join(
+    ROOT_FOLDER, 'dist', 'ftrack-connect'
 )
 
 
@@ -30,16 +31,57 @@ class BuildResources(Command):
         pass
 
     def finalize_options(self):
-        pass
+        self.sass_path = os.path.join(RESOURCE_FOLDER, 'sass')
+        self.css_path = RESOURCE_FOLDER
+        self.resource_source_path = os.path.join(
+            RESOURCE_FOLDER, 'resource.qrc'
+        )
+        self.resource_target_path = os.path.join(
+            ROOT_FOLDER, 'source', 'ftrack_connect', 'resource.py'
+        )
+
 
     def run(self):
         '''Run build.'''
+        compassCommand = 'compass'
+        if os.name in ('nt',):
+            compassCommand += '.bat'
+
+        try:
+            subprocess.check_call([
+                compassCommand,
+                'compile',
+                '--sass-dir', self.sass_path,
+                '--css-dir', self.css_path
+            ])
+        except (subprocess.CalledProcessError, OSError):
+            print('Error compiling sass files. Is Compass installed?')
+            raise SystemExit()
+
+        try:
+            subprocess.check_call(
+                [
+                    'pyside-rcc',
+                    '-o',
+                    self.resource_target_path,
+                    self.resource_source_path
+                ]
+            )
+        except subprocess.CalledProcessError as error:
+            if error.returncode == 2:
+                print(
+                    'Error compiling resource.py using pyside-rcc.'
+                    'See ftrack connect README for more information.'
+                )
+            raise SystemExit(error.returncode)
 
 
 class Build(BuildCommand):
     '''Custom build to pre-build resources.'''
 
-    sub_commands = BuildCommand.sub_commands + [('build_resources', None)]
+    def run(self):
+        self.run_command('build_resources')
+        BuildCommand.run(self)
 
 
 class Install(InstallCommand):
@@ -118,7 +160,6 @@ setup(
     app=['source/ftrack_connect/__main__.py'],
     options=options,
     data_files=[
-        ('', [RESOURCE_FOLDER]),
     ],
     setup_requires=setup_requires,
     zip_safe=False
