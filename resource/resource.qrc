@@ -1,5 +1,5 @@
 <RCC>
-    <qresource>
+    <qresource prefix='image/default'>
         <file alias='ftrackLogo'>ftrack-logo.png</file>
     </qresource>
     <qresource prefix='style'>
