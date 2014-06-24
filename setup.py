@@ -11,35 +11,44 @@ from setuptools.command.install import install as InstallCommand
 from setuptools.command.test import test as TestCommand
 
 
-ROOT_FOLDER = os.path.dirname(
+ROOT_PATH = os.path.dirname(
     os.path.realpath(__file__)
 )
 
-RESOURCE_FOLDER = os.path.join(
-    ROOT_FOLDER, 'resource'
+RESOURCE_PATH = os.path.join(
+    ROOT_PATH, 'resource'
 )
 
-DIST_FOLDER = os.path.join(
-    ROOT_FOLDER, 'dist', 'ftrack-connect'
+DIST_PATH = os.path.join(
+    ROOT_PATH, 'dist', 'ftrack-connect'
 )
 
+README_PATH = os.path.join(os.path.dirname(__file__), 'README.rst')
+PACKAGES_PATH = os.path.join(os.path.dirname(__file__), 'source')
+OPTIONS = {}
+SETUP_REQUIRES = [
+    'pyScss >= 1.2.0, < 2'
+]
 
+
+# Custom commands.
 class BuildResources(Command):
     '''Build additional resources.'''
 
     user_options = []
 
     def initialize_options(self):
-        pass
+        '''Configure default options.'''
 
     def finalize_options(self):
-        self.sass_path = os.path.join(RESOURCE_FOLDER, 'sass')
-        self.css_path = RESOURCE_FOLDER
+        '''Finalize options to be used.'''
+        self.sass_path = os.path.join(RESOURCE_PATH, 'sass')
+        self.css_path = RESOURCE_PATH
         self.resource_source_path = os.path.join(
-            RESOURCE_FOLDER, 'resource.qrc'
+            RESOURCE_PATH, 'resource.qrc'
         )
         self.resource_target_path = os.path.join(
-            ROOT_FOLDER, 'source', 'ftrack_connect', 'resource.py'
+            ROOT_PATH, 'source', 'ftrack_connect', 'resource.py'
         )
 
     def run(self):
@@ -90,6 +99,7 @@ class Build(BuildCommand):
     '''Custom build to pre-build resources.'''
 
     def run(self):
+        '''Run build ensuring build_resources called first.'''
         self.run_command('build_resources')
         BuildCommand.run(self)
 
@@ -98,6 +108,14 @@ class Install(InstallCommand):
     '''Custom install to pre-build resources.'''
 
     def do_egg_install(self):
+        '''Run install ensuring build_resources called first.
+
+        .. note::
+
+            `do_egg_install` used rather than `run` as sometimes `run` is not
+            called at all by setuptools.
+
+        '''
         self.run_command('build_resources')
         InstallCommand.do_egg_install(self)
 
@@ -106,6 +124,7 @@ class PyTest(TestCommand):
     '''Pytest command.'''
 
     def finalize_options(self):
+        '''Finalize options to be used.'''
         TestCommand.finalize_options(self)
         self.test_args = []
         self.test_suite = True
@@ -116,17 +135,9 @@ class PyTest(TestCommand):
         raise SystemExit(pytest.main(self.test_args))
 
 
-readme_path = os.path.join(os.path.dirname(__file__), 'README.rst')
-packages_path = os.path.join(os.path.dirname(__file__), 'source')
-options = {}
-setup_requires = [
-    'pyScss >= 1.2.0, < 2'
-]
-
-
 # Platform specific configuration.
 if sys.platform.lower() == 'darwin':
-    setup_requires.append('py2app')
+    SETUP_REQUIRES.append('py2app')
 
     PY2APP_OPTIONS = {
         'argv_emulation': False,
@@ -136,25 +147,26 @@ if sys.platform.lower() == 'darwin':
         ],
         'iconfile': 'logo.icns',
         'use_pythonpath': True,
-        'dist_dir': DIST_FOLDER,
+        'dist_dir': DIST_PATH,
         'plist': {
             'LSUIElement': True
         }
     }
 
-    options['py2app'] = PY2APP_OPTIONS
+    OPTIONS['py2app'] = PY2APP_OPTIONS
 
 
+# Call main setup.
 setup(
     name='ftrack-connect',
     version='0.1.0',
     description='Core for ftrack connect.',
-    long_description=open(readme_path).read(),
+    long_description=open(README_PATH).read(),
     keywords='ftrack, connect, publish',
     url='https://bitbucket.org/ftrack/ftrack-connect',
     author='ftrack',
     author_email='support@ftrack.com',
-    packages=find_packages(packages_path),
+    packages=find_packages(PACKAGES_PATH),
     package_dir={
         '': 'source'
     },
@@ -168,9 +180,9 @@ setup(
         'test': PyTest
     },
     app=['source/ftrack_connect/__main__.py'],
-    options=options,
+    options=OPTIONS,
     data_files=[
     ],
-    setup_requires=setup_requires,
+    setup_requires=SETUP_REQUIRES,
     zip_safe=False
 )
