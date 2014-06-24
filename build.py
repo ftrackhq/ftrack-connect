@@ -3,6 +3,7 @@
 
 import subprocess
 import os
+import sys
 
 BUILD_SCRIPT_PATH = os.path.dirname(os.path.abspath(__file__))
 
@@ -22,10 +23,12 @@ RESOURCE_QRC_PATH = os.path.join(
 def main():
     '''Compile scss to css and generate PySide resouce file.'''
     os.chdir(SCSS_BUILD_PATH)
-    subprocess.call(['compass', 'compile'])
+    code = subprocess.call(['compass', 'compile'])
+    if code != 0:
+        sys.exit(code)
 
     os.chdir(BUILD_SCRIPT_PATH)
-    subprocess.call(
+    code = subprocess.call(
         [
             'pyside-rcc',
             '-o',
@@ -33,6 +36,8 @@ def main():
             RESOURCE_QRC_PATH
         ]
     )
+    if code != 0:
+        sys.exit(code)
 
 
 if __name__ == '__main__':
