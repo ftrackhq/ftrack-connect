@@ -4,8 +4,11 @@
 import sys
 import os
 
-from setuptools import setup, find_packages
+from setuptools import setup, find_packages, Command
+from distutils.command.build import build as BuildCommand
+from setuptools.command.install import install as InstallCommand
 from setuptools.command.test import test as TestCommand
+
 
 ROOT_FOLDER = os.path.dirname(
     os.path.realpath(__file__)
@@ -18,6 +21,33 @@ DIST_FOLDER = os.path.join(
 RESOURCE_FOLDER = os.path.join(
     ROOT_FOLDER, 'source', 'ftrack_connect', 'resources'
 )
+
+
+class BuildResources(Command):
+    '''Build additional resources.'''
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        '''Run build.'''
+
+
+class Build(BuildCommand):
+    '''Custom build to pre-build resources.'''
+
+    sub_commands = BuildCommand.sub_commands + [('build_resources', None)]
+
+
+class Install(InstallCommand):
+    '''Custom install to pre-build resources.'''
+
+    def do_egg_install(self):
+        self.run_command('build_resources')
+        InstallCommand.do_egg_install(self)
 
 
 class PyTest(TestCommand):
@@ -80,6 +110,9 @@ setup(
     ],
     tests_require=['pytest >= 2.3.5'],
     cmdclass={
+        'build': Build,
+        'build_resources': BuildResources,
+        'install': Install,
         'test': PyTest
     },
     app=['source/ftrack_connect/__main__.py'],
