@@ -35,7 +35,7 @@ def main():
 
     os.chdir(BUILD_SCRIPT_PATH)
     try:
-        code = subprocess.call(
+        subprocess.check_call(
             [
                 'pyside-rcc',
                 '-o',
@@ -43,16 +43,13 @@ def main():
                 RESOURCE_QRC_PATH
             ]
         )
-    except WindowsError as error:
+    except subprocess.CalledProcessError as error:
         if error.returncode == 2:
             print(
-                'Error compiling resource.py using pyside-rcc.',
+                'Error compiling resource.py using pyside-rcc.'
                 'See ftrack connect README for more information.'
             )
-        raise
-
-    if code != 0:
-        raise SystemExit(code)
+        raise SystemExit(error.returncode)
 
 if __name__ == '__main__':
     raise SystemExit(main())
