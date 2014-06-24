@@ -25,7 +25,7 @@ class Component(QtGui.QWidget):
 
         # TODO: Add theme support.
         removeIcon = QtGui.QIcon(
-            QtGui.QPixmap(':/image/light/trash')
+            QtGui.QPixmap(':/ftrack/image/light/trash')
         )
 
         self.removeAction = QtGui.QAction(

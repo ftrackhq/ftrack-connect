@@ -2,7 +2,7 @@
 /** Return path to image *filename* relative to theme directory. */
 @function theme-image($filename) {
 
-	// TODO: Replace path with QT Resource path
-	$url: ':/image/#{$theme}/#{$filename}';
-	@return url($url);
+    // TODO: Replace path with QT Resource path
+    $url: ':/ftrack/image/#{$theme}/#{$filename}';
+    @return url($url);
 }

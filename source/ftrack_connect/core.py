@@ -38,7 +38,7 @@ class ApplicationWindow(QtGui.QMainWindow):
         QtGui.QApplication.setQuitOnLastWindowClosed(False)
 
         self.logoIcon = QtGui.QIcon(
-            QtGui.QPixmap(':/image/default/ftrackLogo')
+            QtGui.QPixmap(':/ftrack/image/default/ftrackLogo')
         )
         self._setupStyle()
 
@@ -251,11 +251,11 @@ class ApplicationWindow(QtGui.QMainWindow):
 
         # Load main font file
         QtGui.QFontDatabase.addApplicationFont(
-            ':/font/main'
+            ':/ftrack/font/main'
         )
 
         # Load main stylesheet
-        file = QtCore.QFile(':/style/{0}'.format(theme))
+        file = QtCore.QFile(':/ftrack/style/{0}'.format(theme))
         file.open(
             QtCore.QFile.ReadOnly | QtCore.QFile.Text
         )
