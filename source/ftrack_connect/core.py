@@ -8,7 +8,7 @@ from PySide import QtGui
 from PySide import QtCore
 
 
-from ftrack_connect import resource
+import ftrack_connect.resource
 from ftrack_connect.tabwidget import TabWidget
 from ftrack_connect.widget.login import Login
 
