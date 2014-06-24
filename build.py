@@ -7,15 +7,15 @@ import os
 BUILD_SCRIPT_PATH = os.path.dirname(os.path.abspath(__file__))
 
 SCSS_BUILD_PATH = os.path.join(
-    BUILD_SCRIPT_PATH, 'sass'
+    BUILD_SCRIPT_PATH, 'resource', 'sass'
 )
 
 RESOURCE_DESTINATION_PATH = os.path.join(
-    BUILD_SCRIPT_PATH, '..', 'source', 'ftrack_connect', 'resource.py'
+    BUILD_SCRIPT_PATH, 'source', 'ftrack_connect', 'resource.py'
 )
 
 RESOURCE_QRC_PATH = os.path.join(
-    BUILD_SCRIPT_PATH, 'resource.qrc'
+    BUILD_SCRIPT_PATH, 'resource', 'resource.qrc'
 )
 
 
