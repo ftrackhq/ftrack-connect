@@ -4,8 +4,9 @@ ftrack connect
 
 Core for ftrack connect.
 
+************
 Installation
-============
+************
 
 .. highlight:: bash
 
@@ -32,7 +33,7 @@ or install it into your site-packages::
     $ python setup.py install
 
 Dependencies
-------------
+============
 
 * `Python <http://python.org>`_ >= 2.6, < 3
 * `PySide <http://qt-project.org/wiki/PySide>`_ >= 1.1.0, < 2
@@ -52,8 +53,9 @@ For testing:
 
 * `Pytest <http://pytest.org>`_  >= 2.3.5
 
+*****
 Usage
-=====
+*****
 
 Run the service::
 
