@@ -8,7 +8,10 @@ import subprocess
 from setuptools import setup, find_packages, Command
 from distutils.command.build import build as BuildCommand
 from setuptools.command.install import install as InstallCommand
+from distutils.command.clean import clean as CleanCommand
 from setuptools.command.test import test as TestCommand
+import distutils.dir_util
+import distutils
 
 
 ROOT_PATH = os.path.dirname(
@@ -24,7 +27,11 @@ SOURCE_PATH = os.path.join(
 )
 
 DISTRIBUTION_PATH = os.path.join(
-    ROOT_PATH, 'dist', 'ftrack_connect'
+    ROOT_PATH, 'dist'
+)
+
+RESOURCE_TARGET_PATH = os.path.join(
+    SOURCE_PATH, 'ftrack_connect', 'resource.py'
 )
 
 README_PATH = os.path.join(os.path.dirname(__file__), 'README.rst')
@@ -48,9 +55,7 @@ class BuildResources(Command):
         self.resource_source_path = os.path.join(
             RESOURCE_PATH, 'resource.qrc'
         )
-        self.resource_target_path = os.path.join(
-            ROOT_PATH, 'source', 'ftrack_connect', 'resource.py'
-        )
+        self.resource_target_path = RESOURCE_TARGET_PATH
 
     def run(self):
         '''Run build.'''
@@ -121,6 +126,39 @@ class Install(InstallCommand):
         InstallCommand.do_egg_install(self)
 
 
+class Clean(CleanCommand):
+    '''Custom clean to remove built resources and distributions.'''
+
+    def run(self):
+        '''Run clean.'''
+        relative_resource_path = os.path.relpath(
+            RESOURCE_TARGET_PATH, ROOT_PATH
+        )
+        if os.path.exists(relative_resource_path):
+            os.remove(relative_resource_path)
+        else:
+            distutils.log.warn(
+                '\'{0}\' does not exist -- can\'t clean it'
+                .format(relative_resource_path)
+            )
+
+        if self.all:
+            relative_distribution_path = os.path.relpath(
+                DISTRIBUTION_PATH, ROOT_PATH
+            )
+            if os.path.exists(relative_distribution_path):
+                distutils.dir_util.remove_tree(
+                    relative_distribution_path, dry_run=self.dry_run
+                )
+            else:
+                distutils.log.warn(
+                    '\'{0}\' does not exist -- can\'t clean it'
+                    .format(relative_distribution_path)
+                )
+
+        CleanCommand.run(self)
+
+
 class PyTest(TestCommand):
     '''Pytest command.'''
 
@@ -157,6 +195,7 @@ configuration = dict(
         'build': Build,
         'build_resources': BuildResources,
         'install': Install,
+        'clean': Clean,
         'test': PyTest
     },
     options={},
