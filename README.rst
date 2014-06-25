@@ -61,11 +61,13 @@ Dependencies
 
 * `Harmony <https://github.com/4degrees/harmony/>`_
 
-For building:
+Additional For building
+-----------------------
 
 * `pyScss <https://github.com/Kronuz/pyScss>`_ >= 1.2.0, < 2
 
-For testing:
+Additional For testing
+----------------------
 
 * `Pytest <http://pytest.org>`_  >= 2.3.5
 
