@@ -35,6 +35,16 @@ Or just build locally and manage yourself::
 
     $ python setup.py build
 
+You can also build platform specific applications.
+
+Windows::
+
+    $ python setup.py py2exe
+
+OSX::
+
+    $ python setup.py py2app
+
 Dependencies
 ============
 
@@ -49,8 +59,11 @@ Dependencies
 
       $ set "PATH=C:\Python27\Lib\site-packages\PySide\;%PATH%"
 
-* `pyScss <https://github.com/Kronuz/pyScss>`_ >= 1.2.0, < 2
 * `Harmony <https://github.com/4degrees/harmony/>`_
+
+For building:
+
+* `pyScss <https://github.com/Kronuz/pyScss>`_ >= 1.2.0, < 2
 
 For testing:
 
