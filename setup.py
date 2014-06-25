@@ -194,6 +194,7 @@ configuration = dict(
     url='https://bitbucket.org/ftrack/ftrack-connect',
     author='ftrack',
     author_email='support@ftrack.com',
+    license='Apache License (2.0)',
     packages=find_packages(PACKAGES_PATH),
     package_dir={
         '': 'source'
