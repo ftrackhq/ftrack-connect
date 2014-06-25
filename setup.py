@@ -4,6 +4,7 @@
 import sys
 import os
 import subprocess
+import re
 
 from setuptools import setup, find_packages, Command
 from distutils.command.build import build as BuildCommand
@@ -37,6 +38,15 @@ RESOURCE_TARGET_PATH = os.path.join(
 README_PATH = os.path.join(os.path.dirname(__file__), 'README.rst')
 
 PACKAGES_PATH = os.path.join(os.path.dirname(__file__), 'source')
+
+
+# Read version from source.
+with open(os.path.join(
+    SOURCE_PATH, 'ftrack_connect', '_version.py'
+)) as _version_file:
+    VERSION = re.match(
+        r'.*__version__ = \'(.*?)\'', _version_file.read(), re.DOTALL
+    ).group(1)
 
 
 # Custom commands.
@@ -177,7 +187,7 @@ class PyTest(TestCommand):
 # General configuration.
 configuration = dict(
     name='ftrack-connect',
-    version='0.1.0',
+    version=VERSION,
     description='Core for ftrack connect.',
     long_description=open(README_PATH).read(),
     keywords='ftrack, connect, publish',
@@ -220,7 +230,7 @@ if sys.platform == 'darwin':
         ],
         'iconfile': 'logo.icns',
         'use_pythonpath': True,
-        'dist_dir': DISTRIBUTION_PATH,
+        'dist_dir': os.path.join(DISTRIBUTION_PATH, VERSION),
         'plist': {
             'LSUIElement': True
         }
@@ -236,7 +246,7 @@ elif sys.platform == 'win32':
         'dll_excludes': [
             'MSVCP90.dll'  # Should not be shipped.
         ],
-        'dist_dir': DISTRIBUTION_PATH,
+        'dist_dir': os.path.join(DISTRIBUTION_PATH, VERSION),
     }
     configuration['windows'] = [{
         "script": "source/ftrack_connect/__main__.py",
