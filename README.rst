@@ -49,7 +49,7 @@ Dependencies
 ============
 
 * `Python <http://python.org>`_ >= 2.6, < 3
-* `PySide <http://qt-project.org/wiki/PySide>`_ >= 1.1.0, < 2
+* `PySide <http://qt-project.org/wiki/PySide>`_ >= 1.2.2, < 2
 
   .. note::
 
