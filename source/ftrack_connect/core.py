@@ -8,6 +8,7 @@ from PySide import QtGui, QtCore
 
 from ftrack_connect.tabwidget import TabWidget
 from ftrack_connect.widget.login import Login
+from ftrack_connect.widget.uncaught_error import UncaughtError
 
 APPLICATION_ROOT = os.path.dirname(
     os.path.realpath(__file__)
@@ -41,6 +42,9 @@ class ApplicationWindow(QtGui.QMainWindow):
     def __init__(self, *args, **kwargs):
         '''Initialise the main application window.'''
         super(ApplicationWindow, self).__init__(*args, **kwargs)
+
+        # Register widget for error handling.
+        self.uncaughtError = UncaughtError(parent=self)
 
         if not QtGui.QSystemTrayIcon.isSystemTrayAvailable():
             raise ConnectError('No system tray located.')
