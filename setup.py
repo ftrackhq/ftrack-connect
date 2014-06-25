@@ -189,6 +189,8 @@ configuration = dict(
         '': 'source'
     },
     install_requires=[
+        'PySide >= 1.1.0, < 2',
+        'Harmony'
     ],
     tests_require=['pytest >= 2.3.5'],
     cmdclass={
@@ -241,6 +243,9 @@ elif sys.platform == 'win32':
         "dest_base": "ftrack_connect"
     }]
     configuration['zipfile'] = 'ftrack_connect_packages.zip'
+    configuration['setup_requires'].extend(
+        configuration['install_requires']
+    )
 
 
 # Call main setup.
