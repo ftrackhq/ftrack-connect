@@ -249,11 +249,11 @@ elif sys.platform == 'win32':
         'dist_dir': os.path.join(DISTRIBUTION_PATH, VERSION),
     }
     configuration['windows'] = [{
-        "script": "source/ftrack_connect/__main__.py",
-        "icon_resources": [
-            (1, "logo.ico")
+        'script': 'source/ftrack_connect/__main__.py',
+        'icon_resources': [
+            (1, 'logo.ico')
         ],
-        "dest_base": "ftrack_connect"
+        'dest_base': 'ftrack_connect'
     }]
     configuration['zipfile'] = 'ftrack_connect_packages.zip'
     configuration['setup_requires'].extend(
