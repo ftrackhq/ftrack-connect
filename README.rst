@@ -60,6 +60,8 @@ Dependencies
       $ set "PATH=C:\Python27\Lib\site-packages\PySide\;%PATH%"
 
 * `Harmony <https://github.com/4degrees/harmony/>`_
+* ftrack Python API (Download from your ftrack server and make available on
+  ``PYTHONPATH``)
 
 Additional For building
 -----------------------
