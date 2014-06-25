@@ -4,6 +4,7 @@
 import sys
 import traceback
 import cStringIO
+import logging
 
 from PySide import QtGui, QtCore
 
@@ -36,9 +37,10 @@ class UncaughtError(QtGui.QMessageBox):
     def exceptHook(self, exceptionType, exceptionValue, exceptionTraceback):
         '''Show message box with error details.'''
 
-        # Print exception and value to console.
-        traceback.print_tb(exceptionTraceback)
-        print(exceptionValue)
+        logging.error(
+            'Logging an uncaught exception',
+            exc_info=(exceptionType, exceptionValue, exceptionTraceback)
+        )
 
         # Show exception to user.
         tracebackInfo = self.getTraceback(exceptionTraceback)
