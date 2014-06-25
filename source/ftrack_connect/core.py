@@ -4,24 +4,14 @@
 import os
 import signal
 
-from PySide import QtGui, QtCore
+from PySide import QtGui
+from PySide import QtCore
 
+
+import ftrack_connect.resource
 from ftrack_connect.tabwidget import TabWidget
 from ftrack_connect.widget.login import Login
 from ftrack_connect.widget.uncaught_error import UncaughtError
-
-APPLICATION_ROOT = os.path.dirname(
-    os.path.realpath(__file__)
-)
-
-# RESOURCEPATH environment variable is set by py2app/py2exe applications.
-RESOURCE_ROOT_PATH = os.path.join(
-    os.environ.get(
-        'RESOURCEPATH',
-        APPLICATION_ROOT
-    ),
-    '..', '..', 'resource'
-)
 
 
 # Enable ctrl+c to quit application when started from command line.
@@ -52,7 +42,7 @@ class ApplicationWindow(QtGui.QMainWindow):
         QtGui.QApplication.setQuitOnLastWindowClosed(False)
 
         self.logoIcon = QtGui.QIcon(
-            '{0}/logo.png'.format(RESOURCE_ROOT_PATH)
+            QtGui.QPixmap(':/ftrack/image/default/ftrackLogo')
         )
         self._setupStyle()
 
@@ -263,15 +253,19 @@ class ApplicationWindow(QtGui.QMainWindow):
         '''Set up application style using *theme*.'''
         QtGui.QApplication.setStyle('cleanlooks')
 
-        # Load font
+        # Load main font file
         QtGui.QFontDatabase.addApplicationFont(
-            '{0}/font/open_sans_regular.ttf'.format(RESOURCE_ROOT_PATH)
+            ':/ftrack/font/main'
         )
 
-        # Load stylesheet
-        styleSheetString = open(
-            '{0}/style_{1}.css'.format(RESOURCE_ROOT_PATH, theme), 'r'
-        ).read()
+        # Load main stylesheet
+        file = QtCore.QFile(':/ftrack/style/{0}'.format(theme))
+        file.open(
+            QtCore.QFile.ReadOnly | QtCore.QFile.Text
+        )
+        stream = QtCore.QTextStream(file)
+        styleSheetString = stream.readAll()
+
         self.setStyleSheet(styleSheetString)
 
     def add(self, widget, name=None):

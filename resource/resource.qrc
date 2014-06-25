@@ -1,0 +1,19 @@
+<RCC>
+    <qresource prefix='ftrack/image/default'>
+        <file alias='ftrackLogo'>ftrack-logo.png</file>
+    </qresource>
+    <qresource prefix='ftrack/style'>
+        <file alias='light'>style_light.css</file>
+        <file alias='dark'>style_dark.css</file>
+    </qresource>
+    <qresource prefix='ftrack/font'>
+        <file alias='main'>font/open_sans_regular.ttf</file>
+    </qresource>
+    <qresource prefix='ftrack/image/light'>
+        <file alias='selectedTab'>image/light/selected_tab.png</file>
+        <file alias='trash'>image/light/trash.png</file>
+    </qresource>
+    <qresource prefix='ftrack/image/dark'>
+        <file alias='selectedTab'>image/dark/selected_tab.png</file>
+    </qresource>
+</RCC>
