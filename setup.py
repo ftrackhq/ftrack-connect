@@ -19,16 +19,17 @@ RESOURCE_PATH = os.path.join(
     ROOT_PATH, 'resource'
 )
 
-DIST_PATH = os.path.join(
-    ROOT_PATH, 'dist', 'ftrack-connect'
+SOURCE_PATH = os.path.join(
+    ROOT_PATH, 'source'
+)
+
+DISTRIBUTION_PATH = os.path.join(
+    ROOT_PATH, 'dist', 'ftrack_connect'
 )
 
 README_PATH = os.path.join(os.path.dirname(__file__), 'README.rst')
+
 PACKAGES_PATH = os.path.join(os.path.dirname(__file__), 'source')
-OPTIONS = {}
-SETUP_REQUIRES = [
-    'pyScss >= 1.2.0, < 2'
-]
 
 
 # Custom commands.
@@ -135,29 +136,8 @@ class PyTest(TestCommand):
         raise SystemExit(pytest.main(self.test_args))
 
 
-# Platform specific configuration.
-if sys.platform.lower() == 'darwin':
-    SETUP_REQUIRES.append('py2app')
-
-    PY2APP_OPTIONS = {
-        'argv_emulation': False,
-        'includes': [
-            'PySide.QtCore',
-            'PySide.QtGui',
-        ],
-        'iconfile': 'logo.icns',
-        'use_pythonpath': True,
-        'dist_dir': DIST_PATH,
-        'plist': {
-            'LSUIElement': True
-        }
-    }
-
-    OPTIONS['py2app'] = PY2APP_OPTIONS
-
-
-# Call main setup.
-setup(
+# General configuration.
+configuration = dict(
     name='ftrack-connect',
     version='0.1.0',
     description='Core for ftrack connect.',
@@ -179,10 +159,50 @@ setup(
         'install': Install,
         'test': PyTest
     },
-    app=['source/ftrack_connect/__main__.py'],
-    options=OPTIONS,
+    options={},
     data_files=[
     ],
-    setup_requires=SETUP_REQUIRES,
-    zip_safe=False
+    setup_requires=[
+        'pyScss >= 1.2.0, < 2'
+    ]
 )
+
+
+# Platform specific configuration.
+if sys.platform == 'darwin':
+    configuration['setup_requires'].append('py2app')
+    configuration['options']['py2app'] = {
+        'argv_emulation': False,
+        'includes': [
+            'PySide.QtCore',
+            'PySide.QtGui',
+        ],
+        'iconfile': 'logo.icns',
+        'use_pythonpath': True,
+        'dist_dir': DISTRIBUTION_PATH,
+        'plist': {
+            'LSUIElement': True
+        }
+    }
+    configuration['app'] = [
+        'source/ftrack_connect/__main__.py'
+    ]
+
+elif sys.platform == 'win32':
+    import py2exe
+
+    configuration['options']['py2exe'] = {
+        'dll_excludes': [
+            'MSVCP90.dll'  # Should not be shipped.
+        ],
+        'dist_dir': DISTRIBUTION_PATH,
+    }
+    configuration['windows'] = [{
+        "script": "source/ftrack_connect/__main__.py",
+        "dest_base": "ftrack_connect"
+    }]
+    configuration['zipfile'] = 'ftrack_connect_packages.zip'
+
+
+# Call main setup.
+setup(**configuration)
