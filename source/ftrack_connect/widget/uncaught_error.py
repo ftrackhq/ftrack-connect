@@ -23,7 +23,7 @@ class UncaughtError(QtGui.QMessageBox):
         sys.excepthook = self.onError.emit
 
     def getTraceback(self, exceptionTraceback):
-        '''Return message from traceback.'''
+        '''Return message from *exceptionTraceback*.'''
         tracebackInfoStream = cStringIO.StringIO()
         traceback.print_tb(
             exceptionTraceback,
@@ -36,22 +36,25 @@ class UncaughtError(QtGui.QMessageBox):
     def exceptHook(self, exceptionType, exceptionValue, exceptionTraceback):
         '''Show message box with error details.'''
 
-        # Print exception to console.
+        # Print exception and value to console.
         traceback.print_tb(exceptionTraceback)
         print(exceptionValue)
 
         # Show exception to user.
         tracebackInfo = self.getTraceback(exceptionTraceback)
         self.setDetailedText(tracebackInfo)
-        self.setText(str(exceptionValue))
+
+        # Make sure text is at least a certain length to force message box size.
+        # Otherwise buttons will not fit.
+        self.setText(str(exceptionValue).ljust(50, ' '))
         self.exec_()
 
     def resizeEvent(self, event):
-        '''Hook into the resize event and force width of detailed text.'''
+        '''Hook into the resize *event* and force width of detailed text.'''
         result = super(UncaughtError, self).resizeEvent(event)
 
-        details_box = self.findChild(QtGui.QTextEdit)
-        if details_box is not None:
-            details_box.setFixedSize(500, 200)
+        detailsBox = self.findChild(QtGui.QTextEdit)
+        if detailsBox is not None:
+            detailsBox.setFixedSize(500, 200)
 
         return result
