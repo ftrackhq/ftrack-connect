@@ -201,7 +201,7 @@ configuration = dict(
     },
     install_requires=[
         'PySide >= 1.2.2, < 2',
-        'Riffle'
+        'Riffle >= 0.1.0, < 2'
     ],
     tests_require=['pytest >= 2.3.5'],
     cmdclass={
