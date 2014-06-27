@@ -11,6 +11,10 @@ QTableView::item
     background: $white;
     color: $text-color;
 }
+QTableView::item:selected
+{
+    background: $gray-lighter;
+}
 
 QHeaderView {
     background-color: $gray-lighter;
