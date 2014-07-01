@@ -6,7 +6,8 @@ import os
 import subprocess
 import re
 
-from setuptools import setup, find_packages, Command
+import setuptools
+from setuptools import setup, find_packages, Command, Distribution
 from distutils.command.build import build as BuildCommand
 from setuptools.command.install import install as InstallCommand
 from distutils.command.clean import clean as CleanCommand
@@ -114,6 +115,13 @@ class BuildResources(Command):
 class Build(BuildCommand):
     '''Custom build to pre-build resources.'''
 
+    def initialize_options(self):
+        '''Configure default options.'''
+        BuildCommand.initialize_options(self)
+
+        # Required for cx_freeze.
+        self.build_exe = None
+
     def run(self):
         '''Run build ensuring build_resources called first.'''
         self.run_command('build_resources')
@@ -220,43 +228,61 @@ configuration = dict(
 )
 
 
-# Platform specific configuration.
-if sys.platform == 'darwin':
-    configuration['setup_requires'].append('py2app')
-    configuration['options']['py2app'] = {
-        'argv_emulation': False,
-        'includes': [
-            'PySide.QtCore',
-            'PySide.QtGui',
-        ],
-        'iconfile': 'logo.icns',
-        'use_pythonpath': True,
-        'dist_dir': os.path.join(DISTRIBUTION_PATH, VERSION),
-        'plist': {
-            'LSUIElement': True
+# Platform specific distributions.
+if sys.platform in ('darwin', 'win32'):
+
+    # Ensure cx_freeze available for import.
+    Distribution(dict(setup_requires='cx_freeze'))
+    configuration['setup_requires'].append('cx_freeze')
+
+    from cx_Freeze import setup, Executable
+
+    executables = []
+    if sys.platform == 'win32':
+        executables.append(
+            Executable(
+                script='source/ftrack_connect/__main__.py',
+                base='Win32GUI',
+                targetName='ftrack_connect.exe',
+                icon='./logo.ico'
+            )
+        )
+
+    elif sys.platform == 'darwin':
+        executables.append(
+            Executable(
+                script='source/ftrack_connect/__main__.py',
+                base=None,
+                targetName='ftrack_connect',
+                icon='./logo.icns'
+            )
+        )
+
+        configuration['options']['bdist_mac'] = {
+            'iconfile': './logo.icns',
+            'bundle_name': 'ftrack_connect'
         }
-    }
-    configuration['app'] = [
-        'source/ftrack_connect/__main__.py'
-    ]
 
-elif sys.platform == 'win32':
-    import py2exe
+    configuration['executables'] = executables
 
-    configuration['options']['py2exe'] = {
-        'dll_excludes': [
-            'MSVCP90.dll'  # Should not be shipped.
+    configuration['options']['build_exe'] = {
+        'includes': [
+            'atexit'  # Required for PySide
         ],
-        'dist_dir': os.path.join(DISTRIBUTION_PATH, VERSION),
+        'excludes': [
+            # The following don't actually exist, but are picked up by the
+            # dependency walker somehow.
+            'boto.compat.sys',
+            'boto.compat._sre',
+            'boto.compat.array',
+            'boto.compat._struct',
+            'boto.compat._json'
+        ],
+
+        # Target directory for distribution files.
+        'build_exe': os.path.join(DISTRIBUTION_PATH, VERSION)
     }
-    configuration['windows'] = [{
-        'script': 'source/ftrack_connect/__main__.py',
-        'icon_resources': [
-            (1, 'logo.ico')
-        ],
-        'dest_base': 'ftrack_connect'
-    }]
-    configuration['zipfile'] = 'ftrack_connect_packages.zip'
+
     configuration['setup_requires'].extend(
         configuration['install_requires']
     )

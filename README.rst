@@ -39,11 +39,11 @@ You can also build platform specific applications.
 
 Windows::
 
-    $ python setup.py py2exe
+    $ python setup.py build_exe
 
 OSX::
 
-    $ python setup.py py2app
+    $ python setup.py bdist_mac
 
 Dependencies
 ============
