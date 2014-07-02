@@ -1,13 +1,11 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-import sys
 import os
 import subprocess
 import re
 
-import setuptools
-from setuptools import setup, find_packages, Command, Distribution
+from setuptools import setup, find_packages, Command
 from distutils.command.build import build as BuildCommand
 from setuptools.command.install import install as InstallCommand
 from distutils.command.clean import clean as CleanCommand
@@ -226,66 +224,6 @@ configuration = dict(
         'pyScss >= 1.2.0, < 2'
     ]
 )
-
-
-# Platform specific distributions.
-if sys.platform in ('darwin', 'win32'):
-
-    # Ensure cx_freeze available for import.
-    Distribution(dict(setup_requires='cx_freeze'))
-    configuration['setup_requires'].append('cx_freeze')
-
-    from cx_Freeze import setup, Executable
-
-    executables = []
-    if sys.platform == 'win32':
-        executables.append(
-            Executable(
-                script='source/ftrack_connect/__main__.py',
-                base='Win32GUI',
-                targetName='ftrack_connect.exe',
-                icon='./logo.ico'
-            )
-        )
-
-    elif sys.platform == 'darwin':
-        executables.append(
-            Executable(
-                script='source/ftrack_connect/__main__.py',
-                base=None,
-                targetName='ftrack_connect',
-                icon='./logo.icns'
-            )
-        )
-
-        configuration['options']['bdist_mac'] = {
-            'iconfile': './logo.icns',
-            'bundle_name': 'ftrack_connect'
-        }
-
-    configuration['executables'] = executables
-
-    configuration['options']['build_exe'] = {
-        'includes': [
-            'atexit'  # Required for PySide
-        ],
-        'excludes': [
-            # The following don't actually exist, but are picked up by the
-            # dependency walker somehow.
-            'boto.compat.sys',
-            'boto.compat._sre',
-            'boto.compat.array',
-            'boto.compat._struct',
-            'boto.compat._json'
-        ],
-
-        # Target directory for distribution files.
-        'build_exe': os.path.join(DISTRIBUTION_PATH, VERSION)
-    }
-
-    configuration['setup_requires'].extend(
-        configuration['install_requires']
-    )
 
 
 # Call main setup.

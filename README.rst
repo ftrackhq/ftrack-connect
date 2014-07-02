@@ -35,16 +35,6 @@ Or just build locally and manage yourself::
 
     $ python setup.py build
 
-You can also build platform specific applications.
-
-Windows::
-
-    $ python setup.py build_exe
-
-OSX::
-
-    $ python setup.py bdist_mac
-
 Dependencies
 ============
 
