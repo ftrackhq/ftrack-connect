@@ -71,9 +71,10 @@ class BuildResources(Command):
         try:
             import scss
         except ImportError:
-            print('Error compiling sass files. Could not import "scss". '
-                  'Check you have the pyScss Python package installed.')
-            raise SystemExit()
+            raise RuntimeError(
+                'Error compiling sass files. Could not import "scss". '
+                'Check you have the pyScss Python package installed.'
+            )
 
         compiler = scss.Scss(
             search_paths=[self.sass_path]
@@ -101,13 +102,12 @@ class BuildResources(Command):
                 self.resource_target_path,
                 self.resource_source_path
             ])
-        except (subprocess.CalledProcessError, OSError):
-            print(
+        except (subprocess.CalledProcessError, OSError) as error:
+            raise RuntimeError(
                 'Error compiling resource.py using pyside-rcc. Possibly '
                 'pyside-rcc could not be found. You might need to manually add '
                 'it to your PATH. See README for more information.'
             )
-            raise SystemExit()
 
 
 class Build(BuildCommand):
