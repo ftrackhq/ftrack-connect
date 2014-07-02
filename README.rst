@@ -12,7 +12,7 @@ Installation
 
 Installation is simple with `pip <http://www.pip-installer.org/>`_::
 
-    $ pip install git+git@bitbucket.org:ftrack/ftrack-connect.git
+    $ pip install git+https://bitbucket.org/ftrack/ftrack-connect.git
 
 .. note::
 
