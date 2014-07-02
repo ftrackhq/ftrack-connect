@@ -12,7 +12,7 @@ Installation
 
 Installation is simple with `pip <http://www.pip-installer.org/>`_::
 
-    $ pip install git+git@bitbucket.org:ftrack/ftrack-connect.git
+    $ pip install git+https://bitbucket.org/ftrack/ftrack-connect.git
 
 .. note::
 
@@ -35,16 +35,6 @@ Or just build locally and manage yourself::
 
     $ python setup.py build
 
-You can also build platform specific applications.
-
-Windows::
-
-    $ python setup.py py2exe
-
-OSX::
-
-    $ python setup.py py2app
-
 Dependencies
 ============
 
@@ -59,7 +49,7 @@ Dependencies
 
       $ set "PATH=C:\Python27\Lib\site-packages\PySide\;%PATH%"
 
-* `Harmony <https://github.com/4degrees/harmony/>`_
+* `Riffle <https://github.com/4degrees/riffle>`_ >= 0.1.0, < 2
 * ftrack Python API (Download from your ftrack server and make available on
   ``PYTHONPATH``)
 

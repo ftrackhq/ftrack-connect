@@ -1,7 +1,6 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-import sys
 import os
 import subprocess
 import re
@@ -72,9 +71,10 @@ class BuildResources(Command):
         try:
             import scss
         except ImportError:
-            print('Error compiling sass files. Could not import "scss". '
-                  'Check you have the pyScss Python package installed.')
-            raise SystemExit()
+            raise RuntimeError(
+                'Error compiling sass files. Could not import "scss". '
+                'Check you have the pyScss Python package installed.'
+            )
 
         compiler = scss.Scss(
             search_paths=[self.sass_path]
@@ -102,13 +102,12 @@ class BuildResources(Command):
                 self.resource_target_path,
                 self.resource_source_path
             ])
-        except (subprocess.CalledProcessError, OSError):
-            print(
+        except (subprocess.CalledProcessError, OSError) as error:
+            raise RuntimeError(
                 'Error compiling resource.py using pyside-rcc. Possibly '
                 'pyside-rcc could not be found. You might need to manually add '
                 'it to your PATH. See README for more information.'
             )
-            raise SystemExit()
 
 
 class Build(BuildCommand):
@@ -201,7 +200,7 @@ configuration = dict(
     },
     install_requires=[
         'PySide >= 1.2.2, < 2',
-        'Harmony'
+        'Riffle >= 0.1.0, < 2'
     ],
     tests_require=['pytest >= 2.3.5'],
     cmdclass={
@@ -218,48 +217,6 @@ configuration = dict(
         'pyScss >= 1.2.0, < 2'
     ]
 )
-
-
-# Platform specific configuration.
-if sys.platform == 'darwin':
-    configuration['setup_requires'].append('py2app')
-    configuration['options']['py2app'] = {
-        'argv_emulation': False,
-        'includes': [
-            'PySide.QtCore',
-            'PySide.QtGui',
-        ],
-        'iconfile': 'logo.icns',
-        'use_pythonpath': True,
-        'dist_dir': os.path.join(DISTRIBUTION_PATH, VERSION),
-        'plist': {
-            'LSUIElement': True
-        }
-    }
-    configuration['app'] = [
-        'source/ftrack_connect/__main__.py'
-    ]
-
-elif sys.platform == 'win32':
-    import py2exe
-
-    configuration['options']['py2exe'] = {
-        'dll_excludes': [
-            'MSVCP90.dll'  # Should not be shipped.
-        ],
-        'dist_dir': os.path.join(DISTRIBUTION_PATH, VERSION),
-    }
-    configuration['windows'] = [{
-        'script': 'source/ftrack_connect/__main__.py',
-        'icon_resources': [
-            (1, 'logo.ico')
-        ],
-        'dest_base': 'ftrack_connect'
-    }]
-    configuration['zipfile'] = 'ftrack_connect_packages.zip'
-    configuration['setup_requires'].extend(
-        configuration['install_requires']
-    )
 
 
 # Call main setup.

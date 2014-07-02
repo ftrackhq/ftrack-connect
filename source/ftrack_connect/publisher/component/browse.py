@@ -2,7 +2,7 @@
 # :copyright: Copyright (c) 2014 ftrack
 
 from PySide import QtGui, QtCore
-from harmony.ui.filesystem_browser import FilesystemBrowser
+from riffle.browser import FilesystemBrowser
 
 
 class BrowseComponent(QtGui.QPushButton):
