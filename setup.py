@@ -113,13 +113,6 @@ class BuildResources(Command):
 class Build(BuildCommand):
     '''Custom build to pre-build resources.'''
 
-    def initialize_options(self):
-        '''Configure default options.'''
-        BuildCommand.initialize_options(self)
-
-        # Required for cx_freeze.
-        self.build_exe = None
-
     def run(self):
         '''Run build ensuring build_resources called first.'''
         self.run_command('build_resources')
