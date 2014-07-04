@@ -5,11 +5,11 @@ import functools
 
 from PySide import QtGui
 
-import ftrack_connect.widget.component
-import ftrack_connect.widget.item_list
+import ftrack_connect.ui.widget.component
+import ftrack_connect.ui.widget.item_list
 
 
-class ComponentsList(ftrack_connect.widget.item_list.ItemList):
+class ComponentsList(ftrack_connect.ui.widget.item_list.ItemList):
     '''List components.
 
     The component list is managed using an internal model.
@@ -41,7 +41,7 @@ class ComponentsList(ftrack_connect.widget.item_list.ItemList):
         if item is None:
             item = {}
 
-        return ftrack_connect.widget.component.Component(**item)
+        return ftrack_connect.ui.widget.component.Component(**item)
 
     def addItem(self, item, row=None):
         '''Add *item* at *row*.

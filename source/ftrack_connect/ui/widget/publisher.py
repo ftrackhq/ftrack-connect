@@ -10,8 +10,8 @@ from entity_path import EntityPath
 from asset_type_selector import AssetTypeSelector
 from browse_button import BrowseButton
 from components_list import ComponentsList
-from ..asynchronous import asynchronous
-from ..error import ConnectError
+from ...asynchronous import asynchronous
+from ...error import ConnectError
 
 
 class Publisher(QtGui.QWidget):
@@ -33,15 +33,6 @@ class Publisher(QtGui.QWidget):
         layout.addWidget(self.browser, alignment=QtCore.Qt.AlignCenter)
         self.browser.fileSelected.connect(self._onFileSelected)
 
-        # Create form layout to keep track of publish form items.
-        formLayout = QtGui.QFormLayout()
-        layout.addLayout(formLayout, stretch=0)
-
-        # Add linked to component and connect to entityChanged signal.
-        entityPath = EntityPath()
-        formLayout.addRow('Linked to', entityPath)
-        self.entityChanged.connect(entityPath.setEntity)
-
         # Create a components list widget.
         self.componentsList = ComponentsList()
         self.componentsList.setObjectName('publisher-componentlist')
@@ -52,6 +43,15 @@ class Publisher(QtGui.QWidget):
             self.componentsList, stretch=1
         )
         self.componentsList.hide()
+
+        # Create form layout to keep track of publish form items.
+        formLayout = QtGui.QFormLayout()
+        layout.addLayout(formLayout, stretch=0)
+
+        # Add linked to component and connect to entityChanged signal.
+        self.entityPath = EntityPath()
+        formLayout.addRow('Linked to', self.entityPath)
+        self.entityChanged.connect(self.entityPath.setEntity)
 
         # Add asset selector.
         self.assetSelector = AssetTypeSelector()
@@ -86,7 +86,7 @@ class Publisher(QtGui.QWidget):
         '''Clear the publish view to it's initial state.'''
         self.assetSelector.setCurrentIndex(-1)
         self.versionDescriptionComponent.clear()
-        self.linkedTo.clear()
+        self.entityPath.clear()
         self.browser.clear()
 
     def setEntity(self, entity):

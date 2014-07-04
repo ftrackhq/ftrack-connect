@@ -4,7 +4,7 @@
 from PySide import QtGui
 import ftrack
 
-from ..asynchronous import asynchronous
+from ...asynchronous import asynchronous
 
 
 class AssetTypeSelector(QtGui.QComboBox):

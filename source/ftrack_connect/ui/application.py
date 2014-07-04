@@ -7,13 +7,10 @@ import signal
 from PySide import QtGui
 from PySide import QtCore
 
-from topic_thread import TopicThread
-from error import ConnectError
+import ftrack_connect.topic_thread
+import ftrack_connect.error
 import ftrack_connect.resource
-import ftrack_connect.tabwidget
-from ftrack_connect.widget.login import Login
-from ftrack_connect.widget.uncaught_error import UncaughtError
-
+from ftrack_connect.ui.widget import uncaught_error, tabwidget
 
 # Enable ctrl+c to quit application when started from command line.
 signal.signal(signal.SIGINT, signal.SIG_DFL)
@@ -30,10 +27,14 @@ class MainWindow(QtGui.QMainWindow):
         super(MainWindow, self).__init__(*args, **kwargs)
 
         # Register widget for error handling.
-        self.uncaughtError = UncaughtError(parent=self)
+        self.uncaughtError = uncaught_error.UncaughtError(
+            parent=self
+        )
 
         if not QtGui.QSystemTrayIcon.isSystemTrayAvailable():
-            raise ConnectError('No system tray located.')
+            raise ftrack_connect.error.ConnectError(
+                'No system tray located.'
+            )
 
         self.logoIcon = QtGui.QIcon(
             QtGui.QPixmap(':/ftrack/image/default/ftrackLogo')
@@ -76,7 +77,7 @@ class MainWindow(QtGui.QMainWindow):
     def showLoginWidget(self):
         '''Show the login widget.'''
         if self.loginWidget is None:
-            self.loginWidget = Login()
+            self.loginWidget = ftrack_connect.ui.widget.Login()
             self.setCentralWidget(self.loginWidget)
             self.loginWidget.login.connect(self.loginWithCredentials)
             self.loginError.connect(self.loginWidget.loginError.emit)
@@ -135,13 +136,13 @@ class MainWindow(QtGui.QMainWindow):
         # Local import to avoid connection errors.
         import ftrack
         ftrack.setup()
-        self.tabPanel = ftrack_connect.tabwidget.TabWidget()
+        self.tabPanel = tabwidget.TabWidget()
         self.setCentralWidget(self.tabPanel)
 
         self._discoverPlugins()
 
-        from ftrack_connect.topic_thread import TopicThread
-        self.topicThread = TopicThread()
+        import ftrack_connect.topic_thread
+        self.topicThread = ftrack_connect.topic_thread.TopicThread()
         self.topicThread.ftrackConnectEvent.connect(self._routeEvent)
         self.topicThread.start()
 
@@ -191,7 +192,7 @@ class MainWindow(QtGui.QMainWindow):
         #: TODO: Add discover functionality and search paths.
 
         # Add publisher as a plugin.
-        from ftrack_connect.publisher import register
+        from .publisher import register
         register(self)
 
     def _routeEvent(self, eventData):
@@ -207,7 +208,7 @@ class MainWindow(QtGui.QMainWindow):
         try:
             plugin = self.plugins[pluginName]
         except KeyError:
-            raise ConnectError(
+            raise ftrack_connect.error.ConnectError(
                 'Plugin "{0}" not found.'.format(
                     pluginName
                 )
@@ -216,7 +217,7 @@ class MainWindow(QtGui.QMainWindow):
         try:
             method = getattr(plugin, method)
         except AttributeError:
-            raise ConnectError(
+            raise ftrack_connect.error.ConnectError(
                 'Method "{0}" not found on "{1}" plugin({2}).'.format(
                     method, pluginName, plugin
                 )
