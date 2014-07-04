@@ -7,7 +7,7 @@ import sys
 
 from PySide import QtGui
 
-import ftrack_connect.application
+import ftrack_connect.ui.application
 
 
 def main(arguments=None):
@@ -41,7 +41,7 @@ def main(arguments=None):
     application.setOrganizationDomain('ftrack.com')
 
     application.setQuitOnLastWindowClosed(False)
-    connectWindow = ftrack_connect.application.MainWindow()
+    connectWindow = ftrack_connect.ui.application.MainWindow()
 
     return application.exec_()
 
