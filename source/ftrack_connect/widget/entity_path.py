@@ -18,7 +18,8 @@ class EntityPath(QtGui.QLineEdit):
     @asynchronous
     def setEntity(self, entity):
         '''Set the *entity* for this widget.'''
-        names = []
+        names = [entity.getName()]
+
         for parent in entity.getParents():
             if isinstance(parent, ftrack.Show):
                 names.append(parent.getFullName())

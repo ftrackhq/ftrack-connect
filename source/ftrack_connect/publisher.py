@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-import time
+import sys
 
 from PySide import QtGui, QtCore
 import ftrack
@@ -86,11 +86,18 @@ class Publisher(QtGui.QStackedWidget):
             self.idleView
         )
 
+        self.clear()
+
         self.requestClose.emit(self)
 
     def _setView(self, view):
         '''Set active widget of the publisher.'''
         self.setCurrentWidget(view)
+
+    def clear(self):
+        '''Reset the publisher to it's initial state.'''
+        self._entity = None
+        self.publishView.clear()
 
     def getName(self):
         '''Return name of widget.'''
@@ -104,10 +111,12 @@ class Publisher(QtGui.QStackedWidget):
         self.publishView.setEntity(entity)
 
     def start(self, entity, **kwargs):
-        '''Set the *entity* on publisher and request to start the publisher.'''
+        '''Clear state, set the *entity* and request to start the publisher.'''
+        self.clear()
+        self.setFocus(QtCore.Qt.OtherFocusReason)
+
         entity = ftrack.Task(
             entity.get('entityId')
         )
-
         self.setEntity(entity)
         self.requestFocus.emit(self)

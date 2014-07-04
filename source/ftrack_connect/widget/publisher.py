@@ -5,9 +5,11 @@ from PySide import QtGui
 from PySide import QtCore
 import ftrack
 
+
 from entity_path import EntityPath
 from asset_type_selector import AssetTypeSelector
 from browse_button import BrowseButton
+from components_list import ComponentsList
 from ..asynchronous import asynchronous
 from ..error import ConnectError
 
@@ -27,17 +29,29 @@ class Publisher(QtGui.QWidget):
 
         self.setLayout(layout)
 
-        browser = BrowseButton(text='Browse')
-        layout.addWidget(browser, alignment=QtCore.Qt.AlignCenter)
+        self.browser = BrowseButton(text='Browse files')
+        layout.addWidget(self.browser, alignment=QtCore.Qt.AlignCenter)
+        self.browser.fileSelected.connect(self._onFileSelected)
 
         # Create form layout to keep track of publish form items.
         formLayout = QtGui.QFormLayout()
-        layout.addLayout(formLayout)
+        layout.addLayout(formLayout, stretch=0)
 
         # Add linked to component and connect to entityChanged signal.
         entityPath = EntityPath()
         formLayout.addRow('Linked to', entityPath)
         self.entityChanged.connect(entityPath.setEntity)
+
+        # Create a components list widget.
+        self.componentsList = ComponentsList()
+        self.componentsList.setObjectName('publisher-componentlist')
+        self.componentsList.itemsChanged.connect(
+            self._onComponentListItemsChanged
+        )
+        layout.addWidget(
+            self.componentsList, stretch=1
+        )
+        self.componentsList.hide()
 
         # Add asset selector.
         self.assetSelector = AssetTypeSelector()
@@ -51,7 +65,29 @@ class Publisher(QtGui.QWidget):
         publishButton.setObjectName('primary')
         publishButton.clicked.connect(self.publish)
 
-        layout.addWidget(publishButton, alignment=QtCore.Qt.AlignCenter)
+        layout.addWidget(
+            publishButton, alignment=QtCore.Qt.AlignCenter, stretch=0
+        )
+
+    def _onComponentListItemsChanged(self):
+        '''Callback for component changed signal.'''
+        if self.componentsList.count():
+            self.componentsList.show()
+        else:
+            self.componentsList.hide()
+
+    def _onFileSelected(self, filePath):
+        '''Callback for Browser file selected signal.'''
+        self.componentsList.addItem({
+            'resourceIdentifier': filePath
+        })
+
+    def clear(self):
+        '''Clear the publish view to it's initial state.'''
+        self.assetSelector.setCurrentIndex(-1)
+        self.versionDescriptionComponent.clear()
+        self.linkedTo.clear()
+        self.browser.clear()
 
     def setEntity(self, entity):
         '''Set the *entity* for the view.'''
@@ -63,6 +99,7 @@ class Publisher(QtGui.QWidget):
         self.publishStarted.emit()
 
         entity = self._entity
+        taskId = None
 
         assetType = self.assetSelector.itemData(
             self.assetSelector.currentIndex()
@@ -78,12 +115,13 @@ class Publisher(QtGui.QWidget):
 
         defaultLocation = ftrack.pickLocation()
 
-        # TODO: Get components from components widget.
         components = []
-        for component in components:
-            component['locations'] = [
-                defaultLocation
-            ]
+        for component in self.componentsList.items():
+            components.append({
+                'locations': [defaultLocation],
+                'name': component['componentName'],
+                'filePath': component['resourceIdentifier']
+            })
 
         self._publish(
             entity=entity, assetType=assetType,
