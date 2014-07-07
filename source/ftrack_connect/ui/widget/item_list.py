@@ -3,7 +3,7 @@
 
 from PySide import QtGui, QtCore
 
-import ftrack_connect.widget.list
+import ftrack_connect.ui.widget.list
 
 
 class ItemList(QtGui.QFrame):
@@ -30,7 +30,7 @@ class ItemList(QtGui.QFrame):
         self.setFrameStyle(QtGui.QFrame.StyledPanel | QtGui.QFrame.NoFrame)
 
         # List
-        self.list = ftrack_connect.widget.list.List()
+        self.list = ftrack_connect.ui.widget.list.List()
         self.layout().addWidget(self.list, stretch=1)
 
         self.layout().setContentsMargins(5, 5, 5, 5)

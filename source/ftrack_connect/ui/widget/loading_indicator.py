@@ -5,13 +5,13 @@ from PySide import QtGui
 from PySide import QtCore
 
 
-class LoadingView(QtGui.QWidget):
-    '''Loading and progress view for ftrack connect Publisher.'''
+class LoadingIndicator(QtGui.QWidget):
+    '''Loading and progress indicator for ftrack connect.'''
     loadingDone = QtCore.Signal()
 
     def __init__(self, parent=None, loadingText='Crunching', doneText='Done!'):
         '''Initiate loading view.'''
-        super(LoadingView, self).__init__(parent)
+        super(LoadingIndicator, self).__init__(parent)
 
         self.loadingText = loadingText
         self.doneText = doneText

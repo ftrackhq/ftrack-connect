@@ -4,21 +4,22 @@
 from PySide import QtGui
 import ftrack
 
-from ..core import asynchronous
+import ftrack_connect.asynchronous
 
 
-class LinkedToComponent(QtGui.QLineEdit):
-    '''Linked to entity component.'''
+class EntityPath(QtGui.QLineEdit):
+    '''Entity path widget.'''
 
     def __init__(self, *args, **kwargs):
-        '''Instantiate the linked to component.'''
-        super(LinkedToComponent, self).__init__(*args, **kwargs)
+        '''Instantiate the entity path widget.'''
+        super(EntityPath, self).__init__(*args, **kwargs)
         self.setReadOnly(True)
 
-    @asynchronous
+    @ftrack_connect.asynchronous.asynchronous
     def setEntity(self, entity):
-        '''Set the *entity* for this component.'''
+        '''Set the *entity* for this widget.'''
         names = [entity.getName()]
+
         for parent in entity.getParents():
             if isinstance(parent, ftrack.Show):
                 names.append(parent.getFullName())

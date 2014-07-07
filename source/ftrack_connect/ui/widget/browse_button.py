@@ -2,20 +2,20 @@
 # :copyright: Copyright (c) 2014 ftrack
 
 from PySide import QtGui, QtCore
-from riffle.browser import FilesystemBrowser
+import riffle.browser
 
 
-class BrowseComponent(QtGui.QPushButton):
-    '''File browser component.'''
+class BrowseButton(QtGui.QPushButton):
+    '''File browser widget.'''
 
     fileSelected = QtCore.Signal(object)
 
     def __init__(self, *args, **kwargs):
-        '''Initialise browser component.'''
-        super(BrowseComponent, self).__init__(*args, **kwargs)
+        '''Initialise browser widget.'''
+        super(BrowseButton, self).__init__(*args, **kwargs)
         self.setToolTip('Browse for file(s).')
         self.setObjectName('publisher-browsebutton')
-        self._dialog = FilesystemBrowser(parent=self)
+        self._dialog = riffle.browser.FilesystemBrowser(parent=self)
         self._dialog.setMinimumSize(900, 500)
 
         self._setupConnections()
