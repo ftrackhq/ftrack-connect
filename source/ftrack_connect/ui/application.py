@@ -10,7 +10,7 @@ import ftrack_connect.topic_thread
 import ftrack_connect.error
 import ftrack_connect.resource
 from ftrack_connect.ui.widget import uncaught_error as _uncaught_error
-from ftrack_connect.ui.widget import tab_widget as _tabwidget
+from ftrack_connect.ui.widget import tab_widget as _tab_widget
 
 
 class MainWindow(QtGui.QMainWindow):
@@ -133,7 +133,7 @@ class MainWindow(QtGui.QMainWindow):
         # Local import to avoid connection errors.
         import ftrack
         ftrack.setup()
-        self.tabPanel = _tabwidget.TabWidget()
+        self.tabPanel = _tab_widget.TabWidget()
         self.setCentralWidget(self.tabPanel)
 
         self._discoverPlugins()
