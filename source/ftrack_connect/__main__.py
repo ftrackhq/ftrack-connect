@@ -4,6 +4,7 @@
 import argparse
 import logging
 import sys
+import signal
 
 from PySide import QtGui
 
@@ -39,8 +40,12 @@ def main(arguments=None):
     application = QtGui.QApplication('ftrack-connect')
     application.setOrganizationName('ftrack')
     application.setOrganizationDomain('ftrack.com')
-
     application.setQuitOnLastWindowClosed(False)
+
+    # Enable ctrl+c to quit application when started from command line.
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
+
+
     connectWindow = ftrack_connect.ui.application.MainWindow()
 
     return application.exec_()
