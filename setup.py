@@ -31,7 +31,7 @@ DISTRIBUTION_PATH = os.path.join(
 )
 
 RESOURCE_TARGET_PATH = os.path.join(
-    SOURCE_PATH, 'ftrack_connect', 'resource.py'
+    SOURCE_PATH, 'ftrack_connect', 'ui', 'resource.py'
 )
 
 README_PATH = os.path.join(os.path.dirname(__file__), 'README.rst')

@@ -8,7 +8,6 @@ from PySide import QtCore
 
 import ftrack_connect.topic_thread
 import ftrack_connect.error
-import ftrack_connect.resource
 from ftrack_connect.ui.widget import uncaught_error as _uncaught_error
 from ftrack_connect.ui.widget import tab_widget as _tab_widget
 
