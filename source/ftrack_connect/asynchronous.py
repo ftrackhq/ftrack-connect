@@ -2,6 +2,7 @@
 # :copyright: Copyright (c) 2014 ftrack
 
 import threading
+import sys
 
 
 def asynchronous(method):

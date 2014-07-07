@@ -2,7 +2,7 @@
 # :copyright: Copyright (c) 2014 ftrack
 
 from PySide import QtGui, QtCore
-from riffle.browser import FilesystemBrowser
+import riffle.browser
 
 
 class BrowseButton(QtGui.QPushButton):
@@ -15,7 +15,7 @@ class BrowseButton(QtGui.QPushButton):
         super(BrowseButton, self).__init__(*args, **kwargs)
         self.setToolTip('Browse for file(s).')
         self.setObjectName('publisher-browsebutton')
-        self._dialog = FilesystemBrowser(parent=self)
+        self._dialog = riffle.browser.FilesystemBrowser(parent=self)
         self._dialog.setMinimumSize(900, 500)
 
         self._setupConnections()

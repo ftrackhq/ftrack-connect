@@ -4,7 +4,7 @@
 from PySide import QtGui
 import ftrack
 
-from ...asynchronous import asynchronous
+import ftrack_connect.asynchronous
 
 
 class EntityPath(QtGui.QLineEdit):
@@ -15,7 +15,7 @@ class EntityPath(QtGui.QLineEdit):
         super(EntityPath, self).__init__(*args, **kwargs)
         self.setReadOnly(True)
 
-    @asynchronous
+    @ftrack_connect.asynchronous.asynchronous
     def setEntity(self, entity):
         '''Set the *entity* for this widget.'''
         names = [entity.getName()]

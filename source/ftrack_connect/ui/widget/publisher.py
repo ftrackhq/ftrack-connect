@@ -6,12 +6,12 @@ from PySide import QtCore
 import ftrack
 
 
-from entity_path import EntityPath
-from asset_type_selector import AssetTypeSelector
-from browse_button import BrowseButton
-from components_list import ComponentsList
-from ...asynchronous import asynchronous
-from ...error import ConnectError
+from ftrack_connect.ui.widget import entity_path as _entity_path
+from ftrack_connect.ui.widget import asset_type_selector as _asset_type_selector
+from ftrack_connect.ui.widget import browse_button as _browse_button
+from ftrack_connect.ui.widget import components_list as _components_list
+import ftrack_connect.asynchronous
+import ftrack_connect.error
 
 
 class Publisher(QtGui.QWidget):
@@ -29,12 +29,12 @@ class Publisher(QtGui.QWidget):
 
         self.setLayout(layout)
 
-        self.browser = BrowseButton(text='Browse files')
+        self.browser = _browse_button.BrowseButton(text='Browse files')
         layout.addWidget(self.browser, alignment=QtCore.Qt.AlignCenter)
         self.browser.fileSelected.connect(self._onFileSelected)
 
         # Create a components list widget.
-        self.componentsList = ComponentsList()
+        self.componentsList = _components_list.ComponentsList()
         self.componentsList.setObjectName('publisher-componentlist')
         self.componentsList.itemsChanged.connect(
             self._onComponentListItemsChanged
@@ -49,17 +49,17 @@ class Publisher(QtGui.QWidget):
         layout.addLayout(formLayout, stretch=0)
 
         # Add linked to component and connect to entityChanged signal.
-        self.entityPath = EntityPath()
+        self.entityPath = _entity_path.EntityPath()
         formLayout.addRow('Linked to', self.entityPath)
         self.entityChanged.connect(self.entityPath.setEntity)
 
         # Add asset selector.
-        self.assetSelector = AssetTypeSelector()
+        self.assetSelector = _asset_type_selector.AssetTypeSelector()
         formLayout.addRow('Asset type', self.assetSelector)
 
         # Add version description component.
-        self.versionDescriptionComponent = QtGui.QTextEdit()
-        formLayout.addRow('Description', self.versionDescriptionComponent)
+        self.versionDescription = QtGui.QTextEdit()
+        formLayout.addRow('Description', self.versionDescription)
 
         publishButton = QtGui.QPushButton(text='Publish')
         publishButton.setObjectName('primary')
@@ -85,7 +85,7 @@ class Publisher(QtGui.QWidget):
     def clear(self):
         '''Clear the publish view to it's initial state.'''
         self.assetSelector.setCurrentIndex(-1)
-        self.versionDescriptionComponent.clear()
+        self.versionDescription.clear()
         self.entityPath.clear()
         self.browser.clear()
 
@@ -105,7 +105,7 @@ class Publisher(QtGui.QWidget):
             self.assetSelector.currentIndex()
         )
 
-        versionDescription = self.versionDescriptionComponent.toPlainText()
+        versionDescription = self.versionDescription.toPlainText()
 
         # ftrack does not support having Tasks as parent for Assets.
         # Therefore get parent shot/sequence etc.
@@ -129,7 +129,7 @@ class Publisher(QtGui.QWidget):
             components=components
         )
 
-    @asynchronous
+    @ftrack_connect.asynchronous.asynchronous
     def _publish(
         self, entity=None, assetName=None, assetType=None,
         versionDescription='', taskId=None, components=None
@@ -144,11 +144,11 @@ class Publisher(QtGui.QWidget):
         '''
         if not assetType:
             self.publishFinished.emit(False)
-            raise ConnectError('No asset type found')
+            raise ftrack_connect.error.ConnectError('No asset type found')
 
         if not entity:
             self.publishFinished.emit(False)
-            raise ConnectError('No entity found')
+            raise ftrack_connect.error.ConnectError('No entity found')
 
         if assetName is None:
             assetName = assetType.getName()
