@@ -10,7 +10,8 @@ from PySide import QtCore
 import ftrack_connect.topic_thread
 import ftrack_connect.error
 import ftrack_connect.resource
-from ftrack_connect.ui.widget import uncaught_error, tabwidget
+import ftrack_connect.ui.widget import _uncaught_error
+import ftrack_connect.ui.widget import _tabwidget
 
 # Enable ctrl+c to quit application when started from command line.
 signal.signal(signal.SIGINT, signal.SIG_DFL)
@@ -27,7 +28,7 @@ class MainWindow(QtGui.QMainWindow):
         super(MainWindow, self).__init__(*args, **kwargs)
 
         # Register widget for error handling.
-        self.uncaughtError = uncaught_error.UncaughtError(
+        self.uncaughtError = _uncaught_error.UncaughtError(
             parent=self
         )
 
@@ -136,7 +137,7 @@ class MainWindow(QtGui.QMainWindow):
         # Local import to avoid connection errors.
         import ftrack
         ftrack.setup()
-        self.tabPanel = tabwidget.TabWidget()
+        self.tabPanel = _tabwidget.TabWidget()
         self.setCentralWidget(self.tabPanel)
 
         self._discoverPlugins()
