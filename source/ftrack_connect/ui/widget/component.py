@@ -5,8 +5,8 @@ import os
 
 from PySide import QtGui
 
-import ftrack_connect.widget.line_edit
-import ftrack_connect.widget.label
+import ftrack_connect.ui.widget.line_edit
+import ftrack_connect.ui.widget.label
 
 
 class Component(QtGui.QWidget):
@@ -18,7 +18,7 @@ class Component(QtGui.QWidget):
         super(Component, self).__init__(parent=parent)
         self.setLayout(QtGui.QVBoxLayout())
 
-        self.componentNameEdit = ftrack_connect.widget.line_edit.LineEdit()
+        self.componentNameEdit = ftrack_connect.ui.widget.line_edit.LineEdit()
         self.componentNameEdit.setPlaceholderText('Enter component name')
 
         self.layout().addWidget(self.componentNameEdit)
@@ -36,7 +36,7 @@ class Component(QtGui.QWidget):
             self.removeAction
         )
 
-        self.resourceInformation = ftrack_connect.widget.label.Label()
+        self.resourceInformation = ftrack_connect.ui.widget.label.Label()
         self.layout().addWidget(self.resourceInformation)
 
         # Set initial values.

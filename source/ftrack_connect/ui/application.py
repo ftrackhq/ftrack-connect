@@ -2,28 +2,17 @@
 # :copyright: Copyright (c) 2014 ftrack
 
 import os
-import signal
 
 from PySide import QtGui
 from PySide import QtCore
 
-
-import ftrack_connect.resource
-from ftrack_connect.tabwidget import TabWidget
-from ftrack_connect.widget.login import Login
-from ftrack_connect.widget.uncaught_error import UncaughtError
-
-
-# Enable ctrl+c to quit application when started from command line.
-signal.signal(signal.SIGINT, signal.SIG_DFL)
+import ftrack_connect.topic_thread
+import ftrack_connect.error
+from ftrack_connect.ui.widget import uncaught_error as _uncaught_error
+from ftrack_connect.ui.widget import tab_widget as _tab_widget
 
 
-class ConnectError(Exception):
-    '''Base ftrack connect error.'''
-    pass
-
-
-class ApplicationWindow(QtGui.QMainWindow):
+class MainWindow(QtGui.QMainWindow):
     '''Main window class for ftrack connect.'''
 
     # Signal to be used when login fails.
@@ -31,15 +20,17 @@ class ApplicationWindow(QtGui.QMainWindow):
 
     def __init__(self, *args, **kwargs):
         '''Initialise the main application window.'''
-        super(ApplicationWindow, self).__init__(*args, **kwargs)
+        super(MainWindow, self).__init__(*args, **kwargs)
 
         # Register widget for error handling.
-        self.uncaughtError = UncaughtError(parent=self)
+        self.uncaughtError = _uncaught_error.UncaughtError(
+            parent=self
+        )
 
         if not QtGui.QSystemTrayIcon.isSystemTrayAvailable():
-            raise ConnectError('No system tray located.')
-
-        QtGui.QApplication.setQuitOnLastWindowClosed(False)
+            raise ftrack_connect.error.ConnectError(
+                'No system tray located.'
+            )
 
         self.logoIcon = QtGui.QIcon(
             QtGui.QPixmap(':/ftrack/image/default/ftrackLogo')
@@ -82,7 +73,7 @@ class ApplicationWindow(QtGui.QMainWindow):
     def showLoginWidget(self):
         '''Show the login widget.'''
         if self.loginWidget is None:
-            self.loginWidget = Login()
+            self.loginWidget = ftrack_connect.ui.widget.Login()
             self.setCentralWidget(self.loginWidget)
             self.loginWidget.login.connect(self.loginWithCredentials)
             self.loginError.connect(self.loginWidget.loginError.emit)
@@ -141,15 +132,17 @@ class ApplicationWindow(QtGui.QMainWindow):
         # Local import to avoid connection errors.
         import ftrack
         ftrack.setup()
-        self.tabPanel = TabWidget()
+        self.tabPanel = _tab_widget.TabWidget()
         self.setCentralWidget(self.tabPanel)
 
         self._discoverPlugins()
 
-        from ftrack_connect.topic_thread import TopicThread
-        self.topicThread = TopicThread()
+        import ftrack_connect.topic_thread
+        self.topicThread = ftrack_connect.topic_thread.TopicThread()
         self.topicThread.ftrackConnectEvent.connect(self._routeEvent)
         self.topicThread.start()
+
+        self.focus()
 
     def _initialiseTray(self):
         '''Initialise and add application icon to system tray.'''
@@ -195,7 +188,7 @@ class ApplicationWindow(QtGui.QMainWindow):
         #: TODO: Add discover functionality and search paths.
 
         # Add publisher as a plugin.
-        from ftrack_connect.publisher.core import register
+        from .publisher import register
         register(self)
 
     def _routeEvent(self, eventData):
@@ -211,7 +204,7 @@ class ApplicationWindow(QtGui.QMainWindow):
         try:
             plugin = self.plugins[pluginName]
         except KeyError:
-            raise ConnectError(
+            raise ftrack_connect.error.ConnectError(
                 'Plugin "{0}" not found.'.format(
                     pluginName
                 )
@@ -220,7 +213,7 @@ class ApplicationWindow(QtGui.QMainWindow):
         try:
             method = getattr(plugin, method)
         except AttributeError:
-            raise ConnectError(
+            raise ftrack_connect.error.ConnectError(
                 'Method "{0}" not found on "{1}" plugin({2}).'.format(
                     method, pluginName, plugin
                 )

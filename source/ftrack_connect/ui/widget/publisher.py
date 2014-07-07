@@ -4,17 +4,18 @@
 from PySide import QtGui
 from PySide import QtCore
 import ftrack
-from ftrack_connect.core import ConnectError
-
-from ..component.linked_to import LinkedToComponent
-from ..component.asset_type_selector import AssetTypeSelectorComponent
-from ..component.browse import BrowseComponent
-from ..core import asynchronous
-from ...widget.components_list import ComponentsList
 
 
-class PublishView(QtGui.QWidget):
-    '''Publish view for ftrack connect Publisher.'''
+from ftrack_connect.ui.widget import entity_path as _entity_path
+from ftrack_connect.ui.widget import asset_type_selector as _asset_type_selector
+from ftrack_connect.ui.widget import browse_button as _browse_button
+from ftrack_connect.ui.widget import components_list as _components_list
+import ftrack_connect.asynchronous
+import ftrack_connect.error
+
+
+class Publisher(QtGui.QWidget):
+    '''Publish widget for ftrack connect Publisher.'''
     entityChanged = QtCore.Signal(object)
 
     publishStarted = QtCore.Signal()
@@ -22,49 +23,49 @@ class PublishView(QtGui.QWidget):
 
     def __init__(self, parent):
         '''Initiate a publish view.'''
-        super(PublishView, self).__init__(parent)
+        super(Publisher, self).__init__(parent)
 
-        publishLayout = QtGui.QVBoxLayout()
+        layout = QtGui.QVBoxLayout()
 
-        self.setLayout(publishLayout)
+        self.setLayout(layout)
 
-        self.browser = BrowseComponent(text='Browse files')
-        publishLayout.addWidget(self.browser, alignment=QtCore.Qt.AlignCenter)
+        self.browser = _browse_button.BrowseButton(text='Browse files')
+        layout.addWidget(self.browser, alignment=QtCore.Qt.AlignCenter)
         self.browser.fileSelected.connect(self._onFileSelected)
 
         # Create a components list widget.
-        self.componentsList = ComponentsList()
+        self.componentsList = _components_list.ComponentsList()
         self.componentsList.setObjectName('publisher-componentlist')
         self.componentsList.itemsChanged.connect(
             self._onComponentListItemsChanged
         )
-        publishLayout.addWidget(
+        layout.addWidget(
             self.componentsList, stretch=1
         )
         self.componentsList.hide()
 
         # Create form layout to keep track of publish form items.
         formLayout = QtGui.QFormLayout()
-        publishLayout.addLayout(formLayout, stretch=0)
+        layout.addLayout(formLayout, stretch=0)
 
         # Add linked to component and connect to entityChanged signal.
-        self.linkedTo = LinkedToComponent()
-        formLayout.addRow('Linked to', self.linkedTo)
-        self.entityChanged.connect(self.linkedTo.setEntity)
+        self.entityPath = _entity_path.EntityPath()
+        formLayout.addRow('Linked to', self.entityPath)
+        self.entityChanged.connect(self.entityPath.setEntity)
 
         # Add asset selector.
-        self.assetSelector = AssetTypeSelectorComponent()
+        self.assetSelector = _asset_type_selector.AssetTypeSelector()
         formLayout.addRow('Asset type', self.assetSelector)
 
         # Add version description component.
-        self.versionDescriptionComponent = QtGui.QTextEdit()
-        formLayout.addRow('Description', self.versionDescriptionComponent)
+        self.versionDescription = QtGui.QTextEdit()
+        formLayout.addRow('Description', self.versionDescription)
 
         publishButton = QtGui.QPushButton(text='Publish')
         publishButton.setObjectName('primary')
         publishButton.clicked.connect(self.publish)
 
-        publishLayout.addWidget(
+        layout.addWidget(
             publishButton, alignment=QtCore.Qt.AlignCenter, stretch=0
         )
 
@@ -84,8 +85,8 @@ class PublishView(QtGui.QWidget):
     def clear(self):
         '''Clear the publish view to it's initial state.'''
         self.assetSelector.setCurrentIndex(-1)
-        self.versionDescriptionComponent.clear()
-        self.linkedTo.clear()
+        self.versionDescription.clear()
+        self.entityPath.clear()
         self.browser.clear()
 
     def setEntity(self, entity):
@@ -104,7 +105,7 @@ class PublishView(QtGui.QWidget):
             self.assetSelector.currentIndex()
         )
 
-        versionDescription = self.versionDescriptionComponent.toPlainText()
+        versionDescription = self.versionDescription.toPlainText()
 
         # ftrack does not support having Tasks as parent for Assets.
         # Therefore get parent shot/sequence etc.
@@ -128,7 +129,7 @@ class PublishView(QtGui.QWidget):
             components=components
         )
 
-    @asynchronous
+    @ftrack_connect.asynchronous.asynchronous
     def _publish(
         self, entity=None, assetName=None, assetType=None,
         versionDescription='', taskId=None, components=None
@@ -143,11 +144,11 @@ class PublishView(QtGui.QWidget):
         '''
         if not assetType:
             self.publishFinished.emit(False)
-            raise ConnectError('No asset type found')
+            raise ftrack_connect.error.ConnectError('No asset type found')
 
         if not entity:
             self.publishFinished.emit(False)
-            raise ConnectError('No entity found')
+            raise ftrack_connect.error.ConnectError('No entity found')
 
         if assetName is None:
             assetName = assetType.getName()

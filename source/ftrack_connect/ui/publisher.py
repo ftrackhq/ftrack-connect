@@ -1,40 +1,10 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-import threading
 import sys
 
 from PySide import QtGui, QtCore
 import ftrack
-
-
-def asynchronous(method):
-    '''Decorator to make a method asynchronous using its own thread.'''
-
-    def wrapper(*args, **kwargs):
-        '''Thread wrapped method.'''
-
-        def exceptHookWrapper(*args, **kwargs):
-            '''Wrapp method and pass exceptions to global excepthook.
-
-            This is needed in threads because of
-            https://sourceforge.net/tracker/?func=detail&atid=105470&aid=1230540&group_id=5470
-            '''
-            try:
-                method(*args, **kwargs)
-            except (KeyboardInterrupt, SystemExit):
-                raise
-            except:
-                sys.excepthook(*sys.exc_info())
-
-        thread = threading.Thread(
-            target=exceptHookWrapper,
-            args=args,
-            kwargs=kwargs
-        )
-        thread.start()
-
-    return wrapper
 
 
 def register(connect):
@@ -57,8 +27,8 @@ class Publisher(QtGui.QStackedWidget):
         super(Publisher, self).__init__(*args, **kwargs)
 
         # Inline to avoid circular import
-        from view.idle import BlockingIdleView
-        self.idleView = BlockingIdleView(
+        from .widget.blocking_indicator import BlockingIndicator
+        self.idleView = BlockingIndicator(
             parent=self, text='Select task in ftrack to start publisher.'
         )
         self.addWidget(
@@ -66,15 +36,15 @@ class Publisher(QtGui.QStackedWidget):
         )
 
         # Inline to avoid circular import
-        from view.publish import PublishView
-        self.publishView = PublishView(parent=self)
+        from .widget.publisher import Publisher as Publish
+        self.publishView = Publish(parent=self)
         self.addWidget(
             self.publishView
         )
 
         # Inline to avoid circular import
-        from view.loading import LoadingView
-        self.loadingView = LoadingView(parent=self)
+        from .widget.loading_indicator import LoadingIndicator
+        self.loadingView = LoadingIndicator(parent=self)
         self.addWidget(
             self.loadingView
         )

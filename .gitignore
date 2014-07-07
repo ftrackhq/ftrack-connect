@@ -35,4 +35,4 @@ pip-log.txt
 .pydevproject
 .settings
 .idea/
-source/ftrack_connect/resource.py
+source/ftrack_connect/ui/resource.py
