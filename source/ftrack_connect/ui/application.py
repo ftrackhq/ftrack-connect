@@ -10,8 +10,8 @@ from PySide import QtCore
 import ftrack_connect.topic_thread
 import ftrack_connect.error
 import ftrack_connect.resource
-import ftrack_connect.ui.widget import _uncaught_error
-import ftrack_connect.ui.widget import _tabwidget
+from ftrack_connect.ui.widget import uncaught_error as _uncaught_error
+from ftrack_connect.ui.widget import tabwidget as _tabwidget
 
 # Enable ctrl+c to quit application when started from command line.
 signal.signal(signal.SIGINT, signal.SIG_DFL)
