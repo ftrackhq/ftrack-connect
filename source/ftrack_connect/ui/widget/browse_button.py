@@ -128,6 +128,8 @@ class BrowseButton(QtGui.QFrame):
 
         self.log.debug('Paths: {0}'.format(paths))
 
+        # Use frames pattern instead of default digits pattern to only match
+        # frame sequences.
         framesPattern = clique.PATTERNS.get('frames')
         sequences, remainders = clique.assemble(
             paths,
