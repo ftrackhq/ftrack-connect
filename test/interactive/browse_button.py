@@ -15,8 +15,6 @@ signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 def main(arguments=None):
     '''Interactive test of components list.'''
-    if arguments is None:
-        arguments = sys.argv
 
     logging.basicConfig(level=logging.DEBUG)
 
@@ -31,4 +29,4 @@ def main(arguments=None):
 
 
 if __name__ == '__main__':
-    raise SystemExit(main())
+    raise SystemExit(main(sys.argv[1:]))

@@ -20,6 +20,8 @@ class BrowseButton(QtGui.QFrame):
 
         self.log = logging.getLogger(__name__ + '.' + self.__class__.__name__)
         self.setAcceptDrops(True)
+        self.setObjectName('ftrack-connect-publisher-browse-button')
+        self.setProperty('ftrackDropArea', True)
 
         layout = QtGui.QVBoxLayout()
         self.setLayout(layout)
@@ -34,10 +36,7 @@ class BrowseButton(QtGui.QFrame):
         )
 
         self._browseButton = QtGui.QPushButton('Browse')
-
         self._browseButton.setToolTip('Browse for file(s).')
-        self.setObjectName('publisher-browsebutton')
-
         layout.addWidget(
             self._browseButton, alignment=topCenterAlignment
         )
@@ -58,13 +57,18 @@ class BrowseButton(QtGui.QFrame):
             if selected:
                 self.fileSelected.emit(selected[0])
 
-    def _updateStyle(self, key, value):
-        self.setProperty(key, value)
+    def _setDropAreaState(self, state='default'):
+        '''Set drop area state to *state*.
+
+        *state* should be 'default', 'active' or 'invalid'.
+
+        '''
+        self.setProperty('ftrackDropAreaState', state)
         self.style().unpolish(self)
         self.style().polish(self)
         self.update()
 
-    def _validateMimeData(self, mimeData):
+    def _processMimeData(self, mimeData):
         '''Return a list of valid filepaths.'''
         validPaths = []
 
@@ -105,33 +109,35 @@ class BrowseButton(QtGui.QFrame):
         '''Override dragEnterEvent and accept all events.'''
         event.setDropAction(QtCore.Qt.CopyAction)
         event.accept()
-        self._updateStyle('styleCls', 'ft-drag-over')
+        self._setDropAreaState('active')
 
     def dragLeaveEvent(self, event):
         '''Override dragLeaveEvent and accept all events.'''
         event.accept()
-        self._updateStyle('styleCls', None)
+        self._setDropAreaState()
 
     def dropEvent(self, event):
         '''Handle dropped file event.'''
-        self._updateStyle('styleCls', None)
+        self._setDropAreaState()
 
         # TODO: Allow hook into the dropEvent.
 
-        paths = self._validateMimeData(
+        paths = self._processMimeData(
             event.mimeData()
         )
 
         self.log.debug('Paths: {0}'.format(paths))
+
+        framesPattern = clique.PATTERNS.get('frames')
         sequences, remainders = clique.assemble(
             paths,
             patterns=[
-                clique.PATTERNS.get('frames')
+                framesPattern
             ]
         )
 
         self.log.debug('Sequences: {0}'.format(sequences))
-        self.log.debug('remainders: {0}'.format(remainders))
+        self.log.debug('Remainders: {0}'.format(remainders))
 
         for sequence in sequences:
             self.fileSelected.emit(sequence.format())
