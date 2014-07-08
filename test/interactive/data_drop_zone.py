@@ -7,7 +7,7 @@ import logging
 
 from PySide import QtGui
 
-import ftrack_connect.ui.widget.browse_button
+import ftrack_connect.ui.widget.data_drop_zone
 
 # Enable ctrl+c to quit application when started from command line.
 signal.signal(signal.SIGINT, signal.SIG_DFL)
@@ -20,11 +20,11 @@ def main(arguments=None):
 
     application = QtGui.QApplication(arguments)
 
-    browse = ftrack_connect.ui.widget.browse_button.BrowseButton()
+    browse = ftrack_connect.ui.widget.data_drop_zone.DataDropZone()
     browse.show()
     browse.move(500, 750)
 
-    browse.fileSelected.connect(logging.debug)
+    browse.dataSelected.connect(logging.debug)
     sys.exit(application.exec_())
 
 

@@ -9,14 +9,14 @@ import riffle.browser
 import clique
 
 
-class ComponentDropZone(QtGui.QFrame):
-    '''Component drop zone widget.'''
+class DataDropZone(QtGui.QFrame):
+    '''Data drop zone widget.'''
 
-    fileSelected = QtCore.Signal(object)
+    dataSelected = QtCore.Signal(object)
 
     def __init__(self, *args, **kwargs):
-        '''Initialise ComponentDropZone widget.'''
-        super(ComponentDropZone, self).__init__(*args, **kwargs)
+        '''Initialise DataDropZone widget.'''
+        super(DataDropZone, self).__init__(*args, **kwargs)
 
         self.log = logging.getLogger(__name__ + '.' + self.__class__.__name__)
         self.setAcceptDrops(True)
@@ -51,11 +51,11 @@ class ComponentDropZone(QtGui.QFrame):
         self._browseButton.clicked.connect(self._browse)
 
     def _browse(self):
-        '''Show browse dialog and emit fileSelected signal on file select.'''
+        '''Show browse dialog and emit dataSelected signal on file select.'''
         if self._dialog.exec_():
             selected = self._dialog.selected()
             if selected:
-                self.fileSelected.emit(selected[0])
+                self.dataSelected.emit(selected[0])
 
     def _setDropAreaState(self, state='default'):
         '''Set drop area state to *state*.
@@ -142,7 +142,7 @@ class ComponentDropZone(QtGui.QFrame):
         self.log.debug('Remainders: {0}'.format(remainders))
 
         for sequence in sequences:
-            self.fileSelected.emit(sequence.format())
+            self.dataSelected.emit(sequence.format())
 
         for path in remainders:
-            self.fileSelected.emit(path)
+            self.dataSelected.emit(path)

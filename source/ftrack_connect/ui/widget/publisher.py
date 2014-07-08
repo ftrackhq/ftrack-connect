@@ -8,7 +8,7 @@ import ftrack
 
 from ftrack_connect.ui.widget import entity_path as _entity_path
 from ftrack_connect.ui.widget import asset_type_selector as _asset_type_selector
-from ftrack_connect.ui.widget import component_drop_zone as _component_drop_zone
+from ftrack_connect.ui.widget import data_drop_zone as _data_drop_zone
 from ftrack_connect.ui.widget import components_list as _components_list
 import ftrack_connect.asynchronous
 import ftrack_connect.error
@@ -29,9 +29,9 @@ class Publisher(QtGui.QWidget):
 
         self.setLayout(layout)
 
-        self.browser = _component_drop_zone.ComponentDropZone()
+        self.browser = _data_drop_zone.DataDropZone()
         layout.addWidget(self.browser)
-        self.browser.fileSelected.connect(self._onFileSelected)
+        self.browser.dataSelected.connect(self._onDataSelected)
 
         # Create a components list widget.
         self.componentsList = _components_list.ComponentsList()
@@ -76,7 +76,7 @@ class Publisher(QtGui.QWidget):
         else:
             self.componentsList.hide()
 
-    def _onFileSelected(self, filePath):
+    def _onDataSelected(self, filePath):
         '''Callback for Browser file selected signal.'''
         self.componentsList.addItem({
             'resourceIdentifier': filePath
