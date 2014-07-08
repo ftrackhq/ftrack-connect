@@ -29,8 +29,8 @@ class Publisher(QtGui.QWidget):
 
         self.setLayout(layout)
 
-        self.browser = _browse_button.BrowseButton(text='Browse files')
-        layout.addWidget(self.browser, alignment=QtCore.Qt.AlignCenter)
+        self.browser = _browse_button.BrowseButton()
+        layout.addWidget(self.browser)
         self.browser.fileSelected.connect(self._onFileSelected)
 
         # Create a components list widget.
