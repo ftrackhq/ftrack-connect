@@ -65,6 +65,7 @@ class BrowseButton(QtGui.QFrame):
         self.update()
 
     def _validateMimeData(self, mimeData):
+        '''Return a list of valid filepaths.'''
         validPaths = []
 
         if not mimeData.hasUrls():
@@ -107,6 +108,7 @@ class BrowseButton(QtGui.QFrame):
         self._updateStyle('styleCls', 'ft-drag-over')
 
     def dragLeaveEvent(self, event):
+        '''Ovverride dragLeaveEvent and accept all events.'''
         event.accept()
         self._updateStyle('styleCls', None)
 
@@ -121,7 +123,7 @@ class BrowseButton(QtGui.QFrame):
         )
 
         self.log.debug('Paths: {0}'.format(paths))
-        sequences, singles = clique.assemble(
+        sequences, remainders = clique.assemble(
             paths,
             patterns=[
                 clique.PATTERNS.get('frames')
@@ -129,10 +131,10 @@ class BrowseButton(QtGui.QFrame):
         )
 
         self.log.debug('Sequences: {0}'.format(sequences))
-        self.log.debug('Singles: {0}'.format(singles))
+        self.log.debug('remainders: {0}'.format(remainders))
 
         for sequence in sequences:
             self.fileSelected.emit(sequence.format())
 
-        for path in singles:
+        for path in remainders:
             self.fileSelected.emit(path)
