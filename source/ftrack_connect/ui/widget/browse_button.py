@@ -71,8 +71,8 @@ class BrowseButton(QtGui.QFrame):
         if not mimeData.hasUrls():
             QtGui.QMessageBox.warning(
                 self,
-                'Invalid file.',
-                'Invalid file: The dropped file is not valid.'
+                'Invalid file',
+                'Invalid file: the dropped item is not a valid file.'
             )
             return validPaths
 
@@ -102,13 +102,13 @@ class BrowseButton(QtGui.QFrame):
         self._dialog.setLocation('')
 
     def dragEnterEvent(self, event):
-        '''Ovverride dragEnterEvent and accept all events.'''
+        '''Override dragEnterEvent and accept all events.'''
         event.setDropAction(QtCore.Qt.CopyAction)
         event.accept()
         self._updateStyle('styleCls', 'ft-drag-over')
 
     def dragLeaveEvent(self, event):
-        '''Ovverride dragLeaveEvent and accept all events.'''
+        '''Override dragLeaveEvent and accept all events.'''
         event.accept()
         self._updateStyle('styleCls', None)
 
