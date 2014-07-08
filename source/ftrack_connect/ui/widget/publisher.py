@@ -8,7 +8,7 @@ import ftrack
 
 from ftrack_connect.ui.widget import entity_path as _entity_path
 from ftrack_connect.ui.widget import asset_type_selector as _asset_type_selector
-from ftrack_connect.ui.widget import browse_button as _browse_button
+from ftrack_connect.ui.widget import component_drop_zone as _component_drop_zone
 from ftrack_connect.ui.widget import components_list as _components_list
 import ftrack_connect.asynchronous
 import ftrack_connect.error
@@ -29,7 +29,7 @@ class Publisher(QtGui.QWidget):
 
         self.setLayout(layout)
 
-        self.browser = _browse_button.BrowseButton()
+        self.browser = _component_drop_zone.ComponentDropZone()
         layout.addWidget(self.browser)
         self.browser.fileSelected.connect(self._onFileSelected)
 

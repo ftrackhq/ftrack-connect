@@ -9,14 +9,14 @@ import riffle.browser
 import clique
 
 
-class BrowseButton(QtGui.QFrame):
-    '''File browser widget.'''
+class ComponentDropZone(QtGui.QFrame):
+    '''Component drop zone widget.'''
 
     fileSelected = QtCore.Signal(object)
 
     def __init__(self, *args, **kwargs):
-        '''Initialise browser widget.'''
-        super(BrowseButton, self).__init__(*args, **kwargs)
+        '''Initialise ComponentDropZone widget.'''
+        super(ComponentDropZone, self).__init__(*args, **kwargs)
 
         self.log = logging.getLogger(__name__ + '.' + self.__class__.__name__)
         self.setAcceptDrops(True)
