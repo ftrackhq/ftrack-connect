@@ -1,0 +1,19 @@
+QFrame[ftrackDropArea] {
+	border-radius: 2px;
+	border-width: 2px;
+	border-style: dashed;
+	border-color: $input-border-color;
+
+	> QLabel {
+		color: $gray-light;
+	}
+}
+
+QFrame[ftrackDropAreaState='active'] {
+	border-color: $input-border-color-focus;
+}
+
+QFrame[ftrackDropAreaState='invalid'] {
+	border-color: $input-border-color-invalid;
+}
+
