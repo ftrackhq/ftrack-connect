@@ -64,6 +64,38 @@ class BrowseButton(QtGui.QFrame):
         self.style().polish(self)
         self.update()
 
+    def _validateMimeData(self, mimeData):
+        validPaths = []
+
+        if not mimeData.hasUrls():
+            QtGui.QMessageBox.warning(
+                self,
+                'Invalid file.',
+                'Invalid file: The dropped file is not valid.'
+            )
+            return validPaths
+
+        for path in mimeData.urls():
+            localPath = path.toLocalFile()
+            if os.path.isfile(localPath):
+                validPaths.append(localPath)
+                self.log.debug('Dropped file: {0}'.format(localPath))
+            else:
+                message = 'Invalid file: "{0}" is not a valid file.'.format(
+                    localPath
+                )
+                if os.path.isdir(localPath):
+                    message = (
+                        'Folders not supported.\n\nIn the current version, '
+                        'folders are not supported. This will be enabled in a '
+                        'later release of ftrack connect.'
+                    )
+                QtGui.QMessageBox.warning(
+                    self, 'Invalid file', message
+                )
+
+        return validPaths
+
     def clear(self):
         '''Clear the browser to it's initial state.'''
         self._dialog.setLocation('')
@@ -83,12 +115,10 @@ class BrowseButton(QtGui.QFrame):
         self._updateStyle('styleCls', None)
 
         # TODO: Allow hook into the dropEvent.
-        paths = []
-        for url in event.mimeData().urls():
-            path = url.toLocalFile()
-            if os.path.isfile(path):
-                paths.append(path)
-                self.log.debug('Dropped file: {0}'.format(path))
+
+        paths = self._validateMimeData(
+            event.mimeData()
+        )
 
         self.log.debug('Paths: {0}'.format(paths))
         sequences, singles = clique.assemble(
