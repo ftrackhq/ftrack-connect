@@ -90,7 +90,13 @@ class BrowseButton(QtGui.QFrame):
                 paths.append(path)
                 self.log.debug('Dropped file: {0}'.format(path))
 
-        sequences, singles = clique.assemble(paths)
+        self.log.debug('Paths: {0}'.format(paths))
+        sequences, singles = clique.assemble(
+            paths,
+            patterns=[
+                clique.PATTERNS.get('frames')
+            ]
+        )
 
         self.log.debug('Sequences: {0}'.format(sequences))
         self.log.debug('Singles: {0}'.format(singles))
