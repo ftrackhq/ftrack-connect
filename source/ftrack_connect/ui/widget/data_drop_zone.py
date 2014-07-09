@@ -21,7 +21,7 @@ class DataDropZone(QtGui.QFrame):
         self.log = logging.getLogger(__name__ + '.' + self.__class__.__name__)
         self.setAcceptDrops(True)
         self.setObjectName('ftrack-connect-publisher-browse-button')
-        self.setProperty('ftrackDropArea', True)
+        self.setProperty('ftrackDropZone', True)
 
         layout = QtGui.QVBoxLayout()
         self.setLayout(layout)
@@ -57,13 +57,13 @@ class DataDropZone(QtGui.QFrame):
             if selected:
                 self.dataSelected.emit(selected[0])
 
-    def _setDropAreaState(self, state='default'):
-        '''Set drop area state to *state*.
+    def _setDropZoneState(self, state='default'):
+        '''Set drop zone state to *state*.
 
         *state* should be 'default', 'active' or 'invalid'.
 
         '''
-        self.setProperty('ftrackDropAreaState', state)
+        self.setProperty('ftrackDropZoneState', state)
         self.style().unpolish(self)
         self.style().polish(self)
         self.update()
@@ -109,16 +109,16 @@ class DataDropZone(QtGui.QFrame):
         '''Override dragEnterEvent and accept all events.'''
         event.setDropAction(QtCore.Qt.CopyAction)
         event.accept()
-        self._setDropAreaState('active')
+        self._setDropZoneState('active')
 
     def dragLeaveEvent(self, event):
         '''Override dragLeaveEvent and accept all events.'''
         event.accept()
-        self._setDropAreaState()
+        self._setDropZoneState()
 
     def dropEvent(self, event):
         '''Handle dropped file event.'''
-        self._setDropAreaState()
+        self._setDropZoneState()
 
         # TODO: Allow hook into the dropEvent.
 
