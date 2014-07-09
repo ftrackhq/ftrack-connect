@@ -19,14 +19,14 @@ class ConnectThumbnailValidationError(ftrack_connect.error.ConnectError):
     pass
 
 
-class Thumbnail(QtGui.QFrame):
+class ThumbnailDropZone(QtGui.QFrame):
     '''Thumbnail widget with support for drag and drop and preview.'''
 
     def __init__(self, *args, **kwargs):
         '''Initialise widget.'''
-        super(Thumbnail, self).__init__(*args, **kwargs)
+        super(ThumbnailDropZone, self).__init__(*args, **kwargs)
 
-        self.setObjectName('thumbnail')
+        self.setObjectName('ftrack-connect-thumbnail-drop-zone')
 
         layout = QtGui.QHBoxLayout()
         layout.addSpacing(0)
@@ -34,14 +34,14 @@ class Thumbnail(QtGui.QFrame):
         self.setLayout(layout)
 
         self.setAcceptDrops(True)
-        self.setProperty('ftrackDropArea', True)
+        self.setProperty('ftrackDropZone', True)
 
         self._filePath = None
         self._imageWidth = 200
         self._imageHeight = 50
 
         self.imageLabel = QtGui.QLabel()
-        self._setDropAreaText()
+        self._setDropZoneText()
         layout.addWidget(self.imageLabel, alignment=QtCore.Qt.AlignLeft)
 
         # TODO: Add theme support.
@@ -95,41 +95,41 @@ class Thumbnail(QtGui.QFrame):
         self.imageLabel.setPixmap(pixmap)
         self.removeButton.setVisible(True)
 
-    def _setDropAreaText(self):
-        '''Set drop area label.'''
+    def _setDropZoneText(self):
+        '''Set drop zone label.'''
         self.imageLabel.setText('Drop a file here to add a thumbnail.')
 
     def removeThumbnail(self):
         '''Remove thumbnail.'''
-        self._setDropAreaText()
+        self._setDropZoneText()
         self._filePath = None
         self.removeButton.setVisible(False)
 
-    def _setDropAreaState(self, state='default'):
-        '''Set drop area state to *state*.
+    def _setDropZoneState(self, state='default'):
+        '''Set drop zone state to *state*.
 
         *state* should be 'default', 'active' or 'invalid'.
 
         '''
-        self.setProperty('ftrackDropAreaState', state)
+        self.setProperty('ftrackDropZoneState', state)
         self.style().unpolish(self)
         self.style().polish(self)
         self.update()
 
     def dragEnterEvent(self, event):
-        '''Validate file and set state when entering drop area.'''
+        '''Validate file and set state when entering drop zone.'''
         try:
             self._getFilePathFromEvent(event)
-            self._setDropAreaState('active')
+            self._setDropZoneState('active')
             event.setDropAction(QtCore.Qt.CopyAction)
         except ConnectThumbnailValidationError:
-            self._setDropAreaState('invalid')
+            self._setDropZoneState('invalid')
             event.setDropAction(QtCore.Qt.IgnoreAction)
         event.accept()
 
     def dragLeaveEvent(self, event):
-        '''Reset state when leaving drop area.'''
-        self._setDropAreaState()
+        '''Reset state when leaving drop zone.'''
+        self._setDropZoneState()
 
     def _isThumbnailReplaceConfirmed(self):
         '''Confirm replacement if a thumbnail is set.'''
@@ -149,7 +149,7 @@ class Thumbnail(QtGui.QFrame):
 
     def dropEvent(self, event):
         '''Validate and set thumbnail when a file is droppped.'''
-        self._setDropAreaState()
+        self._setDropZoneState()
         try:
             filePath = self._getFilePathFromEvent(event)
             if self._isThumbnailReplaceConfirmed():
