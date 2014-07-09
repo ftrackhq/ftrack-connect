@@ -1,0 +1,32 @@
+# :coding: utf-8
+# :copyright: Copyright (c) 2014 ftrack
+
+import sys
+import signal
+import logging
+
+from PySide import QtGui
+
+import ftrack_connect.ui.widget.data_drop_zone
+
+# Enable ctrl+c to quit application when started from command line.
+signal.signal(signal.SIGINT, signal.SIG_DFL)
+
+
+def main(arguments=None):
+    '''Interactive test of components list.'''
+
+    logging.basicConfig(level=logging.DEBUG)
+
+    application = QtGui.QApplication(arguments)
+
+    browse = ftrack_connect.ui.widget.data_drop_zone.DataDropZone()
+    browse.show()
+    browse.move(500, 750)
+
+    browse.dataSelected.connect(logging.debug)
+    sys.exit(application.exec_())
+
+
+if __name__ == '__main__':
+    raise SystemExit(main(sys.argv[1:]))
