@@ -10,7 +10,7 @@ from ftrack_connect.ui.widget import entity_path as _entity_path
 from ftrack_connect.ui.widget import asset_type_selector as _asset_type_selector
 from ftrack_connect.ui.widget import browse_button as _browse_button
 from ftrack_connect.ui.widget import components_list as _components_list
-from ftrack_connect.ui.widget import thumbnail as _thumbnail
+from ftrack_connect.ui.widget import thumbnail_drop_zone as _thumbnail_drop_zone
 import ftrack_connect.asynchronous
 import ftrack_connect.error
 
@@ -58,8 +58,8 @@ class Publisher(QtGui.QWidget):
         self.assetSelector = _asset_type_selector.AssetTypeSelector()
         formLayout.addRow('Asset type', self.assetSelector)
 
-        self.versionThumbnail = _thumbnail.Thumbnail()
-        formLayout.addRow('Thumbnail', self.versionThumbnail)
+        self.thumbnailDropZone = _thumbnail_drop_zone.ThumbnailDropZone()
+        formLayout.addRow('Thumbnail', self.thumbnailDropZone)
 
         # Add version description component.
         self.versionDescription = QtGui.QTextEdit()
@@ -127,7 +127,7 @@ class Publisher(QtGui.QWidget):
                 'filePath': component['resourceIdentifier']
             })
 
-        thumbnailFilePath = self.versionThumbnail.getFilePath()
+        thumbnailFilePath = self.thumbnailDropZone.getFilePath()
 
         self._publish(
             entity=entity, assetType=assetType,
@@ -143,7 +143,7 @@ class Publisher(QtGui.QWidget):
     ):
         '''Get or create an asset of *assetType* on *entity*.
 
-        *taskId*, *versionDescription*, *components* and *thumbnailFilePath* 
+        *taskId*, *versionDescription*, *components* and *thumbnailFilePath*
         are optional.
 
         Each component in *components* should be represented by a dictionary

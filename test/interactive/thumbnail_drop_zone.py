@@ -6,18 +6,18 @@ import signal
 
 from PySide import QtGui
 
-import ftrack_connect.ui.widget.thumbnail
+import ftrack_connect.ui.widget.thumbnail_drop_zone
 
 # Enable ctrl+c to quit application when started from command line.
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 
 def main(arguments=None):
-    '''Interactive test of components list.'''
+    '''Interactive test of thumbnail drop zone.'''
 
     application = QtGui.QApplication(arguments)
 
-    dialog = ftrack_connect.ui.widget.thumbnail.Thumbnail()
+    dialog = ftrack_connect.ui.widget.thumbnail_drop_zone.ThumbnailDropZone()
     dialog.show()
     dialog.resize(600, 400)
     dialog.move(200, 200)
