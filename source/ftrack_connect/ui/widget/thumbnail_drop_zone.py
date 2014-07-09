@@ -41,7 +41,7 @@ class ThumbnailDropZone(QtGui.QFrame):
         self._imageHeight = 50
 
         self.imageLabel = QtGui.QLabel()
-        self._setDropZoneText()
+        self.setDropZoneText()
         layout.addWidget(self.imageLabel, alignment=QtCore.Qt.AlignLeft)
 
         # TODO: Add theme support.
@@ -60,6 +60,7 @@ class ThumbnailDropZone(QtGui.QFrame):
 
         Raises *ConnectThumbnailValidationError* if an invalid or unsupported
         file is added.
+
         '''
         # Validate single url
         urls = event.mimeData().urls()
@@ -87,21 +88,24 @@ class ThumbnailDropZone(QtGui.QFrame):
 
         return filePath
 
-    def showThumbnail(self):
-        '''Show current thumbnail.'''
+    def setThumbnail(self, filePath):
+        '''Set thumbnail to filepath and display preview.'''
+        self._filePath = filePath
         pixmap = QtGui.QPixmap(self._filePath).scaled(
             self._imageWidth, self._imageHeight, QtCore.Qt.KeepAspectRatio
         )
         self.imageLabel.setPixmap(pixmap)
         self.removeButton.setVisible(True)
 
-    def _setDropZoneText(self):
-        '''Set drop zone label.'''
-        self.imageLabel.setText('Drop a file here to add a thumbnail.')
+    def setDropZoneText(self, text=None):
+        '''Set and display drop zone label text as *text*.'''
+        if not text:
+            text = 'Drop a file here to add a thumbnail.'
+        self.imageLabel.setText(text)
 
     def removeThumbnail(self):
         '''Remove thumbnail.'''
-        self._setDropZoneText()
+        self.setDropZoneText()
         self._filePath = None
         self.removeButton.setVisible(False)
 
@@ -153,8 +157,7 @@ class ThumbnailDropZone(QtGui.QFrame):
         try:
             filePath = self._getFilePathFromEvent(event)
             if self._isThumbnailReplaceConfirmed():
-                self._filePath = filePath
-                self.showThumbnail()
+                self.setThumbnail(filePath)
 
         except ConnectThumbnailValidationError as error:
             QtGui.QMessageBox.warning(
