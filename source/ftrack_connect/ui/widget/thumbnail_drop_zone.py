@@ -63,8 +63,11 @@ class ThumbnailDropZone(QtGui.QFrame):
 
         '''
         # Validate single url
+        if not event.mimeData().hasUrls():
+            raise ConnectThumbnailValidationError('Invalid file.')
+
         urls = event.mimeData().urls()
-        if len(urls) != 1:
+        if len(urls) > 1:
             raise ConnectThumbnailValidationError(
                 'Multiple files not supported.'
             )
@@ -72,7 +75,7 @@ class ThumbnailDropZone(QtGui.QFrame):
         # Validate local file
         filePath = urls[0].toLocalFile()
         if not os.path.isfile(filePath):
-            raise ConnectThumbnailValidationError('Not a valid file.')
+            raise ConnectThumbnailValidationError('Invalid file.')
 
         # Validate file extension
         fileExtension = os.path.splitext(filePath)[1][1:].lower()
