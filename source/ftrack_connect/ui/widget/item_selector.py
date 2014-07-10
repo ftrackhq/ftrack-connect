@@ -33,20 +33,41 @@ class ItemSelector(QtGui.QComboBox):
         self.style().polish(self)
         self.update()
 
-    def _currentItemId(self):
-        '''Return id for the currently selected index.'''
+    def currentItem(self):
+        '''Return the currently selected index.'''
         currentIndex = self.currentIndex()
         return self.itemData(currentIndex)
 
-    def _selectItemWithId(self, itemId):
-        '''Select item with *itemId*.
+    def _findItemWithId(self, itemId):
+        '''Return index of item with id equal to *itemId*
 
-        If *itemId* is not found, select the first item.
+        If a matching item is not found, Return 0.
 
         '''
-        index = self.findData(itemId)
-        if index == -1:
-            index = 0
+        foundIndex = 0
+        for index in xrange(self.count()):
+            item = self.itemData(index)
+
+            if item is None:
+                continue
+
+            if item.get(self._idField) == itemId:
+                foundIndex = index
+                break
+
+        return foundIndex
+     
+    def _selectItem(self, item):
+        '''Select item with the same id as *item*.
+
+        If a matching item is not found, selects the first item
+
+        '''
+        index = 0
+        if item is not None:
+            itemId = item.get(self._idField)
+            index = self._findItemWithId(itemId)
+
         self.setCurrentIndex(index)
 
     def updateItems(self, items=None):
@@ -54,16 +75,15 @@ class ItemSelector(QtGui.QComboBox):
         if items is None:
             items = []
 
-        currentItemId = self._currentItemId()
+        currentItem = self.currentItem()
         self.clear()
 
         # Add default empty item
         self.addItem(self._emptyLabel, None)
 
         for item in items:
-            itemId = item.get(self._idField)
             label = item.get(self._labelField) or self._defaultLabel
-            self.addItem(label, itemId)
+            self.addItem(label, item)
 
         # Re-select previously selected item
-        self._selectItemWithId(currentItemId)
+        self._selectItem(currentItem)
