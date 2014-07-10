@@ -9,15 +9,16 @@ import os
 
 from PySide import QtGui
 
-# Add default hooks to topic plugin path if not already set.
-HOOKS_PATH = os.path.abspath(
-    os.path.join(
-        os.path.realpath(__file__), '..', '..', '..', 'resource', 'hooks'
-    )
-)
 
+# Hooks use the ftrack event system. Set the FTRACK_TOPIC_PLUGIN_PATH
+# to pick up the default hooks if it has not already been set.
 os.environ.setdefault(
-    'FTRACK_TOPIC_PLUGIN_PATH', HOOKS_PATH
+    'FTRACK_TOPIC_PLUGIN_PATH',
+    os.path.abspath(
+        os.path.join(
+            os.path.realpath(__file__), '..', '..', '..', 'resource', 'hooks'
+        )
+    )
 )
 
 import ftrack_connect.ui.application
