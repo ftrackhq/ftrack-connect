@@ -10,6 +10,7 @@ from ftrack_connect.ui.widget import entity_path as _entity_path
 from ftrack_connect.ui.widget import asset_type_selector as _asset_type_selector
 from ftrack_connect.ui.widget import data_drop_zone as _data_drop_zone
 from ftrack_connect.ui.widget import components_list as _components_list
+from ftrack_connect.ui.widget import thumbnail_drop_zone as _thumbnail_drop_zone
 import ftrack_connect.asynchronous
 import ftrack_connect.error
 
@@ -56,6 +57,9 @@ class Publisher(QtGui.QWidget):
         # Add asset selector.
         self.assetSelector = _asset_type_selector.AssetTypeSelector()
         formLayout.addRow('Asset type', self.assetSelector)
+
+        self.thumbnailDropZone = _thumbnail_drop_zone.ThumbnailDropZone()
+        formLayout.addRow('Thumbnail', self.thumbnailDropZone)
 
         # Add version description component.
         self.versionDescription = QtGui.QTextEdit()
@@ -123,20 +127,24 @@ class Publisher(QtGui.QWidget):
                 'filePath': component['resourceIdentifier']
             })
 
+        thumbnailFilePath = self.thumbnailDropZone.getFilePath()
+
         self._publish(
             entity=entity, assetType=assetType,
             versionDescription=versionDescription, taskId=taskId,
-            components=components
+            components=components, thumbnailFilePath=thumbnailFilePath
         )
 
     @ftrack_connect.asynchronous.asynchronous
     def _publish(
         self, entity=None, assetName=None, assetType=None,
-        versionDescription='', taskId=None, components=None
+        versionDescription='', taskId=None, components=None,
+        thumbnailFilePath=None
     ):
         '''Get or create an asset of *assetType* on *entity*.
 
-        *taskId*, *versionDescription* and *components* are optional.
+        *taskId*, *versionDescription*, *components* and *thumbnailFilePath*
+        are optional.
 
         Each component in *components* should be represented by a dictionary
         containing name, filepath and a list of locations.
@@ -173,6 +181,9 @@ class Publisher(QtGui.QWidget):
 
             for location in componentData.get('locations', []):
                 location.addComponent(component)
+
+        if thumbnailFilePath:
+            version.createThumbnail(thumbnailFilePath)
 
         version.publish()
 
