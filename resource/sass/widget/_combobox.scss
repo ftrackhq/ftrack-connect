@@ -21,3 +21,7 @@ QComboBox QAbstractItemView::item:selected {
     background-color: $gray-lighter;
     color: $text-color;
 }
+
+QComboBox[ftrackCurrentIndexIsDefault="true"] {
+    color: $text-color-light;
+}

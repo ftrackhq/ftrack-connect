@@ -10,6 +10,7 @@ from ftrack_connect.ui.widget import entity_path as _entity_path
 from ftrack_connect.ui.widget import asset_type_selector as _asset_type_selector
 from ftrack_connect.ui.widget import browse_button as _browse_button
 from ftrack_connect.ui.widget import components_list as _components_list
+from ftrack_connect.ui.widget import item_selector as _item_selector
 import ftrack_connect.asynchronous
 import ftrack_connect.error
 
@@ -57,6 +58,14 @@ class Publisher(QtGui.QWidget):
         self.assetSelector = _asset_type_selector.AssetTypeSelector()
         formLayout.addRow('Asset type', self.assetSelector)
 
+        # Add preview selector.
+        self.previewSelector = _item_selector.ItemSelector(
+            labelField='componentName',
+            defaultLabel='Unnamed component',
+            emptyLabel='Select component to use as preview'
+        )
+        formLayout.addRow('Preview', self.previewSelector)
+
         # Add version description component.
         self.versionDescription = QtGui.QTextEdit()
         formLayout.addRow('Description', self.versionDescription)
@@ -71,6 +80,7 @@ class Publisher(QtGui.QWidget):
 
     def _onComponentListItemsChanged(self):
         '''Callback for component changed signal.'''
+        self.previewSelector.updateItems(self.componentsList.items())
         if self.componentsList.count():
             self.componentsList.show()
         else:

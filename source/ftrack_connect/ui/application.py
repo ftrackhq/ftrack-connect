@@ -10,7 +10,7 @@ import ftrack_connect.topic_thread
 import ftrack_connect.error
 from ftrack_connect.ui.widget import uncaught_error as _uncaught_error
 from ftrack_connect.ui.widget import tab_widget as _tab_widget
-
+from ftrack_connect.ui.widget import login as _login
 
 class MainWindow(QtGui.QMainWindow):
     '''Main window class for ftrack connect.'''
@@ -73,7 +73,7 @@ class MainWindow(QtGui.QMainWindow):
     def showLoginWidget(self):
         '''Show the login widget.'''
         if self.loginWidget is None:
-            self.loginWidget = ftrack_connect.ui.widget.Login()
+            self.loginWidget = _login.Login()
             self.setCentralWidget(self.loginWidget)
             self.loginWidget.login.connect(self.loginWithCredentials)
             self.loginError.connect(self.loginWidget.loginError.emit)
