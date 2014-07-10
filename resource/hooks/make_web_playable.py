@@ -15,14 +15,12 @@ def callback(event, versionId, path, **kw):
     The hook callback accepts *event*, the *versionId* of the version to make
     reviewable and the *path* to the file to use as component.
 
-    Will raise a `ValueError` if the provided path is not an accessible file.
+    Will raise a `ValueError` if the provided path is not an accessible file
+    and `ftrack.ftrackerror.FTrackError` if cloud storage is full or not
+    enabled.
 
     '''
-    try:
-        version = ftrack.AssetVersion(versionId)
-    except ftrack.ftrackerror.FTrackError as error:
-        log.exception(str(error))
-        return
+    version = ftrack.AssetVersion(versionId)
 
     # Validate that the path is an accessible file.
     if not os.path.isfile(path):
@@ -32,11 +30,7 @@ def callback(event, versionId, path, **kw):
 
     # ftrack.Review.makeReviewable uploads file to cloud storage and triggers
     # encoding of the file to appropirate formats(mp4 and webm).
-    try:
-        ftrack.Review.makeReviewable(version, path)
-    except ftrack.ftrackerror.FTrackError as error:
-        log.exception(error.message)
-        return
+    ftrack.Review.makeReviewable(version, path)
 
     log.info('make-reviewable hook completed.')
 
