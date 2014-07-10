@@ -12,6 +12,7 @@ from ftrack_connect.ui.widget import uncaught_error as _uncaught_error
 from ftrack_connect.ui.widget import tab_widget as _tab_widget
 from ftrack_connect.ui.widget import login as _login
 
+
 class MainWindow(QtGui.QMainWindow):
     '''Main window class for ftrack connect.'''
 
