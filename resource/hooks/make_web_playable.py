@@ -6,7 +6,7 @@ import os
 
 import ftrack
 
-log = logging.getLogger(__name__)
+log = logging  # .getLogger(__name__)
 
 
 def callback(event, versionId, path, **kw):
@@ -19,22 +19,21 @@ def callback(event, versionId, path, **kw):
     try:
         version = ftrack.AssetVersion(versionId)
     except ftrack.ftrackerror.FTrackError as error:
-        log.error(error.message)
+        log.exception(str(error))
         return
 
-    # Validate that the filePath is an accessible file.
-    if not os.path.isfile(filePath):
-        log.error(
-            '{0} is not a valid filepath.'.format(filePath)
+    # Validate that the path is an accessible file.
+    if not os.path.isfile(path):
+        raise ValueError(
+            '"{0}" is not a valid filepath.'.format(path)
         )
-        return
 
     # ftrack.Review.makeReviewable uploads file to cloud storage and triggers
     # encoding of the file to appropirate formats(mp4 and webm).
     try:
-        ftrack.Review.makeReviewable(version, filePath)
+        ftrack.Review.makeReviewable(version, path)
     except ftrack.ftrackerror.FTrackError as error:
-        log.error(error.message)
+        log.exception(error.message)
         return
 
     log.info('make-reviewable hook completed.')
