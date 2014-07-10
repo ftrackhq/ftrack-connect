@@ -7,8 +7,15 @@
 Hooks
 *****
 
-Learn how to use hooks to extend or change the default behavior in ftrack
-connect.
+Hooks in ftrack connect can be used to extend or modify the default behaviour
+of the application. They build upon the event system used in ftrack.
+
+.. note::
+
+    Unlike regular event, hook callbacks will run synchronous on the system
+    running the ftrack connect application.
 
 .. toctree::
     :maxdepth: 1
+
+    make-web-playable
