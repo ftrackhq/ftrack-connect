@@ -6,7 +6,7 @@ import os
 
 import ftrack
 
-log = logging  # .getLogger(__name__)
+log = logging.getLogger(__name__)
 
 
 def callback(event, versionId, path, **kw):
@@ -14,6 +14,8 @@ def callback(event, versionId, path, **kw):
 
     The hook callback accepts *event*, the *versionId* of the version to make
     reviewable and the *path* to the file to use as component.
+
+    Will raise a `ValueError` if the provided path is not an accessible file.
 
     '''
     try:

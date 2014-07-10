@@ -1,7 +1,7 @@
 ..
     :copyright: Copyright (c) 2014 ftrack
 
-.. _extending/hooks:
+.. _hooks:
 
 *****
 Hooks
