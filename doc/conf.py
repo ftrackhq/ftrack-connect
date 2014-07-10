@@ -45,21 +45,25 @@ release = _version
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = ['_template', '_theme', '_extension']
+exclude_patterns = ['_template']
 
 # A list of prefixes to ignore for module listings.
 modindex_common_prefix = ['ftrack.']
 
 # -- HTML output --------------------------------------------------------------
 
-html_theme = 'sphinx_rtd_theme'
-html_theme_path = ['_theme']
+# -- HTML output --------------------------------------------------------------
+
+# on_rtd is whether we are on readthedocs.org
+on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
+
+if not on_rtd:  # only import and set the theme if we're building docs locally
+    import sphinx_rtd_theme
+    html_theme = 'sphinx_rtd_theme'
+    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+
 html_static_path = ['_static']
 html_style = 'ftrack.css'
-
-html_theme_options = {
-    'sticky_navigation': True,
-}
 
 # If True, copy source rst files to output for reference.
 html_copy_source = True
