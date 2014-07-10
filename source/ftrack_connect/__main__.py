@@ -5,8 +5,24 @@ import argparse
 import logging
 import sys
 import signal
+import os
 
 from PySide import QtGui
+
+# Add hooks to topic plugin path before importing application.
+mainPath = os.path.dirname(
+    os.path.realpath(__file__)
+)
+
+hooksPath = os.path.abspath(
+    os.path.join(
+        mainPath, '..', '..', 'resource', 'hooks'
+    )
+)
+
+os.environ.setdefault(
+    'FTRACK_TOPIC_PLUGIN_PATH', hooksPath
+)
 
 import ftrack_connect.ui.application
 
@@ -44,7 +60,6 @@ def main(arguments=None):
 
     # Enable ctrl+c to quit application when started from command line.
     signal.signal(signal.SIGINT, signal.SIG_DFL)
-
 
     connectWindow = ftrack_connect.ui.application.MainWindow()
 
