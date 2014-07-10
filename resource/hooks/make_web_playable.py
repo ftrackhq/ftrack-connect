@@ -9,11 +9,11 @@ import ftrack
 log = logging.getLogger(__name__)
 
 
-def callback(event, versionId, filePath, **kw):
+def callback(event, versionId, path, **kw):
     '''Default make-web-playable hook.
 
     The hook callback accepts *event*, the *versionId* of the version to make
-    reviewable and the *filePath* to the file to use as component.
+    reviewable and the *path* to the file to use as component.
 
     '''
     try:
@@ -37,12 +37,13 @@ def callback(event, versionId, filePath, **kw):
         log.error(error.message)
         return
 
-    log.error('make-reviewable hook completed.')
+    log.info('make-reviewable hook completed.')
 
 
 def register(registry, **kw):
     '''Register hook.'''
-    ftrack.TOPICS.subscribe('ftrack.connect.publish.make-web-playable', callback)
-    log.debug(
-        'ftrack.connect.publish.make-web-playable hook registered'
+    ftrack.TOPICS.subscribe(
+        'ftrack.connect.publish.make-web-playable',
+        callback,
+        callbackID='ftrack-connect-default-hook'
     )

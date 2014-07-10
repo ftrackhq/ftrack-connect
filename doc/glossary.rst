@@ -27,3 +27,5 @@ Glossary
         the language website at http://www.python.org
 
     webm
+        WebM is a video file format intended primarily for royalty-free use in
+        the HTML5 video tag. Visit the website at http://www.webmproject.org/

@@ -12,8 +12,8 @@ of the application. They build upon the event system used in ftrack.
 
 .. note::
 
-    Unlike regular event, hook callbacks will run synchronous on the system
-    running the ftrack connect application.
+    Unlike regular events, hooks will typically be run synchronously on the
+    system running the ftrack connect application.
 
 .. toctree::
     :maxdepth: 1
