@@ -122,6 +122,11 @@ class Publisher(QtGui.QWidget):
 
         versionDescription = self.versionDescription.toPlainText()
 
+        previewFilePath = None
+        previewComponent = self.previewSelector.currentItem()
+        if previewComponent:
+            previewFilePath = previewComponent['resourceIdentifier']
+
         # ftrack does not support having Tasks as parent for Assets.
         # Therefore get parent shot/sequence etc.
         if entity.getObjectType() == 'Task':
@@ -132,6 +137,14 @@ class Publisher(QtGui.QWidget):
 
         components = []
         for component in self.componentsList.items():
+            
+            # Ignore components selected as preview components
+            if (
+                previewComponent
+                and previewComponent.get('id') == component.get('id')
+            ):
+                continue
+
             components.append({
                 'locations': [defaultLocation],
                 'name': component['componentName'],
@@ -143,19 +156,20 @@ class Publisher(QtGui.QWidget):
         self._publish(
             entity=entity, assetType=assetType,
             versionDescription=versionDescription, taskId=taskId,
-            components=components, thumbnailFilePath=thumbnailFilePath
+            components=components, previewFilePath=previewFilePath,
+            thumbnailFilePath=thumbnailFilePath
         )
 
     @ftrack_connect.asynchronous.asynchronous
     def _publish(
         self, entity=None, assetName=None, assetType=None,
         versionDescription='', taskId=None, components=None,
-        thumbnailFilePath=None
+        previewFilePath=None, thumbnailFilePath=None
     ):
         '''Get or create an asset of *assetType* on *entity*.
 
-        *taskId*, *versionDescription*, *components* and *thumbnailFilePath*
-        are optional.
+        *taskId*, *versionDescription*, *components*, *previewFilePath* and
+        *thumbnailFilePath* are optional.
 
         Each component in *components* should be represented by a dictionary
         containing name, filepath and a list of locations.
@@ -192,6 +206,14 @@ class Publisher(QtGui.QWidget):
 
             for location in componentData.get('locations', []):
                 location.addComponent(component)
+
+        if previewFilePath:
+            ftrack.TOPICS.publish(
+                'ftrack.connect.publish.make-web-playable',
+                versionId=version.getId(),
+                path=previewFilePath,
+                synchronous=True
+            )
 
         if thumbnailFilePath:
             version.createThumbnail(thumbnailFilePath)
