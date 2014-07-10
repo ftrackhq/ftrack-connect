@@ -9,19 +9,15 @@ import os
 
 from PySide import QtGui
 
-# Add hooks to topic plugin path before importing application.
-mainPath = os.path.dirname(
-    os.path.realpath(__file__)
-)
-
-hooksPath = os.path.abspath(
+# Add default hooks to topic plugin path if not already set.
+HOOKS_PATH = os.path.abspath(
     os.path.join(
-        mainPath, '..', '..', 'resource', 'hooks'
+        os.path.realpath(__file__), '..', '..', '..', 'resource', 'hooks'
     )
 )
 
 os.environ.setdefault(
-    'FTRACK_TOPIC_PLUGIN_PATH', hooksPath
+    'FTRACK_TOPIC_PLUGIN_PATH', HOOKS_PATH
 )
 
 import ftrack_connect.ui.application
