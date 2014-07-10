@@ -5,6 +5,7 @@
 
 import sys
 import os
+import re
 
 # -- General ------------------------------------------------------------------
 
@@ -17,8 +18,6 @@ extensions = [
     'sphinx.ext.viewcode'
 ]
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '_extension'))
-extensions.append('auto_domain_summary')
 
 # The suffix of source filenames.
 source_suffix = '.rst'
@@ -30,9 +29,17 @@ master_doc = 'index'
 project = u'ftrack connect'
 copyright = u'2014, ftrack'
 
-# Version.
-# TODO: Read version from config.
-_version = 'dev'
+# Version
+with open(
+    os.path.join(
+        os.path.dirname(__file__), '..', 'source',
+        'ftrack_connect', '_version.py'
+    )
+) as _version_file:
+    _version = re.match(
+        r'.*__version__ = \'(.*?)\'', _version_file.read(), re.DOTALL
+    ).group(1)
+
 version = _version
 release = _version
 
