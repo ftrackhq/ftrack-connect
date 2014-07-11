@@ -20,7 +20,6 @@ def main(arguments=None):
     Uses a component list as data source.
 
     '''
-
     application = QtGui.QApplication(arguments)
 
     dialog = QtGui.QWidget()

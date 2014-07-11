@@ -17,6 +17,7 @@ class ItemSelector(QtGui.QComboBox):
         identifier and label for each item. *defaultLabel* is used if
         *labelField* is not found in an item and *emptyLabel* is used as
         the placholder label.
+
         '''
         super(ItemSelector, self).__init__(*args, **kwargs)
 
