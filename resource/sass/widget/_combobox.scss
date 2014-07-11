@@ -18,8 +18,9 @@ QComboBox QAbstractItemView {
     background: $input-background;
     color: $text-color;
     outline: 0;
-    border: 1px solid $input-border-color-focus;
+    border: 1px solid $input-border-color;
     border-radius: 2px;
+}
 
 QComboBox QAbstractItemView::item {
     padding: $input-padding 0;
