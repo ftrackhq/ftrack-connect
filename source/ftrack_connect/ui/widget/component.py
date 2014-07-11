@@ -44,14 +44,14 @@ class Component(QtGui.QWidget):
         self.layout().addWidget(self.resourceInformation)
 
         # Set initial values.
-        self.id = str(uuid.uuid4())
+        self.setId(str(uuid.uuid4()))
         self.setComponentName(componentName)
         self.setResourceIdentifier(resourceIdentifier)
 
     def value(self):
         '''Return dictionary with component data.'''
         return {
-            'id': self.id,
+            'id': self.id(),
             'componentName': self.componentName(),
             'resourceIdentifier': self.resourceIdentifier()
         }
@@ -65,6 +65,14 @@ class Component(QtGui.QWidget):
             name = name.split('.')[0]
 
         return name
+
+    def id(self):
+        '''Return current id.'''
+        return self._id
+
+    def setId(self, componentId):
+        '''Set id to *componentId*.'''
+        self._id = componentId
 
     def componentName(self):
         '''Return current component name.'''

@@ -11,7 +11,13 @@ class ItemSelector(QtGui.QComboBox):
         self, idField='id', labelField='label', defaultLabel='Unnamed Item',
         emptyLabel='Select an item', *args, **kwargs
     ):
-        '''Initialise item selector widget.'''
+        '''Initialise item selector widget.
+
+        *idField* and *labelField* are the keys used to get the unique
+        identifier and label for each item. *defaultLabel* is used if
+        *labelField* is not found in an item and *emptyLabel* is used as
+        the placholder label.
+        '''
         super(ItemSelector, self).__init__(*args, **kwargs)
 
         itemDelegate = QtGui.QStyledItemDelegate()
@@ -23,7 +29,7 @@ class ItemSelector(QtGui.QComboBox):
         self._emptyLabel = emptyLabel
 
         self.currentIndexChanged.connect(self._onCurrentIndexChanged)
-        self.updateItems()
+        self.setItems()
 
     def _onCurrentIndexChanged(self):
         '''Update style property when current index changes.'''
@@ -38,25 +44,21 @@ class ItemSelector(QtGui.QComboBox):
         currentIndex = self.currentIndex()
         return self.itemData(currentIndex)
 
-    def _findItemWithId(self, itemId):
+    def findData(self, itemId):
         '''Return index of item with id equal to *itemId*
 
-        If a matching item is not found, Return 0.
+        If a matching item is not found, Return -1.
 
         '''
-        foundIndex = 0
-        for index in xrange(self.count()):
+        foundIndex = -1
+        for index in xrange(1, self.count()):
             item = self.itemData(index)
-
-            if item is None:
-                continue
-
             if item.get(self._idField) == itemId:
                 foundIndex = index
                 break
 
         return foundIndex
-     
+
     def _selectItem(self, item):
         '''Select item with the same id as *item*.
 
@@ -66,12 +68,27 @@ class ItemSelector(QtGui.QComboBox):
         index = 0
         if item is not None:
             itemId = item.get(self._idField)
-            index = self._findItemWithId(itemId)
+            index = self.findData(itemId)
+            if index == -1:
+                index = 0
 
         self.setCurrentIndex(index)
 
-    def updateItems(self, items=None):
-        '''Update list of items to *items*, keeping current selection.'''
+    def items(self):
+        '''Return current items.'''
+        items = []
+        for index in xrange(1, self.count()):
+            items.append(self.itemData(index))
+
+        return items
+
+    def setItems(self, items=None):
+        '''Set items to *items*, keeping current selection.
+
+        *items* should be a list of mappings. Each mapping should contain keys
+        matching those set for idField and labelField.
+
+        '''
         if items is None:
             items = []
 
