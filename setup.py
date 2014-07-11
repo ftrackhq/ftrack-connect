@@ -214,7 +214,8 @@ configuration = dict(
     data_files=[
     ],
     setup_requires=[
-        'pyScss >= 1.2.0, < 2'
+        'pyScss >= 1.2.0, < 2',
+        'sphinx_rtd_theme >= 0.1.6'
     ]
 )
 
