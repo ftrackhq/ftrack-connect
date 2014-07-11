@@ -57,6 +57,8 @@ Additional For building
 -----------------------
 
 * `pyScss <https://github.com/Kronuz/pyScss>`_ >= 1.2.0, < 2
+* `Sphinx <http://sphinx-doc.org/>`_ >= 1.2.2, < 2
+* `sphinx_rtd_theme <https://github.com/snide/sphinx_rtd_theme>`_ >= 0.1.6, < 1
 
 Additional For testing
 ----------------------
@@ -76,6 +78,17 @@ Documentation
 *************
 
 Full documentation can be found at https://doc.ftrack.com/ftrack-connect
+
+Building Documentation
+======================
+
+To build the documentation from source::
+
+    $ python setup.py build_sphinx
+
+View in browser::
+
+    file:///path/to/ftrack-connect/build/doc/html/index.html
 
 *********************
 Copyright and license
