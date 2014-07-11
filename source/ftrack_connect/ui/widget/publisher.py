@@ -187,13 +187,4 @@ class Publisher(QtGui.QWidget):
 
         version.publish()
 
-        # TODO: Publish ftrack.connect.publish.make-web-playable event.
-        # Example:
-        # ftrack.TOPICS.publish(
-        #    'ftrack.connect.publish.make-web-playable',
-        #    versionId=version.getId(),
-        #    filePath='Get file path from selected component',
-        #    synchronous=True
-        # )
-
         self.publishFinished.emit(True)
