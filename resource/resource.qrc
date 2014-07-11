@@ -11,9 +11,11 @@
     </qresource>
     <qresource prefix='ftrack/image/light'>
         <file alias='selectedTab'>image/light/selected_tab.png</file>
+        <file alias='downArrow'>image/light/down_arrow.png</file>
         <file alias='trash'>image/light/trash.png</file>
     </qresource>
     <qresource prefix='ftrack/image/dark'>
         <file alias='selectedTab'>image/dark/selected_tab.png</file>
+        <file alias='downArrow'>image/dark/down_arrow.png</file>
     </qresource>
 </RCC>

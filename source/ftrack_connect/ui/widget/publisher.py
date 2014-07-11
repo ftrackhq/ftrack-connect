@@ -10,7 +10,9 @@ from ftrack_connect.ui.widget import entity_path as _entity_path
 from ftrack_connect.ui.widget import asset_type_selector as _asset_type_selector
 from ftrack_connect.ui.widget import data_drop_zone as _data_drop_zone
 from ftrack_connect.ui.widget import components_list as _components_list
+from ftrack_connect.ui.widget import item_selector as _item_selector
 from ftrack_connect.ui.widget import thumbnail_drop_zone as _thumbnail_drop_zone
+
 import ftrack_connect.asynchronous
 import ftrack_connect.error
 
@@ -58,6 +60,14 @@ class Publisher(QtGui.QWidget):
         self.assetSelector = _asset_type_selector.AssetTypeSelector()
         formLayout.addRow('Asset type', self.assetSelector)
 
+        # Add preview selector.
+        self.previewSelector = _item_selector.ItemSelector(
+            labelField='componentName',
+            defaultLabel='Unnamed component',
+            emptyLabel='Select component to use as preview'
+        )
+        formLayout.addRow('Preview', self.previewSelector)
+
         self.thumbnailDropZone = _thumbnail_drop_zone.ThumbnailDropZone()
         formLayout.addRow('Thumbnail', self.thumbnailDropZone)
 
@@ -75,6 +85,7 @@ class Publisher(QtGui.QWidget):
 
     def _onComponentListItemsChanged(self):
         '''Callback for component changed signal.'''
+        self.previewSelector.setItems(self.componentsList.items())
         if self.componentsList.count():
             self.componentsList.show()
         else:
@@ -111,6 +122,11 @@ class Publisher(QtGui.QWidget):
 
         versionDescription = self.versionDescription.toPlainText()
 
+        previewPath = None
+        previewComponent = self.previewSelector.currentItem()
+        if previewComponent:
+            previewPath = previewComponent['resourceIdentifier']
+
         # ftrack does not support having Tasks as parent for Assets.
         # Therefore get parent shot/sequence etc.
         if entity.getObjectType() == 'Task':
@@ -132,19 +148,20 @@ class Publisher(QtGui.QWidget):
         self._publish(
             entity=entity, assetType=assetType,
             versionDescription=versionDescription, taskId=taskId,
-            components=components, thumbnailFilePath=thumbnailFilePath
+            components=components, previewPath=previewPath,
+            thumbnailFilePath=thumbnailFilePath
         )
 
     @ftrack_connect.asynchronous.asynchronous
     def _publish(
         self, entity=None, assetName=None, assetType=None,
         versionDescription='', taskId=None, components=None,
-        thumbnailFilePath=None
+        previewPath=None, thumbnailFilePath=None
     ):
         '''Get or create an asset of *assetType* on *entity*.
 
-        *taskId*, *versionDescription*, *components* and *thumbnailFilePath*
-        are optional.
+        *taskId*, *versionDescription*, *components*, *previewPath* and
+        *thumbnailFilePath* are optional.
 
         Each component in *components* should be represented by a dictionary
         containing name, filepath and a list of locations.
@@ -181,6 +198,14 @@ class Publisher(QtGui.QWidget):
 
             for location in componentData.get('locations', []):
                 location.addComponent(component)
+
+        if previewPath:
+            ftrack.TOPICS.publish(
+                'ftrack.connect.publish.make-web-playable',
+                versionId=version.getId(),
+                path=previewPath,
+                synchronous=True
+            )
 
         if thumbnailFilePath:
             version.createThumbnail(thumbnailFilePath)
