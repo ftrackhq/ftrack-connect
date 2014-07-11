@@ -48,9 +48,7 @@ release = _version
 exclude_patterns = ['_template']
 
 # A list of prefixes to ignore for module listings.
-modindex_common_prefix = ['ftrack.']
-
-# -- HTML output --------------------------------------------------------------
+modindex_common_prefix = ['ftrack_connect.']
 
 # -- HTML output --------------------------------------------------------------
 
