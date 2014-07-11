@@ -20,6 +20,7 @@ class ItemSelector(QtGui.QComboBox):
         '''
         super(ItemSelector, self).__init__(*args, **kwargs)
 
+        # Set style delegate to allow styling of combobox menu via Qt Stylesheet
         itemDelegate = QtGui.QStyledItemDelegate()
         self.setItemDelegate(itemDelegate)
 
