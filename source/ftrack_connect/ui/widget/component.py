@@ -2,8 +2,9 @@
 # :copyright: Copyright (c) 2014 ftrack
 
 import os
+import uuid
 
-from PySide import QtGui
+from PySide import QtGui, QtCore
 
 import ftrack_connect.ui.widget.line_edit
 import ftrack_connect.ui.widget.label
@@ -11,6 +12,8 @@ import ftrack_connect.ui.widget.label
 
 class Component(QtGui.QWidget):
     '''Represent a component.'''
+
+    nameChanged = QtCore.Signal()
 
     def __init__(self, componentName=None, resourceIdentifier=None,
                  parent=None):
@@ -20,6 +23,7 @@ class Component(QtGui.QWidget):
 
         self.componentNameEdit = ftrack_connect.ui.widget.line_edit.LineEdit()
         self.componentNameEdit.setPlaceholderText('Enter component name')
+        self.componentNameEdit.textChanged.connect(self.nameChanged)
 
         self.layout().addWidget(self.componentNameEdit)
 
@@ -40,12 +44,14 @@ class Component(QtGui.QWidget):
         self.layout().addWidget(self.resourceInformation)
 
         # Set initial values.
+        self.setId(str(uuid.uuid4()))
         self.setComponentName(componentName)
         self.setResourceIdentifier(resourceIdentifier)
 
     def value(self):
         '''Return dictionary with component data.'''
         return {
+            'id': self.id(),
             'componentName': self.componentName(),
             'resourceIdentifier': self.resourceIdentifier()
         }
@@ -59,6 +65,14 @@ class Component(QtGui.QWidget):
             name = name.split('.')[0]
 
         return name
+
+    def id(self):
+        '''Return current id.'''
+        return self._id
+
+    def setId(self, componentId):
+        '''Set id to *componentId*.'''
+        self._id = componentId
 
     def componentName(self):
         '''Return current component name.'''

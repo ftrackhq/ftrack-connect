@@ -60,6 +60,9 @@ class ComponentsList(ftrack_connect.ui.widget.item_list.ItemList):
             functools.partial(self._removeComponent, widget)
         )
 
+        # Connect the widget's nameChanged signal to the itemsChanged signal
+        widget.nameChanged.connect(self.itemsChanged.emit)
+
     def _removeComponent(self, widget):
         '''Remove component represented by *widget*.'''
         row = self.list.indexOfWidget(widget)
