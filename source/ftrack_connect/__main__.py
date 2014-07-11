@@ -5,8 +5,21 @@ import argparse
 import logging
 import sys
 import signal
+import os
 
 from PySide import QtGui
+
+
+# Hooks use the ftrack event system. Set the FTRACK_TOPIC_PLUGIN_PATH
+# to pick up the default hooks if it has not already been set.
+os.environ.setdefault(
+    'FTRACK_TOPIC_PLUGIN_PATH',
+    os.path.abspath(
+        os.path.join(
+            os.path.realpath(__file__), '..', '..', '..', 'resource', 'hooks'
+        )
+    )
+)
 
 import ftrack_connect.ui.application
 
@@ -44,7 +57,6 @@ def main(arguments=None):
 
     # Enable ctrl+c to quit application when started from command line.
     signal.signal(signal.SIGINT, signal.SIG_DFL)
-
 
     connectWindow = ftrack_connect.ui.application.MainWindow()
 
