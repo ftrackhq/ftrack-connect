@@ -64,9 +64,9 @@ class Publisher(QtGui.QWidget):
         self.previewSelector = _item_selector.ItemSelector(
             labelField='componentName',
             defaultLabel='Unnamed component',
-            emptyLabel='Select component to use as preview'
+            emptyLabel='Select component to use'
         )
-        formLayout.addRow('Preview', self.previewSelector)
+        formLayout.addRow('Web playable', self.previewSelector)
 
         self.thumbnailDropZone = _thumbnail_drop_zone.ThumbnailDropZone()
         formLayout.addRow('Thumbnail', self.thumbnailDropZone)
