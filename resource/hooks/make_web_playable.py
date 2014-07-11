@@ -15,8 +15,8 @@ def callback(event, versionId, path, **kw):
     The hook callback accepts *event*, the *versionId* of the version to make
     reviewable and the *path* to the file to use as component.
 
-    Will raise a `ValueError` if the provided path is not an accessible file
-    and `ftrack.ftrackerror.FTrackError` if cloud storage is full or not
+    Will raise :py:exc:`ValueError` if the provided path is not an accessible
+    file and :py:exc:`ftrack.FTrackError` if cloud storage is full or not
     enabled.
 
     '''
