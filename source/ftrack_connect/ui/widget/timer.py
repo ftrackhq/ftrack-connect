@@ -13,7 +13,16 @@ class Timer(QtGui.QWidget):
     '''Timer for logging time.'''
 
     def __init__(self, title=None, description=None, time=0, parent=None):
-        '''Initialise widget with initial component *value* and *parent*.'''
+        '''Initialise timer.
+
+        *title* should be the title entry to display for the time log whilst
+        *description* can provide an optional longer description.
+
+        *time* should be the initial value to set elapsed time to.
+
+        *parent* should be the optional parent of this widget.
+
+        '''
         super(Timer, self).__init__(parent=parent)
         self._timer = None
         self._tick = None
@@ -88,7 +97,7 @@ class Timer(QtGui.QWidget):
             self.start()
 
     def reset(self):
-        '''Reset timer.'''
+        '''Reset timer and elapsed time.'''
         self.stop()
         self._elapsed = 0
 
