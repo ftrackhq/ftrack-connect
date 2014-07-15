@@ -59,9 +59,8 @@ class LaunchApplicationHook(object):
 
         except (OSError, TypeError):
             self.log.exception(
-                '{0} application could not be started with command "{1}".'.format(
-                    applicationIdentifier, command
-                )
+                '{0} application could not be started with command "{1}".'
+                .format(applicationIdentifier, command)
             )
             success = False
             message = '{0} application could not be started.'.format(
