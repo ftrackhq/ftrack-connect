@@ -17,12 +17,10 @@ class Label(QtGui.QLabel):
         self.elideMode = elideMode
         super(Label, self).__init__(*args, **kwargs)
 
-        # Ignore horizontal minimum size so that the label can shrink and make
+        # Set low horizontal minimum size so that the label can shrink and make
         # use of eliding. Note the label will still try to take as much
         # horizontal space as possible.
-        self.setSizePolicy(
-            QtGui.QSizePolicy.Ignored, QtGui.QSizePolicy.Fixed
-        )
+        self.setMinimumWidth(25)
 
     def paintEvent(self, event):
         '''Paint *event* with the configured elideMode.'''
