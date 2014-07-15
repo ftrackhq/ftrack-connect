@@ -52,8 +52,8 @@ def _getApplicationLaunchCommand(applicationIdentifier):
         elif sys.platform == 'darwin':
             # HieroPlayer application command when running OSX.
             command = [
+                'open',
                 '/Applications/HieroPlayer1.8v1/HieroPlayer1.8v1.app'
-                '/Contents/MacOS/HieroPlayer1.8v1'
             ]
 
         else:
@@ -126,6 +126,8 @@ def callback(event, applicationIdentifier, context, **data):
             # Ensure subprocess is detached so closing connect will not also
             # close launched applications.
             options['creationflags'] = subprocess.CREATE_NEW_CONSOLE
+        else:
+            options['preexec_fn'] = os.setsid
 
         process = subprocess.Popen(command, **options)
 
