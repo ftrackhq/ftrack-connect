@@ -10,7 +10,7 @@ import ftrack_connect.ui.application
 def register(connect):
     '''Register publish plugin to ftrack connect.'''
     publisher = Publisher()
-    connect.add(publisher, publisher.getName())
+    connect.addPlugin(publisher, publisher.getName())
 
 
 class Publisher(QtGui.QStackedWidget,

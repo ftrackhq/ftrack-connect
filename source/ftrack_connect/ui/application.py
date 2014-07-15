@@ -285,7 +285,7 @@ class Application(QtGui.QMainWindow):
 
         self.setStyleSheet(styleSheetString)
 
-    def add(self, plugin, name=None, identifier=None):
+    def addPlugin(self, plugin, name=None, identifier=None):
         '''Add *plugin* in new tab with *name* and *identifier*.
 
         *plugin* should be an instance of :py:class:`ApplicationPlugin`.
@@ -320,10 +320,10 @@ class Application(QtGui.QMainWindow):
             self._onWidgetRequestApplicationClose
         )
 
-    def remove(self, identifier):
-        '''Remove widget registered with *identifier*.
+    def removePlugin(self, identifier):
+        '''Remove plugin registered with *identifier*.
 
-        Raise :py:exc:`KeyError` if no widget with *identifier* has been added.
+        Raise :py:exc:`KeyError` if no plugin with *identifier* has been added.
 
         '''
         plugin = self.plugins.get(identifier)

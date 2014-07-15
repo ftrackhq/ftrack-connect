@@ -7,7 +7,7 @@ import ftrack_connect.ui.application
 def register(connect):
     '''Register publish plugin to ftrack connect.'''
     timeLogger = TimeLogger()
-    connect.add(timeLogger)
+    connect.addPlugin(timeLogger)
 
 
 class TimeLogger(ftrack_connect.ui.application.ApplicationPlugin):
