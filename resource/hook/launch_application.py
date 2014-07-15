@@ -35,138 +35,141 @@ def conformEnvironment(mapping):
         mapping[str(key)] = value
 
 
-def _getApplicationLaunchCommand(applicationIdentifier):
-    '''Return application command based on OS and *applicationIdentifier*.'''
-    command = None
+class LaunchApplicationHook(object):
+    '''LaunchApplicationHook class.'''
 
-    if applicationIdentifier == 'hieroplayer':
+    def __call__(self, event, applicationIdentifier, context, **data):
+        '''Default launch-application hook.
 
-        if sys.platform == 'win32':
-            # HieroPlayer application command when running Windows.
-            command = ['hieroplayer.exe']
+        The hook callback accepts *event*, the *applicationIdentifier* and the
+        application *context*.
 
-        elif sys.platform == 'darwin':
-            # HieroPlayer application command when running OSX.
-            command = [
-                'open',
-                '/Applications/HieroPlayer1.8v1/HieroPlayer1.8v1.app'
-            ]
+        '''
+        command = self._getApplicationLaunchCommand(applicationIdentifier)
 
-        else:
-            # HieroPlayer application command when running something else.
-            pass
+        data['context'] = context
+        data['applicationIdentifier'] = applicationIdentifier
+        environment = self._getApplicationEnvironment(
+            data
+        )
 
-    return command
+        success = True
+        message = '{0} application started.'.format(applicationIdentifier)
 
+        # Environment must contain only strings.
+        conformEnvironment(environment)
 
-def _getApplicationEnvironment(eventData=None):
-    '''Return list of environment variables based on *context*.
-
-    The list will also contain the variables available in the current session.
-
-    '''
-    # Copy entire parent environment.
-    environment = {}
-
-    environment.setdefault(
-        'FTRACK_SERVER', os.environ.get('FTRACK_SERVER')
-    )
-    environment.setdefault(
-        'FTRACK_APIKEY', os.environ.get('FTRACK_APIKEY')
-    )
-    environment.setdefault(
-        'LOGNAME', os.environ.get('LOGNAME')
-    )
-
-    environment.setdefault(
-        'FTRACK_LOCATION_PLUGIN_PATH',
-        os.environ.get('FTRACK_LOCATION_PLUGIN_PATH')
-    )
-
-    environment..setdefault(
-        'PYTHONPATH', os.path.dirname(ftrack.__file__)
-    )
-
-    # Add ftrack connect event to environment.
-    if eventData is not None:
         try:
-            applicationContext = base64.b64encode(
-                json.dumps(
-                    eventData
+            options = dict(
+                env=environment,
+                close_fds=True
+            )
+
+            if sys.platform == 'win32':
+                # Ensure subprocess is detached so closing connect will not also
+                # close launched applications.
+                options['creationflags'] = subprocess.CREATE_NEW_CONSOLE
+            else:
+                options['preexec_fn'] = os.setsid
+
+            process = subprocess.Popen(command, **options)
+
+        except (OSError, TypeError):
+            log.exception(
+                '{0} application could not be started with command "{1}".'.format(
+                    applicationIdentifier, command
                 )
             )
-        except:
-            log.exception(
-                'Context could not be converted correctly. {0}'.format(context)
+            success = False
+            message = '{0} application could not be started.'.format(
+                applicationIdentifier
             )
+
         else:
-            environment['FTRACK_CONNECT_EVENT'] = applicationContext
+            message += ' (pid={0})'.format(process.pid)
 
-    log.debug('Setting new environment to {0}'.format(environment))
+        return {
+            'success': success,
+            'message': message
+        }
 
-    return environment
+    def _getApplicationLaunchCommand(self, applicationIdentifier):
+        '''Return application command based on OS and *applicationIdentifier*.
+        '''
+        command = None
 
+        if applicationIdentifier == 'hieroplayer':
 
-def callback(event, applicationIdentifier, context, **data):
-    '''Default launch-application hook.
+            if sys.platform == 'win32':
+                # HieroPlayer application command when running Windows.
+                command = ['hieroplayer.exe']
 
-    The hook callback accepts *event*, the *applicationIdentifier* and the
-    application *context*.
+            elif sys.platform == 'darwin':
+                # HieroPlayer application command when running OSX.
+                command = [
+                    'open',
+                    '/Applications/HieroPlayer1.8v1/HieroPlayer1.8v1.app'
+                ]
 
-    '''
-    command = _getApplicationLaunchCommand(applicationIdentifier)
+            else:
+                # HieroPlayer application command when running something else.
+                pass
 
-    data['context'] = context
-    data['applicationIdentifier'] = applicationIdentifier
-    environment = _getApplicationEnvironment(
-        data
-    )
+        return command
 
-    success = True
-    message = '{0} application started.'.format(applicationIdentifier)
+    def _getApplicationEnvironment(self, eventData=None):
+        '''Return list of environment variables based on *context*.
 
-    # Environment must contain only strings.
-    conformEnvironment(environment)
+        The list will also contain the variables available in the current
+        session.
 
-    try:
-        options = dict(
-            env=environment,
-            close_fds=True
+        '''
+        # Copy entire parent environment.
+        environment = {}
+
+        environment.setdefault(
+            'FTRACK_SERVER', os.environ.get('FTRACK_SERVER')
+        )
+        environment.setdefault(
+            'FTRACK_APIKEY', os.environ.get('FTRACK_APIKEY')
+        )
+        environment.setdefault(
+            'LOGNAME', os.environ.get('LOGNAME')
         )
 
-        if sys.platform == 'win32':
-            # Ensure subprocess is detached so closing connect will not also
-            # close launched applications.
-            options['creationflags'] = subprocess.CREATE_NEW_CONSOLE
-        else:
-            options['preexec_fn'] = os.setsid
-
-        process = subprocess.Popen(command, **options)
-
-    except (OSError, TypeError):
-        log.exception(
-            '{0} application could not be started with command "{1}".'.format(
-                applicationIdentifier, command
-            )
-        )
-        success = False
-        message = '{0} application could not be started.'.format(
-            applicationIdentifier
+        environment.setdefault(
+            'FTRACK_LOCATION_PLUGIN_PATH',
+            os.environ.get('FTRACK_LOCATION_PLUGIN_PATH')
         )
 
-    else:
-        message += ' (pid={0})'.format(process.pid)
+        environment.setdefault(
+            'PYTHONPATH', os.path.dirname(ftrack.__file__)
+        )
 
-    return {
-        'success': success,
-        'message': message
-    }
+        # Add ftrack connect event to environment.
+        if eventData is not None:
+            try:
+                applicationContext = base64.b64encode(
+                    json.dumps(
+                        eventData
+                    )
+                )
+            except:
+                log.exception(
+                    'Context could not be converted correctly. {0}'.format(context)
+                )
+            else:
+                environment['FTRACK_CONNECT_EVENT'] = applicationContext
+
+        log.debug('Setting new environment to {0}'.format(environment))
+
+        return environment
 
 
 def register(registry, **kw):
     '''Register hook.'''
     ftrack.TOPICS.subscribe(
         'ftrack.launch-application',
-        callback,
+        LaunchApplicationHook(),
         callbackID='ftrack-connect-default-hook'
     )
