@@ -66,10 +66,26 @@ def _getApplicationEnvironment(eventData=None):
 
     '''
     # Copy entire parent environment.
-    environment = os.environ.copy()
+    environment = {}
 
-    # Might be good to remove some keys from the new environment.
-    # Such as FTRACK_TOPIC_PLUGIN_PATH.
+    environment.setdefault(
+        'FTRACK_SERVER', os.environ.get('FTRACK_SERVER')
+    )
+    environment.setdefault(
+        'FTRACK_APIKEY', os.environ.get('FTRACK_APIKEY')
+    )
+    environment.setdefault(
+        'LOGNAME', os.environ.get('LOGNAME')
+    )
+
+    environment.setdefault(
+        'FTRACK_LOCATION_PLUGIN_PATH',
+        os.environ.get('FTRACK_LOCATION_PLUGIN_PATH')
+    )
+
+    environment..setdefault(
+        'PYTHONPATH', os.path.dirname(ftrack.__file__)
+    )
 
     # Add ftrack connect event to environment.
     if eventData is not None:
