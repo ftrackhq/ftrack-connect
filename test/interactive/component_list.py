@@ -5,7 +5,7 @@ import sys
 
 from PySide import QtGui
 
-import ftrack_connect.widget.components_list
+import ftrack_connect.ui.widget.components_list
 
 
 def main(arguments=None):
@@ -15,7 +15,7 @@ def main(arguments=None):
 
     application = QtGui.QApplication(arguments)
 
-    dialog = ftrack_connect.widget.components_list.ComponentsList()
+    dialog = ftrack_connect.ui.widget.components_list.ComponentsList()
     dialog.resize(800, 400)
     dialog.show()
     dialog.addItem({
