@@ -52,6 +52,9 @@ class LaunchApplicationHook(object):
             else:
                 options['preexec_fn'] = os.setsid
 
+            self.log.debug(
+                'Launching {0} with options {1}'.format(command, options)
+            )
             process = subprocess.Popen(command, **options)
 
         except (OSError, TypeError):
@@ -127,6 +130,16 @@ class LaunchApplicationHook(object):
         # Copy entire parent environment.
         environment = {}
 
+        if sys.platform == 'win32':
+            # Required for launching executables on Windows.
+            environment.setdefault('SystemRoot', os.environ.get('SystemRoot'))
+            environment.setdefault('SystemDrive', os.environ.get('SystemDrive'))
+
+            # Many applications also need access to temporary storage and other
+            # executable.
+            environment.setdefault('PATH', os.environ.get('PATH'))
+            environment.setdefault('TMP', os.environ.get('TMP'))
+
         environment.setdefault(
             'FTRACK_SERVER', os.environ.get('FTRACK_SERVER')
         )
@@ -142,6 +155,7 @@ class LaunchApplicationHook(object):
             os.environ.get('FTRACK_LOCATION_PLUGIN_PATH')
         )
 
+        # Add discovered ftrack API to PYTHONPATH.
         environment.setdefault(
             'PYTHONPATH', os.path.dirname(ftrack.__file__)
         )
