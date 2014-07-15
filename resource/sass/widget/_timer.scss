@@ -6,6 +6,7 @@
 }
 
 #timer QLineEdit#timeField {
+    font-size: $title-font-size;
     font-weight: bold;
     padding: 10px;
     padding-left: 16px;
@@ -16,6 +17,7 @@
 }
 
 #timer QPushButton#primary {
+    font-size: $title-font-size;
     padding: 10px;
     width: 120px;
 }

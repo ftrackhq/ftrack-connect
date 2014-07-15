@@ -2,6 +2,7 @@
 # :copyright: Copyright (c) 2014 ftrack
 
 import time as _time
+import math
 
 from PySide import QtGui, QtCore
 
@@ -97,7 +98,7 @@ class Timer(QtGui.QWidget):
         '''Start the timer.'''
         if not self.isRunning():
             self._tick = _time.time()
-            self._timer = self.startTimer(500)
+            self._timer = self.startTimer(50)
             self._updateState()
 
     def stop(self):
@@ -168,4 +169,10 @@ class Timer(QtGui.QWidget):
     def setTime(self, time):
         '''Set *time* elapsed.'''
         self._elapsed = time
-        self.timeField.setText(str(self._elapsed))
+        hours, remainder = divmod(time, 3600)
+        minutes, seconds = divmod(remainder, 60)
+
+        text = '{0:02d}:{1:02d}:{2:02d}'.format(
+            int(hours), int(minutes), int(math.ceil(seconds))
+        )
+        self.timeField.setText(text)
