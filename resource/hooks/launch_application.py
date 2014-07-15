@@ -13,6 +13,30 @@ import ftrack
 log = logging.getLogger(__name__)
 
 
+import collections
+
+
+def conformEnvironment(mapping):
+    '''Ensure all entries in *mapping* are strings.
+
+    .. note::
+
+        The *mapping* is modified in place.
+
+    '''
+    if not isinstance(mapping, collections.MutableMapping):
+        return
+
+    for key, value in mapping.items():
+        if isinstance(value, collections.Mapping):
+            conformEnvironment(value)
+        else:
+            value = str(value)
+
+        del mapping[key]
+        mapping[str(key)] = value
+
+
 def _getApplicationLaunchCommand(applicationIdentifier):
     '''Return application command based on OS and *applicationIdentifier*.'''
     command = None
@@ -21,14 +45,16 @@ def _getApplicationLaunchCommand(applicationIdentifier):
 
         if sys.platform == 'win32':
             # HieroPlayer application command when running Windows.
-            pass
+            command = [
+                r'C:\Program Files\The Foundry\HieroPlayer1.8v2\hieroplayer.exe'
+            ]
 
         elif sys.platform == 'darwin':
             # HieroPlayer application command when running OSX.
-            command = (
+            command = [
                 '/Applications/HieroPlayer1.8v1/HieroPlayer1.8v1.app'
                 '/Contents/MacOS/HieroPlayer1.8v1'
-            )
+            ]
 
         else:
             # HieroPlayer application command when running something else.
@@ -86,6 +112,9 @@ def callback(event, applicationIdentifier, context, **data):
 
     success = True
     message = 'Application started.'
+
+    # Environment must contain only strings.
+    conformEnvironment(environment)
 
     try:
         process = subprocess.Popen(command, env=environment)
