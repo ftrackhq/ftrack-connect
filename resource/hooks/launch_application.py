@@ -45,14 +45,16 @@ def _getApplicationLaunchCommand(applicationIdentifier):
 
         if sys.platform == 'win32':
             # HieroPlayer application command when running Windows.
-            pass
+            command = [
+                r'C:\Program Files\The Foundry\HieroPlayer1.8v2\hieroplayer.exe'
+            ]
 
         elif sys.platform == 'darwin':
             # HieroPlayer application command when running OSX.
-            command = (
+            command = [
                 '/Applications/HieroPlayer1.8v1/HieroPlayer1.8v1.app'
                 '/Contents/MacOS/HieroPlayer1.8v1'
-            )
+            ]
 
         else:
             # HieroPlayer application command when running something else.
