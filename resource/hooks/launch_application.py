@@ -23,11 +23,11 @@ def _getApplicationLaunchCommand(applicationIdentifier):
             # HieroPlayer application command when running Windows.
             pass
 
-        elif sys.platform == 'darwins':
+        elif sys.platform == 'darwin':
             # HieroPlayer application command when running OSX.
             command = (
                 '/Applications/HieroPlayer1.8v1/HieroPlayer1.8v1.app'
-                '/Contents/MacOS/HieroPlayer1.8v12'
+                '/Contents/MacOS/HieroPlayer1.8v1'
             )
 
         else:

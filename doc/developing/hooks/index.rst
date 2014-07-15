@@ -19,3 +19,4 @@ of the application. They build upon the event system used in ftrack.
     :maxdepth: 1
 
     make-web-playable
+    launch-application
