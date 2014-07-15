@@ -14,7 +14,7 @@ Parameters
 
 :event: The specific event being handled.
 :applicationIdentifier: The identifier of the application.
-:context: The application context. Eg. selection, userId.
+:context: The application context.
 
 .. literalinclude:: /../resource/hooks/launch_application.py
     :language: python
