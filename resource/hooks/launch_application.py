@@ -11,7 +11,7 @@ import collections
 
 import ftrack
 
-log = logging.getLogger(__name__)
+log = logging.getLogger('ftrack.launch-application')
 
 
 def conformEnvironment(mapping):
