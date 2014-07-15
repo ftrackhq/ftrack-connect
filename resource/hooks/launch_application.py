@@ -111,7 +111,7 @@ def callback(event, applicationIdentifier, context, **data):
     )
 
     success = True
-    message = 'Application started.'
+    message = '{0} application started.'.format(applicationIdentifier)
 
     # Environment must contain only strings.
     conformEnvironment(environment)
@@ -131,12 +131,14 @@ def callback(event, applicationIdentifier, context, **data):
 
     except (OSError, TypeError):
         log.exception(
-            'Application could not be started with command "{0}".'.format(
-                command
+            '{0} application could not be started with command "{1}".'.format(
+                applicationIdentifier, command
             )
         )
         success = False
-        message = 'Application could not be started.'
+        message = '{0} application could not be started.'.format(
+            applicationIdentifier
+        )
 
     else:
         message += ' (pid={0})'.format(process.pid)
