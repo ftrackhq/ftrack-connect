@@ -174,8 +174,6 @@ class LaunchApplicationHook(object):
             else:
                 environment['FTRACK_CONNECT_EVENT'] = applicationContext
 
-        self.log.debug('Setting new environment to {0}'.format(environment))
-
         return environment
 
 
