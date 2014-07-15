@@ -172,7 +172,23 @@ class Timer(QtGui.QWidget):
         hours, remainder = divmod(time, 3600)
         minutes, seconds = divmod(remainder, 60)
 
-        text = '{0:02d}:{1:02d}:{2:02d}'.format(
-            int(hours), int(minutes), int(math.ceil(seconds))
-        )
+        hours = int(hours)
+        minutes = int(minutes)
+        seconds = int(math.ceil(seconds))
+
+        if seconds == 60:
+            minutes += 1
+            seconds = 0
+
+        if minutes == 60:
+            hours += 1
+            minutes = 0
+
+        if not hours and not minutes:
+            text = '{0} sec'.format(seconds)
+        elif not hours:
+            text = '{0:02d}:{1:02d} min'.format(minutes, seconds)
+        else:
+            text = '{0:02d}:{1:02d}:{2:02d}'.format(hours, minutes, seconds)
+
         self.timeField.setText(text)
