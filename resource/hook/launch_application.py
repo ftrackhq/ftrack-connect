@@ -16,7 +16,9 @@ class LaunchApplicationHook(object):
     '''LaunchApplicationHook class.'''
 
     def __init__(self):
-        self.log = logging.getLogger('ftrack.launch-application')
+        self.logger = logging.getLogger(
+            'ftrack.hook.' + self.__class__.__name__
+        )
 
     def __call__(self, event, applicationIdentifier, context, **data):
         '''Default launch-application hook.
@@ -55,7 +57,7 @@ class LaunchApplicationHook(object):
             process = subprocess.Popen(command, **options)
 
         except (OSError, TypeError):
-            self.log.exception(
+            self.logger.exception(
                 '{0} application could not be started with command "{1}".'.format(
                     applicationIdentifier, command
                 )
@@ -124,7 +126,7 @@ class LaunchApplicationHook(object):
         session.
 
         '''
-        # Copy entire parent environment.
+        # Copy appropitate environment variables to new environment.
         environment = {}
 
         environment.setdefault(
@@ -155,13 +157,13 @@ class LaunchApplicationHook(object):
                     )
                 )
             except:
-                self.log.exception(
+                self.logger.exception(
                     'Context could not be converted correctly. {0}'.format(context)
                 )
             else:
                 environment['FTRACK_CONNECT_EVENT'] = applicationContext
 
-        self.log.debug('Setting new environment to {0}'.format(environment))
+        self.logger.debug('Setting new environment to {0}'.format(environment))
 
         return environment
 

@@ -214,7 +214,7 @@ class MainWindow(QtGui.QMainWindow):
         from .publisher import register
         register(self)
 
-    def _routeEvent(self, topic, meta, action, plugin, **data):
+    def _routeEvent(self, topic, _meta_, action, plugin, **data):
         '''Route websocket event to publisher plugin based on *eventData*.
 
         *eventData* should contain 'plugin' and 'action'. Will raise
@@ -239,7 +239,7 @@ class MainWindow(QtGui.QMainWindow):
                 )
             )
 
-        method(topic, meta, **data)
+        method(topic, _meta_, **data)
 
     def _onWidgetRequestFocus(self, widget):
         '''Switch tab to *widget* and bring application to front.'''
