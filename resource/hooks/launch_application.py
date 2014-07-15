@@ -13,6 +13,30 @@ import ftrack
 log = logging.getLogger(__name__)
 
 
+import collections
+
+
+def conformEnvironment(mapping):
+    '''Ensure all entries in *mapping* are strings.
+
+    .. note::
+
+        The *mapping* is modified in place.
+
+    '''
+    if not isinstance(mapping, collections.MutableMapping):
+        return
+
+    for key, value in mapping.items():
+        if isinstance(value, collections.Mapping):
+            conformEnvironment(value)
+        else:
+            value = str(value)
+
+        del mapping[key]
+        mapping[str(key)] = value
+
+
 def _getApplicationLaunchCommand(applicationIdentifier):
     '''Return application command based on OS and *applicationIdentifier*.'''
     command = None
@@ -81,6 +105,9 @@ def callback(event, applicationIdentifier, context, **kw):
 
     success = True
     message = 'Application started.'
+
+    # Environment must contain only strings.
+    conformEnvironment(environment)
 
     try:
         process = subprocess.Popen(command, env=environment)
