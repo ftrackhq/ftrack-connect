@@ -24,27 +24,36 @@ class Timer(QtGui.QWidget):
 
         '''
         super(Timer, self).__init__(parent=parent)
+        self.setObjectName('timer')
+
         self._timer = None
         self._tick = None
         self._elapsed = 0
 
-        self.setLayout(QtGui.QVBoxLayout())
+        layout = QtGui.QHBoxLayout()
+        self.setLayout(layout)
+
+        self.labelLayout = QtGui.QVBoxLayout()
+        layout.addLayout(self.labelLayout)
 
         self.titleLabel = ftrack_connect.ui.widget.label.Label()
-        self.layout().addWidget(self.titleLabel)
+        self.labelLayout.addWidget(self.titleLabel)
 
         self.descriptionLabel = ftrack_connect.ui.widget.label.Label()
-        self.layout().addWidget(self.descriptionLabel)
+        self.labelLayout.addWidget(self.descriptionLabel)
 
         self.timeField = ftrack_connect.ui.widget.line_edit.LineEdit()
         self.timeField.setDisabled(True)
-        self.layout().addWidget(self.timeField)
+        layout.addWidget(self.timeField)
 
         self.toggleButton = QtGui.QPushButton('Start')
-        self.layout().addWidget(self.toggleButton)
+        self.toggleButton.setObjectName('primary')
+        self.toggleButton.setProperty('mode', 'start')
+
+        layout.addWidget(self.toggleButton)
 
         self.setSizePolicy(
-            QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.Fixed
+            QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Fixed
         )
 
         # Connect events.
@@ -56,6 +65,21 @@ class Timer(QtGui.QWidget):
             'description': description,
             'time': time
         })
+
+    def _updateState(self):
+        '''Update internal state and force style refresh.'''
+        if self.isRunning():
+            self.toggleButton.setText('Stop')
+            self.toggleButton.setProperty('mode', 'stop')
+        else:
+            self.toggleButton.setText('Start')
+            self.toggleButton.setProperty('mode', 'start')
+
+        # Force re-evaluation of dynamic stylesheet values based on new
+        # properties.
+        self.toggleButton.style().unpolish(self.toggleButton)
+        self.toggleButton.style().polish(self.toggleButton)
+        self.toggleButton.update()
 
     def timerEvent(self, event):
         '''Handle timer *event*.'''
@@ -71,8 +95,7 @@ class Timer(QtGui.QWidget):
         if not self.isRunning():
             self._tick = _time.time()
             self._timer = self.startTimer(500)
-
-            self.toggleButton.setText('Stop')
+            self._updateState()
 
     def stop(self):
         '''Stop the timer.'''
@@ -83,7 +106,7 @@ class Timer(QtGui.QWidget):
             self.timerEvent(QtCore.QTimerEvent(0))
             self._tick = None
 
-            self.toggleButton.setText('Start')
+            self._updateState()
 
     def isRunning(self):
         '''Return whether timer is currently running.'''
