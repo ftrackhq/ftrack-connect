@@ -2,6 +2,7 @@
 # :copyright: Copyright (c) 2014 ftrack
 
 import os
+import getpass
 
 from PySide import QtGui
 from PySide import QtCore
@@ -51,6 +52,19 @@ class MainWindow(QtGui.QMainWindow):
 
         self.loginWidget = None
         self.login()
+
+    def _onConnectTopicEvent(self, topic, _meta_, **data):
+        '''Generic callback for all ftrack.connect events.
+
+        .. note::
+            Events not triggered by the current logged in user will be dropped.
+
+        '''
+        # Drop all events triggered by other users.
+        if not _meta_.get('userId') == self._currentUserId:
+            return
+
+        self._routeEvent(topic, _meta_, **data)
 
     def login(self):
         '''Login using stored credentials or ask user for them.'''
@@ -138,9 +152,17 @@ class MainWindow(QtGui.QMainWindow):
 
         self._discoverPlugins()
 
+        # getpass.getuser is used to reflect how the ftrack api get the current
+        # user.
+        currentUser = ftrack.User(
+            getpass.getuser()
+        )
+
+        self._currentUserId = currentUser.getId()
+        ftrack.TOPICS.subscribe('ftrack.connect', self._onConnectTopicEvent)
+
         import ftrack_connect.topic_thread
         self.topicThread = ftrack_connect.topic_thread.TopicThread()
-        self.topicThread.ftrackConnectEvent.connect(self._routeEvent)
         self.topicThread.start()
 
         self.focus()
@@ -192,35 +214,32 @@ class MainWindow(QtGui.QMainWindow):
         from .publisher import register
         register(self)
 
-    def _routeEvent(self, eventData):
+    def _routeEvent(self, topic, meta, action, plugin, **data):
         '''Route websocket event to publisher plugin based on *eventData*.
 
         *eventData* should contain 'plugin' and 'action'. Will raise
         `ConnectError` if no plugin is found or if action is missing on plugin.
 
         '''
-        pluginName = eventData.get('plugin')
-        method = eventData.get('action')
-
         try:
-            plugin = self.plugins[pluginName]
+            pluginInstance = self.plugins[plugin]
         except KeyError:
             raise ftrack_connect.error.ConnectError(
                 'Plugin "{0}" not found.'.format(
-                    pluginName
+                    plugin
                 )
             )
 
         try:
-            method = getattr(plugin, method)
+            method = getattr(pluginInstance, action)
         except AttributeError:
             raise ftrack_connect.error.ConnectError(
                 'Method "{0}" not found on "{1}" plugin({2}).'.format(
-                    method, pluginName, plugin
+                    method, plugin, pluginInstance
                 )
             )
 
-        method(**eventData)
+        method(topic, meta, **data)
 
     def _onWidgetRequestFocus(self, widget):
         '''Switch tab to *widget* and bring application to front.'''
