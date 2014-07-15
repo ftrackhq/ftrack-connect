@@ -16,5 +16,5 @@ Parameters
 :applicationIdentifier: The identifier of the application.
 :context: The application context.
 
-.. literalinclude:: /../resource/hooks/launch_application.py
+.. literalinclude:: /../resource/hook/launch_application.py
     :language: python
