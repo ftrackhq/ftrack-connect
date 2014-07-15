@@ -117,7 +117,18 @@ def callback(event, applicationIdentifier, context, **data):
     conformEnvironment(environment)
 
     try:
-        process = subprocess.Popen(command, env=environment)
+        options = dict(
+            env=environment,
+            close_fds=True
+        )
+
+        if sys.platform == 'win32':
+            # Ensure subprocess is detached so closing connect will not also
+            # close launched applications.
+            options['creationflags'] = subprocess.CREATE_NEW_CONSOLE
+
+        process = subprocess.Popen(command, **options)
+
     except (OSError, TypeError):
         log.exception(
             'Application could not be started with command "{0}".'.format(
@@ -126,6 +137,9 @@ def callback(event, applicationIdentifier, context, **data):
         )
         success = False
         message = 'Application could not be started.'
+
+    else:
+        message += ' (pid={0})'.format(process.pid)
 
     return {
         'success': success,
