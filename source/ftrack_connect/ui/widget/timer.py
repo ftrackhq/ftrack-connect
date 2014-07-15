@@ -34,16 +34,19 @@ class Timer(QtGui.QWidget):
         self.setLayout(layout)
 
         self.labelLayout = QtGui.QVBoxLayout()
-        layout.addLayout(self.labelLayout)
+        layout.addLayout(self.labelLayout, stretch=1)
 
         self.titleLabel = ftrack_connect.ui.widget.label.Label()
+        self.titleLabel.setObjectName('title')
         self.labelLayout.addWidget(self.titleLabel)
 
         self.descriptionLabel = ftrack_connect.ui.widget.label.Label()
         self.labelLayout.addWidget(self.descriptionLabel)
 
         self.timeField = ftrack_connect.ui.widget.line_edit.LineEdit()
+        self.timeField.setObjectName('timeField')
         self.timeField.setDisabled(True)
+        self.timeField.setAlignment(QtCore.Qt.AlignCenter)
         layout.addWidget(self.timeField)
 
         self.toggleButton = QtGui.QPushButton('Start')
