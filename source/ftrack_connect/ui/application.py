@@ -27,15 +27,15 @@ class ApplicationPlugin(QtGui.QWidget):
         return self.__class__.__name__
 
 
-class MainWindow(QtGui.QMainWindow):
-    '''Main window class for ftrack connect.'''
+class Application(QtGui.QMainWindow):
+    '''Main application window for ftrack connect.'''
 
     # Signal to be used when login fails.
     loginError = QtCore.Signal(object)
 
     def __init__(self, *args, **kwargs):
         '''Initialise the main application window.'''
-        super(MainWindow, self).__init__(*args, **kwargs)
+        super(Application, self).__init__(*args, **kwargs)
 
         # Register widget for error handling.
         self.uncaughtError = _uncaught_error.UncaughtError(

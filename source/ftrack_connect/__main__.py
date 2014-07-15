@@ -58,7 +58,7 @@ def main(arguments=None):
     # Enable ctrl+c to quit application when started from command line.
     signal.signal(signal.SIGINT, signal.SIG_DFL)
 
-    connectWindow = ftrack_connect.ui.application.MainWindow()
+    connectWindow = ftrack_connect.ui.application.Application()
 
     return application.exec_()
 
