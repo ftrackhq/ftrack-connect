@@ -40,6 +40,10 @@ class WidgetHarness(Harness):
 
         applyButton.clicked.connect(self.setTime)
 
+        widget.setSizePolicy(
+            QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Fixed
+        )
+
         return widget
 
     def setTime(self):
