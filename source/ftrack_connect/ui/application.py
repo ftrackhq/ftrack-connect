@@ -11,6 +11,7 @@ import ftrack_connect.error
 from ftrack_connect.ui.widget import uncaught_error as _uncaught_error
 from ftrack_connect.ui.widget import tab_widget as _tab_widget
 from ftrack_connect.ui.widget import login as _login
+from ftrack_connect.error import NotUniqueError as _NotUniqueError
 
 
 class ApplicationPlugin(QtGui.QWidget):
@@ -25,6 +26,10 @@ class ApplicationPlugin(QtGui.QWidget):
     def getName(self):
         '''Return name of widget.'''
         return self.__class__.__name__
+
+    def getIdentifier(self):
+        '''Return identifier for widget.'''
+        return self.getName().lower().replace(' ', '.')
 
 
 class Application(QtGui.QMainWindow):
@@ -280,27 +285,58 @@ class Application(QtGui.QMainWindow):
 
         self.setStyleSheet(styleSheetString)
 
-    def add(self, widget, name=None):
-        '''Add *widget* as tab with *name*.
+    def add(self, plugin, name=None, identifier=None):
+        '''Add *plugin* in new tab with *name* and *identifier*.
 
-        If *name* is None the name will be collected from the widget.
+        *plugin* should be an instance of :py:class:`ApplicationPlugin`.
+
+        *name* will be used as the label for the tab. If *name* is None then
+        *plugin.getName() will be used.
+
+        *identifier* will be used for routing events to plugins. If
+        **identifier* is None then plugin.getIdentifier() will be used.
 
         '''
         if name is None:
-            name = widget.getName()
+            name = plugin.getName()
 
-        self.tabPanel.addTab(
-            widget, name
-        )
+        if identifier is None:
+            identifier = plugin.getIdentifier()
 
-        self.plugins[name.lower()] = widget
+        if identifier in self.plugins:
+            raise _NotUniqueError(
+                'Cannot add plugin. An existing plugin has already been '
+                'registered with identifier {0}.'.format(identifier)
+            )
 
-        widget.requestApplicationFocus.connect(
+        self.plugins[identifier] = plugin
+        self.tabPanel.addTab(plugin, name)
+
+        # Connect standard plugin events.
+        plugin.requestApplicationFocus.connect(
             self._onWidgetRequestApplicationFocus
         )
-        widget.requestApplicationClose.connect(
+        plugin.requestApplicationClose.connect(
             self._onWidgetRequestApplicationClose
         )
+
+    def remove(self, identifier):
+        '''Remove widget registered with *identifier*.
+
+        Raise :py:exc:`KeyError` if no widget with *identifier* has been added.
+
+        '''
+        plugin = self.plugins.get(identifier)
+        if plugin is None:
+            raise KeyError(
+                'No plugin registered with identifier "{0}".'.format(identifier)
+            )
+
+        index = self.tabPanel.indexOf(plugin)
+        self.tabPanel.removeTab(index)
+
+        plugin.deleteLater()
+        del self.plugins[identifier]
 
     def focus(self):
         '''Focus and bring the window to top.'''
