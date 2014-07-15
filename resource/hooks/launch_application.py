@@ -7,13 +7,11 @@ import json
 import base64
 import sys
 import subprocess
+import collections
 
 import ftrack
 
 log = logging.getLogger(__name__)
-
-
-import collections
 
 
 def conformEnvironment(mapping):
