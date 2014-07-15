@@ -13,6 +13,20 @@ from ftrack_connect.ui.widget import tab_widget as _tab_widget
 from ftrack_connect.ui.widget import login as _login
 
 
+class ApplicationPlugin(QtGui.QWidget):
+    '''Base widget for ftrack connect application plugin.'''
+
+    #: Signal to emit to request focus of this plugin in application.
+    requestApplicationFocus = QtCore.Signal(object)
+
+    #: Signal to emit to request closing application.
+    requestApplicationClose = QtCore.Signal(object)
+
+    def getName(self):
+        '''Return name of widget.'''
+        return self.__class__.__name__
+
+
 class MainWindow(QtGui.QMainWindow):
     '''Main window class for ftrack connect.'''
 
@@ -226,12 +240,12 @@ class MainWindow(QtGui.QMainWindow):
 
         method(**eventData)
 
-    def _onWidgetRequestFocus(self, widget):
+    def _onWidgetRequestApplicationFocus(self, widget):
         '''Switch tab to *widget* and bring application to front.'''
         self.tabPanel.setCurrentWidget(widget)
         self.focus()
 
-    def _onWidgetRequestClose(self, widget):
+    def _onWidgetRequestApplicationClose(self, widget):
         '''Hide application upon *widget* request.'''
         self.hide()
 
@@ -281,8 +295,12 @@ class MainWindow(QtGui.QMainWindow):
 
         self.plugins[name.lower()] = widget
 
-        widget.requestFocus.connect(self._onWidgetRequestFocus)
-        widget.requestClose.connect(self._onWidgetRequestClose)
+        widget.requestApplicationFocus.connect(
+            self._onWidgetRequestApplicationFocus
+        )
+        widget.requestApplicationClose.connect(
+            self._onWidgetRequestApplicationClose
+        )
 
     def focus(self):
         '''Focus and bring the window to top.'''

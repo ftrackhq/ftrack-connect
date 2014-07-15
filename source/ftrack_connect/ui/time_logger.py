@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-from PySide import QtGui, QtCore
+import ftrack_connect.ui.application
 
 
 def register(connect):
@@ -10,11 +10,8 @@ def register(connect):
     connect.add(timeLogger)
 
 
-class TimeLogger(QtGui.QWidget):
+class TimeLogger(ftrack_connect.ui.application.ApplicationPlugin):
     '''Base widget for ftrack connect time logger plugin.'''
-
-    requestFocus = QtCore.Signal(object)
-    requestClose = QtCore.Signal(object)
 
     def __init__(self, *args, **kwargs):
         '''Instantiate the time logger.'''

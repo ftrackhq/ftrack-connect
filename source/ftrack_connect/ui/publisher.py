@@ -1,10 +1,10 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-import sys
-
 from PySide import QtGui, QtCore
 import ftrack
+
+import ftrack_connect.ui.application
 
 
 def register(connect):
@@ -13,14 +13,12 @@ def register(connect):
     connect.add(publisher, publisher.getName())
 
 
-class Publisher(QtGui.QStackedWidget):
+class Publisher(QtGui.QStackedWidget,
+                ftrack_connect.ui.application.ApplicationPlugin):
     '''Base widget for ftrack connect publisher plugin.'''
 
-    # Add signal for when the entity is changed.
+    #: Signal to emit when the entity is changed.
     entityChanged = QtCore.Signal(object)
-
-    requestFocus = QtCore.Signal(object)
-    requestClose = QtCore.Signal(object)
 
     def __init__(self, *args, **kwargs):
         '''Instantiate the publisher widget.'''
@@ -88,7 +86,7 @@ class Publisher(QtGui.QStackedWidget):
 
         self.clear()
 
-        self.requestClose.emit(self)
+        self.requestApplicationClose.emit(self)
 
     def _setView(self, view):
         '''Set active widget of the publisher.'''
@@ -119,4 +117,4 @@ class Publisher(QtGui.QStackedWidget):
             entity.get('entityId')
         )
         self.setEntity(entity)
-        self.requestFocus.emit(self)
+        self.requestApplicationFocus.emit(self)
