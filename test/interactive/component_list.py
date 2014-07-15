@@ -1,33 +1,27 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-import sys
-
-from PySide import QtGui
-
 import ftrack_connect.ui.widget.components_list
+from harness import Harness
 
 
-def main(arguments=None):
-    '''Interactive test of components list.'''
-    if arguments is None:
-        arguments = sys.argv
+class WidgetHarness(Harness):
+    '''Test harness for widget.'''
 
-    application = QtGui.QApplication(arguments)
+    def constructWidget(self):
+        '''Return widget instance to test.'''
+        widget = ftrack_connect.ui.widget.components_list.ComponentsList()
+        widget.addItem({
+            'resourceIdentifier': '/path/to/file.png'
+        })
+        widget.addItem({
+            'resourceIdentifier': '/path/to/sequence.%04d.png [1-20]'
+        })
 
-    dialog = ftrack_connect.ui.widget.components_list.ComponentsList()
-    dialog.resize(800, 400)
-    dialog.show()
-    dialog.addItem({
-        'resourceIdentifier': '/path/to/file.png'
-    })
-    dialog.addItem({
-        'resourceIdentifier': '/path/to/sequence.%04d.png [1-20]'
-    })
-
-    sys.exit(application.exec_())
+        return widget
 
 
 if __name__ == '__main__':
-    raise SystemExit(main())
-
+    raise SystemExit(
+        WidgetHarness().run()
+    )

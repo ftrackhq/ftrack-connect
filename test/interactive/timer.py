@@ -5,7 +5,7 @@ import ftrack_connect.ui.widget.timer
 from harness import Harness
 
 
-class TestHarness(Harness):
+class WidgetHarness(Harness):
     '''Test harness for widget.'''
 
     def constructWidget(self):
@@ -19,5 +19,5 @@ class TestHarness(Harness):
 
 if __name__ == '__main__':
     raise SystemExit(
-        TestHarness().run()
+        WidgetHarness().run()
     )
