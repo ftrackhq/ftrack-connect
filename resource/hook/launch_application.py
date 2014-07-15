@@ -11,32 +11,12 @@ import collections
 
 import ftrack
 
-log = logging.getLogger('ftrack.launch-application')
-
-
-def conformEnvironment(mapping):
-    '''Ensure all entries in *mapping* are strings.
-
-    .. note::
-
-        The *mapping* is modified in place.
-
-    '''
-    if not isinstance(mapping, collections.MutableMapping):
-        return
-
-    for key, value in mapping.items():
-        if isinstance(value, collections.Mapping):
-            conformEnvironment(value)
-        else:
-            value = str(value)
-
-        del mapping[key]
-        mapping[str(key)] = value
-
 
 class LaunchApplicationHook(object):
     '''LaunchApplicationHook class.'''
+
+    def __init__(self):
+        self.log = logging.getLogger('ftrack.launch-application')
 
     def __call__(self, event, applicationIdentifier, context, **data):
         '''Default launch-application hook.
@@ -57,7 +37,7 @@ class LaunchApplicationHook(object):
         message = '{0} application started.'.format(applicationIdentifier)
 
         # Environment must contain only strings.
-        conformEnvironment(environment)
+        self._conformEnvironment(environment)
 
         try:
             options = dict(
@@ -75,7 +55,7 @@ class LaunchApplicationHook(object):
             process = subprocess.Popen(command, **options)
 
         except (OSError, TypeError):
-            log.exception(
+            self.log.exception(
                 '{0} application could not be started with command "{1}".'.format(
                     applicationIdentifier, command
                 )
@@ -92,6 +72,26 @@ class LaunchApplicationHook(object):
             'success': success,
             'message': message
         }
+
+    def _conformEnvironment(self, mapping):
+        '''Ensure all entries in *mapping* are strings.
+
+        .. note::
+
+            The *mapping* is modified in place.
+
+        '''
+        if not isinstance(mapping, collections.MutableMapping):
+            return
+
+        for key, value in mapping.items():
+            if isinstance(value, collections.Mapping):
+                self._conformEnvironment(value)
+            else:
+                value = str(value)
+
+            del mapping[key]
+            mapping[str(key)] = value
 
     def _getApplicationLaunchCommand(self, applicationIdentifier):
         '''Return application command based on OS and *applicationIdentifier*.
@@ -155,13 +155,13 @@ class LaunchApplicationHook(object):
                     )
                 )
             except:
-                log.exception(
+                self.log.exception(
                     'Context could not be converted correctly. {0}'.format(context)
                 )
             else:
                 environment['FTRACK_CONNECT_EVENT'] = applicationContext
 
-        log.debug('Setting new environment to {0}'.format(environment))
+        self.log.debug('Setting new environment to {0}'.format(environment))
 
         return environment
 
