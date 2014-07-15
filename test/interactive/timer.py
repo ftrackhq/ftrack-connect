@@ -5,6 +5,7 @@ import sys
 
 from PySide import QtGui
 
+import ftrack_connect.ui.theme
 import ftrack_connect.ui.widget.timer
 
 
@@ -30,12 +31,14 @@ def main(arguments=None):
     if arguments is None:
         arguments = sys.argv
 
+    # Construct global application.
     application = QtGui.QApplication(arguments)
 
+    # Construct test harness and apply theme.
     dialog = TestHarness()
-    dialog.show()
+    ftrack_connect.ui.theme.applyTheme(dialog)
 
-    dialog.timer.start()
+    dialog.show()
 
     sys.exit(application.exec_())
 

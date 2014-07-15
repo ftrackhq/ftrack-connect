@@ -8,6 +8,7 @@ from PySide import QtCore
 
 import ftrack_connect.topic_thread
 import ftrack_connect.error
+import ftrack_connect.ui.theme
 from ftrack_connect.ui.widget import uncaught_error as _uncaught_error
 from ftrack_connect.ui.widget import tab_widget as _tab_widget
 from ftrack_connect.ui.widget import login as _login
@@ -21,6 +22,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def __init__(self, *args, **kwargs):
         '''Initialise the main application window.'''
+        theme = kwargs.pop('theme', 'light')
         super(MainWindow, self).__init__(*args, **kwargs)
 
         # Register widget for error handling.
@@ -36,7 +38,9 @@ class MainWindow(QtGui.QMainWindow):
         self.logoIcon = QtGui.QIcon(
             QtGui.QPixmap(':/ftrack/image/default/ftrackLogo')
         )
-        self._setupStyle()
+
+        self._theme = None
+        self.setTheme(theme)
 
         self.plugins = {}
 
@@ -51,6 +55,22 @@ class MainWindow(QtGui.QMainWindow):
 
         self.loginWidget = None
         self.login()
+
+    def theme(self):
+        '''Return current theme.'''
+        return self._theme
+
+    def setTheme(self, theme):
+        '''Set *theme*.'''
+        self._theme = theme
+        ftrack_connect.ui.theme.applyTheme(self, self._theme)
+
+    def toggleTheme(self):
+        '''Toggle active application theme.'''
+        if self.theme() == 'dark':
+            self.setTheme('light')
+        else:
+            self.setTheme('dark')
 
     def login(self):
         '''Login using stored credentials or ask user for them.'''
@@ -174,7 +194,7 @@ class MainWindow(QtGui.QMainWindow):
 
         styleAction = QtGui.QAction(
             'Change theme', self,
-            triggered=self._changeTheme
+            triggered=self.toggleTheme
         )
         menu.addAction(styleAction)
 
@@ -230,37 +250,6 @@ class MainWindow(QtGui.QMainWindow):
     def _onWidgetRequestClose(self, widget):
         '''Hide application upon *widget* request.'''
         self.hide()
-
-    def _changeTheme(self):
-        '''Change active application theme.'''
-        if not hasattr(self, '_theme'):
-            self._theme = 'light'
-
-        if self._theme == 'dark':
-            self._theme = 'light'
-        else:
-            self._theme = 'dark'
-
-        self._setupStyle(self._theme)
-
-    def _setupStyle(self, theme='light'):
-        '''Set up application style using *theme*.'''
-        QtGui.QApplication.setStyle('cleanlooks')
-
-        # Load main font file
-        QtGui.QFontDatabase.addApplicationFont(
-            ':/ftrack/font/main'
-        )
-
-        # Load main stylesheet
-        file = QtCore.QFile(':/ftrack/style/{0}'.format(theme))
-        file.open(
-            QtCore.QFile.ReadOnly | QtCore.QFile.Text
-        )
-        stream = QtCore.QTextStream(file)
-        styleSheetString = stream.readAll()
-
-        self.setStyleSheet(styleSheetString)
 
     def add(self, widget, name=None):
         '''Add *widget* as tab with *name*.
