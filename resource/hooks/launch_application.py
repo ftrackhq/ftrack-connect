@@ -37,7 +37,7 @@ def _getApplicationLaunchCommand(applicationIdentifier):
     return command
 
 
-def _getApplicationEnvironment(context=None):
+def _getApplicationEnvironment(eventData=None):
     '''Return list of environment variables based on *context*.
 
     The list will also contain the variables available in the current session.
@@ -50,11 +50,11 @@ def _getApplicationEnvironment(context=None):
     # Such as FTRACK_TOPIC_PLUGIN_PATH.
 
     # Add ftrack connect event to environment.
-    if context is not None:
+    if eventData is not None:
         try:
             applicationContext = base64.b64encode(
                 json.dumps(
-                    context
+                    eventData
                 )
             )
         except:
@@ -69,7 +69,7 @@ def _getApplicationEnvironment(context=None):
     return environment
 
 
-def callback(event, applicationIdentifier, context, **kw):
+def callback(event, applicationIdentifier, context, **data):
     '''Default launch-application hook.
 
     The hook callback accepts *event*, the *applicationIdentifier* and the
@@ -77,7 +77,12 @@ def callback(event, applicationIdentifier, context, **kw):
 
     '''
     command = _getApplicationLaunchCommand(applicationIdentifier)
-    environment = _getApplicationEnvironment(applicationIdentifier)
+
+    data['context'] = context
+    data['applicationIdentifier'] = applicationIdentifier
+    environment = _getApplicationEnvironment(
+        data
+    )
 
     success = True
     message = 'Application started.'
