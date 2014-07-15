@@ -192,6 +192,10 @@ class MainWindow(QtGui.QMainWindow):
         from .publisher import register
         register(self)
 
+        # Add time logger.
+        from . import time_logger
+        time_logger.register(self)
+
     def _routeEvent(self, eventData):
         '''Route websocket event to publisher plugin based on *eventData*.
 
