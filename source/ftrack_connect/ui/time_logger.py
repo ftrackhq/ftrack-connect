@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-from PySide import QtGui
+from PySide import QtGui, QtCore
 
 import ftrack_connect.ui.application
 import ftrack_connect.ui.widget.timer
@@ -26,6 +26,7 @@ class TimeLogger(ftrack_connect.ui.application.ApplicationPlugin):
         self.setLayout(layout)
         layout.setContentsMargins(0, 0, 0, 0)
 
+        self._timerVisible = True
         self.timer = ftrack_connect.ui.widget.timer.Timer()
         layout.addWidget(self.timer)
 
@@ -34,3 +35,40 @@ class TimeLogger(ftrack_connect.ui.application.ApplicationPlugin):
     def getName(self):
         '''Return name of widget.'''
         return 'Log Time'
+
+    def showTimer(self):
+        '''Show the timer widget.'''
+        self._timerVisible = True
+
+        startGeometry = QtCore.QRect(self.timer.geometry())
+        endGeometry = QtCore.QRect(
+            startGeometry.x(), 0,
+            startGeometry.width(), startGeometry.height()
+        )
+        self._animateTimer(startGeometry, endGeometry)
+
+    def hideTimer(self):
+        '''Hide the timer widget.'''
+        self._timerVisible = False
+
+        startGeometry = QtCore.QRect(self.timer.geometry())
+        endGeometry = QtCore.QRect(
+            startGeometry.x(), -startGeometry.height(),
+            startGeometry.width(), startGeometry.height()
+        )
+        self._animateTimer(startGeometry, endGeometry)
+
+    def toggleTimer(self):
+        '''Toggle whether timer is hidden or not.'''
+        if self._timerVisible:
+            self.hideTimer()
+        else:
+            self.showTimer()
+
+    def _animateTimer(self, startGeometry, endGeometry):
+        '''Animate the timer.'''
+        self._animation = QtCore.QPropertyAnimation(self.timer, 'geometry')
+        self._animation.setDuration(200)
+        self._animation.setStartValue(startGeometry)
+        self._animation.setEndValue(endGeometry)
+        self._animation.start()
