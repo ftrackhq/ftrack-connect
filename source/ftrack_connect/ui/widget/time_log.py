@@ -50,6 +50,10 @@ class TimeLog(QtGui.QWidget):
         self.playButton.clicked.connect(self._onPlayButtonClicked)
         layout.addWidget(self.playButton)
 
+        self.setSizePolicy(
+            QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Fixed
+        )
+
         # Set initial values.
         self.setValue({
             'title': title,
