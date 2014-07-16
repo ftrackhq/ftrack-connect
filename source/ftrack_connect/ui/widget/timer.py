@@ -10,7 +10,7 @@ import ftrack_connect.ui.widget.line_edit
 import ftrack_connect.ui.widget.label
 
 
-class Timer(QtGui.QWidget):
+class Timer(QtGui.QFrame):
     '''Timer for logging time.'''
 
     def __init__(self, title=None, description=None, time=0, parent=None):
