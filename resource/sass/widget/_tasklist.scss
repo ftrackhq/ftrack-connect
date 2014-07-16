@@ -1,0 +1,25 @@
+/** Task List */
+#task QLabel#title {
+    font-weight: bold;
+    color: $text-color-primary;
+}
+
+QFrame#tasklist {
+    border: 0;
+    margin: 20px 0 0 0;
+}
+
+QFrame#tasklist QTableWidget {
+    background-color: transparent;
+    border: 0;
+}
+
+QFrame#tasklist QTableWidget::item {
+    background-color: transparent;
+    border-bottom: 1px solid $input-border-color;
+    padding: 0;
+}
+
+#tasklist QLabel#title {
+    font-weight: bold;
+}
