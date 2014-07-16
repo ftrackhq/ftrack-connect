@@ -16,9 +16,6 @@ def register(connect):
     timeLogger = TimeLogger()
     connect.addPlugin(timeLogger)
 
-    # TEMP: Dev only.
-    timeLogger.requestApplicationFocus.emit(timeLogger)
-
 
 class TimerOverlay(ftrack_connect.ui.widget.overlay.Overlay):
     '''Overlay for timer widget.'''
