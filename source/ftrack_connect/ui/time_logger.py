@@ -34,17 +34,6 @@ class TimerOverlay(ftrack_connect.ui.widget.overlay.Overlay):
         message.setAlignment(QtCore.Qt.AlignVCenter)
         layout.addWidget(message)
 
-        self.setStyleSheet('''
-            QFrame#overlay {
-                border: 1px dashed #ddd;
-                background-color:rgba(255, 255, 255, 200);
-            }
-
-            QFrame#overlay QLabel {
-                background: transparent;
-            }
-        ''')
-
 
 class TimeLogger(ftrack_connect.ui.application.ApplicationPlugin):
     '''Base widget for ftrack connect time logger plugin.'''
