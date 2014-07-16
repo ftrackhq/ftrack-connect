@@ -19,6 +19,7 @@ class MainWindow(QtGui.QMainWindow):
 
     # Signal to be used when login fails.
     loginError = QtCore.Signal(object)
+    topicSignal = QtCore.Signal(object, object)
 
     def __init__(self, *args, **kwargs):
         '''Initialise the main application window.'''
@@ -53,18 +54,23 @@ class MainWindow(QtGui.QMainWindow):
         self.loginWidget = None
         self.login()
 
-    def _onConnectTopicEvent(self, topic, _meta_, **data):
+    def _onConnectTopicEvent(self, event, data):
         '''Generic callback for all ftrack.connect events.
 
         .. note::
             Events not triggered by the current logged in user will be dropped.
 
         '''
+        if event.topic != 'ftrack.connect':
+            return
+
+        _meta_ = data.pop('_meta_')
+
         # Drop all events triggered by other users.
         if not _meta_.get('userId') == self._currentUserId:
             return
 
-        self._routeEvent(topic, _meta_, **data)
+        self._routeEvent(event, _meta_, **data)
 
     def login(self):
         '''Login using stored credentials or ask user for them.'''
@@ -159,13 +165,19 @@ class MainWindow(QtGui.QMainWindow):
         )
 
         self._currentUserId = currentUser.getId()
-        ftrack.TOPICS.subscribe('ftrack.connect', self._onConnectTopicEvent)
+
+        ftrack.TOPICS.subscribe('ftrack.connect', self._relayTopicEvent)
+        self.topicSignal.connect(self._onConnectTopicEvent)
 
         import ftrack_connect.topic_thread
         self.topicThread = ftrack_connect.topic_thread.TopicThread()
         self.topicThread.start()
 
         self.focus()
+
+    def _relayTopicEvent(self, event, **kwargs):
+        '''Relay all ftrack.connect topics.'''
+        self.topicSignal.emit(event, kwargs)
 
     def _initialiseTray(self):
         '''Initialise and add application icon to system tray.'''
