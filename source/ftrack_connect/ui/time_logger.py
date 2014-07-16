@@ -34,6 +34,14 @@ class TimerOverlay(ftrack_connect.ui.widget.overlay.Overlay):
         message.setAlignment(QtCore.Qt.AlignVCenter)
         layout.addWidget(message)
 
+        # TODO: See if there is a way to stop Sass converting the rgba string
+        # to the wrong value.
+        self.setStyleSheet('''
+            #ftrack-connect-window TimerOverlay {
+                background-color: rgba(255, 255, 255, 200);
+            }
+        ''')
+
 
 class TimeLogger(ftrack_connect.ui.application.ApplicationPlugin):
     '''Base widget for ftrack connect time logger plugin.'''
