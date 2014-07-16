@@ -15,7 +15,7 @@ directory. Then configure the environment by setting the
 :envvar:`FTRACK_TOPIC_PLUGIN_PATH` environment variable.
 
 It is also possible to prevent a default hook from being triggered by calling
-py:func:`event.stop` in a callback with higher priority or by remving the
+py:func:`event.stop` in a callback with higher priority or by removing the
 default hook using :py:func:`ftrack.TOPICS.unsubscribe`
 
 .. note::
