@@ -86,7 +86,11 @@ class LaunchApplicationHook(object):
             )
 
         else:
-            message += ' (pid={0})'.format(process.pid)
+            self.logger.debug(
+                '{0} application started. (pid={1})'.format(
+                    applicationIdentifier, process.pid
+                )
+            )
 
         return {
             'success': success,
@@ -128,7 +132,7 @@ class LaunchApplicationHook(object):
                 # HieroPlayer application command when running OSX.
                 command = [
                     'open',
-                    '/Applications/HieroPlayer1.8v1/HieroPlayer1.8v1.app'
+                    '/Applications/HieroPlayer1.8v2/HieroPlayer1.8v2.app'
                 ]
 
             else:
