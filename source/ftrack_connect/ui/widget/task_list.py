@@ -38,7 +38,7 @@ class TaskList(ftrack_connect.ui.widget.item_list.ItemList):
         '''Set *title*.'''
         self.titleLabel.setText(title)
 
-    def getTitle(self):
+    def title(self):
         '''Return currect title.'''
         self.titleLabel.text()
 
