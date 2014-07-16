@@ -24,7 +24,7 @@ class TimeLogList(ftrack_connect.ui.widget.item_list.ItemList):
         self.setObjectName('time-log-list')
         self.list.setShowGrid(False)
 
-        # Disbale selection on internal list.
+        # Disable selection on internal list.
         self.list.setSelectionMode(
             QtGui.QAbstractItemView.NoSelection
         )
@@ -38,7 +38,7 @@ class TimeLogList(ftrack_connect.ui.widget.item_list.ItemList):
         self.titleLabel.setText(title)
 
     def title(self):
-        '''Return currect title.'''
+        '''Return current title.'''
         self.titleLabel.text()
 
     def addItem(self, item, row=None):
