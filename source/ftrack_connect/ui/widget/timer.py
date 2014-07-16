@@ -144,7 +144,7 @@ class Timer(QtGui.QFrame):
         '''Set all attributes from *value*.'''
         self.setTitle(value.get('title', None))
         self.setDescription(value.get('description', None))
-        self.setTime(value.get('time', None))
+        self.setTime(value.get('time', 0))
 
     def title(self):
         '''Return title.'''
