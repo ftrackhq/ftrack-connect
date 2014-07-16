@@ -14,7 +14,7 @@ class TimeLogList(ftrack_connect.ui.widget.item_list.ItemList):
 
     itemSelected = QtCore.Signal(object)
 
-    def __init__(self, parent=None, title=''):
+    def __init__(self, parent=None, title=None):
         '''Instantiate widget with optional *parent* and *title*.'''
         super(TimeLogList, self).__init__(
             widgetFactory=self._createWidget,
