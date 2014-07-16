@@ -24,6 +24,7 @@ class TimeLogger(ftrack_connect.ui.application.ApplicationPlugin):
         super(TimeLogger, self).__init__(*args, **kwargs)
         layout = QtGui.QVBoxLayout()
         self.setLayout(layout)
+        layout.setContentsMargins(0, 0, 0, 0)
 
         self.timer = ftrack_connect.ui.widget.timer.Timer()
         layout.addWidget(self.timer)
