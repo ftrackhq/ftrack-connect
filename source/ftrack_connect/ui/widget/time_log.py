@@ -8,16 +8,21 @@ from PySide import QtCore
 import ftrack_connect.ui.widget.label
 
 
-class Task(QtGui.QWidget):
-    '''Represent a task.'''
+class TimeLog(QtGui.QWidget):
+    '''Represent a time log.'''
 
     selected = QtCore.Signal(object)
 
-    def __init__(self, parent=None, task=None):
-        '''Initialise widget with *parent* and reference to ftrack *task*.'''
-        super(Task, self).__init__(parent=parent)
-        self.setObjectName('task')
-        self._task = task
+    def __init__(self, parent=None, link=None):
+        '''Initialise widget with *parent* and optional *link*.
+
+        *link* may be a reference to an ftrack entity to represent a time log
+        for.
+
+        '''
+        super(TimeLog, self).__init__(parent=parent)
+        self.setObjectName('time-log')
+        self._link = link
         self._path = None
 
         layout = QtGui.QHBoxLayout()
@@ -44,8 +49,8 @@ class Task(QtGui.QWidget):
         layout.addWidget(self.playButton)
 
         # Set initial values.
-        self.setId(task.getId())
-        self.setTitle(self._task.getName())
+        self.setId(self._link.getId())
+        self.setTitle(self._link.getName())
         self.setDescription(
             self.path(asString=True)
         )
@@ -61,7 +66,7 @@ class Task(QtGui.QWidget):
     def setTitle(self, title=None):
         '''Set the *path*.'''
         if title is None:
-            path = self._task.getName()
+            path = self._link.getName()
 
         self.titleLabel.setText(title)
 
@@ -79,7 +84,7 @@ class Task(QtGui.QWidget):
     def value(self):
         '''Return dictionary with component data.'''
         return {
-            'id': self._task.id(),
+            'id': self._link.id(),
             'path': self.getPath(),
             'loggedTime': self.loggedTime()
         }
@@ -89,13 +94,13 @@ class Task(QtGui.QWidget):
         self.selected.emit(self)
 
     def path(self, asString=False):
-        '''Return path for task as a list.
+        '''Return path for entity as a list.
 
         If *asString* is True a string representation will be returned instead.
 
         '''
         if self._path is None:
-            parents = self._task.getParents()
+            parents = self._link.getParents()
             parents.reverse()
             self._path = [parent.getName() for parent in parents]
 

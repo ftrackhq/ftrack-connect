@@ -1,25 +1,25 @@
-/** Task List */
-#task QLabel#title {
+/** Time log List */
+#time-log QLabel#title {
     // TODO: Change to use the same variable as in Timer.
     color: #82e3f6;
 }
 
-QFrame#tasklist {
+QFrame#time-log-list {
     border: 0;
     margin: 20px 0 0 0;
 }
 
-QFrame#tasklist QTableWidget {
+QFrame#time-log-list QTableWidget {
     background-color: transparent;
     border: 0;
 }
 
-QFrame#tasklist QTableWidget::item {
+QFrame#time-log-list QTableWidget::item {
     background-color: transparent;
     border-bottom: 1px solid $input-border-color;
     padding: 0;
 }
 
-#tasklist QLabel#title {
+#time-log-list QLabel#title {
     font-weight: bold;
 }

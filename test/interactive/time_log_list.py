@@ -5,7 +5,7 @@ import os
 from PySide import QtGui
 import ftrack
 
-import ftrack_connect.ui.widget.task_list
+import ftrack_connect.ui.widget.time_log_list
 from harness import Harness
 
 
@@ -25,7 +25,7 @@ class WidgetHarness(Harness):
             states=['IN_PROGRESS', 'BLOCKED']
         )
 
-        assignedTasksList = ftrack_connect.ui.widget.task_list.TaskList(
+        assignedTasksList = ftrack_connect.ui.widget.time_log_list.TimeLogList(
             title='Assigned tasks'
         )
 
@@ -33,7 +33,7 @@ class WidgetHarness(Harness):
 
         for task in allAssignedTasks:
             assignedTasksList.addItem({
-                'task': task
+                'link': task
             })
 
         divider = QtGui.QFrame()
@@ -41,7 +41,7 @@ class WidgetHarness(Harness):
         layout.addWidget(divider)
 
         self.selectedTasklabel = QtGui.QLabel()
-        assignedTasksList.taskSelected.connect(self._setLabelText)
+        assignedTasksList.itemSelected.connect(self._setLabelText)
 
         layout.addWidget(self.selectedTasklabel)
 

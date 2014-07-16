@@ -8,22 +8,22 @@ from PySide import QtCore
 
 import ftrack_connect.ui.widget.item_list
 import ftrack_connect.ui.widget.label
-import ftrack_connect.ui.widget.task
+import ftrack_connect.ui.widget.time_log
 
 
-class TaskList(ftrack_connect.ui.widget.item_list.ItemList):
-    '''List tasks widget.'''
+class TimeLogList(ftrack_connect.ui.widget.item_list.ItemList):
+    '''List time logs widget.'''
 
-    taskSelected = QtCore.Signal(object)
+    itemSelected = QtCore.Signal(object)
 
     def __init__(self, parent=None, title=''):
         '''Instantiate widget with optional *parent* and *title*.'''
-        super(TaskList, self).__init__(
-            widgetFactory=self._createTaskWidget,
+        super(TimeLogList, self).__init__(
+            widgetFactory=self._createWidget,
             widgetItem=lambda widget: widget.value(),
             parent=parent
         )
-        self.setObjectName('tasklist')
+        self.setObjectName('time-log-list')
         self.list.setShowGrid(False)
 
         # Disbale selection on internal list.
@@ -52,20 +52,20 @@ class TaskList(ftrack_connect.ui.widget.item_list.ItemList):
         if row is None:
             row = self.count()
 
-        super(TaskList, self).addItem(item, row=row)
+        super(TimeLogList, self).addItem(item, row=row)
         widget = self.list.widgetAt(row)
 
-        # Connect the widget's selected signal to the taskSelected signal
-        widget.selected.connect(self.taskSelected.emit)
+        # Connect the widget's selected signal to the itemSelected signal
+        widget.selected.connect(self.itemSelected.emit)
 
-    def _createTaskWidget(self, item):
-        '''Return timer task widget for *item*.
+    def _createWidget(self, item):
+        '''Return time log widget for *item*.
 
         *item* should be a mapping of keyword arguments to pass to
-        :py:class:`ftrack_connect.ui.widget.task.Task`.
+        :py:class:`ftrack_connect.ui.widget.time_log.TimeLog`.
 
         '''
         if item is None:
             item = {}
 
-        return ftrack_connect.ui.widget.task.Task(**item)
+        return ftrack_connect.ui.widget.time_log.TimeLog(**item)
