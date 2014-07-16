@@ -132,7 +132,7 @@ class LaunchApplicationHook(object):
                 # HieroPlayer application command when running OSX.
                 command = [
                     'open',
-                    '/Applications/HieroPlayer1.8v2/HieroPlayer1.8v2.app'
+                    '/Applications/HieroPlayer1.8v1/HieroPlayer1.8v1.app'
                 ]
 
             else:
