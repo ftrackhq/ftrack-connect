@@ -13,6 +13,12 @@ import ftrack_connect.ui.widget.label
 class Timer(QtGui.QFrame):
     '''Timer for logging time.'''
 
+    #: Signal when timer started passing elapsed time.
+    started = QtCore.Signal(object)
+
+    #: Signal when timer stopped passing elapsed time.
+    stopped = QtCore.Signal(object)
+
     def __init__(self, title=None, description=None, time=0, parent=None):
         '''Initialise timer.
 
@@ -99,6 +105,8 @@ class Timer(QtGui.QFrame):
         if not self.isRunning():
             self._tick = _time.time()
             self._timer = self.startTimer(50)
+            self.started.emit(self.time())
+
             self._updateState()
 
     def stop(self):
@@ -109,6 +117,7 @@ class Timer(QtGui.QFrame):
 
             self.timerEvent(QtCore.QTimerEvent(0))
             self._tick = None
+            self.stopped.emit(self.time())
 
             self._updateState()
 
@@ -163,11 +172,11 @@ class Timer(QtGui.QFrame):
         self.descriptionLabel.setText(description)
 
     def time(self):
-        '''Return time elapsed.'''
+        '''Return time elapsed in seconds.'''
         return self._elapsed
 
     def setTime(self, time):
-        '''Set *time* elapsed.'''
+        '''Set *time* elapsed in seconds.'''
         self._elapsed = time
         hours, remainder = divmod(time, 3600)
         minutes, seconds = divmod(remainder, 60)

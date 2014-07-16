@@ -54,6 +54,8 @@ class TimeLogger(ftrack_connect.ui.application.ApplicationPlugin):
         super(TimeLogger, self).__init__(*args, **kwargs)
         self.setObjectName('timeLogger')
 
+        self._activeEntity = None
+
         layout = QtGui.QVBoxLayout()
         self.setLayout(layout)
 
@@ -69,6 +71,13 @@ class TimeLogger(ftrack_connect.ui.application.ApplicationPlugin):
 
         self.assignedTimeLogList = _TimeLogList(title='Assigned')
         layout.addWidget(self.assignedTimeLogList, stretch=1)
+
+        # Connect events.
+        self.timer.stopped.connect(self._onStopTimer)
+
+        self.assignedTimeLogList.itemSelected.connect(
+            self._onSelectTimeLog
+        )
 
         self._updateAssignedList()
 
@@ -125,3 +134,42 @@ class TimeLogger(ftrack_connect.ui.application.ApplicationPlugin):
             self.disableTimer()
         else:
             self.enableTimer()
+
+    def _onSelectTimeLog(self, timeLog):
+        '''Handle time log selection.'''
+        if timeLog:
+            entity = timeLog.data()
+            if entity == self._activeEntity:
+                return
+
+            # Stop current timer.
+            self.timer.stop()
+
+            # TODO: Store on Timer as data.
+            self._activeEntity = entity
+
+            if self._activeEntity:
+                loggedHoursToday = 0
+                timeReport = self._activeEntity.getLoggedHours()
+                if timeReport is not None:
+                    loggedHoursToday = timeReport.getHours()
+
+                timeInSeconds = loggedHoursToday * 60.0 * 60.0
+
+                self.timer.setValue({
+                    'title': timeLog.title(),
+                    'description': timeLog.description(),
+                    'time': timeInSeconds
+                })
+                self.enableTimer()
+                self.timer.start()
+            else:
+                self.disableTimer()
+        else:
+            self.disableTimer()
+
+    def _onStopTimer(self, time):
+        '''Handle timer being stopped.'''
+        if self._activeEntity:
+            timeInHours = time / 60.0 / 60.0
+            self._activeEntity.setLoggedHours(timeInHours)
