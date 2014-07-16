@@ -44,17 +44,18 @@ class TimeLogList(ftrack_connect.ui.widget.item_list.ItemList):
     def addItem(self, item, row=None):
         '''Add *item* at *row*.
 
-        If *row* is not specified, then append item to end of list.
+        If *row* not specified then add to end of list.
+
+        Return row item added at.
 
         '''
-        if row is None:
-            row = self.count()
-
-        super(TimeLogList, self).addItem(item, row=row)
+        row = super(TimeLogList, self).addItem(item, row=row)
         widget = self.list.widgetAt(row)
 
         # Connect the widget's selected signal to the itemSelected signal
         widget.selected.connect(self.itemSelected.emit)
+
+        return row
 
     def _createWidget(self, item):
         '''Return time log widget for *item*.
