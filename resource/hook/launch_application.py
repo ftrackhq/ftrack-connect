@@ -30,6 +30,7 @@ class LaunchApplicationHook(object):
     '''
 
     def __init__(self):
+        '''Instantiate the hook and setup logging.'''
         self.logger = logging.getLogger(
             'ftrack.hook.' + self.__class__.__name__
         )
