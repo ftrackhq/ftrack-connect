@@ -13,6 +13,11 @@ def register(connect):
     connect.addPlugin(timeLogger)
 
     # TEMP: Dev only.
+    timeLogger.timer.setValue(dict(
+        title='Compositing',
+        description=('drones / sequence / a very very / long path / that '
+                     'should be / elided / is-cu / station')
+    ))
     timeLogger.requestApplicationFocus.emit(timeLogger)
 
 
