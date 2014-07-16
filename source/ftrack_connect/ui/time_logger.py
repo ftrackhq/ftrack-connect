@@ -7,6 +7,7 @@ from PySide import QtGui, QtCore
 
 import ftrack_connect.ui.application
 import ftrack_connect.ui.widget.timer
+import ftrack_connect.ui.widget.overlay
 from ftrack_connect.ui.widget.time_log_list import TimeLogList as _TimeLogList
 
 
@@ -16,12 +17,33 @@ def register(connect):
     connect.addPlugin(timeLogger)
 
     # TEMP: Dev only.
-    timeLogger.timer.setValue(dict(
-        title='Compositing',
-        description=('drones / sequence / a very very / long path / that '
-                     'should be / elided / is-cu / station')
-    ))
     timeLogger.requestApplicationFocus.emit(timeLogger)
+
+
+class TimerOverlay(ftrack_connect.ui.widget.overlay.Overlay):
+    '''Overlay for timer widget.'''
+
+    def __init__(self, parent):
+        '''Initialise.'''
+        super(TimerOverlay, self).__init__(parent)
+        layout = QtGui.QVBoxLayout()
+        self.setLayout(layout)
+
+        message = QtGui.QLabel('Select a task to activate timer.')
+        message.setWordWrap(True)
+        message.setAlignment(QtCore.Qt.AlignVCenter)
+        layout.addWidget(message)
+
+        self.setStyleSheet('''
+            QFrame#overlay {
+                border: 1px dashed #ddd;
+                background-color:rgba(255, 255, 255, 200);
+            }
+
+            QFrame#overlay QLabel {
+                background: transparent;
+            }
+        ''')
 
 
 class TimeLogger(ftrack_connect.ui.application.ApplicationPlugin):
@@ -30,13 +52,20 @@ class TimeLogger(ftrack_connect.ui.application.ApplicationPlugin):
     def __init__(self, *args, **kwargs):
         '''Instantiate the time logger.'''
         super(TimeLogger, self).__init__(*args, **kwargs)
+        self.setObjectName('timeLogger')
+
         layout = QtGui.QVBoxLayout()
         self.setLayout(layout)
-        layout.setContentsMargins(0, 0, 0, 0)
 
-        self._timerVisible = True
+        self.activeLabel = QtGui.QLabel('Currently running')
+        self.activeLabel.setProperty('title', True)
+        layout.addWidget(self.activeLabel)
+
+        self._timerEnabled = False
         self.timer = ftrack_connect.ui.widget.timer.Timer()
         layout.addWidget(self.timer)
+
+        self.timerPlaceholder = TimerOverlay(self.timer)
 
         self.assignedTimeLogList = _TimeLogList(title='Assigned')
         layout.addWidget(self.assignedTimeLogList, stretch=1)
@@ -80,39 +109,19 @@ class TimeLogger(ftrack_connect.ui.application.ApplicationPlugin):
         '''Return name of widget.'''
         return 'Log Time'
 
-    def showTimer(self):
-        '''Show the timer widget.'''
-        self._timerVisible = True
+    def enableTimer(self):
+        '''Enable the timer widget.'''
+        self._timerEnabled = True
+        self.timerPlaceholder.setHidden(True)
 
-        startGeometry = QtCore.QRect(self.timer.geometry())
-        endGeometry = QtCore.QRect(
-            startGeometry.x(), 0,
-            startGeometry.width(), startGeometry.height()
-        )
-        self._animateTimer(startGeometry, endGeometry)
-
-    def hideTimer(self):
-        '''Hide the timer widget.'''
-        self._timerVisible = False
-
-        startGeometry = QtCore.QRect(self.timer.geometry())
-        endGeometry = QtCore.QRect(
-            startGeometry.x(), -startGeometry.height(),
-            startGeometry.width(), startGeometry.height()
-        )
-        self._animateTimer(startGeometry, endGeometry)
+    def disableTimer(self):
+        '''Disable the timer widget.'''
+        self._timerEnabled = False
+        self.timerPlaceholder.setHidden(False)
 
     def toggleTimer(self):
-        '''Toggle whether timer is hidden or not.'''
-        if self._timerVisible:
-            self.hideTimer()
+        '''Toggle whether timer is enabled or not.'''
+        if self._timerEnabled:
+            self.disableTimer()
         else:
-            self.showTimer()
-
-    def _animateTimer(self, startGeometry, endGeometry):
-        '''Animate the timer.'''
-        self._timerAnimation = QtCore.QPropertyAnimation(self.timer, 'geometry')
-        self._timerAnimation.setDuration(200)
-        self._timerAnimation.setStartValue(startGeometry)
-        self._timerAnimation.setEndValue(endGeometry)
-        self._timerAnimation.start()
+            self.enableTimer()
