@@ -4,10 +4,15 @@
 import sys
 import logging
 import argparse
+import signal
 
 from PySide import QtGui
 
 import ftrack_connect.ui.theme
+
+
+# Enable ctrl+c to quit test when started from command line.
+signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 
 class HarnessGui(QtGui.QDialog):
