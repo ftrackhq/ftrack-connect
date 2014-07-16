@@ -188,10 +188,10 @@ class LaunchApplicationHook(object):
                         eventData
                     )
                 )
-            except:
+            except (TypeError, ValueError):
                 self.logger.exception(
-                    'Context could not be converted correctly. {0}'
-                    .format(context)
+                    'The eventData could not be converted correctly. {0}'
+                    .format(eventData)
                 )
             else:
                 environment['FTRACK_CONNECT_EVENT'] = applicationContext
