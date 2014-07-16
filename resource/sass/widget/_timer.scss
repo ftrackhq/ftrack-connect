@@ -1,25 +1,19 @@
 /** Timer */
 #timer QLabel#title {
     font-weight: bold;
-    font-size: $title-font-size;
     color: $text-color-primary;
 }
 
 #timer QLineEdit#timeField {
-    font-size: $title-font-size;
     font-weight: bold;
-    padding: 10px;
-    padding-left: 16px;
-    padding-right: 16px;
-    width: 100px;
-    margin-left: 5px;
-    margin-right: 5px;
+    padding: 8px;
+    width: 80px;
 }
 
 #timer QPushButton#primary {
     font-size: $title-font-size;
-    padding: 10px;
-    width: 120px;
+    padding: 8px;
+    width: 80px;
 }
 
 #timer QPushButton[mode="start"]#primary {
@@ -40,6 +34,7 @@
 
 #timer QPushButton[mode="stop"]#primary {
     background-color: $brand-danger;
+    border-color: lighten($brand-danger, 5%);
 }
 
 #timer QPushButton[mode="stop"]#primary:hover {
