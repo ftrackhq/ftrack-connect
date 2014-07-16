@@ -24,7 +24,7 @@ class CustomOverlay(ftrack_connect.ui.widget.overlay.Overlay):
         self.setStyleSheet('''
             QWidget#overlay {
                 border: 5px solid black;
-                background-color:rgba(255,0,0,150);
+                background-color:rgba(255, 0, 0, 150);
             }
 
             QWidget#overlay QLabel {
