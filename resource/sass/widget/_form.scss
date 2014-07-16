@@ -4,6 +4,10 @@ QLabel {
     color: $text-color;
 }
 
+QLabel[title] {
+    font-weight: bold;
+}
+
 QLineEdit,
 QTextEdit,
 QComboBox {
