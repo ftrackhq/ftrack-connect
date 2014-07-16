@@ -13,7 +13,21 @@ import ftrack
 
 
 class LaunchApplicationHook(object):
-    '''LaunchApplicationHook class.'''
+    '''Default launch-application hook.
+
+    The class is callable and accepts information on the event, the application
+    identifier and the context it is launched from. When launching the
+    application it will configure the environment by copying environment
+    variables such as FTRACK_SERVER, FTRACK_APIKEY, etc. from the current
+    environment.
+
+    Launched applications are started detached so exiting ftrack connect will
+    not close launched applications.
+
+    When called the hook will return information on if the launch was successful
+    and a human readable message.
+
+    '''
 
     def __init__(self):
         self.logger = logging.getLogger(
