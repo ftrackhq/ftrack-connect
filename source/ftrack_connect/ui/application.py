@@ -291,10 +291,10 @@ class Application(QtGui.QMainWindow):
         *plugin* should be an instance of :py:class:`ApplicationPlugin`.
 
         *name* will be used as the label for the tab. If *name* is None then
-        *plugin.getName() will be used.
+        plugin.getName() will be used.
 
         *identifier* will be used for routing events to plugins. If
-        **identifier* is None then plugin.getIdentifier() will be used.
+        *identifier* is None then plugin.getIdentifier() will be used.
 
         '''
         if name is None:
