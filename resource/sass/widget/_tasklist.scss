@@ -1,7 +1,7 @@
 /** Task List */
 #task QLabel#title {
-    font-weight: bold;
-    color: $text-color-primary;
+    // TODO: Change to use the same variable as in Timer.
+    color: #82e3f6;
 }
 
 QFrame#tasklist {

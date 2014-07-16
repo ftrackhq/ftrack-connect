@@ -5,6 +5,7 @@ import uuid
 
 from PySide import QtGui
 from PySide import QtCore
+import ftrack_connect.ui.widget.label
 
 
 class Task(QtGui.QWidget):
