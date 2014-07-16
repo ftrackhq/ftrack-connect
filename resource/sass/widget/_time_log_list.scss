@@ -15,6 +15,6 @@ QFrame#time-log-list QTableWidget::item {
     padding: 0;
 }
 
-#time-log-list QLabel#title {
+#time-log-list > QLabel#title {
     font-weight: bold;
 }
