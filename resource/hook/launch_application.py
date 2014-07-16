@@ -161,6 +161,9 @@ class LaunchApplicationHook(object):
             'FTRACK_SERVER', os.environ.get('FTRACK_SERVER')
         )
         environment.setdefault(
+            'FTRACK_PROXY', os.environ.get('FTRACK_PROXY')
+        )
+        environment.setdefault(
             'FTRACK_APIKEY', os.environ.get('FTRACK_APIKEY')
         )
         environment.setdefault(
