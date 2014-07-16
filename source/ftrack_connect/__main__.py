@@ -68,7 +68,7 @@ def main(arguments=None):
     signal.signal(signal.SIGINT, signal.SIG_DFL)
 
     # Construct main connect window and apply theme.
-    connectWindow = ftrack_connect.ui.application.MainWindow(
+    connectWindow = ftrack_connect.ui.application.Application(
         theme=namespace.theme
     )
 
