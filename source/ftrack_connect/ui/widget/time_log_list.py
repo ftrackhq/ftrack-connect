@@ -1,8 +1,6 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-import uuid
-
 from PySide import QtGui
 from PySide import QtCore
 
