@@ -1,10 +1,13 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
+import os
+
 from PySide import QtGui, QtCore
 
 import ftrack_connect.ui.application
 import ftrack_connect.ui.widget.timer
+from ftrack_connect.ui.widget.time_log_list import TimeLogList as _TimeLogList
 
 
 def register(connect):
@@ -35,7 +38,43 @@ class TimeLogger(ftrack_connect.ui.application.ApplicationPlugin):
         self.timer = ftrack_connect.ui.widget.timer.Timer()
         layout.addWidget(self.timer)
 
-        layout.addStretch(1)
+        self.assignedTimeLogList = _TimeLogList(title='Assigned')
+        layout.addWidget(self.assignedTimeLogList, stretch=1)
+
+        self._updateAssignedList()
+
+    def _updateAssignedList(self):
+        '''Update assigned list.'''
+        self.assignedTimeLogList.clearItems()
+
+        # Local import to allow configuring of ftrack API at runtime.
+        import ftrack
+
+        # TODO: Get logged in user from ftrack API.
+        username = os.environ.get('LOGNAME')
+        if not username:
+            return
+
+        assignedTasks = ftrack.User(
+            os.environ.get('LOGNAME')
+        ).getTasks(
+            states=['IN_PROGRESS', 'BLOCKED']
+        )
+
+        for task in assignedTasks:
+            self.assignedTimeLogList.addItem({
+                'title': task.getName(),
+                'description': self._getPath(task),
+                'data': task
+            })
+
+    def _getPath(self, entity):
+        '''Return path to *entity*.'''
+        parents = entity.getParents()
+        parents.reverse()
+
+        path = [parent.getName() for parent in parents]
+        return ' / '.join(path)
 
     def getName(self):
         '''Return name of widget.'''
