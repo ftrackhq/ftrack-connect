@@ -42,7 +42,7 @@ class WidgetHarness(Harness):
         '''Return widget instance to test.'''
         widget = QtGui.QFrame()
         widget.setFrameStyle(QtGui.QFrame.StyledPanel | QtGui.QFrame.Plain)
-        widget.setStyleSheet("QFrame { background-color: blue; }")
+        widget.setStyleSheet('QFrame { background-color: blue; }')
 
         self._overlay = CustomOverlay(widget)
 
