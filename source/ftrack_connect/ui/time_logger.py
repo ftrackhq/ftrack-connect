@@ -67,8 +67,8 @@ class TimeLogger(ftrack_connect.ui.application.ApplicationPlugin):
 
     def _animateTimer(self, startGeometry, endGeometry):
         '''Animate the timer.'''
-        self._animation = QtCore.QPropertyAnimation(self.timer, 'geometry')
-        self._animation.setDuration(200)
-        self._animation.setStartValue(startGeometry)
-        self._animation.setEndValue(endGeometry)
-        self._animation.start()
+        self._timerAnimation = QtCore.QPropertyAnimation(self.timer, 'geometry')
+        self._timerAnimation.setDuration(200)
+        self._timerAnimation.setStartValue(startGeometry)
+        self._timerAnimation.setEndValue(endGeometry)
+        self._timerAnimation.start()
