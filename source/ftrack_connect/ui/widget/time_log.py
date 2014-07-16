@@ -11,17 +11,21 @@ class TimeLog(QtGui.QWidget):
 
     selected = QtCore.Signal(object)
 
-    def __init__(self, parent=None, link=None):
-        '''Initialise widget with *parent* and optional *link*.
+    def __init__(self, title=None, description=None, data=None, parent=None):
+        '''Initialise time log.
 
-        *link* may be a reference to an ftrack entity to represent a time log
-        for.
+        *title* should be the title entry to display for the time log whilst
+        *description* can provide an optional longer description.
+
+        *data* is optional data that can be stored for future reference (for
+        example a link to an ftrack task that the time log represents).
+
+        *parent* should be the optional parent of this widget.
 
         '''
         super(TimeLog, self).__init__(parent=parent)
         self.setObjectName('time-log')
-        self._link = link
-        self._path = None
+        self._data = None
 
         layout = QtGui.QHBoxLayout()
         self.setLayout(layout)
@@ -47,29 +51,19 @@ class TimeLog(QtGui.QWidget):
         layout.addWidget(self.playButton)
 
         # Set initial values.
-        self.setId(self._link.getId())
-        self.setTitle(self._link.getName())
-        self.setDescription(
-            self.path(asString=True)
-        )
-
-    def id(self):
-        '''Return current id.'''
-        return self._id
-
-    def setId(self, taskId):
-        '''Set id to *taskId*.'''
-        self._id = taskId
-
-    def setTitle(self, title=None):
-        '''Set the *path*.'''
-        if title is None:
-            path = self._link.getName()
-
-        self.titleLabel.setText(title)
+        self.setValue({
+            'title': title,
+            'description': description,
+            'data': data
+        })
 
     def title(self):
+        '''Return title.'''
         return self.titleLabel.text()
+
+    def setTitle(self, title):
+        '''Set *title*.'''
+        self.titleLabel.setText(title)
 
     def description(self):
         '''Return description.'''
@@ -79,30 +73,28 @@ class TimeLog(QtGui.QWidget):
         '''Set *description*.'''
         self.descriptionLabel.setText(description)
 
+    def data(self):
+        '''Return associated data.'''
+        return self._data
+
+    def setData(self, data):
+        '''Set associated *data*.'''
+        self._data = data
+
     def value(self):
-        '''Return dictionary with component data.'''
+        '''Return dictionary of current settings.'''
         return {
-            'id': self._link.id(),
-            'path': self.getPath(),
-            'loggedTime': self.loggedTime()
+            'title': self.title(),
+            'description': self.description(),
+            'data': self.data()
         }
+
+    def setValue(self, value):
+        '''Set all attributes from *value*.'''
+        self.setTitle(value.get('title', None))
+        self.setDescription(value.get('description', None))
+        self.setData(value.get('data', None))
 
     def _onPlayButtonClicked(self):
         '''Handle playButton clicks.'''
         self.selected.emit(self)
-
-    def path(self, asString=False):
-        '''Return path for entity as a list.
-
-        If *asString* is True a string representation will be returned instead.
-
-        '''
-        if self._path is None:
-            parents = self._link.getParents()
-            parents.reverse()
-            self._path = [parent.getName() for parent in parents]
-
-        if asString:
-            return '/'.join(self._path)
-
-        return self._path

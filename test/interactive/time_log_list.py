@@ -34,7 +34,9 @@ class WidgetHarness(Harness):
 
         for task in allAssignedTasks:
             assignedTasksList.addItem({
-                'link': task
+                'title': task.getName(),
+                'description': self._getPath(task),
+                'data': task
             })
 
         divider = QtGui.QFrame()
@@ -52,6 +54,16 @@ class WidgetHarness(Harness):
         self.selectedTasklabel.setText(
             task.title()
         )
+
+    def _getPath(self, entity):
+        '''Return path to *entity*.'''
+        parents = entity.getParents()
+        parents.reverse()
+
+        path = [parent.getName() for parent in parents]
+        return ' / '.join(path)
+
+
 if __name__ == '__main__':
     raise SystemExit(
         WidgetHarness().run()
