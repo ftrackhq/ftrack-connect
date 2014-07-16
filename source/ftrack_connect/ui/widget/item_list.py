@@ -40,13 +40,18 @@ class ItemList(QtGui.QFrame):
         return self.list.count()
 
     def addItem(self, item, row=None):
-        '''Add *item* at *row*.'''
-        if row is None:
-            row = self.count()
+        '''Add *item* at *row*.
 
+        If *row* not specified then add to end of list.
+
+        Return row item added at.
+
+        '''
         widget = self.widgetFactory(item)
-        self.list.addWidget(widget, row)
+        row = self.list.addWidget(widget, row)
         self.itemsChanged.emit()
+
+        return row
 
     def removeItem(self, row):
         '''Remove item at *row*.'''
