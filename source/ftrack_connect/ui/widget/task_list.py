@@ -17,6 +17,7 @@ class TaskList(ftrack_connect.ui.widget.item_list.ItemList):
     taskSelected = QtCore.Signal(object)
 
     def __init__(self, parent=None, title=''):
+        '''Instantiate widget with optional *parent* and *title*.'''
         super(TaskList, self).__init__(
             widgetFactory=self._createTaskWidget,
             widgetItem=lambda widget: widget.value(),

@@ -9,6 +9,7 @@ import ftrack_connect.ui.widget.label
 
 
 class Task(QtGui.QWidget):
+    '''Represent a task.'''
 
     selected = QtCore.Signal(object)
 
