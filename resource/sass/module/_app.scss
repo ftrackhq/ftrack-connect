@@ -6,3 +6,8 @@ QMainWindow#ftrack-connect-window {
 QLabel#login-label {
     font-size: 20px;
 }
+
+* {
+    font-family: $font-family-base;
+    font-size: $font-size-base;
+}

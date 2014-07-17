@@ -4,7 +4,8 @@ $font-family-serif:       Georgia, 'Times New Roman', Times, serif;
 $font-family-monospace:   Menlo, Monaco, Consolas, 'Courier New', monospace;
 $font-family-base:        $font-family-sans-serif;
 
-$title-font-size: 8pt;
+$font-size-base: 9pt;
+$font-size-title: $font-size-base;
 
 // Input
 $input-background: $white;
