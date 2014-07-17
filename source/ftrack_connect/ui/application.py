@@ -2,6 +2,7 @@
 # :copyright: Copyright (c) 2014 ftrack
 
 import os
+import getpass
 
 from PySide import QtGui
 from PySide import QtCore
@@ -18,6 +19,7 @@ class MainWindow(QtGui.QMainWindow):
 
     # Signal to be used when login fails.
     loginError = QtCore.Signal(object)
+    topicSignal = QtCore.Signal(object, object)
 
     def __init__(self, *args, **kwargs):
         '''Initialise the main application window.'''
@@ -51,6 +53,24 @@ class MainWindow(QtGui.QMainWindow):
 
         self.loginWidget = None
         self.login()
+
+    def _onConnectTopicEvent(self, event, data):
+        '''Generic callback for all ftrack.connect events.
+
+        .. note::
+            Events not triggered by the current logged in user will be dropped.
+
+        '''
+        if event.topic != 'ftrack.connect':
+            return
+
+        _meta_ = data.pop('_meta_')
+
+        # Drop all events triggered by other users.
+        if not _meta_.get('userId') == self._currentUserId:
+            return
+
+        self._routeEvent(event, _meta_, **data)
 
     def login(self):
         '''Login using stored credentials or ask user for them.'''
@@ -138,12 +158,26 @@ class MainWindow(QtGui.QMainWindow):
 
         self._discoverPlugins()
 
+        # getpass.getuser is used to reflect how the ftrack api get the current
+        # user.
+        currentUser = ftrack.User(
+            getpass.getuser()
+        )
+
+        self._currentUserId = currentUser.getId()
+
+        ftrack.TOPICS.subscribe('ftrack.connect', self._relayTopicEvent)
+        self.topicSignal.connect(self._onConnectTopicEvent)
+
         import ftrack_connect.topic_thread
         self.topicThread = ftrack_connect.topic_thread.TopicThread()
-        self.topicThread.ftrackConnectEvent.connect(self._routeEvent)
         self.topicThread.start()
 
         self.focus()
+
+    def _relayTopicEvent(self, event, **kwargs):
+        '''Relay all ftrack.connect topics.'''
+        self.topicSignal.emit(event, kwargs)
 
     def _initialiseTray(self):
         '''Initialise and add application icon to system tray.'''
@@ -192,35 +226,32 @@ class MainWindow(QtGui.QMainWindow):
         from .publisher import register
         register(self)
 
-    def _routeEvent(self, eventData):
+    def _routeEvent(self, topic, _meta_, action, plugin, **data):
         '''Route websocket event to publisher plugin based on *eventData*.
 
         *eventData* should contain 'plugin' and 'action'. Will raise
         `ConnectError` if no plugin is found or if action is missing on plugin.
 
         '''
-        pluginName = eventData.get('plugin')
-        method = eventData.get('action')
-
         try:
-            plugin = self.plugins[pluginName]
+            pluginInstance = self.plugins[plugin]
         except KeyError:
             raise ftrack_connect.error.ConnectError(
                 'Plugin "{0}" not found.'.format(
-                    pluginName
+                    plugin
                 )
             )
 
         try:
-            method = getattr(plugin, method)
+            method = getattr(pluginInstance, action)
         except AttributeError:
             raise ftrack_connect.error.ConnectError(
                 'Method "{0}" not found on "{1}" plugin({2}).'.format(
-                    method, pluginName, plugin
+                    method, plugin, pluginInstance
                 )
             )
 
-        method(**eventData)
+        method(topic, _meta_, **data)
 
     def _onWidgetRequestFocus(self, widget):
         '''Switch tab to *widget* and bring application to front.'''
