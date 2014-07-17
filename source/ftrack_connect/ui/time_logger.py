@@ -2,6 +2,7 @@
 # :copyright: Copyright (c) 2014 ftrack
 
 import os
+import operator
 
 from PySide import QtGui, QtCore
 
@@ -63,7 +64,18 @@ class TimeLogger(ftrack_connect.ui.application.ApplicationPlugin):
 
         self.timerPlaceholder = TimerOverlay(self.timer)
 
-        self.assignedTimeLogList = _TimeLogList(title='Assigned')
+        # TODO: Add theme support.
+        reloadIcon = QtGui.QIcon(
+            QtGui.QPixmap(':/ftrack/image/light/reload')
+        )
+
+        assignedTimeLogUpdateButton = QtGui.QPushButton(reloadIcon, '')
+        assignedTimeLogUpdateButton.setFlat(True)
+        assignedTimeLogUpdateButton.clicked.connect(self._updateAssignedList)
+
+        self.assignedTimeLogList = _TimeLogList(
+            title='Assigned', headerWidgets=[assignedTimeLogUpdateButton]
+        )
         layout.addWidget(self.assignedTimeLogList, stretch=1)
 
         # Connect events.
@@ -93,12 +105,18 @@ class TimeLogger(ftrack_connect.ui.application.ApplicationPlugin):
             states=['IN_PROGRESS', 'BLOCKED']
         )
 
-        for task in assignedTasks:
-            self.assignedTimeLogList.addItem({
-                'title': task.getName(),
-                'description': self._getPath(task),
-                'data': task
-            })
+        formattedTasks = [dict({
+            'title': task.getName(),
+            'description': self._getPath(task),
+            'data': task
+        }) for task in assignedTasks]
+
+        formattedTasks = sorted(
+            formattedTasks, key=operator.itemgetter('description', 'title')
+        )
+
+        for task in formattedTasks:
+            self.assignedTimeLogList.addItem(task)
 
     def _getPath(self, entity):
         '''Return path to *entity*.'''

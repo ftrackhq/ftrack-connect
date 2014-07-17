@@ -14,8 +14,13 @@ class TimeLogList(ftrack_connect.ui.widget.item_list.ItemList):
 
     itemSelected = QtCore.Signal(object)
 
-    def __init__(self, parent=None, title=None):
-        '''Instantiate widget with optional *parent* and *title*.'''
+    def __init__(self, parent=None, title=None, headerWidgets=None):
+        '''Instantiate widget with optional *parent* and *title*.
+
+        *headerWidgets* is an optional list of widgets to append to the header
+        of the time log widget.
+
+        '''
         super(TimeLogList, self).__init__(
             widgetFactory=self._createWidget,
             widgetItem=lambda widget: widget.value(),
@@ -29,9 +34,17 @@ class TimeLogList(ftrack_connect.ui.widget.item_list.ItemList):
             QtGui.QAbstractItemView.NoSelection
         )
 
+        headerLayout = QtGui.QHBoxLayout()
         self.titleLabel = QtGui.QLabel(title)
         self.titleLabel.setProperty('title', True)
-        self.layout().insertWidget(0, self.titleLabel)
+
+        headerLayout.addWidget(self.titleLabel, stretch=1)
+
+        if headerWidgets:
+            for widget in headerWidgets:
+                headerLayout.addWidget(widget, stretch=0)
+
+        self.layout().insertLayout(0, headerLayout)
 
     def setTitle(self, title):
         '''Set *title*.'''
