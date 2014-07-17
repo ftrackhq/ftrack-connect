@@ -40,6 +40,8 @@ class TimeLogList(ftrack_connect.ui.widget.item_list.ItemList):
 
         headerLayout.addWidget(self.titleLabel, stretch=1)
 
+        # TODO: Refacor and make use of QToolBar and QAction.
+        # Also consider adding 'addAction'/'removeAction'.
         if headerWidgets:
             for widget in headerWidgets:
                 headerLayout.addWidget(widget, stretch=0)
