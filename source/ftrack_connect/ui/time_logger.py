@@ -83,13 +83,13 @@ class TimeLogger(ftrack_connect.ui.application.ApplicationPlugin):
         import ftrack
 
         # TODO: Get logged in user from ftrack API.
+        # NOTE: The specific environment variable is used as it is explicitly
+        # set post login by the application.
         username = os.environ.get('LOGNAME')
         if not username:
             return
 
-        assignedTasks = ftrack.User(
-            os.environ.get('LOGNAME')
-        ).getTasks(
+        assignedTasks = ftrack.User(username).getTasks(
             states=['IN_PROGRESS', 'BLOCKED']
         )
 
