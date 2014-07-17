@@ -71,6 +71,7 @@ class TimeLogger(ftrack_connect.ui.application.ApplicationPlugin):
 
         assignedTimeLogUpdateButton = QtGui.QPushButton(reloadIcon, '')
         assignedTimeLogUpdateButton.setFlat(True)
+        assignedTimeLogUpdateButton.setToolTip('Refresh list')
         assignedTimeLogUpdateButton.clicked.connect(self._updateAssignedList)
 
         self.assignedTimeLogList = _TimeLogList(
@@ -102,7 +103,7 @@ class TimeLogger(ftrack_connect.ui.application.ApplicationPlugin):
             return
 
         assignedTasks = ftrack.User(username).getTasks(
-            states=['IN_PROGRESS', 'BLOCKED']
+            states=['NOT_STARTED', 'IN_PROGRESS', 'BLOCKED']
         )
 
         formattedTasks = [dict({
