@@ -16,5 +16,5 @@ Parameters
 :versionId: The id of the version that has been created for the publish.
 :path: The path to the file to use as component.
 
-.. literalinclude:: /../resource/hooks/make_web_playable.py
+.. literalinclude:: /../resource/hook/make_web_playable.py
     :language: python
