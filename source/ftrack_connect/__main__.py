@@ -16,7 +16,7 @@ os.environ.setdefault(
     'FTRACK_TOPIC_PLUGIN_PATH',
     os.path.abspath(
         os.path.join(
-            os.path.realpath(__file__), '..', '..', '..', 'resource', 'hooks'
+            os.path.realpath(__file__), '..', '..', '..', 'resource', 'hook'
         )
     )
 )
