@@ -30,7 +30,7 @@ class TimeLogList(ftrack_connect.ui.widget.item_list.ItemList):
         )
 
         self.titleLabel = QtGui.QLabel(title)
-        self.titleLabel.setObjectName('title')
+        self.titleLabel.setProperty('title', True)
         self.layout().insertWidget(0, self.titleLabel)
 
     def setTitle(self, title):

@@ -1,6 +1,5 @@
 /** Timer */
-#timer QLabel#title {
-    font-weight: bold;
+#timer QLabel[title] {
     color: $text-color-primary;
 }
 

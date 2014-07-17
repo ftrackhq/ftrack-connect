@@ -1,5 +1,4 @@
 /** Time log */
-#time-log QLabel#title {
+#time-log QLabel[title] {
     color: $text-color-primary;
-    font-weight: bold;
 }
