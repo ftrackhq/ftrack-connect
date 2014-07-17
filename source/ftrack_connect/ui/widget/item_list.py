@@ -58,6 +58,11 @@ class ItemList(QtGui.QFrame):
         self.list.removeWidget(row)
         self.itemsChanged.emit()
 
+    def clearItems(self):
+        '''Remove all items.'''
+        self.list.clearWidgets()
+        self.itemsChanged.emit()
+
     def indexOfItem(self, item):
         '''Return row of *item* in list or None if not present.'''
         index = None

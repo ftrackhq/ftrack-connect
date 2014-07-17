@@ -34,7 +34,7 @@ class TimeLog(QtGui.QWidget):
         layout.addLayout(self.labelLayout, stretch=1)
 
         self.titleLabel = ftrack_connect.ui.widget.label.Label()
-        self.titleLabel.setObjectName('title')
+        self.titleLabel.setProperty('title', True)
         self.labelLayout.addWidget(self.titleLabel)
 
         self.descriptionLabel = ftrack_connect.ui.widget.label.Label()

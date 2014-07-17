@@ -22,6 +22,7 @@ os.environ.setdefault(
 )
 
 import ftrack_connect.ui.application
+import ftrack_connect.ui.theme
 
 
 def main(arguments=None):
@@ -46,10 +47,18 @@ def main(arguments=None):
         default='info'
     )
 
+    parser.add_argument(
+        '-t', '--theme',
+        help='Set the theme to use.',
+        choices=['light', 'dark'],
+        default='light'
+    )
+
     namespace = parser.parse_args(arguments)
 
     logging.basicConfig(level=loggingLevels[namespace.verbosity])
 
+    # Construct global application.
     application = QtGui.QApplication('ftrack-connect')
     application.setOrganizationName('ftrack')
     application.setOrganizationDomain('ftrack.com')
@@ -58,7 +67,15 @@ def main(arguments=None):
     # Enable ctrl+c to quit application when started from command line.
     signal.signal(signal.SIGINT, signal.SIG_DFL)
 
-    connectWindow = ftrack_connect.ui.application.Application()
+    # Construct main connect window and apply theme.
+    connectWindow = ftrack_connect.ui.application.Application(
+        theme=namespace.theme
+    )
+
+    # Fix for Windows where font size is incorrect for some widgets. For some
+    # reason, resetting the font here solves the sizing issue.
+    font = application.font()
+    application.setFont(font)
 
     return application.exec_()
 

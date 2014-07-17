@@ -20,6 +20,7 @@ class WidgetHarness(Harness):
 
         return widget
 
+
 if __name__ == '__main__':
     raise SystemExit(
         WidgetHarness().run()

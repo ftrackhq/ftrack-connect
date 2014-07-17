@@ -57,6 +57,11 @@ class List(QtGui.QTableWidget):
         self.removeCellWidget(row, self._widgetColumn)
         self.removeRow(row)
 
+    def clearWidgets(self):
+        '''Remove all widgets.'''
+        self.clear()
+        self.setRowCount(0)
+
     def indexOfWidget(self, widget):
         '''Return row of *widget* in list or None if not present.'''
         index = None
