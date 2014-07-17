@@ -1,7 +1,10 @@
 /** Form elements */
 QLabel {
-    font-family: $font-family-base;
     color: $text-color;
+}
+
+QLabel[title] {
+    font-weight: bold;
 }
 
 QLineEdit,
@@ -12,7 +15,6 @@ QComboBox {
     padding: $input-padding;
     background: $input-background;
     selection-background-color: $input-border-color;
-    font-family: $font-family-base;
     color: $text-color;
 
     &:hover {

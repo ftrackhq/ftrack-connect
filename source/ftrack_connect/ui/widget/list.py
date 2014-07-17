@@ -35,7 +35,13 @@ class List(QtGui.QTableWidget):
         return self.rowCount()
 
     def addWidget(self, widget, row=None):
-        '''Add *widget* to list at *row*.'''
+        '''Add *widget* to list at *row*.
+
+        If *row* not specified then add to end of list.
+
+        Return row item added at.
+
+        '''
         if row is None:
             row = self.count()
 
@@ -44,10 +50,17 @@ class List(QtGui.QTableWidget):
 
         self.resizeRowToContents(row)
 
+        return row
+
     def removeWidget(self, row):
         '''Remove and delete widget at *row*.'''
         self.removeCellWidget(row, self._widgetColumn)
         self.removeRow(row)
+
+    def clearWidgets(self):
+        '''Remove all widgets.'''
+        self.clear()
+        self.setRowCount(0)
 
     def indexOfWidget(self, widget):
         '''Return row of *widget* in list or None if not present.'''

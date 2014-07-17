@@ -9,13 +9,33 @@ from PySide import QtCore
 
 import ftrack_connect.topic_thread
 import ftrack_connect.error
+import ftrack_connect.ui.theme
 from ftrack_connect.ui.widget import uncaught_error as _uncaught_error
 from ftrack_connect.ui.widget import tab_widget as _tab_widget
 from ftrack_connect.ui.widget import login as _login
+from ftrack_connect.error import NotUniqueError as _NotUniqueError
 
 
-class MainWindow(QtGui.QMainWindow):
-    '''Main window class for ftrack connect.'''
+class ApplicationPlugin(QtGui.QWidget):
+    '''Base widget for ftrack connect application plugin.'''
+
+    #: Signal to emit to request focus of this plugin in application.
+    requestApplicationFocus = QtCore.Signal(object)
+
+    #: Signal to emit to request closing application.
+    requestApplicationClose = QtCore.Signal(object)
+
+    def getName(self):
+        '''Return name of widget.'''
+        return self.__class__.__name__
+
+    def getIdentifier(self):
+        '''Return identifier for widget.'''
+        return self.getName().lower().replace(' ', '.')
+
+
+class Application(QtGui.QMainWindow):
+    '''Main application window for ftrack connect.'''
 
     # Signal to be used when login fails.
     loginError = QtCore.Signal(object)
@@ -23,7 +43,8 @@ class MainWindow(QtGui.QMainWindow):
 
     def __init__(self, *args, **kwargs):
         '''Initialise the main application window.'''
-        super(MainWindow, self).__init__(*args, **kwargs)
+        theme = kwargs.pop('theme', 'light')
+        super(Application, self).__init__(*args, **kwargs)
 
         # Register widget for error handling.
         self.uncaughtError = _uncaught_error.UncaughtError(
@@ -38,7 +59,9 @@ class MainWindow(QtGui.QMainWindow):
         self.logoIcon = QtGui.QIcon(
             QtGui.QPixmap(':/ftrack/image/default/ftrackLogo')
         )
-        self._setupStyle()
+
+        self._theme = None
+        self.setTheme(theme)
 
         self.plugins = {}
 
@@ -46,13 +69,29 @@ class MainWindow(QtGui.QMainWindow):
 
         self.setObjectName('ftrack-connect-window')
         self.setWindowTitle('ftrack connect')
-        self.resize(350, 600)
+        self.resize(450, 700)
         self.move(50, 50)
 
         self.setWindowIcon(self.logoIcon)
 
         self.loginWidget = None
         self.login()
+
+    def theme(self):
+        '''Return current theme.'''
+        return self._theme
+
+    def setTheme(self, theme):
+        '''Set *theme*.'''
+        self._theme = theme
+        ftrack_connect.ui.theme.applyTheme(self, self._theme)
+
+    def toggleTheme(self):
+        '''Toggle active application theme.'''
+        if self.theme() == 'dark':
+            self.setTheme('light')
+        else:
+            self.setTheme('dark')
 
     def _onConnectTopicEvent(self, event, data):
         '''Generic callback for all ftrack.connect events.
@@ -208,7 +247,7 @@ class MainWindow(QtGui.QMainWindow):
 
         styleAction = QtGui.QAction(
             'Change theme', self,
-            triggered=self._changeTheme
+            triggered=self.toggleTheme
         )
         menu.addAction(styleAction)
 
@@ -225,6 +264,10 @@ class MainWindow(QtGui.QMainWindow):
         # Add publisher as a plugin.
         from .publisher import register
         register(self)
+
+        # Add time logger.
+        from . import time_logger
+        time_logger.register(self)
 
     def _routeEvent(self, topic, _meta_, action, plugin, **data):
         '''Route websocket event to publisher plugin based on *eventData*.
@@ -253,63 +296,67 @@ class MainWindow(QtGui.QMainWindow):
 
         method(topic, _meta_, **data)
 
-    def _onWidgetRequestFocus(self, widget):
+    def _onWidgetRequestApplicationFocus(self, widget):
         '''Switch tab to *widget* and bring application to front.'''
         self.tabPanel.setCurrentWidget(widget)
         self.focus()
 
-    def _onWidgetRequestClose(self, widget):
+    def _onWidgetRequestApplicationClose(self, widget):
         '''Hide application upon *widget* request.'''
         self.hide()
 
-    def _changeTheme(self):
-        '''Change active application theme.'''
-        if not hasattr(self, '_theme'):
-            self._theme = 'light'
+    def addPlugin(self, plugin, name=None, identifier=None):
+        '''Add *plugin* in new tab with *name* and *identifier*.
 
-        if self._theme == 'dark':
-            self._theme = 'light'
-        else:
-            self._theme = 'dark'
+        *plugin* should be an instance of :py:class:`ApplicationPlugin`.
 
-        self._setupStyle(self._theme)
+        *name* will be used as the label for the tab. If *name* is None then
+        plugin.getName() will be used.
 
-    def _setupStyle(self, theme='light'):
-        '''Set up application style using *theme*.'''
-        QtGui.QApplication.setStyle('cleanlooks')
-
-        # Load main font file
-        QtGui.QFontDatabase.addApplicationFont(
-            ':/ftrack/font/main'
-        )
-
-        # Load main stylesheet
-        file = QtCore.QFile(':/ftrack/style/{0}'.format(theme))
-        file.open(
-            QtCore.QFile.ReadOnly | QtCore.QFile.Text
-        )
-        stream = QtCore.QTextStream(file)
-        styleSheetString = stream.readAll()
-
-        self.setStyleSheet(styleSheetString)
-
-    def add(self, widget, name=None):
-        '''Add *widget* as tab with *name*.
-
-        If *name* is None the name will be collected from the widget.
+        *identifier* will be used for routing events to plugins. If
+        *identifier* is None then plugin.getIdentifier() will be used.
 
         '''
         if name is None:
-            name = widget.getName()
+            name = plugin.getName()
 
-        self.tabPanel.addTab(
-            widget, name
+        if identifier is None:
+            identifier = plugin.getIdentifier()
+
+        if identifier in self.plugins:
+            raise _NotUniqueError(
+                'Cannot add plugin. An existing plugin has already been '
+                'registered with identifier {0}.'.format(identifier)
+            )
+
+        self.plugins[identifier] = plugin
+        self.tabPanel.addTab(plugin, name)
+
+        # Connect standard plugin events.
+        plugin.requestApplicationFocus.connect(
+            self._onWidgetRequestApplicationFocus
+        )
+        plugin.requestApplicationClose.connect(
+            self._onWidgetRequestApplicationClose
         )
 
-        self.plugins[name.lower()] = widget
+    def removePlugin(self, identifier):
+        '''Remove plugin registered with *identifier*.
 
-        widget.requestFocus.connect(self._onWidgetRequestFocus)
-        widget.requestClose.connect(self._onWidgetRequestClose)
+        Raise :py:exc:`KeyError` if no plugin with *identifier* has been added.
+
+        '''
+        plugin = self.plugins.get(identifier)
+        if plugin is None:
+            raise KeyError(
+                'No plugin registered with identifier "{0}".'.format(identifier)
+            )
+
+        index = self.tabPanel.indexOf(plugin)
+        self.tabPanel.removeTab(index)
+
+        plugin.deleteLater()
+        del self.plugins[identifier]
 
     def focus(self):
         '''Focus and bring the window to top.'''

@@ -5,10 +5,10 @@ from PySide import QtGui, QtCore
 
 
 class Label(QtGui.QLabel):
-    '''Label that add support for elide mode.'''
+    '''Label that can elide displayed text automatically.'''
 
     def __init__(self, elideMode=QtCore.Qt.ElideMiddle, *args, **kwargs):
-        '''Instansiate with *elideMode*.
+        '''Instantiate label with *elideMode*.
 
         If *elideMode* is not specified it defaults to
         :py:class:`QtCore.Qt.ElideMiddle.`
@@ -16,6 +16,11 @@ class Label(QtGui.QLabel):
         '''
         self.elideMode = elideMode
         super(Label, self).__init__(*args, **kwargs)
+
+        # Set low horizontal minimum size so that the label can shrink and make
+        # use of eliding. Note the label will still try to take as much
+        # horizontal space as possible.
+        self.setMinimumWidth(25)
 
     def paintEvent(self, event):
         '''Paint *event* with the configured elideMode.'''
