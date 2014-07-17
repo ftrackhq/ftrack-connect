@@ -3,7 +3,6 @@ QPushButton[flat="false"] {
     border: 1px solid $border-color;
     border-radius: 2px;
     background-color: $white;
-    font-family: $font-family-base;
     color: $text-color;
     padding: 4px;
     min-width: 80px;
@@ -52,7 +51,6 @@ QToolButton[flat="false"] {
     border: 1px solid $border-color;
     border-radius: 2px;
     background-color: $white;
-    font-family: $font-family-base;
     color: $text-color;
 }
 
