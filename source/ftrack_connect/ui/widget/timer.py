@@ -8,6 +8,7 @@ from PySide import QtGui, QtCore
 
 import ftrack_connect.ui.widget.line_edit
 import ftrack_connect.ui.widget.label
+import ftrack_connect.error
 
 
 class Timer(QtGui.QFrame):
@@ -18,6 +19,21 @@ class Timer(QtGui.QFrame):
 
     #: Signal when timer stopped passing elapsed time.
     stopped = QtCore.Signal(object)
+
+    #: Signal when timer paused passing elapsed time.
+    paused = QtCore.Signal(object)
+
+    #: Signal when timer resumed passing elapsed time.
+    resumed = QtCore.Signal(object)
+
+    #: Timer stopped state.
+    STOPPED = 'STOPPED'
+
+    #: Timer paused state.
+    PAUSED = 'PAUSED'
+
+    #: Time running state.
+    RUNNING = 'RUNNING'
 
     def __init__(self, title=None, description=None, time=0, parent=None):
         '''Initialise timer.
@@ -33,8 +49,10 @@ class Timer(QtGui.QFrame):
         super(Timer, self).__init__(parent=parent)
         self.setObjectName('timer')
 
+        self._state = self.STOPPED
         self._timer = None
         self._tick = None
+        self._tickInterval = 50
         self._elapsed = 0
 
         layout = QtGui.QHBoxLayout()
@@ -76,12 +94,13 @@ class Timer(QtGui.QFrame):
             'time': time
         })
 
-    def _updateState(self):
-        '''Update internal state and force style refresh.'''
-        if self.isRunning():
+    def _updateInterface(self):
+        '''Update interface to reflect current state and force style refresh.'''
+        state = self.state()
+        if state is self.RUNNING:
             self.toggleButton.setText('Stop')
             self.toggleButton.setProperty('mode', 'stop')
-        else:
+        elif state is self.STOPPED:
             self.toggleButton.setText('Start')
             self.toggleButton.setProperty('mode', 'start')
 
@@ -90,6 +109,19 @@ class Timer(QtGui.QFrame):
         self.toggleButton.style().unpolish(self.toggleButton)
         self.toggleButton.style().polish(self.toggleButton)
         self.toggleButton.update()
+
+    def _startTimer(self):
+        '''Start internal timer.'''
+        self._tick = _time.time()
+        self._timer = self.startTimer(self._tickInterval)
+
+    def _stopTimer(self):
+        '''Stop internal timer.'''
+        if self._timer is not None:
+            self.killTimer(self._timer)
+
+        self._timer = None
+        self._tick = None
 
     def timerEvent(self, event):
         '''Handle timer *event*.'''
@@ -101,36 +133,111 @@ class Timer(QtGui.QFrame):
             self._tick = now
 
     def start(self):
-        '''Start the timer.'''
-        if not self.isRunning():
-            self._tick = _time.time()
-            self._timer = self.startTimer(50)
-            self.started.emit(self.time())
+        '''Start the timer.
 
-            self._updateState()
+        Raise :exc:`ftrack_connect.error.InvalidState` if timer is not currently
+        stopped.
+
+        '''
+        state = self.state()
+        if state is not self.STOPPED:
+            raise ftrack_connect.error.InvalidState(
+                'Cannot start timer in {0} state.'.format(state)
+            )
+
+        self._startTimer()
+        self._state = self.RUNNING
+        self.started.emit(self.time())
+
+        self._updateInterface()
 
     def stop(self):
-        '''Stop the timer.'''
-        if self.isRunning():
-            self.killTimer(self._timer)
-            self._timer = None
+        '''Stop the timer.
 
+        Raise :exc:`ftrack_connect.error.InvalidState` if timer is already
+        stopped.
+
+        '''
+        state = self.state()
+        if state is self.STOPPED:
+            raise ftrack_connect.error.InvalidState(
+                'Cannot stop timer in {0} state.'.format(state)
+            )
+
+        if state is not self.PAUSED:
+            # Ensure correct time recorded. Note: Not done when transitioning
+            # from PAUSED to STOPPED as time entered in PAUSED state should be
+            # taken as is.
             self.timerEvent(QtCore.QTimerEvent(0))
-            self._tick = None
-            self.stopped.emit(self.time())
 
-            self._updateState()
+        self._stopTimer()
+        self._state = self.STOPPED
+        self.stopped.emit(self.time())
 
-    def isRunning(self):
-        '''Return whether timer is currently running.'''
-        return self._timer is not None
+        self._updateInterface()
+
+    def pause(self):
+        '''Pause the timer without updating state.
+
+        Raise :exc:`ftrack_connect.error.InvalidState` if timer is not running.
+
+        '''
+        state = self.state()
+        if state is not self.RUNNING:
+            raise ftrack_connect.error.InvalidState(
+                'Cannot pause timer in {0} state.'.format(state)
+            )
+
+        self._stopTimer()
+        self._state = self.PAUSED
+        self.paused.emit(self.time())
+
+    def resume(self):
+        '''Resume a paused timer without updating state.
+
+        Raise :exc:`ftrack_connect.error.InvalidState` if timer is not paused.
+
+        '''
+        state = self.state()
+        if state is not self.PAUSED:
+            raise ftrack_connect.error.InvalidState(
+                'Cannot resume timer in {0} state.'.format(state)
+            )
+
+        self._startTimer()
+        self._state = self.RUNNING
+        self.resumed.emit(self.time())
+
+    def state(self):
+        '''Return current state of timer.
+
+        Possible states are:
+
+            * :attr:`STOPPED`
+            * :attr:`PAUSED`
+            * :attr:`RUNNING`
+
+        .. note::
+
+            State can only be changed using the provided control methods (
+            :meth:`start`, :meth:`stop`, :meth:`pause`, :meth:`resume`.
+
+        '''
+        return self._state
 
     def toggle(self):
-        '''Toggle the timer state.'''
-        if self.isRunning():
-            self.stop()
-        else:
+        '''Toggle the timer state between stopped and started.
+
+        .. note::
+
+            If timer is paused will transition to stopped state.
+
+        '''
+        state = self.state()
+        if state is self.STOPPED:
             self.start()
+        else:
+            self.stop()
 
     def reset(self):
         '''Reset timer and elapsed time.'''

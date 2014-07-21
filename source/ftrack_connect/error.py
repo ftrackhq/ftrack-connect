@@ -9,3 +9,7 @@ class ConnectError(Exception):
 
 class NotUniqueError(ConnectError):
     '''Raise when something that should be unique is not.'''
+
+
+class InvalidState(ConnectError):
+    '''Raise when an invalid state is detected for current action.'''
