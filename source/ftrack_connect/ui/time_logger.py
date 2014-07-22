@@ -156,8 +156,9 @@ class TimeLogger(ftrack_connect.ui.application.ApplicationPlugin):
             if entity == self._activeEntity:
                 return
 
-            # Stop current timer.
-            self.timer.stop()
+            # Stop current timer to ensure value persisted.
+            if self.timer.state() is not self.timer.STOPPED:
+                self.timer.stop()
 
             # TODO: Store on Timer as data.
             self._activeEntity = entity
