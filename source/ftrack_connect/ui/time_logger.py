@@ -80,7 +80,8 @@ class TimeLogger(ftrack_connect.ui.application.ApplicationPlugin):
         layout.addWidget(self.assignedTimeLogList, stretch=1)
 
         # Connect events.
-        self.timer.stopped.connect(self._onStopTimer)
+        self.timer.stopped.connect(self._onCommitTime)
+        self.timer.timeEdited.connect(self._onCommitTime)
 
         self.assignedTimeLogList.itemSelected.connect(
             self._onSelectTimeLog
@@ -181,8 +182,8 @@ class TimeLogger(ftrack_connect.ui.application.ApplicationPlugin):
         else:
             self.disableTimer()
 
-    def _onStopTimer(self, time):
-        '''Handle timer being stopped.'''
+    def _onCommitTime(self, time):
+        '''Commit *time* value to backend..'''
         if self._activeEntity:
             timeInHours = time / 60.0 / 60.0
             self._activeEntity.setLoggedHours(timeInHours)

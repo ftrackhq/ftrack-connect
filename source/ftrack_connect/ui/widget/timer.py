@@ -9,10 +9,17 @@ from PySide import QtGui, QtCore
 import ftrack_connect.ui.widget.line_edit
 import ftrack_connect.ui.widget.label
 import ftrack_connect.error
+import ftrack_connect.duration
 
 
 class Timer(QtGui.QFrame):
     '''Timer for logging time.'''
+
+    #: Signal when time value edited manually.
+    timeEdited = QtCore.Signal(object)
+
+    #: Signal when time value changed either manually or programatically.
+    timeChanged = QtCore.Signal(object)
 
     #: Signal when timer started passing elapsed time.
     started = QtCore.Signal(object)
@@ -106,7 +113,19 @@ class Timer(QtGui.QFrame):
                 self._onTimeFieldFocused()
 
             elif event.type() == QtCore.QEvent.FocusOut:
-                self.setTime(self._convertStringToTime(self.timeField.text()))
+                try:
+                    time = ftrack_connect.duration.parser.parse(
+                        self.timeField.text()
+                    )
+                except ftrack_connect.error.ParseError:
+                    # Revert to previous correct value.
+                    # TODO: Indicate to user that entered value is invalid.
+                    self.setTime(self.time())
+                else:
+                    if time != self.time():
+                        self.timeEdited.emit(time)
+                    self.setTime(time)
+
                 self._onTimeFieldBlurred()
 
             elif event.type() == QtCore.QEvent.KeyPress:
@@ -338,27 +357,13 @@ class Timer(QtGui.QFrame):
 
     def setTime(self, time):
         '''Set *time* elapsed in seconds.'''
+        if time is None:
+            time = 0
+
+        changed = (time == self.time())
         self._elapsed = time
-        hours, remainder = divmod(time, 3600)
-        minutes, seconds = divmod(remainder, 60)
-
-        hours = int(hours)
-        minutes = int(minutes)
-        seconds = int(math.ceil(seconds))
-
-        if seconds == 60:
-            minutes += 1
-            seconds = 0
-
-        if minutes == 60:
-            hours += 1
-            minutes = 0
-
-        if not hours and not minutes:
-            text = '{0} sec'.format(seconds)
-        elif not hours:
-            text = '{0:02d}:{1:02d} min'.format(minutes, seconds)
-        else:
-            text = '{0:02d}:{1:02d}:{2:02d}'.format(hours, minutes, seconds)
-
+        text = ftrack_connect.duration.formatter.format(time)
         self.timeField.setText(text)
+
+        if changed:
+            self.timeChanged.emit(time)
