@@ -113,19 +113,6 @@ class Timer(QtGui.QFrame):
                 self._onTimeFieldFocused()
 
             elif event.type() == QtCore.QEvent.FocusOut:
-                try:
-                    time = ftrack_connect.duration.parser.parse(
-                        self.timeField.text()
-                    )
-                except ftrack_connect.error.ParseError:
-                    # Revert to previous correct value.
-                    # TODO: Indicate to user that entered value is invalid.
-                    self.setTime(self.time())
-                else:
-                    if time != self.time():
-                        self.timeEdited.emit(time)
-                    self.setTime(time)
-
                 self._onTimeFieldBlurred()
 
             elif event.type() == QtCore.QEvent.KeyPress:
@@ -148,6 +135,7 @@ class Timer(QtGui.QFrame):
         return False
 
     def _onTimeFieldFocused(self):
+        '''Handle time field receiving focus.'''
         if self.state() is self.RUNNING:
             self.pause()
 
@@ -160,6 +148,21 @@ class Timer(QtGui.QFrame):
         QtCore.QTimer.singleShot(0, self.timeField.selectAll);
 
     def _onTimeFieldBlurred(self):
+        '''Handle time field losing focus.'''
+        try:
+            time = ftrack_connect.duration.parser.parse(
+                self.timeField.text()
+            )
+        except ftrack_connect.error.ParseError:
+            # Revert to previous correct value.
+            # TODO: Indicate to user that entered value is invalid.
+            self.setTime(self.time())
+        else:
+            if time != self.time():
+                self.timeEdited.emit(time)
+
+            self.setTime(time)
+
         if self.state() is self.PAUSED:
             self.resume()
 
