@@ -141,7 +141,7 @@ class Timer(QtGui.QFrame):
         '''
         state = self.state()
         if state is not self.STOPPED:
-            raise ftrack_connect.error.InvalidState(
+            raise ftrack_connect.error.InvalidStateError(
                 'Cannot start timer in {0} state.'.format(state)
             )
 
@@ -160,7 +160,7 @@ class Timer(QtGui.QFrame):
         '''
         state = self.state()
         if state is self.STOPPED:
-            raise ftrack_connect.error.InvalidState(
+            raise ftrack_connect.error.InvalidStateError(
                 'Cannot stop timer in {0} state.'.format(state)
             )
 
@@ -184,7 +184,7 @@ class Timer(QtGui.QFrame):
         '''
         state = self.state()
         if state is not self.RUNNING:
-            raise ftrack_connect.error.InvalidState(
+            raise ftrack_connect.error.InvalidStateError(
                 'Cannot pause timer in {0} state.'.format(state)
             )
 
@@ -200,7 +200,7 @@ class Timer(QtGui.QFrame):
         '''
         state = self.state()
         if state is not self.PAUSED:
-            raise ftrack_connect.error.InvalidState(
+            raise ftrack_connect.error.InvalidStateError(
                 'Cannot resume timer in {0} state.'.format(state)
             )
 
