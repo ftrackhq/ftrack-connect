@@ -70,7 +70,6 @@ class Timer(QtGui.QFrame):
 
         self.timeField = ftrack_connect.ui.widget.line_edit.LineEdit()
         self.timeField.setObjectName('timeField')
-        self.timeField.setDisabled(True)
         self.timeField.setAlignment(QtCore.Qt.AlignCenter)
         layout.addWidget(self.timeField)
 
@@ -84,6 +83,11 @@ class Timer(QtGui.QFrame):
             QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Fixed
         )
 
+        # Install event filter at application level in order to manage focus
+        # behaviour correctly.
+        application = QtCore.QCoreApplication.instance()
+        application.installEventFilter(self)
+
         # Connect events.
         self.toggleButton.clicked.connect(self.toggle)
 
@@ -94,12 +98,58 @@ class Timer(QtGui.QFrame):
             'time': time
         })
 
+    def eventFilter(self, obj, event):
+        '''Filter *event* sent to *obj*.'''
+        if obj == self.timeField:
+
+            if event.type() == QtCore.QEvent.FocusIn:
+                self._onTimeFieldFocused()
+
+            elif event.type() == QtCore.QEvent.FocusOut:
+                self.setTime(self._convertStringToTime(self.timeField.text()))
+                self._onTimeFieldBlurred()
+
+            elif event.type() == QtCore.QEvent.KeyPress:
+
+                if event.key() in (QtCore.Qt.Key_Enter, QtCore.Qt.Key_Return):
+                    self.timeField.clearFocus()
+                    return True
+
+                elif event.key() == QtCore.Qt.Key_Escape:
+                    # Cancel any currently entered value.
+                    self.setTime(self.time())
+                    self.timeField.clearFocus()
+                    return True
+
+        else:
+            if event.type() == QtCore.QEvent.MouseButtonRelease:
+                self.timeField.clearFocus()
+
+        # Let event propagate.
+        return False
+
+    def _onTimeFieldFocused(self):
+        if self.state() is self.RUNNING:
+            self.pause()
+
+        # Force disabling of toggle button.
+        self.toggleButton.setDisabled(True)
+
+    def _onTimeFieldBlurred(self):
+        if self.state() is self.PAUSED:
+            self.resume()
+
+        # Force enabling of toggle button.
+        self.toggleButton.setEnabled(True)
+
     def _updateInterface(self):
         '''Update interface to reflect current state and force style refresh.'''
         state = self.state()
+
         if state is self.RUNNING:
             self.toggleButton.setText('Stop')
             self.toggleButton.setProperty('mode', 'stop')
+
         elif state is self.STOPPED:
             self.toggleButton.setText('Start')
             self.toggleButton.setProperty('mode', 'start')
@@ -192,6 +242,8 @@ class Timer(QtGui.QFrame):
         self._state = self.PAUSED
         self.paused.emit(self.time())
 
+        self._updateInterface()
+
     def resume(self):
         '''Resume a paused timer without updating state.
 
@@ -207,6 +259,8 @@ class Timer(QtGui.QFrame):
         self._startTimer()
         self._state = self.RUNNING
         self.resumed.emit(self.time())
+
+        self._updateInterface()
 
     def state(self):
         '''Return current state of timer.
