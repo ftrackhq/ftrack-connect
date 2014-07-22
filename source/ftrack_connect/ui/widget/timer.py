@@ -154,6 +154,11 @@ class Timer(QtGui.QFrame):
         # Force disabling of toggle button.
         self.toggleButton.setDisabled(True)
 
+        # Select all text in line edit. Note: Has to be done using a timer as
+        # otherwise the immediately following click event would deselect the
+        # text.
+        QtCore.QTimer.singleShot(0, self.timeField.selectAll);
+
     def _onTimeFieldBlurred(self):
         if self.state() is self.PAUSED:
             self.resume()
