@@ -27,5 +27,5 @@ priority or by removing the default hook using
 .. toctree::
     :maxdepth: 1
 
-    make-web-playable
-    launch-application
+    make_web_playable
+    launch_application
