@@ -1,7 +1,7 @@
 ..
     :copyright: Copyright (c) 2014 ftrack
 
-.. _launching:
+.. _using/launching:
 
 *********************
 Launching the service

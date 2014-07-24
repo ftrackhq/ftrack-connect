@@ -12,7 +12,7 @@ Welcome to the ftrack connect documentation.
 
     about/index
     installing
-    launching
+    using/index
     developing/index
     faq
     glossary
