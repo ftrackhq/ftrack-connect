@@ -6,6 +6,7 @@ import operator
 
 from PySide import QtGui, QtCore
 
+import ftrack_connect.error
 import ftrack_connect.ui.application
 import ftrack_connect.ui.widget.timer
 import ftrack_connect.ui.widget.overlay
@@ -157,8 +158,10 @@ class TimeLogger(ftrack_connect.ui.application.ApplicationPlugin):
                 return
 
             # Stop current timer to ensure value persisted.
-            if self.timer.state() is not self.timer.STOPPED:
+            try:
                 self.timer.stop()
+            except ftrack_connect.error.InvalidStateError:
+                pass
 
             # TODO: Store on Timer as data.
             self._activeEntity = entity
