@@ -131,7 +131,7 @@ class DurationParser(object):
                 return seconds
 
         raise ftrack_connect.error.ParseError(
-            'Failed to parse duration {0}'.format(text)
+            'Failed to parse duration {0}'.format(text.encode('utf-8'))
         )
 
 
