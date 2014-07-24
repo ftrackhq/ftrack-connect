@@ -14,3 +14,4 @@ more customisation options.
     :maxdepth: 1
 
     hooks/index
+    api_reference/index

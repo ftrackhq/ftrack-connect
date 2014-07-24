@@ -48,7 +48,9 @@ release = _version
 exclude_patterns = ['_template']
 
 # A list of prefixes to ignore for module listings.
-modindex_common_prefix = ['ftrack_connect.']
+modindex_common_prefix = [
+    'ftrack_connect.', 'ftrack_connect.ui.', 'ftrack_connect.ui.widget.'
+]
 
 # -- HTML output --------------------------------------------------------------
 
@@ -69,7 +71,8 @@ html_copy_source = True
 
 # -- Autodoc ------------------------------------------------------------------
 
-autodoc_default_flags = ['members', 'undoc-members', 'inherited-members']
+autodoc_default_flags = ['members', 'undoc-members']
+autodoc_member_order = 'bysource'
 
 
 def autodoc_skip(app, what, name, obj, skip, options):

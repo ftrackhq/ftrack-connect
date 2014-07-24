@@ -6,6 +6,7 @@ import operator
 
 from PySide import QtGui, QtCore
 
+import ftrack_connect.error
 import ftrack_connect.ui.application
 import ftrack_connect.ui.widget.timer
 import ftrack_connect.ui.widget.overlay
@@ -80,7 +81,8 @@ class TimeLogger(ftrack_connect.ui.application.ApplicationPlugin):
         layout.addWidget(self.assignedTimeLogList, stretch=1)
 
         # Connect events.
-        self.timer.stopped.connect(self._onStopTimer)
+        self.timer.stopped.connect(self._onCommitTime)
+        self.timer.timeEdited.connect(self._onCommitTime)
 
         self.assignedTimeLogList.itemSelected.connect(
             self._onSelectTimeLog
@@ -155,8 +157,11 @@ class TimeLogger(ftrack_connect.ui.application.ApplicationPlugin):
             if entity == self._activeEntity:
                 return
 
-            # Stop current timer.
-            self.timer.stop()
+            # Stop current timer to ensure value persisted.
+            try:
+                self.timer.stop()
+            except ftrack_connect.error.InvalidStateError:
+                pass
 
             # TODO: Store on Timer as data.
             self._activeEntity = entity
@@ -181,8 +186,8 @@ class TimeLogger(ftrack_connect.ui.application.ApplicationPlugin):
         else:
             self.disableTimer()
 
-    def _onStopTimer(self, time):
-        '''Handle timer being stopped.'''
+    def _onCommitTime(self, time):
+        '''Commit *time* value to backend..'''
         if self._activeEntity:
             timeInHours = time / 60.0 / 60.0
             self._activeEntity.setLoggedHours(timeInHours)
