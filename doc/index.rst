@@ -11,6 +11,7 @@ Welcome to the ftrack connect documentation.
     :maxdepth: 2
 
     about/index
+    installing
     developing/index
     faq
     glossary
