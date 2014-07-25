@@ -214,13 +214,13 @@ configuration = dict(
         'pyScss >= 1.2.0, < 2',
         'PySide >= 1.2.2, < 2',
         'sphinx >= 1.2.2, < 2',
-        'sphinx_rtd_theme >= 0.1.6'
+        'sphinx_rtd_theme >= 0.1.6, < 2'
     ],
     install_requires=[
         'PySide >= 1.2.2, < 2',
         'Riffle >= 0.1.0, < 2'
     ],
-    tests_require=['pytest >= 2.3.5'],
+    tests_require=['pytest >= 2.3.5, < 3'],
     cmdclass={
         'build': Build,
         'build_resources': BuildResources,
