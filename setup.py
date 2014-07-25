@@ -1,6 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
+import sys
 import os
 import subprocess
 import re
@@ -96,8 +97,19 @@ class BuildResources(Command):
                 print('Compiled {0}'.format(css_target))
 
         try:
+            pyside_rcc_command = 'pyside-rcc'
+
+            # On Windows, pyside-rcc is not automatically available on the
+            # PATH so try to find it manually.
+            if sys.platform == 'win32':
+                import PySide
+                pyside_rcc_command = os.path.join(
+                    os.path.dirname(PySide.__file__),
+                    'pyside-rcc.exe'
+                )
+
             subprocess.check_call([
-                'pyside-rcc',
+                pyside_rcc_command,
                 '-o',
                 self.resource_target_path,
                 self.resource_source_path
@@ -198,6 +210,12 @@ configuration = dict(
     package_dir={
         '': 'source'
     },
+    setup_requires=[
+        'pyScss >= 1.2.0, < 2',
+        'PySide >= 1.2.2, < 2',
+        'sphinx >= 1.2.2, < 2',
+        'sphinx_rtd_theme >= 0.1.6'
+    ],
     install_requires=[
         'PySide >= 1.2.2, < 2',
         'Riffle >= 0.1.0, < 2'
@@ -212,11 +230,6 @@ configuration = dict(
     },
     options={},
     data_files=[
-    ],
-    setup_requires=[
-        'pyScss >= 1.2.0, < 2',
-        'sphinx >= 1.2.2, < 2',
-        'sphinx_rtd_theme >= 0.1.6'
     ]
 )
 
