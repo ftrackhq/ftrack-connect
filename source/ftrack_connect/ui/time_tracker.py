@@ -15,8 +15,8 @@ from ftrack_connect.ui.widget.time_log_list import TimeLogList as _TimeLogList
 
 def register(connect):
     '''Register publish plugin to ftrack connect.'''
-    timeLogger = TimeLogger()
-    connect.addPlugin(timeLogger)
+    timeTracker = TimeTracker()
+    connect.addPlugin(timeTracker)
 
 
 class TimerOverlay(ftrack_connect.ui.widget.overlay.Overlay):
@@ -42,13 +42,13 @@ class TimerOverlay(ftrack_connect.ui.widget.overlay.Overlay):
         ''')
 
 
-class TimeLogger(ftrack_connect.ui.application.ApplicationPlugin):
-    '''Base widget for ftrack connect time logger plugin.'''
+class TimeTracker(ftrack_connect.ui.application.ApplicationPlugin):
+    '''Base widget for ftrack connect time tracker plugin.'''
 
     def __init__(self, *args, **kwargs):
-        '''Instantiate the time logger.'''
-        super(TimeLogger, self).__init__(*args, **kwargs)
-        self.setObjectName('timeLogger')
+        '''Instantiate the time tracker.'''
+        super(TimeTracker, self).__init__(*args, **kwargs)
+        self.setObjectName('timeTracker')
 
         self._activeEntity = None
 
@@ -131,7 +131,7 @@ class TimeLogger(ftrack_connect.ui.application.ApplicationPlugin):
 
     def getName(self):
         '''Return name of widget.'''
-        return 'Log Time'
+        return 'Track Time'
 
     def enableTimer(self):
         '''Enable the timer widget.'''

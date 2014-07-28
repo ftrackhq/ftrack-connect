@@ -4,4 +4,5 @@
 ftrack_connect.ui.resource
 ==========================
 
-.. automodule:: ftrack_connect.ui.resource
+Resource module that loads into PySide various resources including images and
+stylesheets.
