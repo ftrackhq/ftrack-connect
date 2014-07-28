@@ -15,8 +15,8 @@ class BusyIndicator(QtGui.QWidget):
         self._speed = 8.0
         self._spinnerAngle = 0
         # TODO: Use properties to enable setting this colour via stylesheets.
-        self._spinnerColor = '#333'
-        self._logo = ':ftrack/image/default/ftrackLogoGrey'
+        self._spinnerColor = '#11b0e9'
+        self._logo = ':ftrack/image/default/ftrackLogoColor'
 
         self.start()
 

@@ -2,6 +2,7 @@
     <qresource prefix='ftrack/image/default'>
         <file alias='ftrackLogo'>ftrack-logo.png</file>
         <file alias='ftrackLogoGrey'>image/logo_grey.svg</file>
+        <file alias='ftrackLogoColor'>image/logo_colour.svg</file>
     </qresource>
     <qresource prefix='ftrack/style'>
         <file alias='light'>style_light.css</file>
