@@ -29,6 +29,7 @@ pip-log.txt
 
 # Caches
 .sass-cache/
+Thumbs.db
 
 # Development
 .project

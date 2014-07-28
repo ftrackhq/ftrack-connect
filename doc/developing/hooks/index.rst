@@ -1,7 +1,7 @@
 ..
     :copyright: Copyright (c) 2014 ftrack
 
-.. _hooks:
+.. _developing/hooks:
 
 *****
 Hooks
@@ -15,8 +15,9 @@ directory. Then configure the environment by setting the
 :envvar:`FTRACK_TOPIC_PLUGIN_PATH` environment variable.
 
 It is also possible to prevent a default hook from being triggered by calling
-py:func:`event.stop` in a callback with higher priority or by removing the
-default hook using :py:func:`ftrack.TOPICS.unsubscribe`
+:py:meth:`event.stop <ftrack.TopicEvent.stop>` in a callback with higher
+priority or by removing the default hook using
+:py:meth:`ftrack.TOPICS.unsubscribe <ftrack.TopicHub.unsubscribe>`
 
 .. note::
 
@@ -26,5 +27,5 @@ default hook using :py:func:`ftrack.TOPICS.unsubscribe`
 .. toctree::
     :maxdepth: 1
 
-    make-web-playable
-    launch-application
+    make_web_playable
+    launch_application
