@@ -15,7 +15,6 @@
 }
 
 #timer QPushButton[mode="start"]#primary {
-    color: lighten($brand-primary, 50%);
     background-color: $brand-primary;
     border-color: darken($brand-primary, 5%);
 }
@@ -28,6 +27,11 @@
 #timer QPushButton[mode="start"]#primary:pressed {
     background-color: darken($brand-primary, 10%);
     border-color: darken($brand-primary, 15%);
+}
+
+#timer QPushButton[mode="start"]:disabled#primary {
+    background-color: lighten($brand-primary, 20%);
+    border-color: lighten($brand-primary, 15%);
 }
 
 #timer QPushButton[mode="stop"]#primary {
@@ -43,4 +47,9 @@
 #timer QPushButton[mode="stop"]#primary:pressed {
     background-color: darken($brand-danger, 10%);
     border-color: darken($brand-danger, 15%);
+}
+
+#timer QPushButton[mode="stop"]:disabled#primary {
+    background-color: lighten($brand-danger, 20%);
+    border-color: lighten($brand-danger, 15%);
 }

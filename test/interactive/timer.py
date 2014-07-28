@@ -39,6 +39,8 @@ class WidgetHarness(Harness):
         driverLayout.addWidget(applyButton)
 
         applyButton.clicked.connect(self.setTime)
+        self._timer.timeEdited.connect(self._onTimeCommit)
+        self._timer.stopped.connect(self._onTimeCommit)
 
         widget.setSizePolicy(
             QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Fixed
@@ -50,6 +52,10 @@ class WidgetHarness(Harness):
         '''Set time.'''
         time = self._timeInput.value()
         self._timer.setTime(time)
+
+    def _onTimeCommit(self, time):
+        '''Commit *time*.'''
+        print('Committing time value of {0}'.format(time))
 
 
 if __name__ == '__main__':
