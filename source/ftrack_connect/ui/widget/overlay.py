@@ -51,43 +51,40 @@ class Overlay(QtGui.QFrame):
         eventFilter.resized.connect(self._onParentResized)
         parent.installEventFilter(eventFilter)
 
-        self._previousEnabledStates = {}
+        # Install global event filter.
+        application = QtCore.QCoreApplication.instance()
+        application.installEventFilter(self)
+
+    def eventFilter(self, obj, event):
+        '''Filter *event* sent to *obj*.
+
+        Disable parent widget of this overlay receiving interaction events
+        while this overlay is active.
+
+        '''
+        # Prevent interaction events reaching parent and its child widgets
+        # while this overlay is visible.
+        if obj != self:
+            if event.type() in (
+                QtCore.QEvent.KeyPress,
+                QtCore.QEvent.FocusIn
+            ):
+                if self.isVisible():
+                    parent = self.parent()
+                    if (
+                        isinstance(obj, QtGui.QWidget)
+                        and parent.isAncestorOf(obj)
+                    ):
+                        # Skip focus to next valid element and swallow event.
+                        obj.focusNextChild()
+                        return True
+
+        # Let event propagate.
+        return False
 
     def _onParentResized(self, event):
         '''Handle parent resize event to make this widget match size.'''
         self.resize(event.size())
-
-    def setVisible(self, visible):
-        '''Set whether *visible* or not.'''
-        if self.isVisible() != visible:
-            if visible:
-                self._setParentEnabled(False)
-            else:
-                self._setParentEnabled(True)
-
-        super(Overlay, self).setVisible(visible)
-
-    def _setParentEnabled(self, enabled):
-        '''Set parent widget *enabled* state leaving this widget unaltered.
-
-        This is required as this overlay is a child of the target.
-
-        '''
-        parent = self.parent()
-        children = parent.findChildren(QtGui.QWidget)
-        for child in children:
-            if self.isAncestorOf(child):
-                # Keep overlay enabled.
-                continue
-            else:
-                childId = id(child)
-                self._previousEnabledStates.setdefault(childId, True)
-
-                if not enabled:
-                    self._previousEnabledStates[childId] = child.isEnabled()
-                    child.setEnabled(enabled)
-                else:
-                    child.setEnabled(self._previousEnabledStates[childId])
 
 
 class BlockingOverlay(Overlay):
