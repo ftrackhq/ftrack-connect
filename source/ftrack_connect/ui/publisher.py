@@ -5,6 +5,8 @@ from PySide import QtGui, QtCore
 import ftrack
 
 import ftrack_connect.ui.application
+import ftrack_connect.ui.widget.overlay
+import ftrack_connect.ui.widget.publisher
 
 
 def register(connect):
@@ -13,8 +15,22 @@ def register(connect):
     connect.addPlugin(publisher, publisher.getName())
 
 
-class Publisher(QtGui.QStackedWidget,
-                ftrack_connect.ui.application.ApplicationPlugin):
+class PublisherBlockingOverlay(
+    ftrack_connect.ui.widget.overlay.BlockingOverlay
+):
+    '''Custom blocking overlay for publisher.'''
+
+    def __init__(self, parent, message='Select a task in ftrack to start.'):
+        super(PublisherBlockingOverlay, self).__init__(parent, message=message)
+        self.confirmButton = QtGui.QPushButton('Ok')
+        self.contentLayout.insertWidget(
+            3, self.confirmButton, alignment=QtCore.Qt.AlignCenter, stretch=0
+        )
+        self.confirmButton.hide()
+        self.confirmButton.clicked.connect(self.hide)
+
+
+class Publisher(ftrack_connect.ui.application.ApplicationPlugin):
     '''Base widget for ftrack connect publisher plugin.'''
 
     #: Signal to emit when the entity is changed.
@@ -23,29 +39,19 @@ class Publisher(QtGui.QStackedWidget,
     def __init__(self, *args, **kwargs):
         '''Instantiate the publisher widget.'''
         super(Publisher, self).__init__(*args, **kwargs)
+        layout = QtGui.QVBoxLayout()
+        self.setLayout(layout)
 
-        # Inline to avoid circular import
-        from .widget.blocking_indicator import BlockingIndicator
-        self.idleView = BlockingIndicator(
-            parent=self, text='Select task in ftrack to start publisher.'
-        )
-        self.addWidget(
-            self.idleView
-        )
+        self.publishView = ftrack_connect.ui.widget.publisher.Publisher()
+        layout.addWidget(self.publishView)
 
-        # Inline to avoid circular import
-        from .widget.publisher import Publisher as Publish
-        self.publishView = Publish(parent=self)
-        self.addWidget(
-            self.publishView
+        self.blockingOverlay = PublisherBlockingOverlay(
+            parent=self.publishView
         )
-
-        # Inline to avoid circular import
-        from .widget.loading_indicator import LoadingIndicator
-        self.loadingView = LoadingIndicator(parent=self)
-        self.addWidget(
-            self.loadingView
+        self.busyOverlay = ftrack_connect.ui.widget.overlay.BusyOverlay(
+            parent=self.publishView,
         )
+        self.busyOverlay.hide()
 
         self.publishView.publishStarted.connect(
             self._onPublishStarted
@@ -55,42 +61,30 @@ class Publisher(QtGui.QStackedWidget,
             self._onPublishFinished
         )
 
-        self.loadingView.loadingDone.connect(
-            self._onLoadingDone
-        )
-
         self.entityChanged.connect(
             self._onEntityChanged
         )
 
-    def _onPublishFinished(self, success):
-        '''Callback for publish finished signal.'''
-        self.loadingView.setDoneState()
-
     def _onPublishStarted(self):
         '''Callback for publish started signal.'''
-        self.loadingView.setLoadingState()
-        self._setView(self.loadingView)
+        self.blockingOverlay.hide()
+        self.busyOverlay.show()
+
+    def _onPublishFinished(self, success):
+        '''Callback for publish finished signal.'''
+        self.busyOverlay.hide()
+        self.blockingOverlay.setMessage(
+            'Publish finished!\n'
+            'Select another task in ftrack or continue to publish using '
+            'current task.'
+        )
+        self.blockingOverlay.confirmButton.show()
+        self.blockingOverlay.show()
 
     def _onEntityChanged(self):
         '''Callback for entityChanged signal.'''
-        self._setView(
-            self.publishView
-        )
-
-    def _onLoadingDone(self):
-        '''Callback for loadingDone signal.'''
-        self._setView(
-            self.idleView
-        )
-
-        self.clear()
-
-        self.requestApplicationClose.emit(self)
-
-    def _setView(self, view):
-        '''Set active widget of the publisher.'''
-        self.setCurrentWidget(view)
+        self.blockingOverlay.hide()
+        self.busyOverlay.hide()
 
     def clear(self):
         '''Reset the publisher to it's initial state.'''
