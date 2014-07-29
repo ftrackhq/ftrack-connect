@@ -49,6 +49,20 @@ class Overlay(QtGui.QFrame):
         eventFilter.resized.connect(self._onParentResized)
         parent.installEventFilter(eventFilter)
 
+        self._previousParentEnabledState = parent.isEnabled()
+
     def _onParentResized(self, event):
         '''Handle parent resize event to make this widget match size.'''
         self.resize(event.size())
+
+    def setVisible(self, visible):
+        '''Set whether *visible* or not.'''
+        parent = self.parent()
+        if visible:
+            self._previousParentEnabledState = parent.isEnabled()
+            parent.setDisabled(True)
+        else:
+            parent.setEnabled(self._previousParentEnabledState)
+
+        super(Overlay, self).setVisible(visible)
+
