@@ -42,20 +42,46 @@ class Overlay(QtGui.QFrame):
 
         # Prevent interaction events reaching parent and its child widgets
         # while this overlay is visible.
-        if obj != self:
-            if event.type() in (
-                QtCore.QEvent.KeyPress,
-                QtCore.QEvent.FocusIn
+        if (
+            self.isVisible()
+            and obj != self
+            and event.type() == QtCore.QEvent.FocusIn
+        ):
+            parent = self.parent()
+            if (
+                isinstance(obj, QtGui.QWidget)
+                and parent.isAncestorOf(obj)
             ):
-                if self.isVisible():
-                    parent = self.parent()
-                    if (
-                        isinstance(obj, QtGui.QWidget)
-                        and parent.isAncestorOf(obj)
-                    ):
-                        # Skip focus to next valid element and swallow event.
-                        obj.focusNextChild()
-                        return True
+                # Loop through available widgets to move focus to. If an
+                # available widget is not a child of the parent widget targeted
+                # by this overlay then move focus to it, respecting requested
+                # focus direction.
+                seen = []
+                current = obj
+                reason = event.reason()
+
+                while True:
+                    if reason == QtCore.Qt.TabFocusReason:
+                        candidate = current.nextInFocusChain()
+                    elif reason == QtCore.Qt.BacktabFocusReason:
+                        candidate = current.previousInFocusChain()
+                    else:
+                        current.clearFocus()
+                        break
+
+                    if candidate in seen:
+                        # No other widget available for focus.
+                        break
+
+                    seen.append(candidate)
+                    if parent.isAncestorOf(candidate):
+                        current = candidate
+                    else:
+                        candidate.setFocus(event.reason())
+                        break
+
+                # Swallow event.
+                return True
 
         # Let event propagate.
         return False

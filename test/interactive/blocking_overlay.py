@@ -25,6 +25,9 @@ class WidgetHarness(Harness):
 
             layout.addWidget(label)
 
+        textEdit = QtGui.QTextEdit('Text edit.')
+        layout.addWidget(textEdit)
+
         button = QtGui.QPushButton('Push Button')
         button.setObjectName('primary')
         layout.addWidget(button)

@@ -18,7 +18,15 @@ class WidgetHarness(Harness):
         widget.setLayout(layout)
         for index in range(5):
             label = QtGui.QLineEdit('Label {0}'.format(index))
+
+            if index == 3:
+                label.setDisabled(True)
+                label.setText(label.text() + ' (Disabled)')
+
             layout.addWidget(label)
+
+        textEdit = QtGui.QTextEdit('Text edit.')
+        layout.addWidget(textEdit)
 
         button = QtGui.QPushButton('Push Button')
         button.setObjectName('primary')
