@@ -59,13 +59,11 @@ class Overlay(QtGui.QFrame):
 
     def setVisible(self, visible):
         '''Set whether *visible* or not.'''
-        if self.isVisible() == visible:
-            return
-
-        if visible:
-            self._setParentEnabled(False)
-        else:
-            self._setParentEnabled(True)
+        if self.isVisible() != visible:
+            if visible:
+                self._setParentEnabled(False)
+            else:
+                self._setParentEnabled(True)
 
         super(Overlay, self).setVisible(visible)
 
