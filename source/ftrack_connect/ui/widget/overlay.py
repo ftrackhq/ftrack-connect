@@ -110,7 +110,7 @@ class BlockingOverlay(Overlay):
         self.content = QtGui.QFrame()
         self.content.setObjectName('content')
         layout.addWidget(
-            self.content, alignment=QtCore.Qt.AlignCenter, stretch=1
+            self.content, alignment=QtCore.Qt.AlignCenter
         )
 
         self.contentLayout = QtGui.QVBoxLayout()
