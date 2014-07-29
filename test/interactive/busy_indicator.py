@@ -14,7 +14,7 @@ class WidgetHarness(Harness):
         '''Return widget instance to test.'''
         widget = QtGui.QFrame()
         widget.setFrameStyle(QtGui.QFrame.StyledPanel | QtGui.QFrame.Plain)
-        widget.setStyleSheet('QFrame { background-color: #555; }')
+        widget.setStyleSheet('QFrame { background-color: #efefef; }')
         widget.setLayout(QtGui.QVBoxLayout())
 
         self._indicator = ftrack_connect.ui.widget.indicator.BusyIndicator()
