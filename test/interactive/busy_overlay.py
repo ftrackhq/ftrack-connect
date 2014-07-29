@@ -21,6 +21,7 @@ class WidgetHarness(Harness):
             layout.addWidget(label)
 
         button = QtGui.QPushButton('Push Button')
+        button.setObjectName('primary')
         layout.addWidget(button)
 
         widget.overlay = ftrack_connect.ui.widget.overlay.BusyOverlay(widget)
