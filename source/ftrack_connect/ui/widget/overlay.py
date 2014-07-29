@@ -107,31 +107,52 @@ class BlockingOverlay(Overlay):
 
         layout.addStretch()
 
+        self.content = QtGui.QFrame()
+        self.content.setObjectName('content')
+        layout.addWidget(
+            self.content, alignment=QtCore.Qt.AlignCenter, stretch=1
+        )
+
+        self.contentLayout = QtGui.QVBoxLayout()
+        self.contentLayout.setContentsMargins(50, 50, 50, 50)
+        self.content.setLayout(self.contentLayout)
+
         self.icon = QtGui.QLabel()
         pixmap = QtGui.QPixmap(':ftrack/image/default/ftrackLogoColor')
         self.icon.setPixmap(
             pixmap.scaledToHeight(36, mode=QtCore.Qt.SmoothTransformation)
         )
         self.icon.setAlignment(QtCore.Qt.AlignCenter)
-        layout.addWidget(self.icon)
+        self.contentLayout.addWidget(self.icon)
 
         self.messageLabel = QtGui.QLabel()
         self.messageLabel.setWordWrap(True)
         self.messageLabel.setAlignment(QtCore.Qt.AlignCenter)
-        layout.addWidget(self.messageLabel)
+        self.contentLayout.addWidget(self.messageLabel)
 
         layout.addStretch()
 
         self.setStyleSheet('''
             BlockingOverlay {
-                background-color: rgba(255, 255, 255, 200);
+                background-color: rgba(250, 250, 250, 200);
                 border: none;
+            }
+
+            BlockingOverlay QFrame#content {
+                background-color: white;
+                border-radius: 5px;
             }
 
             BlockingOverlay QLabel {
                 background: transparent;
             }
         ''')
+
+        dropShadow = QtGui.QGraphicsDropShadowEffect(self.content)
+        dropShadow.setBlurRadius(100)
+        dropShadow.setOffset(0)
+        dropShadow.setColor(QtGui.QColor(100, 100, 100, 250))
+        self.content.setGraphicsEffect(dropShadow)
 
         self.setMessage(message)
 
@@ -152,12 +173,11 @@ class BusyOverlay(BlockingOverlay):
         '''Initialise with *parent* and busy *message*.'''
         super(BusyOverlay, self).__init__(parent, message=message)
 
-        layout = self.layout()
         self.indicator = ftrack_connect.ui.widget.indicator.BusyIndicator()
-        self.indicator.setFixedHeight(85)
+        self.indicator.setFixedSize(85, 85)
 
         self.icon.hide()
-        layout.insertWidget(1, self.indicator)
+        self.contentLayout.insertWidget(1, self.indicator)
 
     def setVisible(self, visible):
         '''Set whether *visible* or not.'''
