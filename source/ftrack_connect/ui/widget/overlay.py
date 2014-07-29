@@ -3,6 +3,8 @@
 
 from PySide import QtGui, QtCore
 
+import ftrack_connect.ui.widget.indicator
+
 
 class OverlayResizeEventFilter(QtCore.QObject):
     '''Relay parent resize events to overlay.
@@ -66,3 +68,43 @@ class Overlay(QtGui.QFrame):
 
         super(Overlay, self).setVisible(visible)
 
+
+class BusyOverlay(Overlay):
+    '''Display a standard busy overlay over another widget.'''
+
+    def __init__(self, parent, message='Processing'):
+        '''Initialise with *parent* and busy *message*.'''
+        super(BusyOverlay, self).__init__(parent)
+        layout = QtGui.QVBoxLayout()
+        self.setLayout(layout)
+
+        layout.addStretch()
+        self.indicator = ftrack_connect.ui.widget.indicator.BusyIndicator()
+        self.indicator.setFixedHeight(85)
+        layout.addWidget(self.indicator)
+
+        self.messageLabel = QtGui.QLabel(message)
+        self.messageLabel.setWordWrap(True)
+        self.messageLabel.setAlignment(QtCore.Qt.AlignCenter)
+        layout.addWidget(self.messageLabel)
+
+        layout.addStretch()
+
+        self.setStyleSheet('''
+            BusyOverlay {
+                background-color: rgba(255, 255, 255, 200);
+            }
+
+            BusyOverlay QLabel {
+                background: transparent;
+            }
+        ''')
+
+    def setVisible(self, visible):
+        '''Set whether *visible* or not.'''
+        if visible:
+            self.indicator.start()
+        else:
+            self.indicator.stop()
+
+        super(BusyOverlay, self).setVisible(visible)
