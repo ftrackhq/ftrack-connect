@@ -122,13 +122,15 @@ class BlockingOverlay(Overlay):
         self.icon.setPixmap(
             pixmap.scaledToHeight(36, mode=QtCore.Qt.SmoothTransformation)
         )
-        self.icon.setAlignment(QtCore.Qt.AlignCenter)
-        self.contentLayout.addWidget(self.icon)
+        self.contentLayout.addWidget(
+            self.icon, alignment=QtCore.Qt.AlignCenter
+        )
 
         self.messageLabel = QtGui.QLabel()
         self.messageLabel.setWordWrap(True)
-        self.messageLabel.setAlignment(QtCore.Qt.AlignCenter)
-        self.contentLayout.addWidget(self.messageLabel)
+        self.contentLayout.addWidget(
+            self.messageLabel, alignment=QtCore.Qt.AlignCenter
+        )
 
         layout.addStretch()
 
@@ -177,7 +179,9 @@ class BusyOverlay(BlockingOverlay):
         self.indicator.setFixedSize(85, 85)
 
         self.icon.hide()
-        self.contentLayout.insertWidget(1, self.indicator)
+        self.contentLayout.insertWidget(
+            1, self.indicator, alignment=QtCore.Qt.AlignCenter
+        )
 
     def setVisible(self, visible):
         '''Set whether *visible* or not.'''
