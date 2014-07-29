@@ -52,31 +52,36 @@ class Overlay(QtGui.QFrame):
                 isinstance(obj, QtGui.QWidget)
                 and parent.isAncestorOf(obj)
             ):
+                # Ensure the targeted object loses its focus.
+                obj.clearFocus()
+
                 # Loop through available widgets to move focus to. If an
                 # available widget is not a child of the parent widget targeted
                 # by this overlay then move focus to it, respecting requested
                 # focus direction.
                 seen = []
-                current = obj
+                candidate = obj
                 reason = event.reason()
 
                 while True:
                     if reason == QtCore.Qt.TabFocusReason:
-                        candidate = current.nextInFocusChain()
+                        candidate = candidate.nextInFocusChain()
                     elif reason == QtCore.Qt.BacktabFocusReason:
-                        candidate = current.previousInFocusChain()
+                        candidate = candidate.previousInFocusChain()
                     else:
-                        current.clearFocus()
                         break
 
                     if candidate in seen:
                         # No other widget available for focus.
                         break
 
+                    # Keep track of candidates to avoid infinite recursion.
                     seen.append(candidate)
-                    if parent.isAncestorOf(candidate):
-                        current = candidate
-                    else:
+
+                    if (
+                        isinstance(candidate, QtGui.QWidget)
+                        and not parent.isAncestorOf(candidate)
+                    ):
                         candidate.setFocus(event.reason())
                         break
 
