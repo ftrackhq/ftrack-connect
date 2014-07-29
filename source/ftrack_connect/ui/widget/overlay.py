@@ -83,7 +83,7 @@ class BusyOverlay(Overlay):
         self.indicator.setFixedHeight(85)
         layout.addWidget(self.indicator)
 
-        self.messageLabel = QtGui.QLabel(message)
+        self.messageLabel = QtGui.QLabel()
         self.messageLabel.setWordWrap(True)
         self.messageLabel.setAlignment(QtCore.Qt.AlignCenter)
         layout.addWidget(self.messageLabel)
@@ -100,6 +100,8 @@ class BusyOverlay(Overlay):
             }
         ''')
 
+        self.setMessage(message)
+
     def setVisible(self, visible):
         '''Set whether *visible* or not.'''
         if visible:
@@ -108,3 +110,12 @@ class BusyOverlay(Overlay):
             self.indicator.stop()
 
         super(BusyOverlay, self).setVisible(visible)
+
+    def message(self):
+        '''Return current message.'''
+        return self._message
+
+    def setMessage(self, message):
+        '''Set current message to display.'''
+        self._message = message
+        self.messageLabel.setText(message)

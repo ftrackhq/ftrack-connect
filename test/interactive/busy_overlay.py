@@ -33,8 +33,11 @@ class WidgetHarness(Harness):
     def constructController(self, widget):
         '''Return controller for *widget*.'''
         controlWidget = QtGui.QWidget()
+        controlLayout = QtGui.QVBoxLayout()
+        controlWidget.setLayout(controlLayout)
+
         layout = QtGui.QHBoxLayout()
-        controlWidget.setLayout(layout)
+        controlLayout.addLayout(layout)
 
         showButton = QtGui.QPushButton('Show')
         layout.addWidget(showButton)
@@ -44,6 +47,14 @@ class WidgetHarness(Harness):
 
         showButton.clicked.connect(widget.overlay.show)
         hideButton.clicked.connect(widget.overlay.hide)
+
+        messageEdit = QtGui.QLineEdit()
+        messageEdit.setPlaceholderText('Enter message to display')
+        controlLayout.addWidget(messageEdit)
+
+        messageEdit.textChanged.connect(
+            widget.overlay.setMessage
+        )
 
         return controlWidget
 
