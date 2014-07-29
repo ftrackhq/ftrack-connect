@@ -48,6 +48,8 @@ class Publisher(ftrack_connect.ui.application.ApplicationPlugin):
         self.blockingOverlay = PublisherBlockingOverlay(
             parent=self.publishView
         )
+        self.blockingOverlay.messageLabel.setMinimumWidth(250)
+
         self.busyOverlay = ftrack_connect.ui.widget.overlay.BusyOverlay(
             parent=self.publishView,
         )
