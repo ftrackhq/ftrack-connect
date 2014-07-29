@@ -45,14 +45,10 @@ class Publisher(ftrack_connect.ui.application.ApplicationPlugin):
         self.publishView = ftrack_connect.ui.widget.publisher.Publisher()
         layout.addWidget(self.publishView)
 
-        self.blockingOverlay = PublisherBlockingOverlay(
-            parent=self.publishView
-        )
+        self.blockingOverlay = PublisherBlockingOverlay(self)
         self.blockingOverlay.messageLabel.setMinimumWidth(250)
 
-        self.busyOverlay = ftrack_connect.ui.widget.overlay.BusyOverlay(
-            parent=self.publishView,
-        )
+        self.busyOverlay = ftrack_connect.ui.widget.overlay.BusyOverlay(self)
         self.busyOverlay.hide()
 
         self.publishView.publishStarted.connect(
