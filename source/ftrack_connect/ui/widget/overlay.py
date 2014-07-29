@@ -6,31 +6,6 @@ from PySide import QtGui, QtCore
 import ftrack_connect.ui.widget.indicator
 
 
-class OverlayResizeEventFilter(QtCore.QObject):
-    '''Relay parent resize events to overlay.
-
-    To use, install this filter on the object to observe and listen for resized
-    events::
-
-        filter = OverlayResizeEventFilter()
-        filter.resized.connect(onResizedDoSomething)
-        parent.installEventFilter(filter)
-
-    '''
-
-    #: Signal when observed object is resized.
-    resized = QtCore.Signal(object)
-
-    def eventFilter(self, obj, event):
-        '''Filter *event* sent to *obj*.'''
-        if event.type() == QtCore.QEvent.Resize:
-            # Relay event.
-            self.resized.emit(event)
-
-        # Let event propagate.
-        return False
-
-
 class Overlay(QtGui.QFrame):
     '''Display a transparent overlay over another widget.
 
@@ -45,23 +20,26 @@ class Overlay(QtGui.QFrame):
         self.setObjectName('overlay')
         self.setFrameStyle(QtGui.QFrame.StyledPanel | QtGui.QFrame.Plain)
 
-        # Install event filter on parent so that the overlay can match the
-        # parent's size.
-        eventFilter = OverlayResizeEventFilter(parent)
-        eventFilter.resized.connect(self._onParentResized)
-        parent.installEventFilter(eventFilter)
-
-        # Install global event filter.
+        # Install global event filter that will deal with matching parent size
+        # and disabling parent interaction when overlay is visible.
         application = QtCore.QCoreApplication.instance()
         application.installEventFilter(self)
 
     def eventFilter(self, obj, event):
         '''Filter *event* sent to *obj*.
 
+        Maintain sizing of this overlay to match parent widget.
+
         Disable parent widget of this overlay receiving interaction events
         while this overlay is active.
 
         '''
+        # Match sizing of parent.
+        if obj == self.parent():
+            if event.type() == QtCore.QEvent.Resize:
+                # Relay event.
+                self.resize(event.size())
+
         # Prevent interaction events reaching parent and its child widgets
         # while this overlay is visible.
         if obj != self:
@@ -81,10 +59,6 @@ class Overlay(QtGui.QFrame):
 
         # Let event propagate.
         return False
-
-    def _onParentResized(self, event):
-        '''Handle parent resize event to make this widget match size.'''
-        self.resize(event.size())
 
 
 class BlockingOverlay(Overlay):
