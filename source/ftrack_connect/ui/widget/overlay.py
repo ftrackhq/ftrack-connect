@@ -122,12 +122,14 @@ class BlockingOverlay(Overlay):
         self.icon.setPixmap(
             pixmap.scaledToHeight(36, mode=QtCore.Qt.SmoothTransformation)
         )
+        self.icon.setAlignment(QtCore.Qt.AlignCenter)
         self.contentLayout.addWidget(
             self.icon, alignment=QtCore.Qt.AlignCenter
         )
 
         self.messageLabel = QtGui.QLabel()
         self.messageLabel.setWordWrap(True)
+        self.messageLabel.setAlignment(QtCore.Qt.AlignCenter)
         self.contentLayout.addWidget(
             self.messageLabel, alignment=QtCore.Qt.AlignCenter
         )
