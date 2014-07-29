@@ -72,7 +72,7 @@ class Publisher(ftrack_connect.ui.application.ApplicationPlugin):
         '''Callback for publish finished signal.'''
         self.busyOverlay.hide()
         self.blockingOverlay.setMessage(
-            'Publish finished!\n&nbsp;\n'
+            'Publish finished!\n \n'
             'Select another task in ftrack or continue to publish using '
             'current task.'
         )
