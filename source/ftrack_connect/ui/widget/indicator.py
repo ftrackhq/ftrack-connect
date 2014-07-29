@@ -29,6 +29,7 @@ class BusyIndicator(QtGui.QWidget):
         '''Stop spinning if currently spinning.'''
         if self._timer is not None:
             self.killTimer(self._timer)
+            self._timer = None
 
     def timerEvent(self, event):
         '''Handle timer *event*.'''
