@@ -69,19 +69,28 @@ class Overlay(QtGui.QFrame):
         super(Overlay, self).setVisible(visible)
 
 
-class BusyOverlay(Overlay):
-    '''Display a standard busy overlay over another widget.'''
+class BlockingOverlay(Overlay):
+    '''Display a standard blocking overlay over another widget.'''
 
     def __init__(self, parent, message='Processing'):
-        '''Initialise with *parent* and busy *message*.'''
-        super(BusyOverlay, self).__init__(parent)
+        '''Initialise with *parent*.
+
+         *message* is the message to display on the overlay.
+
+         '''
+        super(BlockingOverlay, self).__init__(parent)
         layout = QtGui.QVBoxLayout()
         self.setLayout(layout)
 
         layout.addStretch()
-        self.indicator = ftrack_connect.ui.widget.indicator.BusyIndicator()
-        self.indicator.setFixedHeight(85)
-        layout.addWidget(self.indicator)
+
+        self.icon = QtGui.QLabel()
+        pixmap = QtGui.QPixmap(':ftrack/image/default/ftrackLogoColor')
+        self.icon.setPixmap(
+            pixmap.scaledToHeight(36, mode=QtCore.Qt.SmoothTransformation)
+        )
+        self.icon.setAlignment(QtCore.Qt.AlignCenter)
+        layout.addWidget(self.icon)
 
         self.messageLabel = QtGui.QLabel()
         self.messageLabel.setWordWrap(True)
@@ -91,25 +100,17 @@ class BusyOverlay(Overlay):
         layout.addStretch()
 
         self.setStyleSheet('''
-            BusyOverlay {
+            BlockingOverlay {
                 background-color: rgba(255, 255, 255, 200);
+                border: none;
             }
 
-            BusyOverlay QLabel {
+            BlockingOverlay QLabel {
                 background: transparent;
             }
         ''')
 
         self.setMessage(message)
-
-    def setVisible(self, visible):
-        '''Set whether *visible* or not.'''
-        if visible:
-            self.indicator.start()
-        else:
-            self.indicator.stop()
-
-        super(BusyOverlay, self).setVisible(visible)
 
     def message(self):
         '''Return current message.'''
@@ -119,3 +120,27 @@ class BusyOverlay(Overlay):
         '''Set current message to display.'''
         self._message = message
         self.messageLabel.setText(message)
+
+
+class BusyOverlay(BlockingOverlay):
+    '''Display a standard busy overlay over another widget.'''
+
+    def __init__(self, parent, message='Processing'):
+        '''Initialise with *parent* and busy *message*.'''
+        super(BusyOverlay, self).__init__(parent, message=message)
+
+        layout = self.layout()
+        self.indicator = ftrack_connect.ui.widget.indicator.BusyIndicator()
+        self.indicator.setFixedHeight(85)
+
+        self.icon.hide()
+        layout.insertWidget(1, self.indicator)
+
+    def setVisible(self, visible):
+        '''Set whether *visible* or not.'''
+        if visible:
+            self.indicator.start()
+        else:
+            self.indicator.stop()
+
+        super(BusyOverlay, self).setVisible(visible)
