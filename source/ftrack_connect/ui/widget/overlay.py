@@ -51,7 +51,7 @@ class Overlay(QtGui.QFrame):
         eventFilter.resized.connect(self._onParentResized)
         parent.installEventFilter(eventFilter)
 
-        self._previousParentEnabledState = parent.isEnabled()
+        self._previousEnabledStates = {}
 
     def _onParentResized(self, event):
         '''Handle parent resize event to make this widget match size.'''
@@ -59,14 +59,37 @@ class Overlay(QtGui.QFrame):
 
     def setVisible(self, visible):
         '''Set whether *visible* or not.'''
-        parent = self.parent()
+        if self.isVisible() == visible:
+            return
+
         if visible:
-            self._previousParentEnabledState = parent.isEnabled()
-            parent.setDisabled(True)
+            self._setParentEnabled(False)
         else:
-            parent.setEnabled(self._previousParentEnabledState)
+            self._setParentEnabled(True)
 
         super(Overlay, self).setVisible(visible)
+
+    def _setParentEnabled(self, enabled):
+        '''Set parent widget *enabled* state leaving this widget unaltered.
+
+        This is required as this overlay is a child of the target.
+
+        '''
+        parent = self.parent()
+        children = parent.findChildren(QtGui.QWidget)
+        for child in children:
+            if self.isAncestorOf(child):
+                # Keep overlay enabled.
+                continue
+            else:
+                childId = id(child)
+                self._previousEnabledStates.setdefault(childId, True)
+
+                if not enabled:
+                    self._previousEnabledStates[childId] = child.isEnabled()
+                    child.setEnabled(enabled)
+                else:
+                    child.setEnabled(self._previousEnabledStates[childId])
 
 
 class BlockingOverlay(Overlay):
