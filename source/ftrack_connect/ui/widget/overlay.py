@@ -12,6 +12,9 @@ class Overlay(QtGui.QFrame):
     Customise the background colour using stylesheets. The widget has an object
     name of "overlay".
 
+    While the overlay is active, the target widget and its children will not
+    receive interaction events from the user (e.g. focus).
+
     '''
 
     def __init__(self, parent):
@@ -41,7 +44,18 @@ class Overlay(QtGui.QFrame):
                 self.resize(event.size())
 
         # Prevent interaction events reaching parent and its child widgets
-        # while this overlay is visible.
+        # while this overlay is visible. To do this, intercept appropriate
+        # events (currently focus events) and handle them by skipping child
+        # widgets of the target parent. This prevents the user from tabbing
+        # into a widget that is currently overlaid.
+        #
+        # Note: Previous solutions attempted to use a simpler method of setting
+        # the overlaid widget to disabled. This doesn't work because the overlay
+        # itself is a child of the overlaid widget and Qt does not allow a child
+        # of a disabled widget to be enabled. Attempting to manage manually the
+        # enabled state of each child grows too complex as have to remember the
+        # initial state of each widget when the overlay is shown and then revert
+        # to it on hide.
         if (
             self.isVisible()
             and obj != self
