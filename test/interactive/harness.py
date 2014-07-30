@@ -18,13 +18,30 @@ signal.signal(signal.SIGINT, signal.SIG_DFL)
 class HarnessGui(QtGui.QDialog):
     '''Harness gui for widget.'''
 
-    def __init__(self, widget, parent=None):
-        '''Initialise harness with *widget*.'''
+    def __init__(self, widget, controller=None, parent=None):
+        '''Initialise harness with *widget* and optional *controller*.'''
         super(HarnessGui, self).__init__(parent=parent)
         self.setLayout(QtGui.QVBoxLayout())
 
         self.widget = widget
-        self.layout().addWidget(self.widget)
+        self.layout().addWidget(self.widget, stretch=1)
+
+        self.controller = controller
+        if self.controller:
+            self.controlGroup = QtGui.QFrame()
+            self.controlGroup.setObjectName('HarnessGuiController')
+            self.layout().addWidget(self.controlGroup, stretch=0)
+
+            controlGroupLayout = QtGui.QVBoxLayout()
+            controlGroupLayout.setContentsMargins(0, 0, 0, 0)
+            self.controlGroup.setLayout(controlGroupLayout)
+
+            controlGroupLayout.addWidget(self.controller, stretch=0)
+
+            self.controlGroup.setSizePolicy(
+                QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Maximum
+            )
+
         self.layout().setSizeConstraint(QtGui.QLayout.SetMinAndMaxSize)
 
 
@@ -38,6 +55,14 @@ class Harness(object):
     def constructWidget(self):
         '''Return widget instance to test.'''
         raise NotImplementedError()
+
+    def constructController(self, widget):
+        '''Return widget that provides controls for manipulating the test.
+
+        *widget* is the widget returned from :py:meth:`constructWidget`.
+
+        '''
+        return None
 
     def run(self, arguments=None):
         '''Run harness.'''
@@ -76,7 +101,8 @@ class Harness(object):
 
         # Construct test harness and apply theme.
         widget = self.constructWidget()
-        harnessGui = HarnessGui(widget)
+        controller = self.constructController(widget)
+        harnessGui = HarnessGui(widget, controller)
         ftrack_connect.ui.theme.applyTheme(harnessGui, namespace.theme)
 
         harnessGui.show()

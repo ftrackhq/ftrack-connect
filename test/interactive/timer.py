@@ -12,41 +12,31 @@ class WidgetHarness(Harness):
 
     def constructWidget(self):
         '''Return widget instance to test.'''
-        widget = QtGui.QWidget()
-        layout = QtGui.QVBoxLayout()
-        widget.setLayout(layout)
-        layout.setContentsMargins(0, 0, 0, 0)
-
-        self._timer = timer = ftrack_connect.ui.widget.timer.Timer(
+        self._timer = ftrack_connect.ui.widget.timer.Timer(
             title='Compositing',
             description=('drones / sequence / a very very / long path / that '
                          'should be / elided / is-cu / station')
         )
-        layout.addWidget(timer, stretch=0)
+        return self._timer
 
-        divider = QtGui.QFrame()
-        divider.setFrameShape(QtGui.QFrame.HLine)
-        layout.addWidget(divider)
+    def constructController(self, widget):
+        '''Return controller for *widget*.'''
+        controlWidget = QtGui.QWidget()
+        layout = QtGui.QHBoxLayout()
+        controlWidget.setLayout(layout)
 
-        driverLayout = QtGui.QHBoxLayout()
-        layout.addLayout(driverLayout)
-
-        self._timeInput = timeInput = QtGui.QSpinBox()
-        timeInput.setRange(0, 999 * 60 * 60)
-        driverLayout.addWidget(timeInput)
+        self._timeInput = QtGui.QSpinBox()
+        self._timeInput.setRange(0, 999 * 60 * 60)
+        layout.addWidget(self._timeInput)
 
         applyButton = QtGui.QPushButton('Apply')
-        driverLayout.addWidget(applyButton)
+        layout.addWidget(applyButton)
 
         applyButton.clicked.connect(self.setTime)
-        self._timer.timeEdited.connect(self._onTimeCommit)
-        self._timer.stopped.connect(self._onTimeCommit)
+        widget.timeEdited.connect(self._onTimeCommit)
+        widget.stopped.connect(self._onTimeCommit)
 
-        widget.setSizePolicy(
-            QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Fixed
-        )
-
-        return widget
+        return controlWidget
 
     def setTime(self):
         '''Set time.'''
