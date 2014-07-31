@@ -128,7 +128,7 @@ class BlockingOverlay(Overlay):
         )
 
         self.contentLayout = QtGui.QVBoxLayout()
-        self.contentLayout.setContentsMargins(50, 50, 50, 50)
+        self.contentLayout.setContentsMargins(0, 0, 0, 0)
         self.content.setLayout(self.contentLayout)
 
         self.icon = QtGui.QLabel()
@@ -159,6 +159,7 @@ class BlockingOverlay(Overlay):
             BlockingOverlay QFrame#content {
                 background-color: white;
                 border-radius: 5px;
+                padding: 50px;
             }
 
             BlockingOverlay QLabel {
