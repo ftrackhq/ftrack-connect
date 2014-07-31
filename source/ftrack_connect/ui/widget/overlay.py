@@ -28,6 +28,27 @@ class Overlay(QtGui.QFrame):
         application = QtCore.QCoreApplication.instance()
         application.installEventFilter(self)
 
+    def setVisible(self, visible):
+        '''Set whether *visible* or not.'''
+        if visible:
+            # Manually clear focus from any widget that is overlaid. This
+            # works in conjunction with :py:meth`eventFilter` to prevent
+            # interaction with overlaid widgets.
+            parent = self.parent()
+            if parent.hasFocus():
+                parent.clearFocus()
+            else:
+                for widget in parent.findChildren(QtGui.QWidget):
+                    if self.isAncestorOf(widget):
+                        # Ignore widgets that are part of the overlay.
+                        continue
+
+                    if widget.hasFocus():
+                        widget.clearFocus()
+                        break
+
+        super(Overlay, self).setVisible(visible)
+
     def eventFilter(self, obj, event):
         '''Filter *event* sent to *obj*.
 
