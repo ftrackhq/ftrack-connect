@@ -57,7 +57,7 @@ class Application(QtGui.QMainWindow):
             )
 
         self.logoIcon = QtGui.QIcon(
-            QtGui.QPixmap(':/ftrack/image/default/ftrackLogo')
+            QtGui.QPixmap(':/ftrack/image/default/ftrackLogoColor')
         )
 
         self._theme = None
