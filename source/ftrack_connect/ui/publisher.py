@@ -28,6 +28,7 @@ class PublisherBlockingOverlay(
         )
         self.confirmButton.hide()
         self.confirmButton.clicked.connect(self.hide)
+        self.content.setMinimumWidth(350)
 
 
 class Publisher(ftrack_connect.ui.application.ApplicationPlugin):
@@ -46,7 +47,6 @@ class Publisher(ftrack_connect.ui.application.ApplicationPlugin):
         layout.addWidget(self.publishView)
 
         self.blockingOverlay = PublisherBlockingOverlay(self)
-        self.blockingOverlay.messageLabel.setMinimumWidth(250)
 
         self.busyOverlay = ftrack_connect.ui.widget.overlay.BusyOverlay(self)
         self.busyOverlay.hide()

@@ -141,8 +141,6 @@ class BlockingOverlay(Overlay):
         layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(layout)
 
-        layout.addStretch()
-
         self.content = QtGui.QFrame()
         self.content.setObjectName('content')
         layout.addWidget(
@@ -159,18 +157,12 @@ class BlockingOverlay(Overlay):
             pixmap.scaledToHeight(36, mode=QtCore.Qt.SmoothTransformation)
         )
         self.icon.setAlignment(QtCore.Qt.AlignCenter)
-        self.contentLayout.addWidget(
-            self.icon, alignment=QtCore.Qt.AlignCenter
-        )
+        self.contentLayout.addWidget(self.icon)
 
         self.messageLabel = QtGui.QLabel()
         self.messageLabel.setWordWrap(True)
         self.messageLabel.setAlignment(QtCore.Qt.AlignCenter)
-        self.contentLayout.addWidget(
-            self.messageLabel, alignment=QtCore.Qt.AlignCenter
-        )
-
-        layout.addStretch()
+        self.contentLayout.addWidget(self.messageLabel)
 
         self.setStyleSheet('''
             BlockingOverlay {
