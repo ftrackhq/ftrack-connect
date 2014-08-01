@@ -138,6 +138,7 @@ class BlockingOverlay(Overlay):
          '''
         super(BlockingOverlay, self).__init__(parent)
         layout = QtGui.QVBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(layout)
 
         layout.addStretch()
@@ -178,21 +179,16 @@ class BlockingOverlay(Overlay):
             }
 
             BlockingOverlay QFrame#content {
-                background-color: white;
-                border-radius: 5px;
-                padding: 50px;
+                padding: 0px;
+                border: 80px solid transparent;
+                background-color: transparent;
+                border-image: url(:ftrack/image/default/boxShadow) 140 stretch;
             }
 
             BlockingOverlay QLabel {
                 background: transparent;
             }
         ''')
-
-        dropShadow = QtGui.QGraphicsDropShadowEffect(self.content)
-        dropShadow.setBlurRadius(100)
-        dropShadow.setOffset(0)
-        dropShadow.setColor(QtGui.QColor(100, 100, 100, 250))
-        self.content.setGraphicsEffect(dropShadow)
 
         self.setMessage(message)
 
