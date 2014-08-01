@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-from PySide import QtGui
+from PySide import QtGui, QtCore
 
 import ftrack_connect.ui.widget.overlay
 from harness import Harness
@@ -32,7 +32,9 @@ class WidgetHarness(Harness):
         button.setObjectName('primary')
         layout.addWidget(button)
 
-        widget.overlay = ftrack_connect.ui.widget.overlay.BusyOverlay(widget)
+        widget.overlay = ftrack_connect.ui.widget.overlay.BlockingOverlay(
+            widget
+        )
 
         widget.setMinimumSize(400, 400)
 

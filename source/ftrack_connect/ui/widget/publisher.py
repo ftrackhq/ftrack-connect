@@ -24,7 +24,7 @@ class Publisher(QtGui.QWidget):
     publishStarted = QtCore.Signal()
     publishFinished = QtCore.Signal(bool)
 
-    def __init__(self, parent):
+    def __init__(self, parent=None):
         '''Initiate a publish view.'''
         super(Publisher, self).__init__(parent)
 
