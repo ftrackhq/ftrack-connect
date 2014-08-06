@@ -10,4 +10,4 @@ class TopicThread(QtCore.QThread):
 
     def run(self):
         '''Run the topic thread.'''
-        ftrack.TOPICS.wait()
+        ftrack.EVENT_HUB.wait()

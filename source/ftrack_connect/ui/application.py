@@ -39,7 +39,7 @@ class Application(QtGui.QMainWindow):
 
     # Signal to be used when login fails.
     loginError = QtCore.Signal(object)
-    topicSignal = QtCore.Signal(object, object)
+    topicSignal = QtCore.Signal(object)
 
     def __init__(self, *args, **kwargs):
         '''Initialise the main application window.'''
@@ -93,23 +93,23 @@ class Application(QtGui.QMainWindow):
         else:
             self.setTheme('dark')
 
-    def _onConnectTopicEvent(self, event, data):
+    def _onConnectTopicEvent(self, event):
         '''Generic callback for all ftrack.connect events.
 
         .. note::
             Events not triggered by the current logged in user will be dropped.
 
         '''
-        if event.topic != 'ftrack.connect':
+        if event['topic'] != 'ftrack.connect':
             return
-
-        _meta_ = data.pop('_meta_')
 
         # Drop all events triggered by other users.
-        if not _meta_.get('userId') == self._currentUserId:
+        # TODO: Do this filtering in the subscription.
+        userId = event['source'].get('user', {}).get('id', None)
+        if userId != self._currentUserId:
             return
 
-        self._routeEvent(event, _meta_, **data)
+        self._routeEvent(event)
 
     def login(self):
         '''Login using stored credentials or ask user for them.'''
@@ -161,7 +161,7 @@ class Application(QtGui.QMainWindow):
             ftrack.xmlServer.__init__('{url}/client/'.format(url=url), False)
 
             # Force update topic hub since it will set the url on initialise.
-            ftrack.TOPICS.__init__()
+            ftrack.EVENT_HUB.__init__()
 
         except Exception as error:
 
@@ -205,7 +205,9 @@ class Application(QtGui.QMainWindow):
 
         self._currentUserId = currentUser.getId()
 
-        ftrack.TOPICS.subscribe('ftrack.connect', self._relayTopicEvent)
+        ftrack.EVENT_HUB.subscribe(
+            'topic=ftrack.connect', self._relayTopicEvent
+        )
         self.topicSignal.connect(self._onConnectTopicEvent)
 
         import ftrack_connect.topic_thread
@@ -214,9 +216,9 @@ class Application(QtGui.QMainWindow):
 
         self.focus()
 
-    def _relayTopicEvent(self, event, **kwargs):
+    def _relayTopicEvent(self, event):
         '''Relay all ftrack.connect topics.'''
-        self.topicSignal.emit(event, kwargs)
+        self.topicSignal.emit(event)
 
     def _initialiseTray(self):
         '''Initialise and add application icon to system tray.'''
@@ -269,13 +271,21 @@ class Application(QtGui.QMainWindow):
         from . import time_tracker
         time_tracker.register(self)
 
-    def _routeEvent(self, topic, _meta_, action, plugin, **data):
-        '''Route websocket event to publisher plugin based on *eventData*.
+    def _routeEvent(self, event):
+        '''Route websocket *event* to publisher plugin.
 
-        *eventData* should contain 'plugin' and 'action'. Will raise
-        `ConnectError` if no plugin is found or if action is missing on plugin.
+        Expect event['data'] to contain:
+
+            * plugin - The name of the plugin to route to.
+            * action - The action to execute on the plugin.
+
+        Raise `ConnectError` if no plugin is found or if action is missing on
+        plugin.
 
         '''
+        plugin = event['data']['plugin']
+        action = event['data']['action']
+
         try:
             pluginInstance = self.plugins[plugin]
         except KeyError:
@@ -290,11 +300,11 @@ class Application(QtGui.QMainWindow):
         except AttributeError:
             raise ftrack_connect.error.ConnectError(
                 'Method "{0}" not found on "{1}" plugin({2}).'.format(
-                    method, plugin, pluginInstance
+                    action, plugin, pluginInstance
                 )
             )
 
-        method(topic, _meta_, **data)
+        method(event)
 
     def _onWidgetRequestApplicationFocus(self, widget):
         '''Switch tab to *widget* and bring application to front.'''

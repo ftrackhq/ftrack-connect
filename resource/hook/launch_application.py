@@ -35,20 +35,21 @@ class LaunchApplicationHook(object):
             'ftrack.hook.' + self.__class__.__name__
         )
 
-    def __call__(self, event, applicationIdentifier, context, **data):
+    def __call__(self, event):
         '''Default launch-application hook.
 
-        The hook callback accepts *event*, the *applicationIdentifier* and the
-        application *context*.
+        The hook callback accepts an *event*.
+
+        event['data'] should contain:
+
+            applicationIdentifier - The identifier of the application to launch.
+            context - Context to launch the application in.
 
         '''
-        command = self._getApplicationLaunchCommand(applicationIdentifier)
+        applicationIdentifier = event['data']['applicationIdentifier']
 
-        data['context'] = context
-        data['applicationIdentifier'] = applicationIdentifier
-        environment = self._getApplicationEnvironment(
-            data
-        )
+        command = self._getApplicationLaunchCommand(applicationIdentifier)
+        environment = self._getApplicationEnvironment(event['data'])
 
         success = True
         message = '{0} application started.'.format(applicationIdentifier)
@@ -207,8 +208,7 @@ class LaunchApplicationHook(object):
 
 def register(registry, **kw):
     '''Register hook.'''
-    ftrack.TOPICS.subscribe(
-        'ftrack.launch-application',
-        LaunchApplicationHook(),
-        callbackID='ftrack-connect-default-hook'
+    ftrack.EVENT_HUB.subscribe(
+        'topic=ftrack.launch-application',
+        LaunchApplicationHook()
     )

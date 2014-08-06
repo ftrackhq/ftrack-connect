@@ -100,8 +100,18 @@ class Publisher(ftrack_connect.ui.application.ApplicationPlugin):
 
         self.publishView.setEntity(entity)
 
-    def start(self, topic, _meta_, entity, **kwargs):
-        '''Clear state, set the *entity* and request to start the publisher.'''
+    def start(self, event):
+        '''Handle *event*.
+
+        event['data'] should contain:
+
+            * entity - The entity to set on the publisher.
+
+        Clear state, set the *entity* and request to start the publisher.
+
+        '''
+        entity = event['data']['entity']
+
         self.clear()
         self.setFocus(QtCore.Qt.OtherFocusReason)
 
@@ -111,6 +121,7 @@ class Publisher(ftrack_connect.ui.application.ApplicationPlugin):
         self.setEntity(entity)
         self.requestApplicationFocus.emit(self)
 
-        ftrack.TOPICS._publishCallbackResponse({
-            'message': 'Publisher started.'
-        }, _meta_)
+        ftrack.EVENT_HUB.publishReply(
+            sourceEvent=event,
+            data={'message': 'Publisher started.'}
+        )
