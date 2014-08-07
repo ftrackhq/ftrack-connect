@@ -43,7 +43,8 @@ class LaunchApplicationHook(object):
         event['data'] should contain:
 
             applicationIdentifier - The identifier of the application to launch.
-            context - Context to launch the application in.
+            context - Context of request to help guide how to launch the
+                      application.
 
         '''
         applicationIdentifier = event['data']['applicationIdentifier']

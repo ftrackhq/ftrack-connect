@@ -8,7 +8,9 @@ Hooks
 *****
 
 Hooks in ftrack connect can be used to extend or modify the default behaviour
-of the application. They build upon the event system used in ftrack.
+of the application. They build upon the event system used in ftrack. As such,
+each hook receives a single argument which is an instance of
+:py:class:`ftrack.Event`.
 
 The built-in hooks can be overridden by creating new hooks and placing them in a
 directory. Then configure the environment by setting the
