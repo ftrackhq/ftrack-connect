@@ -10,10 +10,10 @@ import os
 from PySide import QtGui
 
 
-# Hooks use the ftrack event system. Set the FTRACK_TOPIC_PLUGIN_PATH
+# Hooks use the ftrack event system. Set the FTRACK_EVENT_PLUGIN_PATH
 # to pick up the default hooks if it has not already been set.
 os.environ.setdefault(
-    'FTRACK_TOPIC_PLUGIN_PATH',
+    'FTRACK_EVENT_PLUGIN_PATH',
     os.path.abspath(
         os.path.join(
             os.path.realpath(__file__), '..', '..', '..', 'resource', 'hook'
