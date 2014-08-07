@@ -5,9 +5,9 @@ from PySide import QtCore
 import ftrack
 
 
-class TopicThread(QtCore.QThread):
-    '''Thread to listen on ftrack's topics hub.'''
+class EventHubThread(QtCore.QThread):
+    '''Listen for events from ftrack's event hub.'''
 
     def run(self):
-        '''Run the topic thread.'''
+        '''Listen for events.'''
         ftrack.EVENT_HUB.wait()

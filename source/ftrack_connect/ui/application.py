@@ -7,7 +7,7 @@ import getpass
 from PySide import QtGui
 from PySide import QtCore
 
-import ftrack_connect.topic_thread
+import ftrack_connect.event_hub_thread
 import ftrack_connect.error
 import ftrack_connect.ui.theme
 from ftrack_connect.ui.widget import uncaught_error as _uncaught_error
@@ -37,9 +37,11 @@ class ApplicationPlugin(QtGui.QWidget):
 class Application(QtGui.QMainWindow):
     '''Main application window for ftrack connect.'''
 
-    # Signal to be used when login fails.
+    #: Signal when login fails.
     loginError = QtCore.Signal(object)
-    topicSignal = QtCore.Signal(object)
+
+    #: Signal when event received via ftrack's event hub.
+    eventHubSignal = QtCore.Signal(object)
 
     def __init__(self, *args, **kwargs):
         '''Initialise the main application window.'''
@@ -160,7 +162,7 @@ class Application(QtGui.QMainWindow):
             # Force update the url of the server in case it was already set.
             ftrack.xmlServer.__init__('{url}/client/'.format(url=url), False)
 
-            # Force update topic hub since it will set the url on initialise.
+            # Force update event hub since it will set the url on initialise.
             ftrack.EVENT_HUB.__init__()
 
         except Exception as error:
@@ -206,19 +208,19 @@ class Application(QtGui.QMainWindow):
         self._currentUserId = currentUser.getId()
 
         ftrack.EVENT_HUB.subscribe(
-            'topic=ftrack.connect', self._relayTopicEvent
+            'topic=ftrack.connect', self._relayEventHubEvent
         )
-        self.topicSignal.connect(self._onConnectTopicEvent)
+        self.eventHubSignal.connect(self._onConnectTopicEvent)
 
-        import ftrack_connect.topic_thread
-        self.topicThread = ftrack_connect.topic_thread.TopicThread()
-        self.topicThread.start()
+        import ftrack_connect.event_hub_thread
+        self.eventHubThread = ftrack_connect.event_hub_thread.EventHubThread()
+        self.eventHubThread.start()
 
         self.focus()
 
-    def _relayTopicEvent(self, event):
-        '''Relay all ftrack.connect topics.'''
-        self.topicSignal.emit(event)
+    def _relayEventHubEvent(self, event):
+        '''Relay all ftrack.connect events.'''
+        self.eventHubSignal.emit(event)
 
     def _initialiseTray(self):
         '''Initialise and add application icon to system tray.'''
