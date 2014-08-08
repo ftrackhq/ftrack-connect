@@ -9,17 +9,24 @@ import ftrack
 log = logging.getLogger(__name__)
 
 
-def callback(event, versionId, path, **kw):
+def callback(event):
     '''Default make-web-playable hook.
 
-    The hook callback accepts *event*, the *versionId* of the version to make
-    reviewable and the *path* to the file to use as component.
+    The hook callback accepts an *event*.
+
+    event['data'] should contain:
+
+        * versionId - The id of the version to make reviewable.
+        * path - The path to the file to use as the component.
 
     Will raise :py:exc:`ValueError` if the provided path is not an accessible
     file and :py:exc:`ftrack.FTrackError` if cloud storage is full or not
     enabled.
 
     '''
+    versionId = event['data']['versionId']
+    path = event['data']['path']
+
     version = ftrack.AssetVersion(versionId)
 
     # Validate that the path is an accessible file.
@@ -37,8 +44,7 @@ def callback(event, versionId, path, **kw):
 
 def register(registry, **kw):
     '''Register hook.'''
-    ftrack.TOPICS.subscribe(
-        'ftrack.connect.publish.make-web-playable',
-        callback,
-        callbackID='ftrack-connect-default-hook'
+    ftrack.EVENT_HUB.subscribe(
+        'topic=ftrack.connect.publish.make-web-playable',
+        callback
     )
