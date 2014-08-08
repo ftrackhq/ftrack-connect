@@ -200,10 +200,14 @@ class Publisher(QtGui.QWidget):
                 location.addComponent(component)
 
         if previewPath:
-            ftrack.TOPICS.publish(
-                'ftrack.connect.publish.make-web-playable',
-                versionId=version.getId(),
-                path=previewPath,
+            ftrack.EVENT_HUB.publish(
+                ftrack.Event(
+                    'ftrack.connect.publish.make-web-playable',
+                    data=dict(
+                        versionId=version.getId(),
+                        path=previewPath
+                    )
+                ),
                 synchronous=True
             )
 
