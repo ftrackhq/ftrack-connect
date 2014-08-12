@@ -217,6 +217,7 @@ configuration = dict(
         'sphinx_rtd_theme >= 0.1.6, < 2'
     ],
     install_requires=[
+        'pyparsing >= 2.0.2, < 3',
         'PySide >= 1.2.2, < 2',
         'Riffle >= 0.1.0, < 2'
     ],
