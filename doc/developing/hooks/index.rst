@@ -31,3 +31,4 @@ priority or by removing the default hook using
 
     make_web_playable
     launch_application
+    get_applications
