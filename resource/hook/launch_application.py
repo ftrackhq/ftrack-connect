@@ -184,7 +184,7 @@ class LaunchApplicationHook(object):
                 ]
 
             else:
-                self.logger.debug(
+                self.logger.warning(
                     ('Unable to find launch command for {0} on this '
                      'platform.').format(
                         applicationIdentifier
