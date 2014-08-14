@@ -183,6 +183,14 @@ class LaunchApplicationHook(object):
                      'Adobe Premiere Pro CC 2014.app')
                 ]
 
+            else:
+                self.logger.debug(
+                    ('Unable to find launch command for {0} on this '
+                     'platform.').format(
+                        applicationIdentifier
+                    )
+                )
+
             # Figure out if the command should be started with the file path of
             # the latest published version.
             if command is not None and applicationData is not None:
