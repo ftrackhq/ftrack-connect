@@ -10,12 +10,36 @@ import ftrack
 class GetApplicationsHook(object):
     '''Default get-applications hook.
 
-    The class is callable and return an object with  nested list of applications that can be
-    launched on this computer.
+    The class is callable and return an object with a nested list of
+    applications that can be launched on this computer.
 
     Example:
 
-
+        dict(
+            label='name of computer',
+            items=[
+                dict(
+                    label='Maya 2014',
+                    applicationIdentifier='maya_2014'
+                ),
+                dict(
+                    label='2D applications',
+                    items=[
+                        dict(
+                            label='Premiere Pro CC 2014',
+                            applicationIdentifier='pp_cc_2014'
+                        ),
+                        dict(
+                            label='Premiere Pro CC 2014 with latest publish',
+                            applicationIdentifier='pp_cc_2014',
+                            applicationData=dict(
+                                latest=True
+                            )
+                        )
+                    ]
+                )
+            ]
+        )
 
     '''
 
@@ -37,7 +61,7 @@ class GetApplicationsHook(object):
 
         '''
         context = event['data']['context']
-        applications = [
+        items = [
             {
                 'label': '2D applications',
                 'items': [
@@ -57,8 +81,8 @@ class GetApplicationsHook(object):
         ]
 
         return {
-            'session': socket.gethostname(),
-            'applications': applications
+            'label': socket.gethostname(),
+            'items': items
         }
 
 
