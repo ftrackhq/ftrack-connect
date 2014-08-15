@@ -107,6 +107,11 @@ class Publisher(ftrack_connect.ui.application.ApplicationPlugin):
 
             * entity - The entity to set on the publisher.
 
+        event['data'] may optionally contain:
+
+            * components - a list of dictionaries with name and path, used to
+                automatically populate the list of components.
+
         Clear state, set the *entity* and request to start the publisher.
 
         '''
@@ -114,6 +119,14 @@ class Publisher(ftrack_connect.ui.application.ApplicationPlugin):
 
         self.clear()
         self.setFocus(QtCore.Qt.OtherFocusReason)
+
+        # Add any components from event data
+        components = event['data'].get('components', [])
+        for componentData in components:
+            self.publishView.componentsList.addItem({
+                'componentName': componentData.get('name'),
+                'resourceIdentifier': componentData.get('path')
+            })
 
         entity = ftrack.Task(
             entity.get('entityId')
