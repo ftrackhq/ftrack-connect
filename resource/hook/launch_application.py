@@ -195,14 +195,17 @@ class LaunchApplicationHook(object):
             # the latest published version.
             if command is not None and applicationData is not None:
                 if applicationData.get('latest', False):
+                    entity = context['selection'][0]
+                    entityId = entity['entityId']
+                    entityType = entity['entityType']
 
                     # Get a list of valid versions based on entityType.
                     versions = []
-                    if context['entityType'] == 'task':
-                        task = ftrack.Task(context['entityId'])
+                    if entityType == 'task':
+                        task = ftrack.Task(entityId)
                         versions = task.getAssetVersions()
-                    elif context['entityType'] == 'assetversion':
-                        versions = [ftrack.AssetVersion(context['entityId'])]
+                    elif entityType == 'assetversion':
+                        versions = [ftrack.AssetVersion(entityId)]
 
                     # Find the latest version that can be opened.
                     lastDate = None
