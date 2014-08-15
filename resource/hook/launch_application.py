@@ -177,6 +177,11 @@ class LaunchApplicationHook(object):
         )
 
         environment.setdefault(
+            'FTRACK_EVENT_SERVER',
+            ftrack.EVENT_HUB.getServerUrl()
+        )
+
+        environment.setdefault(
             'FTRACK_LOCATION_PLUGIN_PATH',
             os.environ.get('FTRACK_LOCATION_PLUGIN_PATH')
         )
