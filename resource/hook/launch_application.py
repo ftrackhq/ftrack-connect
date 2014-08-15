@@ -194,8 +194,9 @@ class LaunchApplicationHook(object):
             # Figure out if the command should be started with the file path of
             # the latest published version.
             if command is not None and applicationData is not None:
-                if applicationData.get('latest', False):
-                    entity = context['selection'][0]
+                selection = context.get('selection')
+                if selection and applicationData.get('latest', False):
+                    entity = selection[0]
                     entityId = entity['entityId']
                     entityType = entity['entityType']
 
