@@ -45,12 +45,24 @@ class LaunchApplicationHook(object):
             applicationIdentifier - The identifier of the application to launch.
             context - Context of request to help guide how to launch the
                       application.
+            applicationData - Is passed with the applicationIdentifier and can
+                              be used to provide additional information about
+                              how the application should be launched.
 
         '''
         applicationIdentifier = event['data']['applicationIdentifier']
+        context = event['data']['context']
+        applicationData = event['data']['applicationData']
 
-        command = self._getApplicationLaunchCommand(applicationIdentifier)
-        environment = self._getApplicationEnvironment(event['data'])
+        command = self._getApplicationLaunchCommand(
+            applicationIdentifier,
+            context,
+            applicationData
+        )
+        environment = self._getApplicationEnvironment({
+            'data': event['data'],
+            'source': event['source']
+        })
 
         success = True
         message = '{0} application started.'.format(applicationIdentifier)
@@ -119,8 +131,19 @@ class LaunchApplicationHook(object):
             del mapping[key]
             mapping[str(key)] = value
 
-    def _getApplicationLaunchCommand(self, applicationIdentifier):
-        '''Return application command based on OS and *applicationIdentifier*.
+    def _getApplicationLaunchCommand(self, applicationIdentifier, context,
+                                     applicationData):
+        '''Return application command based on OS and *applicationIdentifier*,
+        *context* and *applicationData*.
+
+        *applicationIdentifier* is a unique identifier for each application.
+
+        *context* is the entity the application should be started for.
+
+        *applicationData* is passed with the *applicationIdentifier* and can be
+        used to provide additional information about how the application should
+        be launched.
+
         '''
         command = None
 
@@ -140,6 +163,67 @@ class LaunchApplicationHook(object):
             else:
                 # HieroPlayer application command when running something else.
                 pass
+
+        elif applicationIdentifier == 'premiere_pro_cc_2014':
+
+            if sys.platform == 'win32':
+                command = [
+                    os.path.join(
+                        os.environ['PROGRAMFILES'],
+                        'Adobe',
+                        'Adobe Premiere Pro CC 2014',
+                        'Adobe Premiere Pro.exe'
+                    )
+                ]
+
+            elif sys.platform == 'darwin':
+                command = [
+                    'open',
+                    ('/Applications/Adobe Premiere Pro CC 2014/'
+                     'Adobe Premiere Pro CC 2014.app')
+                ]
+
+            else:
+                self.logger.warning(
+                    ('Unable to find launch command for {0} on this '
+                     'platform.').format(
+                        applicationIdentifier
+                    )
+                )
+
+            # Figure out if the command should be started with the file path of
+            # the latest published version.
+            if command is not None and applicationData is not None:
+                selection = context.get('selection')
+                if selection and applicationData.get('latest', False):
+                    entity = selection[0]
+                    entityId = entity['entityId']
+                    entityType = entity['entityType']
+
+                    # Get a list of valid versions based on entityType.
+                    versions = []
+                    if entityType == 'task':
+                        task = ftrack.Task(entityId)
+                        versions = task.getAssetVersions()
+                    elif entityType == 'assetversion':
+                        versions = [ftrack.AssetVersion(entityId)]
+
+                    # Find the latest version that can be opened.
+                    lastDate = None
+                    path = None
+                    for version in versions:
+                        for component in version.getComponents():
+                            fileSystemPath = component.getFilesystemPath()
+                            if fileSystemPath.endswith('.prproj'):
+                                if (
+                                    lastDate is None or
+                                    version.getDate() > lastDate
+                                ):
+                                    path = fileSystemPath
+                                    lastDate = version.getDate()
+
+                    if path is not None:
+                        command.append(path)
 
         return command
 
