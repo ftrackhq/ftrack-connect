@@ -15,8 +15,12 @@ Example event passed to hook::
         topic='ftrack.get-applications',
         data=dict(
             context=dict(
-                    entityId='eb16970c-5fc6-11e2-bb9a-f23c91df25eb',
-                    entityType='task'
+                selection=[
+                    dict(
+                        entityId='eb16970c-5fc6-11e2-bb9a-f23c91df25eb',
+                        entityType='task',
+                    )
+                ]
             )
         )
     )

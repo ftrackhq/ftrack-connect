@@ -184,7 +184,7 @@ class LaunchApplicationHook(object):
                 ]
 
             else:
-                self.logger.debug(
+                self.logger.warning(
                     ('Unable to find launch command for {0} on this '
                      'platform.').format(
                         applicationIdentifier
@@ -194,15 +194,19 @@ class LaunchApplicationHook(object):
             # Figure out if the command should be started with the file path of
             # the latest published version.
             if command is not None and applicationData is not None:
-                if applicationData.get('latest', False):
+                selection = context.get('selection')
+                if selection and applicationData.get('latest', False):
+                    entity = selection[0]
+                    entityId = entity['entityId']
+                    entityType = entity['entityType']
 
                     # Get a list of valid versions based on entityType.
                     versions = []
-                    if context['entityType'] == 'task':
-                        task = ftrack.Task(context['entityId'])
+                    if entityType == 'task':
+                        task = ftrack.Task(entityId)
                         versions = task.getAssetVersions()
-                    elif context['entityType'] == 'assetversion':
-                        versions = [ftrack.AssetVersion(context['entityId'])]
+                    elif entityType == 'assetversion':
+                        versions = [ftrack.AssetVersion(entityId)]
 
                     # Find the latest version that can be opened.
                     lastDate = None

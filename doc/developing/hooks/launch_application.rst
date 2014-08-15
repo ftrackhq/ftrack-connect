@@ -21,10 +21,7 @@ Example event passed to hook::
                         entityId='eb16970c-5fc6-11e2-bb9a-f23c91df25eb',
                         entityType='task',
                     )
-                ],
-                user=dict(
-                    id='e1dc0534-a573-11e3-9614-080027331d71'
-                )
+                ]
             )
         )
     )
