@@ -16,8 +16,11 @@ class GetApplicationsHook(object):
     Example:
 
         dict(
-            label='name of computer',
             items=[
+                dict(
+                   label='My applications',
+                   type='heading'
+                ),
                 dict(
                     label='Maya 2014',
                     applicationIdentifier='maya_2014'
@@ -63,6 +66,10 @@ class GetApplicationsHook(object):
         context = event['data']['context']
         items = [
             {
+                'label': socket.gethostname(),
+                'type': 'heading'
+            },
+            {
                 'label': '2D applications',
                 'items': [
                     {
@@ -81,7 +88,6 @@ class GetApplicationsHook(object):
         ]
 
         return {
-            'label': socket.gethostname(),
             'items': items
         }
 
