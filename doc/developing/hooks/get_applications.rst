@@ -28,11 +28,17 @@ Example event passed to hook::
 Expects reply data in the form::
 
     dict(
-        label='name of computer',
         items=[
+            dict(
+                label='My applications',
+                type='heading'
+            ),
             dict(
                 label='Maya 2014',
                 applicationIdentifier='maya_2014'
+            ),
+            dict(
+               type='separator'
             ),
             dict(
                 label='2D applications',
