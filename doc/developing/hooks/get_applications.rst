@@ -38,6 +38,9 @@ Expects reply data in the form::
                 applicationIdentifier='maya_2014'
             ),
             dict(
+               type='separator'
+            ),
+            dict(
                 label='2D applications',
                 items=[
                     dict(
