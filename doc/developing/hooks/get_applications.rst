@@ -1,6 +1,8 @@
 ..
     :copyright: Copyright (c) 2014 ftrack
 
+.. _developing/hooks/launch_application
+
 ***********************
 ftrack.get-applications
 ***********************
