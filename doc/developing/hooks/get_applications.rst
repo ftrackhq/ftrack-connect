@@ -5,9 +5,12 @@
 ftrack.get-applications
 ***********************
 
-The get-applications hook is triggered from the ftrack interface. The
-default hook is a placeholder and should be extended to include a complete list 
-of applications that can be launched.
+The get-applications hook is triggered from the ftrack interface to request a 
+list of availble applications for launching. For more information, see 
+:ref:`ftrack:using/connect/launch_application`.
+
+The default hook is a placeholder and should be extended to include a complete
+list of applications that can be launched.
 
 Example event passed to hook::
 
@@ -38,7 +41,7 @@ Expects reply data in the form::
                 applicationIdentifier='mega_modeling_2014'
             ),
             dict(
-               type='separator'
+                type='separator'
             ),
             dict(
                 label='2D Applications',
@@ -80,18 +83,21 @@ To add an application, add an item in the following format.
         )
     )
 
-Where the different options are:
+The different options are:
 
-    * ``label`` is used to display the application in the ftrack interface. 
-    * ``applicationIdentifier`` is used to uniqly identify this application
-      in the ``launch-application`` hook.
-    * ``applicationData`` is optional and can contain any extra data you want
-      to include in the event. This data will be passed on to the 
-      ``launch-application`` hook.
+``label``
+    Used to display the application in the ftrack interface. 
+``applicationIdentifier``
+    Used to uniquely identify this application in the 
+    :ref:`developing/hooks/launch_application` hook.
+``applicationData`` 
+    Optional and can contain any extra data you want to include in the event. 
+    This data will be passed on to the 
+    :ref:`developing/hooks/launch_application` hook.
 
 
 Headings
-============
+========
 
 To add a heading, use type ``heading`` and enter the text as ``label``.
 
@@ -103,7 +109,7 @@ To add a heading, use type ``heading`` and enter the text as ``label``.
     )
 
 Separators
-============
+==========
 
 To add a separator, add an item with type ``separator``.
 
@@ -116,9 +122,10 @@ To add a separator, add an item with type ``separator``.
 Nested menus
 ============
 
-If an item contains a ``items`` list, it will be displayed as a submenu with
-each item as entries in the submenu. The ``label`` will be used as the text
-label for the submenu. Items can nested as deep as you wish.
+If an item contains an ``items`` list, it will be displayed as a submenu with
+each item in the list forming an item in the submenu. The ``label`` will be
+used as the text label for the submenu. You can have as many nested submenus as
+you wish, but try to keep the depth to a maximum of three levels for usability.
 
 .. code-block:: python
 
