@@ -46,36 +46,45 @@ class ApplicationsBase(object):
 
         '''
         regex = None
+        separator = os.path.sep
         if sys.platform == 'win32':
             top = os.environ['PROGRAMFILES']
             regex = win32
+
+            # Separator must properly excaped before it can be used in regular
+            # expression.
+            separator = r'\\'
         elif sys.platform == 'darwin':
             top = '/Applications'
             regex = darwin
         else:
             return []
 
-        separator = os.path.sep
+        if not regex:
+            return []
+
         matcher = re.compile(regex)
         pieces = regex.split(separator)
         partialMatchers = map(
             re.compile,
-            (separator.join(pieces[:i + 1]) for i in range(len(pieces)))
+            (separator.join(pieces[:i + 1]) + '' for i in range(len(pieces)))
         )
 
         applications = []
+        level = 0
         for root, folders, files in os.walk(top, topdown=True):
-
-            for i in reversed(range(len(folders))):
-                folder = os.path.relpath(os.path.join(root, folders[i]), top)
-                level = folder.count(separator)
+            for index in reversed(range(len(folders))):
+                folder = os.path.relpath(
+                    os.path.join(root, folders[index]),
+                    top
+                )
 
                 # Discard folders not matching the regexp.
                 if (
                     level >= len(partialMatchers) or
                     not partialMatchers[level].match(folder)
                 ):
-                    del folders[i]
+                    del folders[index]
 
             # Both files and folders are interesting since OSX applications are
             # folders.
@@ -93,7 +102,7 @@ class ApplicationsBase(object):
                         'version': version,
                         'label': label.format(version=version)
                     })
-
+            level += 1
         return applications
 
     def _getApplications(self):
@@ -113,9 +122,9 @@ class ApplicationsBase(object):
 
         # Add Premiere Pro CC.
         applications.extend(self._findApplications(
-            darwin=(r'Adobe Premiere Pro CC (.{1,10})/'
+            darwin=(r'Adobe Premiere Pro CC ([\d]{4})/'
                     r'Adobe Premiere Pro CC \1.app$'),
-            win32=r'',
+            win32=r'Adobe\\Adobe Premiere Pro CC ([\d]{4})\\Adobe Premiere Pro.exe$',
             label='Premiere Pro CC {version}',
             applicationIdentifier='premiere_pro_cc_{version}'
         ))
@@ -123,15 +132,15 @@ class ApplicationsBase(object):
         # Add Nuke.
         applications.extend(self._findApplications(
             darwin=r'Nuke(.{1,10})/Nuke\1.app$',
-            win32=r'',
+            win32=r'The Foundry\\Nuke(.{1,10})\\nuke.exe$',
             label='Nuke {version}',
             applicationIdentifier='nuke_{version}'
         ))
 
         # Add Maya.
         applications.extend(self._findApplications(
-            darwin=r'Autodesk/maya(.{1,10})/Maya.app$',
-            win32=r'',
+            darwin=r'Autodesk/maya([\d]{1,4})/Maya.app$',
+            win32=r'Autodesk\\Maya([\d]{1,4})\\bin\\maya.exe$',
             label='Maya {version}',
             applicationIdentifier='maya_{version}'
         ))
@@ -139,7 +148,7 @@ class ApplicationsBase(object):
         # Add HIEROPLAYER.
         applications.extend(self._findApplications(
             darwin=r'HieroPlayer(.{1,10})/HieroPlayer\1.app$',
-            win32=r'',
+            win32=r'The Foundry\\HieroPlayer(.{1,10})\\hieroplayer.exe$',
             label='HieroPlayer {version}',
             applicationIdentifier='hieroplayer_{version}'
         ))
