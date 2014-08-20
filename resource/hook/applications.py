@@ -17,13 +17,17 @@ import ftrack
 class ApplicationsBase(object):
     '''Base class for application hooks.'''
 
+    # Class variable used to store found applications.
+    applications = []
+
     def __init__(self):
         '''Instantiate the base class and load applications.'''
         self.logger = logging.getLogger(
             'ftrack.hook.' + self.__class__.__name__
         )
 
-        self.applications = self._getApplications()
+        if not self.applications:
+            self.applications.extend(self._getApplications())
 
     def getApplications(self):
         '''Return list of available application on this host.'''
