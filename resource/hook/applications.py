@@ -170,7 +170,7 @@ class ApplicationsStore(object):
             applications.extend(self._findApplications(
                 expression=(
                     r'The Foundry\\'
-                    r'HieroPlayer(.{1,10})\\',
+                    r'HieroPlayer(.{1,10})\\'
                     r'hieroplayer.exe$'
                 ),
                 top=os.environ['PROGRAMFILES'],
