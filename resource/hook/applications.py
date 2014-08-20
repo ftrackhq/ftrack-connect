@@ -14,31 +14,22 @@ import re
 import ftrack
 
 
-class ApplicationsBase(object):
-    '''Base class for application hooks.'''
-
-    # Class variable used to store found applications.
-    applications = []
+class ApplicationsStore(object):
+    '''Class used as a store to provide available application on this host.'''
 
     def __init__(self):
-        '''Instantiate the base class and load applications.'''
-        self.logger = logging.getLogger(
-            'ftrack.hook.' + self.__class__.__name__
-        )
-
-        if not self.applications:
-            self.applications.extend(self._getApplications())
+        '''Instantiate store and load applications.'''
+        self.applications = self._getApplications()
 
     def getApplications(self):
         '''Return list of available application on this host.'''
         return self.applications
 
-    def _findApplications(self, darwin, win32, label, applicationIdentifier):
+    def _findApplications(self, expression, top, label, applicationIdentifier):
         '''Return list of found applications based on a relative regexp.
 
-        *darwin* will be used on OSX to search in the /Applications folder.
-
-        *win32* will be used on Windows to search in the PROGRAMFILES folder.
+        *expression* should be a regular expression matching the path to an
+        application together with the prefix *top*.
 
         *label* is the label the application will be given. *label* should be on
         the format "Name of app {version}" where version is the first match in
@@ -49,26 +40,14 @@ class ApplicationsBase(object):
         regexp.
 
         '''
-        regex = None
-        separator = os.path.sep
+        separator = os.sep
+
+        # Must escape separator on windows.
         if sys.platform == 'win32':
-            top = os.environ['PROGRAMFILES']
-            regex = win32
+            separator = re.escape(os.sep)
 
-            # Separator must be properly excaped before it can be used in
-            # regular expression.
-            separator = r'\\'
-        elif sys.platform == 'darwin':
-            top = '/Applications'
-            regex = darwin
-        else:
-            return []
-
-        if not regex:
-            return []
-
-        matcher = re.compile(regex)
-        pieces = regex.split(separator)
+        matcher = re.compile(expression)
+        pieces = expression.split(separator)
         partialMatchers = map(
             re.compile,
             (separator.join(pieces[:i + 1]) for i in range(len(pieces)))
@@ -83,7 +62,7 @@ class ApplicationsBase(object):
                     top
                 )
 
-                # Discard folders not matching the regexp.
+                # Discard folders not matching the partial regular expression.
                 if (
                     level >= len(partialMatchers) or
                     not partialMatchers[level].match(folder)
@@ -93,11 +72,14 @@ class ApplicationsBase(object):
             # Both files and folders are interesting since OSX applications are
             # folders.
             for filename in folders + files:
-                filename = os.path.relpath(os.path.join(root, filename), top)
-                match = matcher.match(filename)
+                relativeApplicationPath = os.path.relpath(
+                    os.path.join(root, filename),
+                    top
+                )
+                match = matcher.match(relativeApplicationPath)
                 if match:
                     version = match.groups()[0]
-                    path = os.path.join(top, filename)
+                    path = os.path.join(top, relativeApplicationPath)
                     applications.append({
                         'applicationIdentifier': applicationIdentifier.format(
                             version=version
@@ -125,45 +107,81 @@ class ApplicationsBase(object):
         '''
         applications = []
 
-        # Add Premiere Pro CC.
-        applications.extend(self._findApplications(
-            darwin=(r'Adobe Premiere Pro CC ([\d]{4})/'
-                    r'Adobe Premiere Pro CC \1.app$'),
-            win32=(r'Adobe\\'
-                   r'Adobe Premiere Pro CC ([\d]{4})\\'
-                   r'Adobe Premiere Pro.exe$'),
-            label='Premiere Pro CC {version}',
-            applicationIdentifier='premiere_pro_cc_{version}'
-        ))
+        if sys.platform == 'darwin':
 
-        # Add Nuke.
-        applications.extend(self._findApplications(
-            darwin=r'Nuke(.{1,10})/Nuke\1.app$',
-            win32=r'The Foundry\\Nuke(.{1,10})\\nuke.exe$',
-            label='Nuke {version}',
-            applicationIdentifier='nuke_{version}'
-        ))
+            applications.extend(self._findApplications(
+                expression=(
+                    r'Adobe Premiere Pro CC ([\d]{4})/'
+                    r'Adobe Premiere Pro CC \1.app$'
+                ),
+                top='/Applications',
+                label='Premiere Pro CC {version}',
+                applicationIdentifier='premiere_pro_cc_{version}'
+            ))
 
-        # Add Maya.
-        applications.extend(self._findApplications(
-            darwin=r'Autodesk/maya([\d]{1,4})/Maya.app$',
-            win32=r'Autodesk\\Maya([\d]{1,4})\\bin\\maya.exe$',
-            label='Maya {version}',
-            applicationIdentifier='maya_{version}'
-        ))
+            applications.extend(self._findApplications(
+                expression=r'Nuke(.{1,10})/Nuke\1.app$',
+                top='/Applications',
+                label='Nuke {version}',
+                applicationIdentifier='nuke_{version}'
+            ))
 
-        # Add HIEROPLAYER.
-        applications.extend(self._findApplications(
-            darwin=r'HieroPlayer(.{1,10})/HieroPlayer\1.app$',
-            win32=r'The Foundry\\HieroPlayer(.{1,10})\\hieroplayer.exe$',
-            label='HieroPlayer {version}',
-            applicationIdentifier='hieroplayer_{version}'
-        ))
+            applications.extend(self._findApplications(
+                expression=r'Autodesk/maya([\d]{1,4})/Maya.app$',
+                top='/Applications',
+                label='Maya {version}',
+                applicationIdentifier='maya_{version}'
+            ))
+
+            applications.extend(self._findApplications(
+                expression=r'HieroPlayer(.{1,10})/HieroPlayer\1.app$',
+                top='/Applications',
+                label='HieroPlayer {version}',
+                applicationIdentifier='hieroplayer_{version}'
+            ))
+
+        elif sys.platform == 'win32':
+
+            applications.extend(self._findApplications(
+                expression=(
+                    r'Adobe\\'
+                    r'Adobe Premiere Pro CC ([\d]{4})\\'
+                    r'Adobe Premiere Pro.exe$'
+                ),
+                top=os.environ['PROGRAMFILES'],
+                label='Premiere Pro CC {version}',
+                applicationIdentifier='premiere_pro_cc_{version}'
+            ))
+
+            applications.extend(self._findApplications(
+                expression=r'The Foundry\\Nuke(.{1,10})\\nuke.exe$',
+                top=os.environ['PROGRAMFILES'],
+                label='Nuke {version}',
+                applicationIdentifier='nuke_{version}'
+            ))
+
+            applications.extend(self._findApplications(
+                expression=r'Autodesk\\Maya([\d]{1,4})\\bin\\maya.exe$',
+                top=os.environ['PROGRAMFILES'],
+                label='Maya {version}',
+                applicationIdentifier='maya_{version}'
+            ))
+
+            applications.extend(self._findApplications(
+                expression=(
+                    r'The Foundry\\'
+                    r'HieroPlayer(.{1,10})\\',
+                    r'hieroplayer.exe$'
+                ),
+                top=os.environ['PROGRAMFILES'],
+                label='HieroPlayer {version}',
+                applicationIdentifier='hieroplayer_{version}'
+            ))
 
         return applications
 
 
-class GetApplicationsHook(ApplicationsBase):
+class GetApplicationsHook(object):
     '''Default get-applications hook.
 
     The class is callable and return an object with a nested list of
@@ -205,13 +223,13 @@ class GetApplicationsHook(ApplicationsBase):
 
     '''
 
-    def __init__(self):
+    def __init__(self, applicationStore):
         '''Instantiate the hook and setup logging.'''
         self.logger = logging.getLogger(
             'ftrack.hook.' + self.__class__.__name__
         )
 
-        super(GetApplicationsHook, self).__init__()
+        self.applicationStore = applicationStore
 
     def __call__(self, event):
         '''Default get-applications hook.
@@ -245,8 +263,12 @@ class GetApplicationsHook(ApplicationsBase):
             'items': items
         }
 
+    def getApplications(self):
+        '''Return applications from application store.'''
+        return self.applicationStore.getApplications()
 
-class LaunchApplicationHook(ApplicationsBase):
+
+class LaunchApplicationHook(object):
     '''Default launch-application hook.
 
     The class is callable and accepts information on the event, the application
@@ -263,13 +285,13 @@ class LaunchApplicationHook(ApplicationsBase):
 
     '''
 
-    def __init__(self):
+    def __init__(self, applicationStore):
         '''Instantiate the hook and setup logging.'''
         self.logger = logging.getLogger(
             'ftrack.hook.' + self.__class__.__name__
         )
 
-        super(LaunchApplicationHook, self).__init__()
+        self.applicationStore = applicationStore
 
     def __call__(self, event):
         '''Default launch-application hook.
@@ -346,6 +368,10 @@ class LaunchApplicationHook(ApplicationsBase):
             'success': success,
             'message': message
         }
+
+    def getApplications(self):
+        '''Return applications from application store.'''
+        return self.applicationStore.getApplications()
 
     def _conformEnvironment(self, mapping):
         '''Ensure all entries in *mapping* are strings.
@@ -519,12 +545,14 @@ class LaunchApplicationHook(ApplicationsBase):
 
 def register(registry, **kw):
     '''Register hooks.'''
+    applicationStore = ApplicationsStore()
+
     ftrack.EVENT_HUB.subscribe(
         'topic=ftrack.get-applications',
-        GetApplicationsHook()
+        GetApplicationsHook(applicationStore)
     )
 
     ftrack.EVENT_HUB.subscribe(
         'topic=ftrack.launch-application',
-        LaunchApplicationHook()
+        LaunchApplicationHook(applicationStore)
     )
