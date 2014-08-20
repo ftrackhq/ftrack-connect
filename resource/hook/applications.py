@@ -51,8 +51,8 @@ class ApplicationsBase(object):
             top = os.environ['PROGRAMFILES']
             regex = win32
 
-            # Separator must properly excaped before it can be used in regular
-            # expression.
+            # Separator must be properly excaped before it can be used in
+            # regular expression.
             separator = r'\\'
         elif sys.platform == 'darwin':
             top = '/Applications'
@@ -67,7 +67,7 @@ class ApplicationsBase(object):
         pieces = regex.split(separator)
         partialMatchers = map(
             re.compile,
-            (separator.join(pieces[:i + 1]) + '' for i in range(len(pieces)))
+            (separator.join(pieces[:i + 1]) for i in range(len(pieces)))
         )
 
         applications = []
@@ -125,7 +125,9 @@ class ApplicationsBase(object):
         applications.extend(self._findApplications(
             darwin=(r'Adobe Premiere Pro CC ([\d]{4})/'
                     r'Adobe Premiere Pro CC \1.app$'),
-            win32=r'Adobe\\Adobe Premiere Pro CC ([\d]{4})\\Adobe Premiere Pro.exe$',
+            win32=(r'Adobe\\'
+                   r'Adobe Premiere Pro CC ([\d]{4})\\'
+                   r'Adobe Premiere Pro.exe$'),
             label='Premiere Pro CC {version}',
             applicationIdentifier='premiere_pro_cc_{version}'
         ))
