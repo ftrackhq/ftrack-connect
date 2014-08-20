@@ -62,5 +62,6 @@ Expects reply data in the form::
 Default hook
 ============
 
-.. literalinclude:: /../resource/hook/get_applications.py
+.. literalinclude:: /../resource/hook/applications.py
     :language: python
+    :pyobject: GetApplicationsHook
