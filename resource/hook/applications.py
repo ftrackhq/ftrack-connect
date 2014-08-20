@@ -103,6 +103,7 @@ class ApplicationsBase(object):
                         'label': label.format(version=version)
                     })
             level += 1
+
         return applications
 
     def _getApplications(self):
@@ -389,13 +390,13 @@ class LaunchApplicationHook(ApplicationsBase):
         if applicationConfig:
             if sys.platform == 'win32':
                 command = [
-                    application['path']
+                    applicationConfig['path']
                 ]
 
             elif sys.platform == 'darwin':
                 command = [
                     'open',
-                    application['path']
+                    applicationConfig['path']
                 ]
         else:
             self.logger.warning(
