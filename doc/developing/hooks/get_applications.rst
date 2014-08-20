@@ -1,14 +1,14 @@
 ..
     :copyright: Copyright (c) 2014 ftrack
 
-.. _developing/hooks/launch_application
+.. _developing/hooks/get_applications
 
 ***********************
 ftrack.get-applications
 ***********************
 
 The get-applications hook is triggered from the ftrack interface to request a 
-list of availble applications for launching. For more information, see 
+list of available applications for launching. For more information, see 
 :ref:`ftrack:using/connect/launch_application`.
 
 The default hook is a placeholder and should be extended to include a complete

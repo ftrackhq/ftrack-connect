@@ -8,8 +8,9 @@ ftrack.launch-application
 *************************
 
 The *launch-application* hook is triggered from the ftrack interface when a user
-selects an application in the Launch menu. For more information about launching
-applications from the web UI, see :ref:`ftrack:using/connect/launch_application`.
+selects an application in the :guilabel:`Launch` menu. For more information
+about launching applications from the web UI, see 
+:ref:`ftrack:using/connect/launch_application`.
 
 The list of applications is provided by the 
 :ref:`developing/hooks/get_applications` :term:`hook`. The *get-applications*
