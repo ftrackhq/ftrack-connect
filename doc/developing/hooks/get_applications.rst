@@ -49,8 +49,8 @@ Expects reply data in the form::
                 label='2D Applications',
                 items=[
                     dict(
-                        label='Profesional Painter',
-                        applicationIdentifier='profesional_painter'
+                        label='Professional Painter',
+                        applicationIdentifier='professional_painter'
                     ),
                     dict(
                         label='Cool Compositor v2',
