@@ -42,7 +42,8 @@ class ApplicationsStore(object):
         '''
         separator = os.sep
 
-        # Must escape separator on windows.
+        # Joined paths will not match regular expression unless separator is
+        # escaped on windows.
         if sys.platform == 'win32':
             separator = re.escape(os.sep)
 
@@ -249,21 +250,35 @@ class GetApplicationsHook(object):
                 'type': 'heading'
             }
         ]
-        applications = self.getApplications()
+        applications = self._getApplications()
         applications = sorted(
             applications, key=lambda application: application['label']
         )
+
         for application in applications:
+            applicationIdentifier = application['applicationIdentifier']
+            label = application['label']
             items.append({
-                'applicationIdentifier': application['applicationIdentifier'],
-                'label': application['label']
+                'applicationIdentifier': applicationIdentifier,
+                'label': label
             })
+
+            if applicationIdentifier.startswith('premiere_pro_cc'):
+                items.append({
+                    'applicationIdentifier': applicationIdentifier,
+                    'label': '{label} with latest version'.format(
+                        label=label
+                    ),
+                    'applicationData': {
+                        'launchWithLatest': True
+                    }
+                })
 
         return {
             'items': items
         }
 
-    def getApplications(self):
+    def _getApplications(self):
         '''Return applications from application store.'''
         return self.applicationStore.getApplications()
 
@@ -369,7 +384,7 @@ class LaunchApplicationHook(object):
             'message': message
         }
 
-    def getApplications(self):
+    def _getApplications(self):
         '''Return applications from application store.'''
         return self.applicationStore.getApplications()
 
@@ -409,7 +424,7 @@ class LaunchApplicationHook(object):
         '''
         command = None
         applicationConfig = None
-        for application in self.getApplications():
+        for application in self._getApplications():
             if application['applicationIdentifier'] == applicationIdentifier:
                 applicationConfig = application
 
@@ -419,17 +434,15 @@ class LaunchApplicationHook(object):
             ):
                 applicationConfig = application
 
-        if applicationConfig:
-            if sys.platform == 'win32':
-                command = [
-                    applicationConfig['path']
-                ]
-
-            elif sys.platform == 'darwin':
-                command = [
-                    'open',
-                    applicationConfig['path']
-                ]
+        if applicationConfig and sys.platform in ('win32', 'linux2'):
+            command = [
+                applicationConfig['path']
+            ]
+        elif applicationConfig and sys.platform == 'darwin':
+            command = [
+                'open',
+                applicationConfig['path']
+            ]
         else:
             self.logger.warning(
                 ('Unable to find launch command for {0} on this '
@@ -440,39 +453,61 @@ class LaunchApplicationHook(object):
 
         # Figure out if the command should be started with the file path of
         # the latest published version.
-        if command is not None and applicationData is not None:
+        if (command is not None and applicationData is not None):
             selection = context.get('selection')
-            if selection and applicationData.get('latest', False):
+            if selection and applicationData.get('launchWithLatest', False):
                 entity = selection[0]
-                entityId = entity['entityId']
-                entityType = entity['entityType']
 
-                # Get a list of valid versions based on entityType.
-                versions = []
-                if entityType == 'task':
-                    task = ftrack.Task(entityId)
-                    versions = task.getAssetVersions()
-                elif entityType == 'assetversion':
-                    versions = [ftrack.AssetVersion(entityId)]
+                if applicationIdentifier.startswith('premiere_pro_cc'):
+                    component = self.findLatestComponent(
+                        entity['entityId'],
+                        entity['entityType'],
+                        'prproj'
+                    )
 
-                # Find the latest version that can be opened.
-                lastDate = None
-                path = None
-                for version in versions:
-                    for component in version.getComponents():
-                        fileSystemPath = component.getFilesystemPath()
-                        if fileSystemPath.endswith('.prproj'):
-                            if (
-                                lastDate is None or
-                                version.getDate() > lastDate
-                            ):
-                                path = fileSystemPath
-                                lastDate = version.getDate()
-
-                if path is not None:
-                    command.append(path)
+                if component is not None:
+                    command.append(component.getFilesystemPath())
 
         return command
+
+    def findLatestComponent(self, entityId, entityType, extension=''):
+        '''Return the latest published component from *entityId* and *entityType*.
+
+        *extension* can be used to find suitable components by matching with
+        their file system path.
+
+        '''
+        versions = []
+        if entityType == 'task':
+            task = ftrack.Task(entityId)
+            versions = task.getAssetVersions()
+        elif entityType == 'assetversion':
+            versions = [ftrack.AssetVersion(entityId)]
+        else:
+            self.logger.debug(
+                (
+                    'Unable to find latest version from entityId={entityId} '
+                    'with entityType={entityType}.'
+                ).format(
+                    entityId=entityId,
+                    entityType=entityType
+                )
+            )
+            return None
+
+        lastDate = None
+        latestComponent = None
+        for version in versions:
+            for component in version.getComponents():
+                fileSystemPath = component.getFilesystemPath()
+                if fileSystemPath.endswith(extension):
+                    if (
+                        lastDate is None or
+                        version.getDate() > lastDate
+                    ):
+                        latestComponent = component
+                        lastDate = version.getDate()
+        return latestComponent
 
     def _getApplicationEnvironment(self, eventData=None):
         '''Return list of environment variables based on *context*.
