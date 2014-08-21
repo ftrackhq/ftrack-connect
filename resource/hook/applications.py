@@ -15,14 +15,14 @@ import ftrack
 
 
 class ApplicationsStore(object):
-    '''Class used as a store to provide available application on this host.'''
+    '''Class used as a store to provide available applications on this host.'''
 
     def __init__(self):
         '''Instantiate store and load applications.'''
         self.applications = self._getApplications()
 
     def getApplications(self):
-        '''Return list of available application on this host.'''
+        '''Return list of available applications.'''
         return self.applications
 
     def _findApplications(self, expression, top, label, applicationIdentifier):
@@ -30,6 +30,9 @@ class ApplicationsStore(object):
 
         *expression* should be a regular expression matching the path to an
         application together with the prefix *top*.
+
+        *top* should be a file path to a folder where the *expression* matching
+        should begin. On OSX *top* would often be '/Applications'.
 
         *label* is the label the application will be given. *label* should be on
         the format "Name of app {version}" where version is the first match in
