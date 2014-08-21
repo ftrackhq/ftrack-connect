@@ -97,9 +97,9 @@ class ApplicationsStore(object):
         return applications
 
     def _getApplications(self):
-        '''Return a list of applications.
+        '''Return a list of applications that can be launched from this host.
 
-        Applications should be on the form:
+        An application should be on the form:
 
             dict(
                 'applicationIdentifier': 'name_version',
@@ -282,7 +282,7 @@ class GetApplicationsHook(object):
         }
 
     def _getApplications(self):
-        '''Return applications from application store.'''
+        '''Return applications from the application store.'''
         return self.applicationStore.getApplications()
 
 
@@ -388,7 +388,7 @@ class LaunchApplicationHook(object):
         }
 
     def _getApplications(self):
-        '''Return applications from application store.'''
+        '''Return applications from the application store.'''
         return self.applicationStore.getApplications()
 
     def _conformEnvironment(self, mapping):
