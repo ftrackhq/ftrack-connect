@@ -10,6 +10,7 @@ import subprocess
 import collections
 import socket
 import re
+import glob
 
 import ftrack
 
@@ -25,75 +26,42 @@ class ApplicationsStore(object):
         '''Return list of available applications.'''
         return self.applications
 
-    def _findApplications(self, expression, top, label, applicationIdentifier):
-        '''Return list of found applications based on a relative regexp.
+    def _findApplications(self, expression, versionExpression, label,
+                          applicationIdentifier):
+        '''
+        Return list of found applications base on *expression*.
 
-        *expression* should be a regular expression matching the path to an
-        application together with the prefix *top*.
+        *expression* is passed directly to the :py:mod:`glob` module to match
+        path names.
 
-        *top* should be a file path to a folder where the *expression* matching
-        should begin. On OSX *top* would often be '/Applications'.
+        *versionExpression* is a regular expression used to find the version of
+        the application. This expression should include a named backreference.
+        For example::
+
+            '(?P<version>[\d]{4})'
 
         *label* is the label the application will be given. *label* should be on
-        the format "Name of app {version}" where version is the first match in
-        the regexp.
+        the format "Name of app {version}".
 
         *applicationIdentifier* should be on the form
         "application_name_{version}" where version is the first match in the
         regexp.
 
         '''
-        separator = os.sep
-
-        # Joined paths will not match regular expression unless separator is
-        # escaped on windows.
-        if sys.platform == 'win32':
-            separator = re.escape(os.sep)
-
-        matcher = re.compile(expression)
-        pieces = expression.split(separator)
-        partialMatchers = map(
-            re.compile,
-            (separator.join(pieces[:i + 1]) for i in range(len(pieces)))
-        )
-
         applications = []
-        level = 0
-        for root, folders, files in os.walk(top, topdown=True):
-            for index in reversed(range(len(folders))):
-                folder = os.path.relpath(
-                    os.path.join(root, folders[index]),
-                    top
-                )
-
-                # Discard folders not matching the partial regular expression.
-                if (
-                    level >= len(partialMatchers) or
-                    not partialMatchers[level].match(folder)
-                ):
-                    del folders[index]
-
-            # Both files and folders are interesting since OSX applications are
-            # folders.
-            for filename in folders + files:
-                relativeApplicationPath = os.path.relpath(
-                    os.path.join(root, filename),
-                    top
-                )
-                match = matcher.match(relativeApplicationPath)
-                if match:
-                    version = match.groups()[0]
-                    path = os.path.join(top, relativeApplicationPath)
-                    applications.append({
-                        'applicationIdentifier': applicationIdentifier.format(
-                            version=version
-                        ),
-                        'path': path,
-                        'version': version,
-                        'label': label.format(version=version)
-                    })
-            level += 1
-
+        results = glob.glob(expression)
+        for result in results:
+            match = re.search(versionExpression, result)
+            if match:
+                version = match.group('version')
+                applications.append({
+                    'applicationIdentifier': applicationIdentifier.format(
+                        version=version
+                    ),
+                    'path': result,
+                    'version': version,
+                    'label': label.format(version=version)
+                })
         return applications
 
     def _getApplications(self):
@@ -114,35 +82,41 @@ class ApplicationsStore(object):
         if sys.platform == 'darwin':
 
             applications.extend(self._findApplications(
-                expression=(
-                    r'Adobe Premiere Pro CC ([\d]{4})/'
-                    r'Adobe Premiere Pro CC \1.app$'
-                ),
-                top='/Applications',
+                expression=('/Applications/Adobe Premiere Pro CC */'
+                            'Adobe Premiere Pro CC *.app'),
+                versionExpression=r'(?P<version>[\d]{4})',
                 label='Premiere Pro CC {version}',
                 applicationIdentifier='premiere_pro_cc_{version}'
             ))
 
             applications.extend(self._findApplications(
-                expression=r'Nuke(.{1,10})/Nuke\1.app$',
-                top='/Applications',
+                expression=('/Applications/Nuke*/'
+                            'Nuke*.app'),
+                versionExpression=r'Nuke(?P<version>.{1,10})$',
                 label='Nuke {version}',
                 applicationIdentifier='nuke_{version}'
             ))
 
-            applications.extend(self._findApplications(
-                expression=r'Autodesk/maya([\d]{1,4})/Maya.app$',
-                top='/Applications',
-                label='Maya {version}',
-                applicationIdentifier='maya_{version}'
-            ))
+            # applications.extend(self._findApplications(
+            #     expression=r'Nuke(.{1,10})/Nuke\1.app$',
+            #     top='/Applications',
+            #     label='Nuke {version}',
+            #     applicationIdentifier='nuke_{version}'
+            # ))
 
-            applications.extend(self._findApplications(
-                expression=r'HieroPlayer(.{1,10})/HieroPlayer\1.app$',
-                top='/Applications',
-                label='HieroPlayer {version}',
-                applicationIdentifier='hieroplayer_{version}'
-            ))
+            # applications.extend(self._findApplications(
+            #     expression=r'Autodesk/maya([\d]{1,4})/Maya.app$',
+            #     top='/Applications',
+            #     label='Maya {version}',
+            #     applicationIdentifier='maya_{version}'
+            # ))
+
+            # applications.extend(self._findApplications(
+            #     expression=r'HieroPlayer(.{1,10})/HieroPlayer\1.app$',
+            #     top='/Applications',
+            #     label='HieroPlayer {version}',
+            #     applicationIdentifier='hieroplayer_{version}'
+            # ))
 
         elif sys.platform == 'win32':
 
@@ -448,21 +422,20 @@ class LaunchApplicationHook(object):
             ]
         else:
             self.logger.warning(
-                ('Unable to find launch command for {0} on this '
-                 'platform.').format(
-                    applicationIdentifier
-                )
+                'Unable to find launch command for {0} on this platform.'
+                .format(applicationIdentifier)
             )
 
         # Figure out if the command should be started with the file path of
         # the latest published version.
-        if (command is not None and applicationData is not None):
+        if command is not None and applicationData is not None:
             selection = context.get('selection')
             if selection and applicationData.get('launchWithLatest', False):
                 entity = selection[0]
+                component = None
 
                 if applicationIdentifier.startswith('premiere_pro_cc'):
-                    component = self.findLatestComponent(
+                    component = self._findLatestComponent(
                         entity['entityId'],
                         entity['entityType'],
                         'prproj'
@@ -473,14 +446,13 @@ class LaunchApplicationHook(object):
 
         return command
 
-    def findLatestComponent(self, entityId, entityType, extension=''):
-        '''Return the latest published component from *entityId* and *entityType*.
+    def _findLatestComponent(self, entityId, entityType, extension=''):
+        '''Return latest published component from *entityId* and *entityType*.
 
         *extension* can be used to find suitable components by matching with
         their file system path.
 
         '''
-        versions = []
         if entityType == 'task':
             task = ftrack.Task(entityId)
             versions = task.getAssetVersions()
@@ -519,46 +491,30 @@ class LaunchApplicationHook(object):
         session.
 
         '''
-        # Copy appropitate environment variables to new environment.
-        environment = {}
+        # Copy appropriate environment variables to new environment.
+        environment = {
+            'FTRACK_SERVER': os.environ.get('FTRACK_SERVER'),
+            'FTRACK_PROXY': os.environ.get('FTRACK_PROXY'),
+            'FTRACK_APIKEY': os.environ.get('FTRACK_APIKEY'),
+            'LOGNAME': os.environ.get('LOGNAME'),
+            'FTRACK_EVENT_SERVER': ftrack.EVENT_HUB.getServerUrl(),
+            'FTRACK_LOCATION_PLUGIN_PATH': os.environ.get(
+                'FTRACK_LOCATION_PLUGIN_PATH'
+            )
+        }
 
         if sys.platform == 'win32':
             # Required for launching executables on Windows.
-            environment.setdefault('SystemRoot', os.environ.get('SystemRoot'))
-            environment.setdefault('SystemDrive', os.environ.get('SystemDrive'))
+            environment['SystemRoot'] = os.environ.get('SystemRoot')
+            environment['SystemDrive'] = os.environ.get('SystemDrive')
 
             # Many applications also need access to temporary storage and other
             # executable.
-            environment.setdefault('PATH', os.environ.get('PATH'))
-            environment.setdefault('TMP', os.environ.get('TMP'))
-
-        environment.setdefault(
-            'FTRACK_SERVER', os.environ.get('FTRACK_SERVER')
-        )
-        environment.setdefault(
-            'FTRACK_PROXY', os.environ.get('FTRACK_PROXY')
-        )
-        environment.setdefault(
-            'FTRACK_APIKEY', os.environ.get('FTRACK_APIKEY')
-        )
-        environment.setdefault(
-            'LOGNAME', os.environ.get('LOGNAME')
-        )
-
-        environment.setdefault(
-            'FTRACK_EVENT_SERVER',
-            ftrack.EVENT_HUB.getServerUrl()
-        )
-
-        environment.setdefault(
-            'FTRACK_LOCATION_PLUGIN_PATH',
-            os.environ.get('FTRACK_LOCATION_PLUGIN_PATH')
-        )
+            environment['PATH'] = os.environ.get('PATH')
+            environment['TMP'] = os.environ.get('TMP')
 
         # Add discovered ftrack API to PYTHONPATH.
-        environment.setdefault(
-            'PYTHONPATH', os.path.dirname(ftrack.__file__)
-        )
+        environment['PYTHONPATH'] = os.path.dirname(ftrack.__file__)
 
         # Add ftrack connect event to environment.
         if eventData is not None:
