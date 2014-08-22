@@ -543,10 +543,22 @@ class LaunchApplicationHook(object):
                 ['SystemRoot', 'SystemDrive'], environment
             )
 
-            # Many applications also need access to temporary storage and other
-            # executable.
+            # Many applications also need access to temporary storage and
+            # other standard Windows locations.
             self._mapEnvironmentVariables(
-                ['PATH', 'TMP'], environment
+                [
+                    'APPDATA', 'LOCALAPPDATA',
+
+                    'COMMONPROGRAMW6432',
+                    'COMMONPROGRAMFILES', 'COMMONPROGRAMFILES(X86)',
+
+                    'PROGRAMW6432', 'PROGRAMFILES', 'PROGRAMFILES(X86)'
+
+                    'PATH', 'PATHEXT',
+
+                    'TMP', 'TEMP'
+                ],
+                environment
             )
 
         # Prepend discovered ftrack API to PYTHONPATH.
