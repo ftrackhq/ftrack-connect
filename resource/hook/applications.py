@@ -15,12 +15,12 @@ import glob
 import ftrack
 
 
-class ApplicationsStore(object):
-    '''Class used as a store to provide available applications on this host.'''
+class ApplicationStore(object):
+    '''Discover and store available applications on this host.'''
 
     def __init__(self):
-        '''Instantiate store and load applications.'''
-        super(ApplicationsStore, self).__init__()
+        '''Instantiate store and discover applications.'''
+        super(ApplicationStore, self).__init__()
         self.logger = logging.getLogger(
             'ftrack.hook.' + self.__class__.__name__
         )
@@ -564,7 +564,7 @@ class LaunchApplicationHook(object):
 
 def register(registry, **kw):
     '''Register hooks.'''
-    applicationStore = ApplicationsStore()
+    applicationStore = ApplicationStore()
 
     ftrack.EVENT_HUB.subscribe(
         'topic=ftrack.get-applications',
