@@ -18,7 +18,9 @@ import ftrack
 #: Will match last set of numbers in string where numbers may contain a digit
 #: followed by zero or more digits, periods, or the letters 'a', 'b', 'c' or 'v'
 #: E.g. /path/to/x86/some/application/folder/v1.8v2b1/app.exe -> 1.8v2b1
-DEFAULT_VERSION_EXPRESSION = re.compile(r'(?P<version>\d[\d.vabc]*)[^\d]*$')
+DEFAULT_VERSION_EXPRESSION = re.compile(
+    r'(?P<version>\d[\d.vabc]*?)[^\d]*$'
+)
 
 
 class ApplicationStore(object):
