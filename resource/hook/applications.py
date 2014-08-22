@@ -20,6 +20,7 @@ class ApplicationsStore(object):
 
     def __init__(self):
         '''Instantiate store and load applications.'''
+        super(ApplicationsStore, self).__init__()
         self.logger = logging.getLogger(
             'ftrack.hook.' + self.__class__.__name__
         )
@@ -225,6 +226,7 @@ class GetApplicationsHook(object):
 
     def __init__(self, applicationStore):
         '''Instantiate the hook and setup logging.'''
+        super(GetApplicationsHook, self).__init__()
         self.logger = logging.getLogger(
             'ftrack.hook.' + self.__class__.__name__
         )
@@ -301,6 +303,7 @@ class LaunchApplicationHook(object):
 
     def __init__(self, applicationStore):
         '''Instantiate the hook and setup logging.'''
+        super(LaunchApplicationHook, self).__init__()
         self.logger = logging.getLogger(
             'ftrack.hook.' + self.__class__.__name__
         )
