@@ -502,6 +502,17 @@ class LaunchApplicationHook(object):
                         lastDate = version.getDate()
         return latestComponent
 
+    def _mapEnvironmentVariables(self, keys, targetEnvironment,
+                                 sourceEnvironment=os.environ):
+        '''Map *keys* from *sourceEnvironment* to *targetEnvironment*.
+
+        Only map a key if it is present in *sourceEnvironment*.
+
+        '''
+        for key in keys:
+            if key in sourceEnvironment:
+                targetEnvironment[key] = sourceEnvironment[key]
+
     def _getApplicationEnvironment(self, eventData=None):
         '''Return list of environment variables based on *context*.
 
@@ -511,28 +522,39 @@ class LaunchApplicationHook(object):
         '''
         # Copy appropriate environment variables to new environment.
         environment = {
-            'FTRACK_SERVER': os.environ.get('FTRACK_SERVER'),
-            'FTRACK_PROXY': os.environ.get('FTRACK_PROXY'),
-            'FTRACK_APIKEY': os.environ.get('FTRACK_APIKEY'),
-            'LOGNAME': os.environ.get('LOGNAME'),
-            'FTRACK_EVENT_SERVER': ftrack.EVENT_HUB.getServerUrl(),
-            'FTRACK_LOCATION_PLUGIN_PATH': os.environ.get(
-                'FTRACK_LOCATION_PLUGIN_PATH'
-            )
+            'FTRACK_EVENT_SERVER': ftrack.EVENT_HUB.getServerUrl()
         }
+
+        self._mapEnvironmentVariables(
+            [
+                'FTRACK_SERVER',
+                'FTRACK_PROXY',
+                'FTRACK_APIKEY',
+                'FTRACK_LOCATION_PLUGIN_PATH',
+                'LOGNAME'
+            ],
+            environment
+        )
 
         if sys.platform == 'win32':
             # Required for launching executables on Windows.
-            environment['SystemRoot'] = os.environ.get('SystemRoot')
-            environment['SystemDrive'] = os.environ.get('SystemDrive')
+            self._mapEnvironmentVariables(
+                ['SystemRoot', 'SystemDrive'], environment
+            )
 
             # Many applications also need access to temporary storage and other
             # executable.
-            environment['PATH'] = os.environ.get('PATH')
-            environment['TMP'] = os.environ.get('TMP')
+            self._mapEnvironmentVariables(
+                ['PATH', 'TMP'], environment
+            )
 
-        # Add discovered ftrack API to PYTHONPATH.
-        environment['PYTHONPATH'] = os.path.dirname(ftrack.__file__)
+        # Prepend discovered ftrack API to PYTHONPATH.
+        environment['PYTHONPATH'] = (
+            os.pathsep.join([
+                os.path.dirname(ftrack.__file__),
+                os.environ.get('PYTHONPATH', '')
+            ])
+        )
 
         # Add ftrack connect event to environment.
         if eventData is not None:
