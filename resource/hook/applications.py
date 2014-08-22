@@ -506,11 +506,12 @@ class LaunchApplicationHook(object):
                                  sourceEnvironment=os.environ):
         '''Map *keys* from *sourceEnvironment* to *targetEnvironment*.
 
-        Only map a key if it is present in *sourceEnvironment*.
+        Only map a key if it is present in *sourceEnvironment* and not already
+        present in *targetEnvironment*.
 
         '''
         for key in keys:
-            if key in sourceEnvironment:
+            if key not in targetEnvironment and key in sourceEnvironment:
                 targetEnvironment[key] = sourceEnvironment[key]
 
     def _getApplicationEnvironment(self, eventData=None):
