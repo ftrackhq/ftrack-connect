@@ -36,13 +36,36 @@ class ApplicationStore(object):
         # Discover applications and store.
         self.applications = self._discoverApplications()
 
+    def getApplication(self, identifier):
+        '''Return first application with matching *identifier*.
+
+        *identifier* may contain a wildcard at the end to match the first
+        substring matching entry.
+
+        Return None if no application matches.
+
+        '''
+        hasWildcard = identifier[-1] == '*'
+        if hasWildcard:
+            identifier = identifier[:-1]
+
+        for application in self.applications:
+            if hasWildcard:
+                if application['identifier'].startswith(identifier):
+                    return application
+            else:
+                if application['identifier'] == identifier:
+                    return application
+
+        return None
+
     def _discoverApplications(self):
         '''Return a list of applications that can be launched from this host.
 
         An application should be of the form:
 
             dict(
-                'applicationIdentifier': 'name_version',
+                'identifier': 'name_version',
                 'label': 'Name version',
                 'path': 'Absolute path to the file',
                 'version': 'Version of the application'
@@ -166,9 +189,7 @@ class ApplicationStore(object):
             if match:
                 version = match.group('version')
                 applications.append({
-                    'applicationIdentifier': applicationIdentifier.format(
-                        version=version
-                    ),
+                    'identifier': applicationIdentifier.format(version=version),
                     'path': result,
                     'version': version,
                     'label': label.format(version=version)
@@ -257,7 +278,7 @@ class GetApplicationsHook(object):
         )
 
         for application in applications:
-            applicationIdentifier = application['applicationIdentifier']
+            applicationIdentifier = application['identifier']
             label = application['label']
             items.append({
                 'applicationIdentifier': applicationIdentifier,
@@ -323,20 +344,36 @@ class LaunchApplicationHook(object):
         '''
         applicationIdentifier = event['data']['applicationIdentifier']
         context = event['data']['context']
-        applicationData = event['data']['applicationData']
+        data = event['data']['applicationData']
 
-        command = self._getApplicationLaunchCommand(
-            applicationIdentifier,
-            context,
-            applicationData
+        # Look up application.
+        applicationIdentifierPattern = applicationIdentifier
+        if applicationIdentifierPattern == 'hieroplayer':
+            applicationIdentifierPattern += '*'
+
+        application = self.applicationStore.getApplication(
+            applicationIdentifierPattern
         )
+
+        if application is None:
+            return {
+                'success': False,
+                'message': (
+                    '{0} application not found.'
+                    .format(applicationIdentifier)
+                )
+            }
+
+        # Construct command and environment.
+        command = self._getApplicationLaunchCommand(application, context, data)
+
         environment = self._getApplicationEnvironment({
             'data': event['data'],
             'source': event['source']
         })
 
         success = True
-        message = '{0} application started.'.format(applicationIdentifier)
+        message = '{0} application started.'.format(application['label'])
 
         # Environment must contain only strings.
         self._conformEnvironment(environment)
@@ -367,7 +404,7 @@ class LaunchApplicationHook(object):
 
             success = False
             message = '{0} application could not be started.'.format(
-                applicationIdentifier
+                application['label']
             )
 
         else:
@@ -402,56 +439,41 @@ class LaunchApplicationHook(object):
             del mapping[key]
             mapping[str(key)] = value
 
-    def _getApplicationLaunchCommand(self, applicationIdentifier, context,
-                                     applicationData):
-        '''Return application command based on OS and *applicationIdentifier*,
-        *context* and *applicationData*.
+    def _getApplicationLaunchCommand(self, application, context, data):
+        '''Return *application* command based on OS, *context* and *data*.
 
-        *applicationIdentifier* is a unique identifier for each application.
+        *application* should be a mapping describing the application, as in the
+        :py:class:`ApplicationStore`.
 
         *context* is the entity the application should be started for.
 
-        *applicationData* is passed with the *applicationIdentifier* and can be
-        used to provide additional information about how the application should
+        *data* provides additional information about how the application should
         be launched.
 
         '''
         command = None
-        applicationConfig = None
-        for application in self.applicationStore.applications:
-            if application['applicationIdentifier'] == applicationIdentifier:
-                applicationConfig = application
 
-            elif (
-                applicationIdentifier == 'hieroplayer' and
-                application['applicationIdentifier'].startswith('hieroplayer')
-            ):
-                applicationConfig = application
+        if application and sys.platform in ('win32', 'linux2'):
+            command = [application['path']]
 
-        if applicationConfig and sys.platform in ('win32', 'linux2'):
-            command = [
-                applicationConfig['path']
-            ]
-        elif applicationConfig and sys.platform == 'darwin':
-            command = [
-                'open',
-                applicationConfig['path']
-            ]
+        elif application and sys.platform == 'darwin':
+            command = ['open', application['path']]
+
         else:
             self.logger.warning(
                 'Unable to find launch command for {0} on this platform.'
-                .format(applicationIdentifier)
+                .format(application[])
             )
 
         # Figure out if the command should be started with the file path of
         # the latest published version.
-        if command is not None and applicationData is not None:
+        if command is not None and data is not None:
             selection = context.get('selection')
-            if selection and applicationData.get('launchWithLatest', False):
+            if selection and data.get('launchWithLatest', False):
                 entity = selection[0]
                 component = None
 
-                if applicationIdentifier.startswith('premiere_pro_cc'):
+                if application['identifier'].startswith('premiere_pro_cc'):
                     component = self._findLatestComponent(
                         entity['entityId'],
                         entity['entityType'],
