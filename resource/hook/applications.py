@@ -20,14 +20,24 @@ class ApplicationsStore(object):
 
     def __init__(self):
         '''Instantiate store and load applications.'''
+        self.logger = logging.getLogger(
+            'ftrack.hook.' + self.__class__.__name__
+        )
+        # Construct default version expression that will match last set of
+        # numbers in string where numbers may contain a digit followed by zero
+        # or more digits, periods, or the letters 'a', 'b', 'c' or 'v'.
+        # E.g. /path/to/x86/some/application/folder/v1.8v2b1/app.exe -> 1.8v2b1
+        self.defaultVersionExpression = re.compile(
+            r'(?P<version>\d[\d.vabc]*)[^\d]*$'
+        )
         self.applications = self._getApplications()
 
     def getApplications(self):
         '''Return list of available applications.'''
         return self.applications
 
-    def _findApplications(self, expression, versionExpression, label,
-                          applicationIdentifier):
+    def _findApplications(self, expression, label, applicationIdentifier,
+                          versionExpression=None):
         '''
         Return list of found applications base on *expression*.
 
@@ -40,6 +50,10 @@ class ApplicationsStore(object):
 
             '(?P<version>[\d]{4})'
 
+        If not specified, a default expression will be used that will attempt
+        to match the last numbers found in the path following standard version
+        schemes.
+
         *label* is the label the application will be given. *label* should be on
         the format "Name of app {version}".
 
@@ -48,10 +62,15 @@ class ApplicationsStore(object):
         regexp.
 
         '''
+        if versionExpression is None:
+            versionExpression = self.defaultVersionExpression
+        else:
+            versionExpression = re.compile(versionExpression)
+
         applications = []
         results = glob.glob(expression)
         for result in results:
-            match = re.search(versionExpression, result)
+            match = versionExpression.search(result)
             if match:
                 version = match.group('version')
                 applications.append({
@@ -62,6 +81,12 @@ class ApplicationsStore(object):
                     'version': version,
                     'label': label.format(version=version)
                 })
+            else:
+                self.logger.debug(
+                    'Found application executable did not appear to contain '
+                    'required version information: {0}'.format(result)
+                )
+
         return applications
 
     def _getApplications(self):
@@ -87,35 +112,30 @@ class ApplicationsStore(object):
                     prefix +
                     'Adobe Premiere Pro CC */Adobe Premiere Pro CC *.app'
                 ),
-                versionExpression=r'(?P<version>[\d]{4})',
                 label='Premiere Pro CC {version}',
                 applicationIdentifier='premiere_pro_cc_{version}'
             ))
 
             applications.extend(self._findApplications(
                 expression=prefix + 'Autodesk/maya*/Maya.app',
-                versionExpression=r'maya(?P<version>[\d]{1,4})',
                 label='Maya {version}',
                 applicationIdentifier='maya_{version}'
             ))
 
             applications.extend(self._findApplications(
                 expression=prefix + 'Nuke*/Nuke*.app',
-                versionExpression=r'Nuke(?P<version>.{1,10}).app$',
                 label='Nuke {version}',
                 applicationIdentifier='nuke_{version}'
             ))
 
             applications.extend(self._findApplications(
                 expression=prefix + 'HieroPlayer*/HieroPlayer*.app',
-                versionExpression=r'HieroPlayer(?P<version>.{1,10}).app$',
                 label='HieroPlayer {version}',
                 applicationIdentifier='hieroplayer_{version}'
             ))
 
             applications.extend(self._findApplications(
                 expression=prefix + 'Hiero*/Hiero*.app',
-                versionExpression=r'Hiero(?P<version>.{1,10}).app$',
                 label='Hiero {version}',
                 applicationIdentifier='hiero_{version}'
             ))
@@ -128,21 +148,18 @@ class ApplicationsStore(object):
                     prefix +
                     'Adobe\\Adobe Premiere Pro CC *\\Adobe Premiere Pro.exe'
                 ),
-                versionExpression=r'(?P<version>[\d]{4})',
                 label='Premiere Pro CC {version}',
                 applicationIdentifier='premiere_pro_cc_{version}'
             ))
 
             applications.extend(self._findApplications(
                 expression=prefix + 'Autodesk\\Maya*\\bin\\maya.exe',
-                versionExpression=r'Maya(?P<version>[\d]{4})',
                 label='Maya {version}',
                 applicationIdentifier='maya_{version}'
             ))
 
             applications.extend(self._findApplications(
                 expression=prefix + 'Nuke*\\nuke.exe',
-                versionExpression=r'(?P<version>(.{1,10}))',
                 label='Nuke {version}',
                 applicationIdentifier='premiere_pro_cc_{version}'
             ))
@@ -151,14 +168,12 @@ class ApplicationsStore(object):
                 expression=(
                     prefix + 'The Foundry\\HieroPlayer*\\hieroplayer.exe'
                 ),
-                versionExpression=r'HieroPlayer(?P<version>.{1,10})\\',
                 label='HieroPlayer {version}',
                 applicationIdentifier='hieroplayer_{version}'
             ))
 
             applications.extend(self._findApplications(
                 expression=prefix + 'The Foundry\\Hiero*\\hiero.exe',
-                versionExpression=r'Hiero(?P<version>.{1,10})\\',
                 label='Hiero {version}',
                 applicationIdentifier='hiero_{version}'
             ))
