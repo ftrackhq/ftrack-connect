@@ -121,39 +121,39 @@ class ApplicationsStore(object):
         elif sys.platform == 'win32':
 
             applications.extend(self._findApplications(
-                expression=(
-                    r'Adobe\\'
-                    r'Adobe Premiere Pro CC ([\d]{4})\\'
-                    r'Adobe Premiere Pro.exe$'
-                ),
-                top=os.environ['PROGRAMFILES'],
+                expression=('C:\\Program Files*\\Adobe\\Adobe Premiere Pro CC *\\'
+                            'Adobe Premiere Pro.exe'),
+                versionExpression=r'(?P<version>[\d]{4})',
                 label='Premiere Pro CC {version}',
                 applicationIdentifier='premiere_pro_cc_{version}'
             ))
 
             applications.extend(self._findApplications(
-                expression=r'The Foundry\\Nuke(.{1,10})\\nuke.exe$',
-                top=os.environ['PROGRAMFILES'],
-                label='Nuke {version}',
-                applicationIdentifier='nuke_{version}'
+                expression='C:\\Program Files*\\The Foundry\\Nuke*\\nuke.exe',
+                versionExpression=r'(?P<version>(.{1,10}))',
+                label='Premiere Pro CC {version}',
+                applicationIdentifier='premiere_pro_cc_{version}'
             ))
 
             applications.extend(self._findApplications(
-                expression=r'Autodesk\\Maya([\d]{1,4})\\bin\\maya.exe$',
-                top=os.environ['PROGRAMFILES'],
+                expression='C:\\Program Files*\\Autodesk\\Maya*\\bin\\maya.exe',
+                versionExpression=r'Maya(?P<version>[\d]{4})',
                 label='Maya {version}',
                 applicationIdentifier='maya_{version}'
             ))
 
             applications.extend(self._findApplications(
-                expression=(
-                    r'The Foundry\\'
-                    r'HieroPlayer(.{1,10})\\'
-                    r'hieroplayer.exe$'
-                ),
-                top=os.environ['PROGRAMFILES'],
+                expression='C:\\Program Files*\\The Foundry\\HieroPlayer*\\hieroplayer.exe',
+                versionExpression=r'HieroPlayer(?P<version>.{1,10})\\',
                 label='HieroPlayer {version}',
                 applicationIdentifier='hieroplayer_{version}'
+            ))
+
+            applications.extend(self._findApplications(
+                expression='C:\\Program Files*\\The Foundry\\Hieror*\\hiero.exe',
+                versionExpression=r'Hiero(?P<version>.{1,10})\\',
+                label='Hiero {version}',
+                applicationIdentifier='hiero_{version}'
             ))
 
         return applications
