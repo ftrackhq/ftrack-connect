@@ -14,6 +14,12 @@ import glob
 
 import ftrack
 
+#: Default expression to match version component of executable path.
+#: Will match last set of numbers in string where numbers may contain a digit
+#: followed by zero or more digits, periods, or the letters 'a', 'b', 'c' or 'v'
+#: E.g. /path/to/x86/some/application/folder/v1.8v2b1/app.exe -> 1.8v2b1
+DEFAULT_VERSION_EXPRESSION = re.compile(r'(?P<version>\d[\d.vabc]*)[^\d]*$')
+
 
 class ApplicationStore(object):
     '''Discover and store available applications on this host.'''
@@ -23,14 +29,6 @@ class ApplicationStore(object):
         super(ApplicationStore, self).__init__()
         self.logger = logging.getLogger(
             'ftrack.hook.' + self.__class__.__name__
-        )
-
-        # Construct default version expression that will match last set of
-        # numbers in string where numbers may contain a digit followed by zero
-        # or more digits, periods, or the letters 'a', 'b', 'c' or 'v'.
-        # E.g. /path/to/x86/some/application/folder/v1.8v2b1/app.exe -> 1.8v2b1
-        self.defaultVersionExpression = re.compile(
-            r'(?P<version>\d[\d.vabc]*)[^\d]*$'
         )
 
         # Discover applications and store.
@@ -143,9 +141,8 @@ class ApplicationStore(object):
 
             '(?P<version>[\d]{4})'
 
-        If not specified, a default expression will be used that will attempt
-        to match the last numbers found in the path following standard version
-        schemes.
+        If not specified, then :py:data:`DEFAULT_VERSION_EXPRESSION` will be
+        used.
 
         *label* is the label the application will be given. *label* should be on
         the format "Name of app {version}".
@@ -156,7 +153,7 @@ class ApplicationStore(object):
 
         '''
         if versionExpression is None:
-            versionExpression = self.defaultVersionExpression
+            versionExpression = DEFAULT_VERSION_EXPRESSION
         else:
             versionExpression = re.compile(versionExpression)
 
