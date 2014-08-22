@@ -10,7 +10,7 @@ import subprocess
 import collections
 import socket
 import re
-import glob
+import pprint
 
 import ftrack
 
@@ -75,78 +75,83 @@ class ApplicationStore(object):
         applications = []
 
         if sys.platform == 'darwin':
-            prefix = '/Applications/'
+            prefix = ['/', 'Applications']
 
             applications.extend(self._searchFilesystem(
-                expression=(
-                    prefix +
-                    'Adobe Premiere Pro CC */Adobe Premiere Pro CC *.app'
-                ),
+                expression=prefix + [
+                    'Adobe Premiere Pro CC .+', 'Adobe Premiere Pro CC .+.app'
+                ],
                 label='Premiere Pro CC {version}',
                 applicationIdentifier='premiere_pro_cc_{version}'
             ))
 
             applications.extend(self._searchFilesystem(
-                expression=prefix + 'Autodesk/maya*/Maya.app',
+                expression=prefix + ['Autodesk', 'maya.+', 'Maya.app'],
                 label='Maya {version}',
                 applicationIdentifier='maya_{version}'
             ))
 
             applications.extend(self._searchFilesystem(
-                expression=prefix + 'Nuke*/Nuke*.app',
+                expression=prefix + ['Nuke.*', 'Nuke\d.+.app'],
                 label='Nuke {version}',
                 applicationIdentifier='nuke_{version}'
             ))
 
             applications.extend(self._searchFilesystem(
-                expression=prefix + 'HieroPlayer*/HieroPlayer*.app',
+                expression=prefix + ['HieroPlayer\d.*', 'HieroPlayer\d.+.app'],
                 label='HieroPlayer {version}',
                 applicationIdentifier='hieroplayer_{version}'
             ))
 
             applications.extend(self._searchFilesystem(
-                expression=prefix + 'Hiero*/Hiero*.app',
+                expression=prefix + ['Hiero\d.+', 'Hiero\d.+.app'],
                 label='Hiero {version}',
                 applicationIdentifier='hiero_{version}'
             ))
 
         elif sys.platform == 'win32':
-            prefix = 'C:\\Program Files*\\'
+            prefix = ['C:\\', 'Program Files.*']
 
             applications.extend(self._searchFilesystem(
                 expression=(
                     prefix +
-                    'Adobe\\Adobe Premiere Pro CC *\\Adobe Premiere Pro.exe'
+                    ['Adobe', 'Adobe Premiere Pro CC .+',
+                     'Adobe Premiere Pro.exe']
                 ),
                 label='Premiere Pro CC {version}',
                 applicationIdentifier='premiere_pro_cc_{version}'
             ))
 
             applications.extend(self._searchFilesystem(
-                expression=prefix + 'Autodesk\\Maya*\\bin\\maya.exe',
+                expression=prefix + ['Autodesk', 'Maya.+', 'bin', 'maya.exe'],
                 label='Maya {version}',
                 applicationIdentifier='maya_{version}'
             ))
 
             applications.extend(self._searchFilesystem(
-                expression=prefix + 'Nuke*\\nuke.exe',
+                expression=prefix + ['Nuke.*', 'Nuke\d.+.exe'],
                 label='Nuke {version}',
-                applicationIdentifier='premiere_pro_cc_{version}'
+                applicationIdentifier='nuke_{version}'
             ))
 
             applications.extend(self._searchFilesystem(
                 expression=(
-                    prefix + 'The Foundry\\HieroPlayer*\\hieroplayer.exe'
+                    prefix +
+                    ['The Foundry', 'HieroPlayer\d.+', 'hieroplayer.exe']
                 ),
                 label='HieroPlayer {version}',
                 applicationIdentifier='hieroplayer_{version}'
             ))
 
             applications.extend(self._searchFilesystem(
-                expression=prefix + 'The Foundry\\Hiero*\\hiero.exe',
+                expression=prefix + ['The Foundry', 'Hiero\d.+', 'hiero.exe'],
                 label='Hiero {version}',
                 applicationIdentifier='hiero_{version}'
             ))
+
+        self.logger.debug(
+            'Discovered applications:\n{0}'.format(pprint.pformat(applications))
+        )
 
         return applications
 
@@ -155,12 +160,19 @@ class ApplicationStore(object):
         '''
         Return list of applications found in filesystem matching *expression*.
 
-        *expression* is passed directly to the :py:mod:`glob` module to match
-        path names.
+        *expression* should be a list of regular expressions to match against
+        path segments up to the executable. Each path segment traversed will be
+        matched against the corresponding expression part. The first expression
+        part must not contain any regular expression syntax and must match
+        directly to a path existing on disk as it will form the root of the
+        search. Example::
+
+            ['C:\\', 'Program Files.*', 'Company', 'Product\d+', 'product.exe']
 
         *versionExpression* is a regular expression used to find the version of
-        the application. This expression should include a named 'version' group
-        which can be used in the label and applicationIdentifier templates.
+        *the application. It will be applied against the full matching path of
+        *any discovered executable. It must include a named 'version' group
+        *which can be used in the label and applicationIdentifier templates.
 
         For example::
 
@@ -177,28 +189,69 @@ class ApplicationStore(object):
         regexp.
 
         '''
+        applications = []
+
         if versionExpression is None:
             versionExpression = DEFAULT_VERSION_EXPRESSION
         else:
             versionExpression = re.compile(versionExpression)
 
-        applications = []
-        results = glob.glob(expression)
-        for result in results:
-            match = versionExpression.search(result)
-            if match:
-                version = match.group('version')
-                applications.append({
-                    'identifier': applicationIdentifier.format(version=version),
-                    'path': result,
-                    'version': version,
-                    'label': label.format(version=version)
-                })
+        pieces = expression[:]
+        start = pieces.pop(0)
+        if sys.platform == 'win32':
+            # On Windows C: means current directory so convert roots that look
+            # like drive letters to the C:\ format.
+            if start and start[-1] == ':':
+                start += '\\'
+
+        if not os.path.exists(start):
+            raise ValueError(
+                'First part "{0}" of expression "{1}" must match exactly to an '
+                'existing entry on the filesystem.'
+                .format(start, expression)
+            )
+
+        expressions = map(re.compile, pieces)
+        expressionsCount = len(expressions)
+
+        for location, folders, files in os.walk(start, topdown=True):
+            level = location.rstrip(os.path.sep).count(os.path.sep)
+            expression = expressions[level]
+
+            if level < (expressionsCount - 1):
+                # If not yet at final piece then just prune directories.
+                folders[:] = [folder for folder in folders
+                              if expression.match(folder)]
+                print folders
             else:
-                self.logger.debug(
-                    'Found application executable did not appear to contain '
-                    'required version information: {0}'.format(result)
-                )
+                # Match executable. Note that on OSX executable might equate to
+                # a folder (.app).
+                for entry in folders + files:
+                    match = expression.match(entry)
+                    if match:
+                        # Extract version from full matching path.
+                        path = os.path.join(start, location, entry)
+
+                        versionMatch = versionExpression.search(path)
+                        if versionMatch:
+                            version = versionMatch.group('version')
+                            applications.append({
+                                'identifier': applicationIdentifier.format(
+                                    version=version
+                                ),
+                                'path': path,
+                                'version': version,
+                                'label': label.format(version=version)
+                            })
+                        else:
+                            self.logger.debug(
+                                'Discovered application executable, but it '
+                                'does not appear to o contain required version '
+                                'information: {0}'.format(path)
+                            )
+
+                # Don't descend any further as out of patterns to match.
+                del folders[:]
 
         return applications
 
