@@ -536,12 +536,7 @@ class LaunchApplicationHook(object):
                 targetEnvironment[key] = sourceEnvironment[key]
 
     def _getApplicationEnvironment(self, eventData=None):
-        '''Return list of environment variables based on *context*.
-
-        The list will also contain the variables available in the current
-        session.
-
-        '''
+        '''Return mapping of environment variables based on *eventData*.'''
         # Copy appropriate environment variables to new environment.
         environment = {
             'FTRACK_EVENT_SERVER': ftrack.EVENT_HUB.getServerUrl()
