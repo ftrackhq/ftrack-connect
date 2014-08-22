@@ -24,6 +24,7 @@ class ApplicationStore(object):
         self.logger = logging.getLogger(
             'ftrack.hook.' + self.__class__.__name__
         )
+
         # Construct default version expression that will match last set of
         # numbers in string where numbers may contain a digit followed by zero
         # or more digits, periods, or the letters 'a', 'b', 'c' or 'v'.
@@ -31,22 +32,113 @@ class ApplicationStore(object):
         self.defaultVersionExpression = re.compile(
             r'(?P<version>\d[\d.vabc]*)[^\d]*$'
         )
-        self.applications = self._getApplications()
 
-    def getApplications(self):
-        '''Return list of available applications.'''
-        return self.applications
+        # Discover applications and store.
+        self.applications = self._discoverApplications()
 
-    def _findApplications(self, expression, label, applicationIdentifier,
+    def _discoverApplications(self):
+        '''Return a list of applications that can be launched from this host.
+
+        An application should be of the form:
+
+            dict(
+                'applicationIdentifier': 'name_version',
+                'label': 'Name version',
+                'path': 'Absolute path to the file',
+                'version': 'Version of the application'
+            )
+
+        '''
+        applications = []
+
+        if sys.platform == 'darwin':
+            prefix = '/Applications/'
+
+            applications.extend(self._searchFilesystem(
+                expression=(
+                    prefix +
+                    'Adobe Premiere Pro CC */Adobe Premiere Pro CC *.app'
+                ),
+                label='Premiere Pro CC {version}',
+                applicationIdentifier='premiere_pro_cc_{version}'
+            ))
+
+            applications.extend(self._searchFilesystem(
+                expression=prefix + 'Autodesk/maya*/Maya.app',
+                label='Maya {version}',
+                applicationIdentifier='maya_{version}'
+            ))
+
+            applications.extend(self._searchFilesystem(
+                expression=prefix + 'Nuke*/Nuke*.app',
+                label='Nuke {version}',
+                applicationIdentifier='nuke_{version}'
+            ))
+
+            applications.extend(self._searchFilesystem(
+                expression=prefix + 'HieroPlayer*/HieroPlayer*.app',
+                label='HieroPlayer {version}',
+                applicationIdentifier='hieroplayer_{version}'
+            ))
+
+            applications.extend(self._searchFilesystem(
+                expression=prefix + 'Hiero*/Hiero*.app',
+                label='Hiero {version}',
+                applicationIdentifier='hiero_{version}'
+            ))
+
+        elif sys.platform == 'win32':
+            prefix = 'C:\\Program Files*\\'
+
+            applications.extend(self._searchFilesystem(
+                expression=(
+                    prefix +
+                    'Adobe\\Adobe Premiere Pro CC *\\Adobe Premiere Pro.exe'
+                ),
+                label='Premiere Pro CC {version}',
+                applicationIdentifier='premiere_pro_cc_{version}'
+            ))
+
+            applications.extend(self._searchFilesystem(
+                expression=prefix + 'Autodesk\\Maya*\\bin\\maya.exe',
+                label='Maya {version}',
+                applicationIdentifier='maya_{version}'
+            ))
+
+            applications.extend(self._searchFilesystem(
+                expression=prefix + 'Nuke*\\nuke.exe',
+                label='Nuke {version}',
+                applicationIdentifier='premiere_pro_cc_{version}'
+            ))
+
+            applications.extend(self._searchFilesystem(
+                expression=(
+                    prefix + 'The Foundry\\HieroPlayer*\\hieroplayer.exe'
+                ),
+                label='HieroPlayer {version}',
+                applicationIdentifier='hieroplayer_{version}'
+            ))
+
+            applications.extend(self._searchFilesystem(
+                expression=prefix + 'The Foundry\\Hiero*\\hiero.exe',
+                label='Hiero {version}',
+                applicationIdentifier='hiero_{version}'
+            ))
+
+        return applications
+
+    def _searchFilesystem(self, expression, label, applicationIdentifier,
                           versionExpression=None):
         '''
-        Return list of found applications base on *expression*.
+        Return list of applications found in filesystem matching *expression*.
 
         *expression* is passed directly to the :py:mod:`glob` module to match
         path names.
 
         *versionExpression* is a regular expression used to find the version of
-        the application. This expression should include a named backreference.
+        the application. This expression should include a named 'version' group
+        which can be used in the label and applicationIdentifier templates.
+
         For example::
 
             '(?P<version>[\d]{4})'
@@ -87,97 +179,6 @@ class ApplicationStore(object):
                     'Found application executable did not appear to contain '
                     'required version information: {0}'.format(result)
                 )
-
-        return applications
-
-    def _getApplications(self):
-        '''Return a list of applications that can be launched from this host.
-
-        An application should be on the form:
-
-            dict(
-                'applicationIdentifier': 'name_version',
-                'label': 'Name version',
-                'path': 'Absolute path to the file',
-                'version': 'version of the application'
-            )
-
-        '''
-        applications = []
-
-        if sys.platform == 'darwin':
-            prefix = '/Applications/'
-
-            applications.extend(self._findApplications(
-                expression=(
-                    prefix +
-                    'Adobe Premiere Pro CC */Adobe Premiere Pro CC *.app'
-                ),
-                label='Premiere Pro CC {version}',
-                applicationIdentifier='premiere_pro_cc_{version}'
-            ))
-
-            applications.extend(self._findApplications(
-                expression=prefix + 'Autodesk/maya*/Maya.app',
-                label='Maya {version}',
-                applicationIdentifier='maya_{version}'
-            ))
-
-            applications.extend(self._findApplications(
-                expression=prefix + 'Nuke*/Nuke*.app',
-                label='Nuke {version}',
-                applicationIdentifier='nuke_{version}'
-            ))
-
-            applications.extend(self._findApplications(
-                expression=prefix + 'HieroPlayer*/HieroPlayer*.app',
-                label='HieroPlayer {version}',
-                applicationIdentifier='hieroplayer_{version}'
-            ))
-
-            applications.extend(self._findApplications(
-                expression=prefix + 'Hiero*/Hiero*.app',
-                label='Hiero {version}',
-                applicationIdentifier='hiero_{version}'
-            ))
-
-        elif sys.platform == 'win32':
-            prefix = 'C:\\Program Files*\\'
-
-            applications.extend(self._findApplications(
-                expression=(
-                    prefix +
-                    'Adobe\\Adobe Premiere Pro CC *\\Adobe Premiere Pro.exe'
-                ),
-                label='Premiere Pro CC {version}',
-                applicationIdentifier='premiere_pro_cc_{version}'
-            ))
-
-            applications.extend(self._findApplications(
-                expression=prefix + 'Autodesk\\Maya*\\bin\\maya.exe',
-                label='Maya {version}',
-                applicationIdentifier='maya_{version}'
-            ))
-
-            applications.extend(self._findApplications(
-                expression=prefix + 'Nuke*\\nuke.exe',
-                label='Nuke {version}',
-                applicationIdentifier='premiere_pro_cc_{version}'
-            ))
-
-            applications.extend(self._findApplications(
-                expression=(
-                    prefix + 'The Foundry\\HieroPlayer*\\hieroplayer.exe'
-                ),
-                label='HieroPlayer {version}',
-                applicationIdentifier='hieroplayer_{version}'
-            ))
-
-            applications.extend(self._findApplications(
-                expression=prefix + 'The Foundry\\Hiero*\\hiero.exe',
-                label='Hiero {version}',
-                applicationIdentifier='hiero_{version}'
-            ))
 
         return applications
 
@@ -251,7 +252,7 @@ class GetApplicationsHook(object):
                 'type': 'heading'
             }
         ]
-        applications = self._getApplications()
+        applications = self.applicationStore.applications
         applications = sorted(
             applications, key=lambda application: application['label']
         )
@@ -278,10 +279,6 @@ class GetApplicationsHook(object):
         return {
             'items': items
         }
-
-    def _getApplications(self):
-        '''Return applications from the application store.'''
-        return self.applicationStore.getApplications()
 
 
 class LaunchApplicationHook(object):
@@ -386,10 +383,6 @@ class LaunchApplicationHook(object):
             'message': message
         }
 
-    def _getApplications(self):
-        '''Return applications from the application store.'''
-        return self.applicationStore.getApplications()
-
     def _conformEnvironment(self, mapping):
         '''Ensure all entries in *mapping* are strings.
 
@@ -426,7 +419,7 @@ class LaunchApplicationHook(object):
         '''
         command = None
         applicationConfig = None
-        for application in self._getApplications():
+        for application in self.applicationStore.applications:
             if application['applicationIdentifier'] == applicationIdentifier:
                 applicationConfig = application
 
