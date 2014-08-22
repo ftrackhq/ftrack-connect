@@ -90,33 +90,32 @@ class ApplicationsStore(object):
             ))
 
             applications.extend(self._findApplications(
-                expression=('/Applications/Nuke*/'
-                            'Nuke*.app'),
-                versionExpression=r'Nuke(?P<version>.{1,10})$',
+                expression=('/Applications/Nuke*/Nuke*.app'),
+                versionExpression=r'Nuke(?P<version>.{1,10}).app$',
                 label='Nuke {version}',
                 applicationIdentifier='nuke_{version}'
             ))
 
-            # applications.extend(self._findApplications(
-            #     expression=r'Nuke(.{1,10})/Nuke\1.app$',
-            #     top='/Applications',
-            #     label='Nuke {version}',
-            #     applicationIdentifier='nuke_{version}'
-            # ))
+            applications.extend(self._findApplications(
+                expression=('/Applications/Autodesk/maya*/Maya.app'),
+                versionExpression=r'maya(?P<version>[\d]{1,4})',
+                label='Maya {version}',
+                applicationIdentifier='maya_{version}'
+            ))
 
-            # applications.extend(self._findApplications(
-            #     expression=r'Autodesk/maya([\d]{1,4})/Maya.app$',
-            #     top='/Applications',
-            #     label='Maya {version}',
-            #     applicationIdentifier='maya_{version}'
-            # ))
+            applications.extend(self._findApplications(
+                expression=('/Applications/HieroPlayer*/HieroPlayer*.app'),
+                versionExpression=r'HieroPlayer(?P<version>.{1,10}).app$',
+                label='HieroPlayer {version}',
+                applicationIdentifier='hieroplayer_{version}'
+            ))
 
-            # applications.extend(self._findApplications(
-            #     expression=r'HieroPlayer(.{1,10})/HieroPlayer\1.app$',
-            #     top='/Applications',
-            #     label='HieroPlayer {version}',
-            #     applicationIdentifier='hieroplayer_{version}'
-            # ))
+            applications.extend(self._findApplications(
+                expression=('/Applications/Hiero*/Hiero*.app'),
+                versionExpression=r'Hiero(?P<version>.{1,10}).app$',
+                label='Hiero {version}',
+                applicationIdentifier='hiero_{version}'
+            ))
 
         elif sys.platform == 'win32':
 
