@@ -143,7 +143,7 @@ class ApplicationsStore(object):
             applications.extend(self._findApplications(
                 expression=prefix + 'Nuke*\\nuke.exe',
                 versionExpression=r'(?P<version>(.{1,10}))',
-                label='Premiere Pro CC {version}',
+                label='Nuke {version}',
                 applicationIdentifier='premiere_pro_cc_{version}'
             ))
 
