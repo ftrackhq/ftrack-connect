@@ -453,16 +453,16 @@ class LaunchApplicationHook(object):
         '''
         command = None
 
-        if application and sys.platform in ('win32', 'linux2'):
+        if sys.platform in ('win32', 'linux2'):
             command = [application['path']]
 
-        elif application and sys.platform == 'darwin':
+        elif sys.platform == 'darwin':
             command = ['open', application['path']]
 
         else:
             self.logger.warning(
                 'Unable to find launch command for {0} on this platform.'
-                .format(application[])
+                .format(application['identifier'])
             )
 
         # Figure out if the command should be started with the file path of
