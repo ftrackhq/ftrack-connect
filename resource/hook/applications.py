@@ -222,7 +222,6 @@ class ApplicationStore(object):
                 # If not yet at final piece then just prune directories.
                 folders[:] = [folder for folder in folders
                               if expression.match(folder)]
-                print folders
             else:
                 # Match executable. Note that on OSX executable might equate to
                 # a folder (.app).
