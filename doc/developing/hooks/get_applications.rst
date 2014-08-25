@@ -153,5 +153,6 @@ you wish, but try to keep the depth to a maximum of three levels for usability.
 Default hook
 ============
 
-.. literalinclude:: /../resource/hook/get_applications.py
+.. literalinclude:: /../resource/hook/applications.py
     :language: python
+    :pyobject: GetApplicationsHook

@@ -51,5 +51,6 @@ Expects reply data in the form::
 Default hook
 ============
 
-.. literalinclude:: /../resource/hook/launch_application.py
+.. literalinclude:: /../resource/hook/applications.py
     :language: python
+    :pyobject: LaunchApplicationHook
