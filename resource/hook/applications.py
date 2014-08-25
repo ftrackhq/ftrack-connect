@@ -92,9 +92,15 @@ class ApplicationStore(object):
             ))
 
             applications.extend(self._searchFilesystem(
-                expression=prefix + ['Nuke.*', 'Nuke\d.+.app'],
+                expression=prefix + ['Nuke.*', 'Nuke\d[\w.]+.app'],
                 label='Nuke {version}',
                 applicationIdentifier='nuke_{version}'
+            ))
+
+            applications.extend(self._searchFilesystem(
+                expression=prefix + ['Nuke.*', 'NukeX\d.+.app'],
+                label='NukeX {version}',
+                applicationIdentifier='nukex_{version}'
             ))
 
             applications.extend(self._searchFilesystem(
