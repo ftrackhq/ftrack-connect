@@ -10,7 +10,11 @@ Glossary
     API
         Application programming interface.
 
-    json
+    hook
+        Used to extend or modify the default behaviour in ftrack connect. See
+        :ref:`developing/hooks` for more information.
+
+    JSON
         (JavaScript Object Notation), a lightweight data-interchange format.
         Visit the website at http://www.json.org/
 
