@@ -14,7 +14,7 @@ from ftrack_connect.ui.widget.time_log_list import TimeLogList as _TimeLogList
 
 
 def register(connect):
-    '''Register publish plugin to ftrack connect.'''
+    '''Register timer tracker plugin to ftrack connect.'''
     timeTracker = TimeTracker()
     connect.addPlugin(timeTracker)
 
