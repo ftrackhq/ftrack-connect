@@ -128,6 +128,11 @@ class Publisher(ftrack_connect.ui.application.ApplicationPlugin):
                 'resourceIdentifier': componentData.get('path')
             })
 
+        # Add thumbnail from event data
+        thumbnail = event['data'].get('thumbnail')
+        if thumbnail:
+            self.publishView.thumbnailDropZone.setThumbnail(thumbnail)
+
         entity = ftrack.Task(
             entity.get('entityId')
         )
