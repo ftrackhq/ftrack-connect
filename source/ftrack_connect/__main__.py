@@ -9,11 +9,6 @@ import os
 
 from PySide import QtGui
 
-# Import QtSvg and QtXml to force load libraries needed to display
-# svg on Windows. 
-from PySide import QtSvg
-from PySide import QtXml
-
 # Hooks use the ftrack event system. Set the FTRACK_EVENT_PLUGIN_PATH
 # to pick up the default hooks if it has not already been set.
 os.environ.setdefault(
