@@ -9,6 +9,7 @@ import os
 
 from PySide import QtGui
 
+
 # Hooks use the ftrack event system. Set the FTRACK_EVENT_PLUGIN_PATH
 # to pick up the default hooks if it has not already been set.
 os.environ.setdefault(
