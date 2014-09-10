@@ -114,7 +114,7 @@ class Publisher(ftrack_connect.ui.application.ApplicationPlugin):
                 automatically populate the list of components.
 
             thumbnail
-                an absolute path to an image file to set as the versions
+                an absolute path to an image file to set as the version's
                 thumbnail.
 
         Clear state, set the *entity* and request to start the publisher.
