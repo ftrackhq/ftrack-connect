@@ -109,8 +109,13 @@ class Publisher(ftrack_connect.ui.application.ApplicationPlugin):
 
         event['data'] may optionally contain:
 
-            * components - a list of dictionaries with name and path, used to
+            components 
+                a list of dictionaries with name and path, used to 
                 automatically populate the list of components.
+
+            thumbnail
+                an absolute path to an image file to set as the version's
+                thumbnail.
 
         Clear state, set the *entity* and request to start the publisher.
 
@@ -127,6 +132,11 @@ class Publisher(ftrack_connect.ui.application.ApplicationPlugin):
                 'componentName': componentData.get('name'),
                 'resourceIdentifier': componentData.get('path')
             })
+
+        # Add thumbnail from event data
+        thumbnail = event['data'].get('thumbnail')
+        if thumbnail:
+            self.publishView.thumbnailDropZone.setThumbnail(thumbnail)
 
         entity = ftrack.Task(
             entity.get('entityId')
