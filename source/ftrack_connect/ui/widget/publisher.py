@@ -103,6 +103,8 @@ class Publisher(QtGui.QWidget):
         self.versionDescription.clear()
         self.entityPath.clear()
         self.browser.clear()
+        self.componentsList.clearItems()
+        self.thumbnailDropZone.clear()
 
     def setEntity(self, entity):
         '''Set the *entity* for the view.'''

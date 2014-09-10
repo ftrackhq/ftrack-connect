@@ -171,3 +171,8 @@ class ThumbnailDropZone(QtGui.QFrame):
     def getFilePath(self):
         '''Return image filePath for thumbnail.'''
         return self._filePath
+
+    def clear(self):
+        '''Remove thumbnail and reset initial state.'''
+        self._filePath = None
+        self.setDropZoneText()
