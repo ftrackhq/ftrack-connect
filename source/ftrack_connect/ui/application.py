@@ -105,12 +105,6 @@ class Application(QtGui.QMainWindow):
         if event['topic'] != 'ftrack.connect':
             return
 
-        # Drop all events triggered by other users.
-        # TODO: Do this filtering in the subscription.
-        userId = event['source'].get('user', {}).get('id', None)
-        if userId != self._currentUserId:
-            return
-
         self._routeEvent(event)
 
     def login(self):
@@ -208,7 +202,11 @@ class Application(QtGui.QMainWindow):
         self._currentUserId = currentUser.getId()
 
         ftrack.EVENT_HUB.subscribe(
-            'topic=ftrack.connect', self._relayEventHubEvent
+            'topic=ftrack.connect',
+            self._relayEventHubEvent,
+            subscriber={
+                'userId': self._currentUserId
+            }
         )
         self.eventHubSignal.connect(self._onConnectTopicEvent)
 
