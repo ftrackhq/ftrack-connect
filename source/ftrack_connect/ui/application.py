@@ -107,6 +107,13 @@ class Application(QtGui.QMainWindow):
 
         self._routeEvent(event)
 
+    def logout(self):
+        '''Clear stored credentials and quit Connect.'''
+        settings = QtCore.QSettings()
+        settings.remove('login')
+
+        QtGui.qApp.quit()
+
     def login(self):
         '''Login using stored credentials or ask user for them.'''
 
@@ -237,24 +244,30 @@ class Application(QtGui.QMainWindow):
         '''Return a menu for system tray.'''
         menu = QtGui.QMenu(self)
 
+        logoutAction = QtGui.QAction(
+            'Log Out && Quit', self,
+            triggered=self.logout
+        )
+
         quitAction = QtGui.QAction(
-            'Quit connect', self,
+            'Quit', self,
             triggered=QtGui.qApp.quit
         )
 
         focusAction = QtGui.QAction(
-            'Open connect', self,
+            'Open', self,
             triggered=self.focus
         )
 
         styleAction = QtGui.QAction(
-            'Change theme', self,
+            'Change Theme', self,
             triggered=self.toggleTheme
         )
-        menu.addAction(styleAction)
-
         menu.addAction(focusAction)
         menu.addSeparator()
+        menu.addAction(styleAction)
+        menu.addSeparator()
+        menu.addAction(logoutAction)
         menu.addAction(quitAction)
 
         return menu
