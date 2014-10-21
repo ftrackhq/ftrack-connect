@@ -268,6 +268,7 @@ class Application(QtGui.QMainWindow):
         menu.addAction(styleAction)
         menu.addSeparator()
         menu.addAction(logoutAction)
+        menu.addSeparator()
         menu.addAction(quitAction)
 
         return menu
