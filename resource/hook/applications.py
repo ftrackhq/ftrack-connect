@@ -676,25 +676,16 @@ def register(registry, **kw):
     '''Register hooks.'''
     applicationStore = ApplicationStore()
 
-    # getpass.getuser is used to reflect how the ftrack api get the current
-    # user.
-    currentUser = ftrack.User(
-        getpass.getuser()
-    )
-    userId = currentUser.getId()
-
     ftrack.EVENT_HUB.subscribe(
-        'topic=ftrack.action.discover',
-        GetApplicationsHook(applicationStore),
-        subscriber={
-            'userId': userId
-        }
+        'topic=ftrack.action.discover and source.user.username={0}'.format(
+            getpass.getuser()
+        ),
+        GetApplicationsHook(applicationStore)
     )
 
     ftrack.EVENT_HUB.subscribe(
-        'topic=ftrack.action.launch',
-        LaunchApplicationHook(applicationStore),
-        subscriber={
-            'userId': userId
-        }
+        'topic=ftrack.action.launch and source.user.username={0}'.format(
+            getpass.getuser()
+        ),
+        LaunchApplicationHook(applicationStore)
     )
