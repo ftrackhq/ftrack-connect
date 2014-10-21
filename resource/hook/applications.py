@@ -325,6 +325,13 @@ class GetApplicationsHook(object):
 
         '''
         context = event['data']['context']
+
+        # If selection contains more than one item return early since
+        # applications cannot be started for multiple items.
+        selection = context.get('selection', [])
+        if len(selection) != 1:
+            return
+
         items = [
             {
                 'label': socket.gethostname(),
@@ -677,7 +684,7 @@ def register(registry, **kw):
     userId = currentUser.getId()
 
     ftrack.EVENT_HUB.subscribe(
-        'topic=ftrack.get-applications',
+        'topic=ftrack.action.discover',
         GetApplicationsHook(applicationStore),
         subscriber={
             'userId': userId
@@ -685,7 +692,7 @@ def register(registry, **kw):
     )
 
     ftrack.EVENT_HUB.subscribe(
-        'topic=ftrack.launch-application',
+        'topic=ftrack.action.launch',
         LaunchApplicationHook(applicationStore),
         subscriber={
             'userId': userId
