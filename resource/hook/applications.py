@@ -23,6 +23,8 @@ DEFAULT_VERSION_EXPRESSION = re.compile(
     r'(?P<version>\d[\d.vabc]*?)[^\d]*$'
 )
 
+ACTION_IDENTIFIER = 'ftrack-connect-launch-applications-action'
+
 
 class ApplicationStore(object):
     '''Discover and store available applications on this host.'''
@@ -157,7 +159,9 @@ class ApplicationStore(object):
             ))
 
         self.logger.debug(
-            'Discovered applications:\n{0}'.format(pprint.pformat(applications))
+            'Discovered applications:\n{0}'.format(
+                pprint.pformat(applications)
+            )
         )
 
         return applications
@@ -263,7 +267,7 @@ class ApplicationStore(object):
 
 
 class GetApplicationsHook(object):
-    '''Default get-applications hook.
+    '''Default action.discover hook.
 
     The class is callable and return an object with a nested list of
     applications that can be launched on this computer.
@@ -314,7 +318,7 @@ class GetApplicationsHook(object):
         self.applicationStore = applicationStore
 
     def __call__(self, event):
-        '''Default get-applications hook.
+        '''Default action.discover hook.
 
         The hook callback accepts an *event*.
 
@@ -348,6 +352,7 @@ class GetApplicationsHook(object):
             label = application['label']
             items.append({
                 'applicationIdentifier': applicationIdentifier,
+                'actionIdentifier': ACTION_IDENTIFIER,
                 'label': label
             })
 
@@ -394,7 +399,7 @@ class LaunchApplicationHook(object):
         self.applicationStore = applicationStore
 
     def __call__(self, event):
-        '''Default launch-application hook.
+        '''Default action.launch hook.
 
         The hook callback accepts an *event*.
 
@@ -684,8 +689,9 @@ def register(registry, **kw):
     )
 
     ftrack.EVENT_HUB.subscribe(
-        'topic=ftrack.action.launch and source.user.username={0}'.format(
-            getpass.getuser()
+        'topic=ftrack.action.launch and source.user.username={0} '
+        'and data.actionIdentifier={1}'.format(
+            getpass.getuser(), ACTION_IDENTIFIER
         ),
         LaunchApplicationHook(applicationStore)
     )

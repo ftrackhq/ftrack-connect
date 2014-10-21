@@ -3,13 +3,13 @@
 
 .. _developing/hooks/get_applications:
 
-***********************
-ftrack.get-applications
-***********************
+**********************
+ftrack.action.discover
+**********************
 
-The get-applications hook is triggered from the ftrack interface to request a 
+The action.discover hook is triggered from the ftrack interface to request a 
 list of available applications for launching. For more information, see 
-:ref:`ftrack:using/connect/launch_application`.
+:ref:`ftrack:using/connect/launch_action`.
 
 The default hook is a placeholder and should be extended to include a complete
 list of applications that can be launched.
@@ -17,7 +17,7 @@ list of applications that can be launched.
 Example event passed to hook::
 
     Event(
-        topic='ftrack.get-applications',
+        topic='ftrack.action.discover',
         data=dict(
             context=dict(
                 selection=[
@@ -40,7 +40,8 @@ Expects reply data in the form::
             ),
             dict(
                 label='Mega Modeling 2014',
-                applicationIdentifier='mega_modeling_2014'
+                applicationIdentifier='mega_modeling_2014',
+                actionIdentifier='ftrack-connect-launch-applications-action'
             ),
             dict(
                 type='separator'
@@ -50,11 +51,13 @@ Expects reply data in the form::
                 items=[
                     dict(
                         label='Professional Painter',
-                        applicationIdentifier='professional_painter'
+                        actionIdentifier='ftrack-connect-launch-applications-action'
+                        
                     ),
                     dict(
                         label='Cool Compositor v2',
                         applicationIdentifier='cc_v2',
+                        actionIdentifier='ftrack-connect-launch-applications-action'
                         applicationData=dict(
                             cc_plugins=['foo', 'bar'],
                         )
@@ -82,20 +85,23 @@ To add an application, add an item in the following format.
         applicationIdentifier='cc_v2',
         applicationData=dict(
             cc_plugins=['foo', 'bar'],
-        )
+        ),
+        actionIdentifier='ftrack-connect-launch-applications-action'
     )
 
 The different options are:
 
 ``label``
     Used to display the application in the ftrack interface. 
+``actionIdentifier``
+    Used to target a specific callback for an action.
 ``applicationIdentifier``
     Used to uniquely identify this application in the 
-    :ref:`developing/hooks/launch_application` hook.
+    :ref:`developing/hooks/action_launch` hook.
 ``applicationData`` 
     Optional and can contain any extra data you want to include in the event. 
     This data will be passed on to the 
-    :ref:`developing/hooks/launch_application` hook.
+    :ref:`developing/hooks/action_launch` hook.
 
 
 Headings

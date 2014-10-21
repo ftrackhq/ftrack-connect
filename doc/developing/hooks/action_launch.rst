@@ -3,20 +3,20 @@
 
 .. _developing/hooks/launch_application:
 
-*************************
-ftrack.launch-application
-*************************
+********************
+ftrack.action.launch
+********************
 
-The *launch-application* hook is triggered from the ftrack interface when a user
-selects an application in the :guilabel:`Launch` menu. For more information
-about launching applications from the web UI, see 
-:ref:`ftrack:using/connect/launch_application`.
+The *action.launch* hook is triggered from the ftrack interface when a user
+selects an action in the :guilabel:`Actions` menu. For more information
+about launching actions from the web UI, see 
+:ref:`ftrack:using/connect/launch_action`.
 
 The list of applications is provided by the 
-:ref:`developing/hooks/get_applications` :term:`hook`. The *get-applications*
-hook provides a list of applications with ``applicationIdentifier`` and
-optionally ``applicationData``. These parameters are passed to this hook and
-should be used to launch the correct application.
+:ref:`developing/hooks/action_discover` :term:`hook`. The *action.discover*
+hook provides a list of applications with ``applicationIdentifier``
+and optionally ``applicationData``. These parameters are passed to this hook
+and should be used to launch the correct application.
 
 The default hook is a placeholder and should be extended to include correct
 application commands.
@@ -24,9 +24,10 @@ application commands.
 Example event passed to hook::
 
     Event(
-        topic='ftrack.launch-application',
+        topic='ftrack.action.launch',
         data=dict(
             applicationIdentifier='maya-2014',
+            actionIdentifier='ftrack-connect-launch-applications-action',
             applicationData=dict(
                 foo='bar'
             ),
