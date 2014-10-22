@@ -297,7 +297,7 @@ class GetApplicationsHook(object):
                         dict(
                             label='Premiere Pro CC 2014 with latest publish',
                             applicationIdentifier='pp_cc_2014',
-                            applicationData=dict(
+                            actionData=dict(
                                 latest=True
                             )
                         )
@@ -351,19 +351,22 @@ class GetApplicationsHook(object):
             applicationIdentifier = application['identifier']
             label = application['label']
             items.append({
-                'applicationIdentifier': applicationIdentifier,
                 'actionIdentifier': ACTION_IDENTIFIER,
-                'label': label
+                'label': label,
+                'actionData': {
+                    'applicationIdentifier': applicationIdentifier
+                }
             })
 
             if applicationIdentifier.startswith('premiere_pro_cc'):
                 items.append({
-                    'applicationIdentifier': applicationIdentifier,
+                    'actionIdentifier': ACTION_IDENTIFIER,
                     'label': '{label} with latest version'.format(
                         label=label
                     ),
-                    'applicationData': {
-                        'launchWithLatest': True
+                    'actionData': {
+                        'launchWithLatest': True,
+                        'applicationIdentifier': applicationIdentifier
                     }
                 })
 
@@ -405,17 +408,16 @@ class LaunchApplicationHook(object):
 
         event['data'] should contain:
 
-            applicationIdentifier - The identifier of the application to launch.
             context - Context of request to help guide how to launch the
                       application.
-            applicationData - Is passed with the applicationIdentifier and can
-                              be used to provide additional information about
-                              how the application should be launched.
-
+            actionData - Is passed and should contain the applicationIdentifier
+                         and other values that can be used to provide
+                         additional information about how the application
+                         should be launched.
         '''
-        applicationIdentifier = event['data']['applicationIdentifier']
         context = event['data']['context']
-        data = event['data']['applicationData']
+        data = event['data']['actionData']
+        applicationIdentifier = data['applicationIdentifier']
 
         # Look up application.
         applicationIdentifierPattern = applicationIdentifier

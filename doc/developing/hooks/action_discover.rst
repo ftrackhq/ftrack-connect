@@ -8,11 +8,11 @@ ftrack.action.discover
 **********************
 
 The action.discover hook is triggered from the ftrack interface to request a 
-list of available applications for launching. For more information, see 
+list of available actions for launching. For more information, see 
 :ref:`ftrack:using/connect/launch_action`.
 
 The default hook is a placeholder and should be extended to include a complete
-list of applications that can be launched.
+list of actions that can be launched.
 
 Example event passed to hook::
 
@@ -40,8 +40,10 @@ Expects reply data in the form::
             ),
             dict(
                 label='Mega Modeling 2014',
-                applicationIdentifier='mega_modeling_2014',
-                actionIdentifier='ftrack-connect-launch-applications-action'
+                actionIdentifier='ftrack-connect-launch-applications-action',
+                actiondata=dict(
+                    applicationIdentifier='mega_modeling_2014'
+                )
             ),
             dict(
                 type='separator'
@@ -56,10 +58,10 @@ Expects reply data in the form::
                     ),
                     dict(
                         label='Cool Compositor v2',
-                        applicationIdentifier='cc_v2',
                         actionIdentifier='ftrack-connect-launch-applications-action'
                         applicationData=dict(
-                            cc_plugins=['foo', 'bar'],
+                            applicationIdentifier='cc_v2',
+                            cc_plugins=['foo', 'bar']
                         )
                     )
                 ]
@@ -73,8 +75,8 @@ contain a dictionary for each menu item to be returned. Each item can have a
 default and can be omitted. If an item contains a new ``items`` list, it will
 be displayed as a submenu.
 
-Applications
-============
+Action
+======
 
 To add an application, add an item in the following format.
 
@@ -82,27 +84,26 @@ To add an application, add an item in the following format.
 
     dict(
         label='Crazy Compositor v2',
-        applicationIdentifier='cc_v2',
-        applicationData=dict(
+        actionIdentifier='ftrack-connect-launch-applications-action',
+        actionData=dict(
             cc_plugins=['foo', 'bar'],
-        ),
-        actionIdentifier='ftrack-connect-launch-applications-action'
+            applicationIdentifier='cc_v2'
+        )
     )
 
 The different options are:
 
 ``label``
-    Used to display the application in the ftrack interface. 
+    Used to display the action in the ftrack interface. 
 ``actionIdentifier``
     Used to target a specific callback for an action.
-``applicationIdentifier``
-    Used to uniquely identify this application in the 
-    :ref:`developing/hooks/action_launch` hook.
-``applicationData`` 
-    Optional and can contain any extra data you want to include in the event. 
+``actionData`` 
+    Optional and can contain any extra data you want to include in the event.
     This data will be passed on to the 
     :ref:`developing/hooks/action_launch` hook.
 
+    In the default hook actionData contains an ``applicationIdentifier``
+    which is used to uniquely identify which application to start.
 
 Headings
 ========
@@ -142,11 +143,17 @@ you wish, but try to keep the depth to a maximum of three levels for usability.
         items=[
             dict(
                 label='Application X',
-                applicationIdentifier='app_x'
+                actionIdentifier='ftrack-connect-launch-applications-action',
+                actionData=dict(
+                    applicationIdentifier='app_x'
+                )
             ),
             dict(
                 label='Application Y',
-                applicationIdentifier='app_y'
+                actionIdentifier='ftrack-connect-launch-applications-action',
+                actionData=dict(
+                    applicationIdentifier='app_y'
+                )
             )
         ]
     )
@@ -154,7 +161,7 @@ you wish, but try to keep the depth to a maximum of three levels for usability.
 .. note::
 
     An item with an ``items`` array will always be displayed as a submenu,
-    regardless of the presence of any ``type`` or ``applicationIdentifier``.
+    regardless of the presence of any ``type`` or ``actionData``.
 
 Default hook
 ============
