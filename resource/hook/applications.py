@@ -607,7 +607,8 @@ class LaunchApplicationHook(object):
                 'FTRACK_PROXY',
                 'FTRACK_APIKEY',
                 'FTRACK_LOCATION_PLUGIN_PATH',
-                'LOGNAME'
+                'LOGNAME',
+                'FTRACK_PREMIERE_PRESET_PATH'
             ],
             environment
         )
