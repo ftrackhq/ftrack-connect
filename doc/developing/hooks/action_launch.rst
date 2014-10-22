@@ -9,8 +9,8 @@ ftrack.action.launch
 
 The *action.launch* hook is triggered from the ftrack interface when a user
 selects an action in the :guilabel:`Actions` menu. For more information
-about launching actions from the web UI, see 
-:ref:`ftrack:using/connect/launch_action`.
+about launching applications from the web UI, see 
+:ref:`ftrack:using/connect/launch_application`.
 
 The list of applications is provided by the 
 :ref:`developing/hooks/action_discover` :term:`hook`. The *action.discover*
