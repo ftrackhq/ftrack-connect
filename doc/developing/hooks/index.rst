@@ -30,5 +30,5 @@ priority or by removing the default hook using
     :maxdepth: 1
 
     make_web_playable
-    launch_application
-    get_applications
+    action_launch
+    action_discover
