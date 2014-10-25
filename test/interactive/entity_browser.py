@@ -15,6 +15,13 @@ class WidgetHarness(Harness):
         widget = ftrack_connect.ui.widget.entity_browser.EntityBrowser()
         widget.setMinimumSize(600, 400)
         self._browser = widget
+
+        # Disconnect buttons for now to avoid dialog closing.
+        self._browser.acceptButton.clicked.disconnect(self._browser.accept)
+        self._browser.cancelButton.clicked.disconnect(self._browser.reject)
+
+        self._browser.acceptButton.clicked.connect(self._onAccept)
+
         return widget
 
     def constructController(self, widget):
@@ -50,6 +57,10 @@ class WidgetHarness(Harness):
         '''Update displayed location.'''
         location = self._browser.getLocation()
         self._location.setText(' / '.join(location))
+
+    def _onAccept(self):
+        '''Display selected.'''
+        print 'Selected: ', self._browser.selected()
 
 
 if __name__ == '__main__':

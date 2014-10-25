@@ -9,7 +9,7 @@ import ftrack_connect.ui.model.entity_tree
 import ftrack_connect.ui.widget.overlay
 
 
-class EntityBrowser(QtGui.QFrame):
+class EntityBrowser(QtGui.QDialog):
     '''Entity browser.'''
 
     #: Signal when location changed.
@@ -110,6 +110,9 @@ class EntityBrowser(QtGui.QFrame):
         self.view.horizontalHeader().setResizeMode(
             0, QtGui.QHeaderView.Stretch
         )
+
+        self.acceptButton.clicked.connect(self.accept)
+        self.cancelButton.clicked.connect(self.reject)
 
         self.navigationBar.currentChanged.connect(
             self._onSelectNavigationBarItem
