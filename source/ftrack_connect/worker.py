@@ -37,7 +37,7 @@ class Worker(QtCore.QThread):
                     None,
                     'Error',
                     'An unhandled error occurred:'
-                    '\n{0}'.format(error)
+                    '\\n{0}'.format(error)
                 )
         
         '''
