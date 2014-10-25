@@ -12,6 +12,9 @@ import ftrack_connect.ui.widget.overlay
 class EntityBrowser(QtGui.QFrame):
     '''Entity browser.'''
 
+    #: Signal when location changed.
+    locationChanged = QtCore.Signal()
+
     def __init__(self, root=None, parent=None):
         '''Initialise browser with *root* entity.
 
@@ -128,6 +131,61 @@ class EntityBrowser(QtGui.QFrame):
         '''Return selected entities.'''
         return self._selected[:]
 
+    def setLocation(self, location):
+        '''Set location to *location*.
+
+        *location* should be a list of entries representing the 'path' from the
+        root of the model to the desired location.
+
+        Each entry in the list should be an entity id.
+
+        '''
+        # Ensure root children loaded in order to begin search.
+        rootIndex = self.model.index(-1, -1)
+        if (
+            self.model.hasChildren(rootIndex)
+            and self.model.canFetchMore(rootIndex)
+        ):
+            self.model.fetchMore(rootIndex)
+
+        # Search for matching entries by identity.
+        role = self.model.sourceModel().IDENTITY_ROLE
+
+        matchingIndex = rootIndex
+        searchIndex = self.model.index(0, 0)
+        for identity in location:
+            matches = self.model.match(
+                searchIndex, role, identity
+            )
+            if not matches:
+                break
+
+            matchingIndex = matches[0]
+            if (
+                self.model.hasChildren(matchingIndex)
+                and self.model.canFetchMore(matchingIndex)
+            ):
+                self.model.fetchMore(matchingIndex)
+
+            searchIndex = self.model.index(0, 0, parent=matchingIndex)
+
+        else:
+            self.setLocationFromIndex(matchingIndex)
+            return
+
+        raise ValueError('Could not match location {0!r}'.format(location))
+
+    def getLocation(self):
+        '''Return current location as list of entity ids from root.'''
+        location = []
+        item = self.model.item(self.view.rootIndex())
+        while item is not None and item.entity != self._root:
+            location.append(item.id)
+            item = item.parent
+
+        location.reverse()
+        return location
+
     def setLocationFromIndex(self, index):
         '''Set location to *index*.'''
         if index is None:
@@ -135,6 +193,7 @@ class EntityBrowser(QtGui.QFrame):
 
         self.view.setRootIndex(index)
         self._updateNavigationBar()
+        self.locationChanged.emit()
 
     def _updateNavigationBar(self):
         '''Update navigation bar.'''

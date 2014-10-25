@@ -118,8 +118,8 @@ class Item(object):
         if not self.canFetchMore():
             return []
 
-        children = self._fetchChildren()
         self._fetched = True
+        children = self._fetchChildren()
 
         return children
 
@@ -229,6 +229,9 @@ class EntityTreeModel(QtCore.QAbstractItemModel):
     #: Role referring to :class:`Item` instance.
     ITEM_ROLE = QtCore.Qt.UserRole + 1
 
+    #: Role referring to the unique identity of :class:`Item`.
+    IDENTITY_ROLE = ITEM_ROLE + 1
+
     #: Signal that a loading operation has started.
     loadStarted = QtCore.Signal()
 
@@ -264,8 +267,11 @@ class EntityTreeModel(QtCore.QAbstractItemModel):
 
         return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
 
-    def index(self, row, column, parent):
+    def index(self, row, column, parent=None):
         '''Return index for *row* and *column* under *parent*.'''
+        if parent is None:
+            parent = QtCore.QModelIndex()
+
         if not self.hasIndex(row, column, parent):
             return QtCore.QModelIndex()
 
@@ -296,6 +302,9 @@ class EntityTreeModel(QtCore.QAbstractItemModel):
 
         return self.createIndex(parent.row, 0, parent)
 
+    def match(self, *args, **kwargs):
+        return super(EntityTreeModel, self).match(*args, **kwargs)
+
     def item(self, index):
         '''Return item at *index*.'''
         return self.data(index, role=self.ITEM_ROLE)
@@ -314,6 +323,9 @@ class EntityTreeModel(QtCore.QAbstractItemModel):
 
         if role == self.ITEM_ROLE:
             return item
+
+        elif role == self.IDENTITY_ROLE:
+            return item.id
 
         elif role == QtCore.Qt.DisplayRole:
             column_name = self.columns[column]
@@ -457,6 +469,15 @@ class EntityTreeProxyModel(QtGui.QSortFilterProxyModel):
             return False
 
         return sourceModel.hasChildren(self.mapToSource(index))
+
+    def match(self, start, *args, **kwargs):
+        sourceModel = self.sourceModel()
+
+        if not sourceModel:
+            return []
+
+        matches = sourceModel.match(self.mapToSource(start), *args, **kwargs)
+        return map(self.mapFromSource, matches)
 
     def item(self, index):
         '''Return item at *index*.'''
