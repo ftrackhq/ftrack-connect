@@ -14,6 +14,7 @@
     <qresource prefix='ftrack/image/light'>
         <file alias='selectedTab'>image/light/selected_tab.png</file>
         <file alias='downArrow'>image/light/down_arrow.png</file>
+        <file alias='upArrow'>image/light/up_arrow.png</file>
         <file alias='trash'>image/light/trash.png</file>
         <file alias='play'>image/light/play2.svg</file>
         <file alias='reload'>image/light/spinner2.svg</file>

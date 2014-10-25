@@ -41,7 +41,7 @@ class EntityBrowser(QtGui.QFrame):
 
         self.navigateUpButton = QtGui.QToolButton()
         self.navigateUpButton.setIcon(
-            QtGui.QIcon(':ftrack/image/dark/upArrow')
+            QtGui.QIcon(':ftrack/image/light/upArrow')
         )
         self.headerLayout.addWidget(self.navigateUpButton)
 
