@@ -1,9 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-import functools
-
-from PySide import QtGui, QtCore
+from PySide import QtGui
 
 import ftrack_connect.ui.widget.entity_browser
 from harness import Harness
