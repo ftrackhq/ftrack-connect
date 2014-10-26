@@ -201,8 +201,18 @@ class EntityBrowser(QtGui.QDialog):
         if index is None:
             index = QtCore.QModelIndex()
 
+        currentIndex = self.view.rootIndex()
+        if index == currentIndex:
+            return
+
         self.view.setRootIndex(index)
         self._updateNavigationBar()
+
+        selectionModel = self.view.selectionModel()
+        selectionModel.clearSelection()
+        del self._selected[:]
+        self.acceptButton.setDisabled(True)
+
         self.locationChanged.emit()
 
     def _updateNavigationBar(self):
@@ -253,7 +263,6 @@ class EntityBrowser(QtGui.QDialog):
     def _onActivateItem(self, index):
         '''Handle activation of item in listing.'''
         if self.model.hasChildren(index):
-            self.acceptButton.setDisabled(True)
             self.setLocationFromIndex(index)
 
     def _onSelectItem(self, selection, previousSelection):
