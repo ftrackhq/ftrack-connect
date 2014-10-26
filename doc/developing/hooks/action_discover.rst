@@ -1,7 +1,7 @@
 ..
     :copyright: Copyright (c) 2014 ftrack
 
-.. _developing/hooks/get_applications:
+.. _developing/hooks/action_discover:
 
 **********************
 ftrack.action.discover
@@ -9,7 +9,7 @@ ftrack.action.discover
 
 The action.discover hook is triggered from the ftrack interface to request a 
 list of available actions for launching. For more information, see 
-:ref:`ftrack:using/connect/launch_action`.
+:ref:`ftrack:using/extending/launch_action`.
 
 The default hook is a placeholder and should be extended to include a complete
 list of actions that can be launched.
@@ -38,7 +38,7 @@ Expects reply data in the form::
                 label='Mega Modeling 2014',
                 actionIdentifier='ftrack-connect-launch-applications-action',
                 icon='URL to custom icon or predefined name',
-                actiondata=dict(
+                actionData=dict(
                     applicationIdentifier='mega_modeling_2014'
                 )
             ),
@@ -52,7 +52,7 @@ Expects reply data in the form::
                 label='Cool Compositor v2',
                 actionIdentifier='ftrack-connect-launch-applications-action'
                 icon='URL to custom icon or predefined name',
-                actiondata=dict(
+                actionData=dict(
                     applicationIdentifier='cc_v2',
                     cc_plugins=['foo', 'bar']
                 )
