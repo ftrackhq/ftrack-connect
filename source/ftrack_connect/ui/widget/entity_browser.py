@@ -15,6 +15,9 @@ class EntityBrowser(QtGui.QDialog):
     #: Signal when location changed.
     locationChanged = QtCore.Signal()
 
+    #: Signal when selection changes. Pass new selection.
+    selectionChanged = QtCore.Signal(object)
+
     def __init__(self, root=None, parent=None):
         '''Initialise browser with *root* entity.
 
@@ -212,6 +215,7 @@ class EntityBrowser(QtGui.QDialog):
         selectionModel.clearSelection()
         del self._selected[:]
         self.acceptButton.setDisabled(True)
+        self.selectionChanged.emit(self.selected())
 
         self.locationChanged.emit()
 
@@ -271,6 +275,7 @@ class EntityBrowser(QtGui.QDialog):
         del self._selected[:]
         item = self.model.item(selection)
         self._selected.append(item.entity)
+        self.selectionChanged.emit(self.selected())
 
     def _onNavigateUpButtonClicked(self):
         '''Navigate up on button click.'''
