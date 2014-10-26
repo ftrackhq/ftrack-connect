@@ -21,3 +21,9 @@ EntityBrowser QTabBar::tab:selected {
     background-image: url();
     color: $white;
 }
+
+
+EntityBrowser QTabBar::tab:hover {
+    background-color: darken($brand-primary, 5%);
+    border-color: darken($brand-primary, 10%);
+}
