@@ -69,7 +69,7 @@ class Item(object):
     @property
     def icon(self):
         '''Return icon.'''
-        return QtGui.QIcon(':/ftrack/image/default/ftrackLogoColor')
+        return QtGui.QIcon(':/ftrack/image/default/ftrackLogoGreyDark')
 
     @property
     def row(self):
@@ -176,6 +176,11 @@ class Project(Item):
         '''Return type of item as string.'''
         return 'Project'
 
+    @property
+    def icon(self):
+        '''Return icon.'''
+        return QtGui.QIcon(':/ftrack/image/light/home')
+
     def _fetchChildren(self):
         '''Fetch and return new child items.'''
         children = []
@@ -195,6 +200,19 @@ class Context(Item):
     def type(self):
         '''Return type of item as string.'''
         return self.entity.getObjectType()
+
+    @property
+    def icon(self):
+        '''Return icon.'''
+        icon = self.type
+        if icon is None:
+            icon = 'asset'
+        else:
+            icon = icon.lower()
+            if icon not in ('episode', 'shot', 'task'):
+                icon = 'folder'
+
+        return QtGui.QIcon(':/ftrack/image/light/{0}'.format(icon))
 
     def _fetchChildren(self):
         '''Fetch and return new child items.'''
@@ -217,6 +235,11 @@ class Task(Item):
     def type(self):
         '''Return type of item as string.'''
         return self.entity.getObjectType()
+
+    @property
+    def icon(self):
+        '''Return icon.'''
+        return QtGui.QIcon(':/ftrack/image/light/task')
 
     def mayHaveChildren(self):
         '''Return whether item may have children.'''
