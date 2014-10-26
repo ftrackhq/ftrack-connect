@@ -18,13 +18,15 @@ class EntityPath(QtGui.QLineEdit):
     @ftrack_connect.asynchronous.asynchronous
     def setEntity(self, entity):
         '''Set the *entity* for this widget.'''
-        names = [entity.getName()]
+        names = []
 
-        for parent in entity.getParents():
-            if isinstance(parent, ftrack.Show):
-                names.append(parent.getFullName())
+        while entity is not None:
+            if isinstance(entity, ftrack.Show):
+                names.append(entity.getFullName())
+                entity = None
             else:
-                names.append(parent.getName())
+                names.append(entity.getName())
+                entity = entity.getParent()
 
         # Reverse names since project should be first.
         names.reverse()
