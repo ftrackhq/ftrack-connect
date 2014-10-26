@@ -132,8 +132,8 @@ class Item(object):
         '''
         return []
 
-    def refetch(self):
-        '''Reload children.'''
+    def clearChildren(self):
+        '''Remove all children and return to un-fetched state.'''
         # Reset children
         for child in self.children[:]:
             self.removeChild(child)
@@ -421,10 +421,24 @@ class EntityTreeModel(QtCore.QAbstractItemModel):
 
             self.loadEnded.emit()
 
+    def reloadChildren(self, index):
+        '''Reload the children of parent *index*.'''
+        if not self.hasChildren(index):
+            return
+
+        if not index.isValid():
+            item = self.root
+        else:
+            item = index.internalPointer()
+
+        self.beginRemoveRows(index, 0, self.rowCount(index))
+        item.clearChildren()
+        self.endRemoveRows()
+
     def reset(self):
         '''Reset model'''
         self.beginResetModel()
-        self.root.refetch()
+        self.root.clearChildren()
         self.endResetModel()
 
 
@@ -469,6 +483,15 @@ class EntityTreeProxyModel(QtGui.QSortFilterProxyModel):
             return False
 
         return sourceModel.hasChildren(self.mapToSource(index))
+
+    def reloadChildren(self, index):
+        '''Reload the children of parent *index*.'''
+        sourceModel = self.sourceModel()
+
+        if not sourceModel:
+            return False
+
+        return sourceModel.reloadChildren(self.mapToSource(index))
 
     def match(self, start, *args, **kwargs):
         sourceModel = self.sourceModel()

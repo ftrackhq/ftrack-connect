@@ -48,6 +48,12 @@ class EntityBrowser(QtGui.QDialog):
         )
         self.headerLayout.addWidget(self.navigateUpButton)
 
+        self.reloadButton = QtGui.QToolButton()
+        self.reloadButton.setIcon(
+            QtGui.QIcon(':ftrack/image/light/reload')
+        )
+        self.headerLayout.addWidget(self.reloadButton)
+
         self.layout().addLayout(self.headerLayout)
 
         self.contentSplitter = QtGui.QSplitter()
@@ -118,6 +124,7 @@ class EntityBrowser(QtGui.QDialog):
             self._onSelectNavigationBarItem
         )
         self.navigateUpButton.clicked.connect(self._onNavigateUpButtonClicked)
+        self.reloadButton.clicked.connect(self._onReloadButtonClicked)
         self.view.activated.connect(self._onActivateItem)
 
         selectionModel = self.view.selectionModel()
@@ -261,3 +268,8 @@ class EntityBrowser(QtGui.QDialog):
         currentRootIndex = self.view.rootIndex()
         parent = self.model.parent(currentRootIndex)
         self.setLocationFromIndex(parent)
+
+    def _onReloadButtonClicked(self):
+        '''Reload current index on button click.'''
+        currentRootIndex = self.view.rootIndex()
+        self.model.reloadChildren(currentRootIndex)
