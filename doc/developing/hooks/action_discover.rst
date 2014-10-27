@@ -7,9 +7,9 @@
 ftrack.action.discover
 **********************
 
-The action.discover hook is triggered from the ftrack interface to request a 
+The *action.discover* hook is triggered from the ftrack interface to request a
 list of available actions for launching. For more information, see 
-:ref:`ftrack:using/extending/launch_action`.
+:ref:`ftrack:using/actions`.
 
 The default hook is a placeholder and should be extended to include a complete
 list of actions that can be launched.
