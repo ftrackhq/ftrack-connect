@@ -1,15 +1,15 @@
 ..
     :copyright: Copyright (c) 2014 ftrack
 
-.. _developing/hooks/get_applications:
+.. _developing/hooks/action_discover:
 
 **********************
 ftrack.action.discover
 **********************
 
-The action.discover hook is triggered from the ftrack interface to request a 
+The *action.discover* hook is triggered from the ftrack interface to request a
 list of available actions for launching. For more information, see 
-:ref:`ftrack:using/connect/launch_action`.
+:ref:`ftrack:using/actions`.
 
 The default hook is a placeholder and should be extended to include a complete
 list of actions that can be launched.
@@ -35,56 +35,45 @@ Expects reply data in the form::
     dict(
         items=[
             dict(
-                label='My applications',
-                type='heading'
-            ),
-            dict(
                 label='Mega Modeling 2014',
                 actionIdentifier='ftrack-connect-launch-applications-action',
-                actiondata=dict(
+                icon='URL to custom icon or predefined name',
+                actionData=dict(
                     applicationIdentifier='mega_modeling_2014'
                 )
             ),
             dict(
-                type='separator'
+                label='Professional Painter',
+                icon='URL to custom icon or predefined name',
+                actionIdentifier='ftrack-connect-launch-applications-action'
+                
             ),
             dict(
-                label='2D Applications',
-                items=[
-                    dict(
-                        label='Professional Painter',
-                        actionIdentifier='ftrack-connect-launch-applications-action'
-                        
-                    ),
-                    dict(
-                        label='Cool Compositor v2',
-                        actionIdentifier='ftrack-connect-launch-applications-action'
-                        applicationData=dict(
-                            applicationIdentifier='cc_v2',
-                            cc_plugins=['foo', 'bar']
-                        )
-                    )
-                ]
+                label='Cool Compositor v2',
+                actionIdentifier='ftrack-connect-launch-applications-action'
+                icon='URL to custom icon or predefined name',
+                actionData=dict(
+                    applicationIdentifier='cc_v2',
+                    cc_plugins=['foo', 'bar']
+                )
             )
         ]
     )
 
 The response should be a dictionary with an ``items`` list. The list should
-contain a dictionary for each menu item to be returned. Each item can have a
-``type`` of ``heading``, ``separator`` or ``button``, where ``button`` is the
-default and can be omitted. If an item contains a new ``items`` list, it will
-be displayed as a submenu.
+contain a dictionary for each menu item to be returned.
 
 Action
 ======
 
-To add an application, add an item in the following format.
+To add an action, add an item in the following format.
 
 .. code-block:: python
 
     dict(
         label='Crazy Compositor v2',
         actionIdentifier='ftrack-connect-launch-applications-action',
+        icon='URL to custom icon or predefined name',
         actionData=dict(
             cc_plugins=['foo', 'bar'],
             applicationIdentifier='cc_v2'
@@ -97,6 +86,11 @@ The different options are:
     Used to display the action in the ftrack interface. 
 ``actionIdentifier``
     Used to target a specific callback for an action.
+``icon``
+    Icon to display in the ftrack interface. Can be either an URL to a custom
+    icon or the name of a predefined icon. Predefined icons are ``hiero``,
+    ``hieroplayer``, ``nuke``, ``nukex``, ``maya``, ``premiere`` and 
+    ``default``
 ``actionData`` 
     Optional and can contain any extra data you want to include in the event.
     This data will be passed on to the 
@@ -104,64 +98,6 @@ The different options are:
 
     In the default hook actionData contains an ``applicationIdentifier``
     which is used to uniquely identify which application to start.
-
-Headings
-========
-
-To add a heading, use type ``heading`` and enter the text as ``label``.
-
-.. code-block:: python
-
-    dict(
-        label='My applications',
-        type='heading'
-    )
-
-Separators
-==========
-
-To add a separator, add an item with type ``separator``.
-
-.. code-block:: python
-
-    dict(
-        type='separator'
-    )
-
-Nested menus
-============
-
-If an item contains an ``items`` list, it will be displayed as a submenu with
-each item in the list forming an item in the submenu. The ``label`` will be
-used as the text label for the submenu. You can have as many nested submenus as
-you wish, but try to keep the depth to a maximum of three levels for usability.
-
-.. code-block:: python
-
-    dict(
-        label='More items',
-        items=[
-            dict(
-                label='Application X',
-                actionIdentifier='ftrack-connect-launch-applications-action',
-                actionData=dict(
-                    applicationIdentifier='app_x'
-                )
-            ),
-            dict(
-                label='Application Y',
-                actionIdentifier='ftrack-connect-launch-applications-action',
-                actionData=dict(
-                    applicationIdentifier='app_y'
-                )
-            )
-        ]
-    )
-
-.. note::
-
-    An item with an ``items`` array will always be displayed as a submenu,
-    regardless of the presence of any ``type`` or ``actionData``.
 
 Default hook
 ============
