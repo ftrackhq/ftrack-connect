@@ -274,7 +274,9 @@ class EntityBrowser(QtGui.QDialog):
         self.acceptButton.setEnabled(True)
         del self._selected[:]
         item = self.model.item(selection)
-        self._selected.append(item.entity)
+        if item:
+            self._selected.append(item.entity)
+
         self.selectionChanged.emit(self.selected())
 
     def _onNavigateUpButtonClicked(self):
