@@ -122,18 +122,15 @@ class Publisher(QtGui.QWidget):
         # Ensure browser points to parent of currently selected entity.
         if self._entity is not None:
             location = []
-            parent = self._entity
-            while parent is not None:
-                location.append(parent.getId())
-                try:
-                    parent = parent.getParent()
-                except AttributeError:
-                    parent = None
+            try:
+                parents = self._entity.getParents()
+            except AttributeError:
+                pass
+            else:
+                for parent in parents:
+                    location.append(parent.getId())
 
             location.reverse()
-            if location:
-                location.pop()
-
             self.entityBrowser.setLocation(location)
 
         # Launch browser.
