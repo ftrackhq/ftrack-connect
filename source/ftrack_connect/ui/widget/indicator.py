@@ -84,10 +84,10 @@ class BusyIndicator(QtGui.QWidget):
 
             gradient = QtGui.QConicalGradient(
                 QtCore.QPoint(0, 0),
-                self._spinnerAngle
+                -self._spinnerAngle
             )
-            gradient.setColorAt(0.05, QtCore.Qt.transparent)
-            gradient.setColorAt(1.0, self._spinnerColor)
+            gradient.setColorAt(0.95, QtCore.Qt.transparent)
+            gradient.setColorAt(0, self._spinnerColor)
 
             brush = QtGui.QBrush(gradient)
             pen.setBrush(brush)

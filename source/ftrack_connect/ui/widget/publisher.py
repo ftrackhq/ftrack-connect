@@ -7,6 +7,7 @@ import ftrack
 
 
 from ftrack_connect.ui.widget import entity_path as _entity_path
+from ftrack_connect.ui.widget import entity_browser as _entity_brower
 from ftrack_connect.ui.widget import asset_type_selector as _asset_type_selector
 from ftrack_connect.ui.widget import data_drop_zone as _data_drop_zone
 from ftrack_connect.ui.widget import components_list as _components_list
@@ -27,6 +28,7 @@ class Publisher(QtGui.QWidget):
     def __init__(self, parent=None):
         '''Initiate a publish view.'''
         super(Publisher, self).__init__(parent)
+        self._entity = None
 
         layout = QtGui.QVBoxLayout()
 
@@ -52,9 +54,27 @@ class Publisher(QtGui.QWidget):
         layout.addLayout(formLayout, stretch=0)
 
         # Add linked to component and connect to entityChanged signal.
+        linkedEntity = QtGui.QFrame()
+        linkedEntity.setLayout(QtGui.QHBoxLayout())
+        linkedEntity.layout().setContentsMargins(0, 0, 0, 0)
+
+        self.entityBrowser = _entity_brower.EntityBrowser(parent=self)
+        self.entityBrowser.setMinimumSize(600, 400)
+        self.entityBrowser.selectionChanged.connect(
+            self._onEntityBrowserSelectionChanged
+        )
+
         self.entityPath = _entity_path.EntityPath()
-        formLayout.addRow('Linked to', self.entityPath)
+        linkedEntity.layout().addWidget(self.entityPath)
+
+        self.entityBrowseButton = QtGui.QPushButton('Browse')
+        linkedEntity.layout().addWidget(self.entityBrowseButton)
+
+        formLayout.addRow('Linked to', linkedEntity)
         self.entityChanged.connect(self.entityPath.setEntity)
+        self.entityBrowseButton.clicked.connect(
+            self._onEntityBrowseButtonClicked
+        )
 
         # Add asset selector.
         self.assetSelector = _asset_type_selector.AssetTypeSelector()
@@ -97,11 +117,54 @@ class Publisher(QtGui.QWidget):
             'resourceIdentifier': filePath
         })
 
+    def _onEntityBrowseButtonClicked(self):
+        '''Handle entity browse button clicked.'''
+        # Ensure browser points to parent of currently selected entity.
+        if self._entity is not None:
+            location = []
+            try:
+                parents = self._entity.getParents()
+            except AttributeError:
+                pass
+            else:
+                for parent in parents:
+                    location.append(parent.getId())
+
+            location.reverse()
+            self.entityBrowser.setLocation(location)
+
+        # Launch browser.
+        if self.entityBrowser.exec_():
+            selected = self.entityBrowser.selected()
+            if selected:
+                self.setEntity(selected[0])
+            else:
+                self.setEntity(None)
+
+    def _onEntityBrowserSelectionChanged(self, selection):
+        '''Handle selection of entity in browser.'''
+        self.entityBrowser.acceptButton.setDisabled(True)
+        if len(selection) == 1:
+            entity = selection[0]
+
+            # Prevent selecting Projects or Tasks directly under a Project to
+            # match web interface behaviour.
+            if isinstance(entity, ftrack.Task):
+                objectType = entity.getObjectType()
+                if (
+                    objectType == 'Task'
+                    and isinstance(entity.getParent(), ftrack.Project)
+                ):
+                    return
+
+                self.entityBrowser.acceptButton.setDisabled(False)
+
     def clear(self):
         '''Clear the publish view to it's initial state.'''
         self.assetSelector.setCurrentIndex(-1)
         self.versionDescription.clear()
         self.entityPath.clear()
+        self.entityBrowser.setLocation([])
         self.browser.clear()
         self.componentsList.clearItems()
         self.thumbnailDropZone.clear()
@@ -113,9 +176,15 @@ class Publisher(QtGui.QWidget):
 
     def publish(self):
         '''Gather all data in publisher and publish version with components.'''
+        # TODO: Proper validation.
+        entity = self._entity
+        if entity is None:
+            raise ftrack_connect.error.ConnectError(
+                'No linked entity selected to publish against!'
+            )
+
         self.publishStarted.emit()
 
-        entity = self._entity
         taskId = None
 
         assetType = self.assetSelector.itemData(
@@ -171,7 +240,7 @@ class Publisher(QtGui.QWidget):
         '''
         if not assetType:
             self.publishFinished.emit(False)
-            raise ftrack_connect.error.ConnectError('No asset type found')
+            raise ftrack_connect.error.ConnectError('No asset type selected.')
 
         if not entity:
             self.publishFinished.emit(False)

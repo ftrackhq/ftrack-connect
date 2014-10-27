@@ -20,7 +20,7 @@ class PublisherBlockingOverlay(
 ):
     '''Custom blocking overlay for publisher.'''
 
-    def __init__(self, parent, message='Select a task in ftrack to start.'):
+    def __init__(self, parent, message=''):
         super(PublisherBlockingOverlay, self).__init__(parent, message=message)
         self.confirmButton = QtGui.QPushButton('Ok')
         self.contentLayout.insertWidget(
@@ -47,6 +47,7 @@ class Publisher(ftrack_connect.ui.application.ApplicationPlugin):
         layout.addWidget(self.publishView)
 
         self.blockingOverlay = PublisherBlockingOverlay(self)
+        self.blockingOverlay.hide()
 
         self.busyOverlay = ftrack_connect.ui.widget.overlay.BusyOverlay(self)
         self.busyOverlay.hide()
@@ -71,13 +72,14 @@ class Publisher(ftrack_connect.ui.application.ApplicationPlugin):
     def _onPublishFinished(self, success):
         '''Callback for publish finished signal.'''
         self.busyOverlay.hide()
-        self.blockingOverlay.setMessage(
-            'Publish finished!\n \n'
-            'Select another task in ftrack or continue to publish using '
-            'current task.'
-        )
-        self.blockingOverlay.confirmButton.show()
-        self.blockingOverlay.show()
+        if success:
+            self.blockingOverlay.setMessage(
+                'Publish finished!\n \n'
+                'Select another task in ftrack or continue to publish using '
+                'current task.'
+            )
+            self.blockingOverlay.confirmButton.show()
+            self.blockingOverlay.show()
 
     def _onEntityChanged(self):
         '''Callback for entityChanged signal.'''
