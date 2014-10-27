@@ -80,8 +80,18 @@ class Item(object):
         return 0
 
     def addChild(self, item):
-        '''Add *item* as child of this item.'''
-        if item.parent and item.parent != self:
+        '''Add *item* as child of this item.
+
+        .. note::
+
+            If *item* is already a child of this item then return without
+            making any modifications.
+
+        '''
+        if item.parent:
+            if item.parent == self:
+                return
+
             item.parent.removeChild(item)
 
         self.children.append(item)
