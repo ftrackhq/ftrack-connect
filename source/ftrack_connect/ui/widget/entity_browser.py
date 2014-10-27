@@ -49,12 +49,14 @@ class EntityBrowser(QtGui.QDialog):
         self.navigateUpButton.setIcon(
             QtGui.QIcon(':ftrack/image/light/upArrowDark')
         )
+        self.navigateUpButton.setToolTip('Navigate up a level.')
         self.headerLayout.addWidget(self.navigateUpButton)
 
         self.reloadButton = QtGui.QToolButton()
         self.reloadButton.setIcon(
             QtGui.QIcon(':ftrack/image/light/reload')
         )
+        self.reloadButton.setToolTip('Reload listing from server.')
         self.headerLayout.addWidget(self.reloadButton)
 
         self.layout().addLayout(self.headerLayout)
