@@ -200,20 +200,11 @@ class Application(QtGui.QMainWindow):
 
         self._discoverPlugins()
 
-        # getpass.getuser is used to reflect how the ftrack api get the current
-        # user.
-        currentUser = ftrack.User(
-            getpass.getuser()
-        )
-
-        self._currentUserId = currentUser.getId()
-
         ftrack.EVENT_HUB.subscribe(
-            'topic=ftrack.connect',
-            self._relayEventHubEvent,
-            subscriber={
-                'userId': self._currentUserId
-            }
+            'topic=ftrack.connect and source.user.username={0}'.format(
+                getpass.getuser()
+            ),
+            self._relayEventHubEvent
         )
         self.eventHubSignal.connect(self._onConnectTopicEvent)
 
