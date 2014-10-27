@@ -110,8 +110,8 @@ class EntityBrowser(QtGui.QDialog):
         self.acceptButton.setDefault(True)
         self.acceptButton.setDisabled(True)
 
-        self.model.sourceModel().loadStarted.connect(self.overlay.show)
-        self.model.sourceModel().loadEnded.connect(self.overlay.hide)
+        self.model.sourceModel().loadStarted.connect(self._onLoadStarted)
+        self.model.sourceModel().loadEnded.connect(self._onLoadEnded)
 
         self.view.horizontalHeader().setResizeMode(
             QtGui.QHeaderView.ResizeToContents
@@ -215,6 +215,16 @@ class EntityBrowser(QtGui.QDialog):
         selectionModel.clearSelection()
 
         self.locationChanged.emit()
+
+    def _onLoadStarted(self):
+        '''Handle load started.'''
+        self.reloadButton.setEnabled(False)
+        self.overlay.show()
+
+    def _onLoadEnded(self):
+        '''Handle load ended.'''
+        self.overlay.hide()
+        self.reloadButton.setEnabled(True)
 
     def _updateNavigationBar(self):
         '''Update navigation bar.'''
