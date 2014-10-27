@@ -132,7 +132,9 @@ class EntityBrowser(QtGui.QDialog):
 
         selectionModel = self.view.selectionModel()
         selectionModel.currentRowChanged.connect(self._onSelectItem)
-
+        self.selectionChanged.connect(
+            self._onSelectionChanged
+        )
         self._updateNavigationBar()
 
     @property
@@ -214,7 +216,6 @@ class EntityBrowser(QtGui.QDialog):
         selectionModel = self.view.selectionModel()
         selectionModel.clearSelection()
         del self._selected[:]
-        self.acceptButton.setDisabled(True)
         self.selectionChanged.emit(self.selected())
 
         self.locationChanged.emit()
@@ -271,13 +272,19 @@ class EntityBrowser(QtGui.QDialog):
 
     def _onSelectItem(self, selection, previousSelection):
         '''Handle selection of item in listing.'''
-        self.acceptButton.setEnabled(True)
         del self._selected[:]
         item = self.model.item(selection)
         if item:
             self._selected.append(item.entity)
 
         self.selectionChanged.emit(self.selected())
+
+    def _onSelectionChanged(self, selection):
+        '''Handle change of *selection*.'''
+        if selection:
+            self.acceptButton.setEnabled(True)
+        else:
+            self.acceptButton.setEnabled(False)
 
     def _onNavigateUpButtonClicked(self):
         '''Navigate up on button click.'''
