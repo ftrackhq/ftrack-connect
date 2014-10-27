@@ -146,10 +146,17 @@ class Publisher(QtGui.QWidget):
         self.entityBrowser.acceptButton.setDisabled(True)
         if len(selection) == 1:
             entity = selection[0]
-            if (
-                isinstance(entity, ftrack.Task)
-                and entity.getObjectType().lower() == 'task'
-            ):
+
+            # Prevent selecting Projects or Tasks directly under a Project to
+            # match web interface behaviour.
+            if isinstance(entity, ftrack.Task):
+                objectType = entity.getObjectType()
+                if (
+                    objectType == 'Task'
+                    and isinstance(entity.getParent(), ftrack.Project)
+                ):
+                    return
+
                 self.entityBrowser.acceptButton.setDisabled(False)
 
     def clear(self):
