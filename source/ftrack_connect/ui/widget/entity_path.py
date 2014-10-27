@@ -19,14 +19,18 @@ class EntityPath(QtGui.QLineEdit):
     def setEntity(self, entity):
         '''Set the *entity* for this widget.'''
         names = []
+        entities = [entity]
+        try:
+            entities.extend(entity.getParents())
+        except AttributeError:
+            pass
 
-        while entity is not None:
-            if isinstance(entity, ftrack.Show):
-                names.append(entity.getFullName())
-                entity = None
-            else:
-                names.append(entity.getName())
-                entity = entity.getParent()
+        for entity in entities:
+            if entity:
+                if isinstance(entity, ftrack.Show):
+                    names.append(entity.getFullName())
+                else:
+                    names.append(entity.getName())
 
         # Reverse names since project should be first.
         names.reverse()
