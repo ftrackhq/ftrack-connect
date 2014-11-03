@@ -42,6 +42,20 @@ class TimerOverlay(ftrack_connect.ui.widget.overlay.Overlay):
         ''')
 
 
+class TimeTrackerBlockingOverlay(
+    ftrack_connect.ui.widget.overlay.BlockingOverlay
+):
+    '''Custom blocking overlay for time tracker.'''
+
+    def __init__(self, parent, message=''):
+        '''Initialise.'''
+        super(TimeTrackerBlockingOverlay, self).__init__(
+            parent, message=message,
+            icon=':ftrack/image/default/ftrackLogoGrey'
+        )
+        self.content.setMinimumWidth(350)
+
+
 class TimeTracker(ftrack_connect.ui.application.ApplicationPlugin):
     '''Base widget for ftrack connect time tracker plugin.'''
 
@@ -87,6 +101,11 @@ class TimeTracker(ftrack_connect.ui.application.ApplicationPlugin):
         self.assignedTimeLogList.itemSelected.connect(
             self._onSelectTimeLog
         )
+
+        self.blockingOverlay = TimeTrackerBlockingOverlay(
+            self, 'Time tracker is currently disabled during beta.'
+        )
+        self.blockingOverlay.show()
 
         self._updateAssignedList()
 
