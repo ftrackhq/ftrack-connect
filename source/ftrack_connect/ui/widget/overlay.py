@@ -130,7 +130,10 @@ class Overlay(QtGui.QFrame):
 class BlockingOverlay(Overlay):
     '''Display a standard blocking overlay over another widget.'''
 
-    def __init__(self, parent, message='Processing'):
+    def __init__(
+        self, parent, message='Processing',
+        icon=':ftrack/image/default/ftrackLogoColor'
+    ):
         '''Initialise with *parent*.
 
          *message* is the message to display on the overlay.
@@ -152,7 +155,7 @@ class BlockingOverlay(Overlay):
         self.content.setLayout(self.contentLayout)
 
         self.icon = QtGui.QLabel()
-        pixmap = QtGui.QPixmap(':ftrack/image/default/ftrackLogoColor')
+        pixmap = QtGui.QPixmap(icon)
         self.icon.setPixmap(
             pixmap.scaledToHeight(36, mode=QtCore.Qt.SmoothTransformation)
         )
