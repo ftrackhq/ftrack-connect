@@ -339,9 +339,10 @@ class GetApplicationsHook(object):
         context = event['data']['context']
 
         # If selection contains more than one item return early since
-        # applications cannot be started for multiple items.
+        # applications cannot be started for multiple items or if the
+        # selected item is not a "task".
         selection = context.get('selection', [])
-        if len(selection) != 1:
+        if len(selection) != 1 or selection[0].get('entityType') != 'task':
             return
 
         items = []
