@@ -196,6 +196,7 @@ class Application(QtGui.QMainWindow):
         import ftrack
         ftrack.setup()
         self.tabPanel = _tab_widget.TabWidget()
+        self.tabPanel.tabBar().setObjectName('application-tab-bar')
         self.setCentralWidget(self.tabPanel)
 
         self._discoverPlugins()
