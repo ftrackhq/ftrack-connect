@@ -1,7 +1,4 @@
 /** Tab bar. */
-QTabWidget {
-    background: red;
-}
 
 QTabWidget::pane {
     border-top: 2px solid $gray-lighter;
@@ -23,7 +20,7 @@ QTabBar::tab {
     color: $gray;
 }
 
-QTabBar::tab:selected {
+QTabBar#application-tab-bar::tab:selected {
     background-image: theme-image('selectedTab');
     background-position: bottom center;
     background-repeat: none;
