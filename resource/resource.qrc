@@ -31,5 +31,17 @@
     <qresource prefix='ftrack/image/dark'>
         <file alias='selectedTab'>image/dark/selected_tab.png</file>
         <file alias='downArrow'>image/dark/down_arrow.png</file>
+        <file alias='upArrow'>image/dark/up_arrow.png</file>
+        <file alias='upArrowDark'>image/dark/up_arrow_dark.png</file>
+        <file alias='trash'>image/dark/trash.png</file>
+        <file alias='play'>image/dark/play2.svg</file>
+        <file alias='reload'>image/dark/spinner2.svg</file>
+        <file alias='asset'>image/dark/asset.png</file>
+        <file alias='episode'>image/dark/episode.png</file>
+        <file alias='folder'>image/dark/folder.png</file>
+        <file alias='folder_open'>image/dark/folder_open.png</file>
+        <file alias='home'>image/dark/home.png</file>
+        <file alias='shot'>image/dark/shot.png</file>
+        <file alias='task'>image/dark/task.png</file>
     </qresource>
 </RCC>
