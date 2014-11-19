@@ -9,6 +9,7 @@ import glob
 
 from setuptools import setup, find_packages, Command
 from distutils.command.build import build as BuildCommand
+from setuptools.command.bdist_egg import bdist_egg as BuildEggCommand
 from setuptools.command.install import install as InstallCommand
 from distutils.command.clean import clean as CleanCommand
 from setuptools.command.test import test as TestCommand
@@ -123,6 +124,22 @@ class BuildResources(Command):
             )
 
 
+class BuildEgg(BuildEggCommand):
+    '''Custom egg build to ensure resources built.
+
+    .. note::
+
+        Required because when this project is a dependency for another project,
+        only bdist_egg will be called and *not* build.
+
+    '''
+
+    def run(self):
+        '''Run egg build ensuring build_resources called first.'''
+        self.run_command('build_resources')
+        BuildEggCommand.run(self)
+
+
 class Build(BuildCommand):
     '''Custom build to pre-build resources.'''
 
@@ -130,22 +147,6 @@ class Build(BuildCommand):
         '''Run build ensuring build_resources called first.'''
         self.run_command('build_resources')
         BuildCommand.run(self)
-
-
-class Install(InstallCommand):
-    '''Custom install to pre-build resources.'''
-
-    def do_egg_install(self):
-        '''Run install ensuring build_resources called first.
-
-        .. note::
-
-            `do_egg_install` used rather than `run` as sometimes `run` is not
-            called at all by setuptools.
-
-        '''
-        self.run_command('build_resources')
-        InstallCommand.do_egg_install(self)
 
 
 class Clean(CleanCommand):
@@ -225,7 +226,7 @@ configuration = dict(
     cmdclass={
         'build': Build,
         'build_resources': BuildResources,
-        'install': Install,
+        'bdist_egg': BuildEgg,
         'clean': Clean,
         'test': PyTest
     },
