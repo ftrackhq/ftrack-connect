@@ -5,6 +5,7 @@ import sys
 import os
 import subprocess
 import re
+import glob
 
 from setuptools import setup, find_packages, Command
 from distutils.command.build import build as BuildCommand
@@ -230,6 +231,10 @@ configuration = dict(
     },
     options={},
     data_files=[
+        (
+            'ftrack_connect_resource/hook',
+            glob.glob(os.path.join(RESOURCE_PATH, 'hook', '*.py'))
+        )
     ]
 )
 
