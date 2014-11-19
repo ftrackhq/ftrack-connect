@@ -10,7 +10,6 @@ import glob
 from setuptools import setup, find_packages, Command
 from distutils.command.build import build as BuildCommand
 from setuptools.command.bdist_egg import bdist_egg as BuildEggCommand
-from setuptools.command.install import install as InstallCommand
 from distutils.command.clean import clean as CleanCommand
 from setuptools.command.test import test as TestCommand
 import distutils.dir_util
