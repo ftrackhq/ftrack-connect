@@ -235,7 +235,8 @@ configuration = dict(
             'ftrack_connect_resource/hook',
             glob.glob(os.path.join(RESOURCE_PATH, 'hook', '*.py'))
         )
-    ]
+    ],
+    zip_safe=False
 )
 
 
