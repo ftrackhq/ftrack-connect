@@ -13,14 +13,18 @@ from PySide import QtGui
 
 # Hooks use the ftrack event system. Set the FTRACK_EVENT_PLUGIN_PATH
 # to pick up the default hooks if it has not already been set.
-default_hook_path = pkg_resources.resource_filename(
-    pkg_resources.Requirement.parse('ftrack-connect'),
-    'ftrack_connect_resource/hook'
-)
+try:
+    os.environ.setdefault(
+        'FTRACK_EVENT_PLUGIN_PATH',
+        pkg_resources.resource_filename(
+            pkg_resources.Requirement.parse('ftrack-connect'),
+            'ftrack_connect_resource/hook'
+        )
+    )
+except pkg_resources.DistributionNotFound:
+    # If part of a frozen package then distribution might not be found.
+    pass
 
-os.environ.setdefault(
-    'FTRACK_EVENT_PLUGIN_PATH', default_hook_path
-)
 
 import ftrack_connect.ui.application
 import ftrack_connect.ui.theme
