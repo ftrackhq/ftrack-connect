@@ -27,6 +27,8 @@
         <file alias='home'>image/light/home.png</file>
         <file alias='shot'>image/light/shot.png</file>
         <file alias='task'>image/light/task.png</file>
+        <file alias='ftrackLogoColor'>image/logo_colour.svg</file>
+        <file alias='ftrackLogoGrey'>image/logo_grey_dark.svg</file>
     </qresource>
     <qresource prefix='ftrack/image/dark'>
         <file alias='selectedTab'>image/dark/selected_tab.png</file>
@@ -43,5 +45,7 @@
         <file alias='home'>image/dark/home.png</file>
         <file alias='shot'>image/dark/shot.png</file>
         <file alias='task'>image/dark/task.png</file>
+        <file alias='ftrackLogoColor'>image/logo_colour.svg</file>
+        <file alias='ftrackLogoGrey'>image/logo_grey.svg</file>
     </qresource>
 </RCC>
