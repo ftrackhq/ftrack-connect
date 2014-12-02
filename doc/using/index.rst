@@ -13,5 +13,6 @@ Find out all the information you need to use ftrack connect day to day.
     :maxdepth: 1
 
     launching
+    signing_in_and_out
     tracking_time
     publishing
