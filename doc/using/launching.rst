@@ -8,8 +8,13 @@ Launching the service
 *********************
 
 ftrack connect revolves around a core service that runs locally on your machine.
-Once you have the main package :ref:`installed <installing>`, you can run an
-instance of the service by opening a terminal and executing the following:
+Once you have the main package :ref:`installed <installing>`, you need to run an
+instance of the service.
+
+If you are using one of the pre-built packages you can just run the executable
+provided.
+
+Otherwise, open a terminal and execute the following:
 
 .. code-block:: bash
 

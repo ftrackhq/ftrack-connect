@@ -9,7 +9,10 @@ Installing
 
 .. highlight:: bash
 
-Installation is simple with `pip <http://www.pip-installer.org/>`_::
+Pre-built packages are available for download for Windows and Mac at
+https://www.ftrack.com/downloads
+
+Alternatively, install using `pip <http://www.pip-installer.org/>`_::
 
     pip install git+https://bitbucket.org/ftrack/ftrack-connect.git
 
