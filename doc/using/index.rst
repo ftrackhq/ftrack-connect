@@ -14,5 +14,4 @@ Find out all the information you need to use ftrack connect day to day.
 
     launching
     signing_in_and_out
-    tracking_time
     publishing
