@@ -36,9 +36,8 @@ Then press :guilabel:`Sign In`.
 Signing Out
 ===========
 
-If you need to sign out explicitly then you can do this from the service context
-menu. Just :kbd:`right click` on the icon and select :guilabel:`Log Out & Quit`
-from the menu.
+If you need to sign out explicitly then you can do this from the  :term:`service
+context menu` by selecting :guilabel:`Log Out & Quit`.
 
 .. image:: /image/service_menu.png
 

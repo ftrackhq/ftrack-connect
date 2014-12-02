@@ -43,7 +43,4 @@ Mac:
 The service will then continue to run in the background even if you close all
 the windows.
 
-To reopen a window or exit the service, use the popup menu that appears by
-:kbd:`right clicking` on the icon.
-
-.. image:: /image/service_menu.png
+To reopen a window or exit the service, use the :term:`service context menu`.
