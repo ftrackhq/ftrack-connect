@@ -32,7 +32,7 @@ Glossary
 
     service context menu
         The service provides a context menu for performing basic actions. It
-        is accessible by :kbd:`right clicking` on the service icon.
+        is accessible by :kbd:`clicking` on the service icon.
 
         .. image:: /image/service_menu.png
 
