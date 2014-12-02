@@ -30,6 +30,12 @@ Glossary
         your systems more effectively. Often used in creative industries. Visit
         the language website at http://www.python.org
 
+    service context menu
+        The service provides a context menu for performing basic actions. It
+        is accessible by :kbd:`clicking` on the service icon.
+
+        .. image:: /image/service_menu.png
+
     webm
         WebM is a video file format intended primarily for royalty-free use in
         the HTML5 video tag. Visit the website at http://www.webmproject.org/
