@@ -7,10 +7,37 @@
 Publishing
 **********
 
-.. todo::
+Connect provides a simple publisher application to support publishing files
+directly from your computer without the need to open another application (though
+publishing from within many applications, including from the ftrack web
+interface, is also supported).
 
-    To be completed.
+To publish, ensure you have the interface open by selecting :guilabel:`Open`
+from the :term:`service context menu` and then selecting the :guilabel:`Publish`
+tab.
 
+.. image:: /image/publisher_tab.png
+
+Add components
+==============
+
+Drag and drop files from your computer onto the publisher (or use the
+:guilabel:`Browse` button to browse and select files).
+
+.. note::
+
+    Sequences of files will be automatically detected and added as one entry.
+
+.. image:: /image/publisher_drop_files.png
+
+Each file will be added as a component with a name based on the filename of the
+file. You can manually edit the name if desired by clicking in the name of the
+component and typing a new name.
+
+.. image:: /image/publisher_edit_component_name.png
+
+Components can be removed by clicking the :guilabel:`Remove` icon next to each
+entry.
 
 Select a linked entity
 ======================
@@ -39,3 +66,34 @@ up a level at a time.
 To select the entity to link against, select an item in the list and then click
 the :guilabel:`Choose` button. Alternatively, to cancel making any changes
 click the :guilabel:`Cancel` button.
+
+Fill out remaining fields
+=========================
+
+Fill out the remaining fields in the publisher.
+
+.. image:: /image/publisher_filled_out.png
+
+:Asset type: The type of asset to publish. Choose from a list retrieved from the
+             connected ftrack server.
+:Web playable: If you want one of the components to be encoded for playing on
+               the web select it in this field from the list of components
+               added.
+:Thumbnail: Drag and drop a small thumbnail of the asset onto this field to give
+            others a better indication of what the asset is before opening.
+:Description: A brief description of the published asset or the changes made
+              since the last published version.
+
+Publish
+=======
+
+When ready, press :guilabel:`Publish` to start the publish. During this time
+you will see a progress indicator.
+
+.. image:: /image/publisher_publish_progress.png
+
+.. important:: Do not quit the service whilst the publish is in progress.
+
+Once completed, the indicator will change to a notification.
+
+.. image:: /image/publisher_publish_success.png
