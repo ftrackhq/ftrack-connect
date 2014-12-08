@@ -748,20 +748,6 @@ class LaunchApplicationHook(object):
 
                 includeFoundryAssetManager = True
 
-            # Load Hiero and HieroPlayer plugins.
-            if applicationIdentifier.startswith('hiero'):
-                environment['HIERO_PLUGIN_PATH'] = (
-                    os.pathsep.join([
-                        environment.get(
-                            'HIERO_PLUGIN_PATH', ''
-                        ),
-                        os.path.join(
-                            FTRACK_PYTHON_LEGACY_PLUGINS_PATH,
-                            'ftrackreviewHieroPlugin'
-                        )
-                    ])
-                )
-
             # Load Maya specific environment such as legacy plugins.
             if applicationIdentifier.startswith('maya'):
                 MAYA_PLUGIN_PATH = os.path.join(
