@@ -713,7 +713,7 @@ class LaunchApplicationHook(object):
 
             entity = eventData['data']['context']['selection'][0]
             task = ftrack.Task(entity['entityId'])
-            taskParent = task.parent()
+            taskParent = task.getParent()
 
             environment['FTRACK_TASKID'] = task.getId()
             environment['FTRACK_SHOTID'] = task.get('parent_id')
