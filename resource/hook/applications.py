@@ -713,6 +713,7 @@ class LaunchApplicationHook(object):
 
             entity = eventData['data']['context']['selection'][0]
             task = ftrack.Task(entity['entityId'])
+            taskParent = task.parent()
 
             environment['FTRACK_TASKID'] = task.getId()
             environment['FTRACK_SHOTID'] = task.get('parent_id')
@@ -786,6 +787,16 @@ class LaunchApplicationHook(object):
                         )
                     ])
                 )
+
+            try:
+                environment['FS'] = str(int(taskParent.getFrameStart()))
+            except Exception:
+                environment['FS'] = str(1)
+
+            try:
+                environment['FE'] = str(int(taskParent.getFrameEnd()))
+            except Exception:
+                environment['FE'] = str(1)
 
         self.logger.info('Adding application specific environment: {0}'.format(
             environment
