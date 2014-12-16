@@ -697,7 +697,11 @@ class LaunchApplicationHook(object):
     def _setApplicationSpecificEnvironment(
         self, environment, applicationIdentifier, eventData
     ):
-        '''Return extra environment variables based on *applicationIdentifier*.
+        '''Return *environment* with any extra variables.
+
+        The *applicationIdentifier* and *eventData* can be used to modify
+        the  environment differently for different applications and selections.
+
         '''
         FTRACK_PYTHON_LEGACY_PLUGINS_PATH = os.path.abspath(
             os.path.join(
@@ -714,6 +718,16 @@ class LaunchApplicationHook(object):
             entity = eventData['data']['context']['selection'][0]
             task = ftrack.Task(entity['entityId'])
             taskParent = task.getParent()
+
+            try:
+                environment['FS'] = str(int(taskParent.getFrameStart()))
+            except Exception:
+                environment['FS'] = '1'
+
+            try:
+                environment['FE'] = str(int(taskParent.getFrameEnd()))
+            except Exception:
+                environment['FE'] = '1'
 
             environment['FTRACK_TASKID'] = task.getId()
             environment['FTRACK_SHOTID'] = task.get('parent_id')
@@ -787,16 +801,6 @@ class LaunchApplicationHook(object):
                         )
                     ])
                 )
-
-            try:
-                environment['FS'] = str(int(taskParent.getFrameStart()))
-            except Exception:
-                environment['FS'] = str(1)
-
-            try:
-                environment['FE'] = str(int(taskParent.getFrameEnd()))
-            except Exception:
-                environment['FE'] = str(1)
 
         self.logger.info('Adding application specific environment: {0}'.format(
             environment
