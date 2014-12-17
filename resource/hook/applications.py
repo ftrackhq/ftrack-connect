@@ -686,125 +686,23 @@ class LaunchApplicationHook(object):
             else:
                 environment['FTRACK_CONNECT_EVENT'] = applicationContext
 
-        environment = self._setApplicationSpecificEnvironment(
-            environment, applicationIdentifier, eventData
+        hookResponse = ftrack.EVENT_HUB.publish(
+            ftrack.Event(
+                'ftrack.application.modify.environment',
+                data=dict(
+                    environment=environment,
+                    applicationIdentifier=applicationIdentifier,
+                    context=eventData['data']['context']
+                )
+            ),
+            synchronous=True
         )
+
+        if hookResponse:
+            environment = hookResponse.pop()
 
         self.logger.debug('Setting new environment to {0}'.format(environment))
 
-        return environment
-
-    def _setApplicationSpecificEnvironment(
-        self, environment, applicationIdentifier, eventData
-    ):
-        '''Return *environment* with any extra variables.
-
-        The *applicationIdentifier* and *eventData* can be used to modify
-        the  environment differently for different applications and selections.
-
-        '''
-        FTRACK_PYTHON_LEGACY_PLUGINS_PATH = os.path.abspath(
-            os.path.join(
-                os.path.dirname(__file__), '..', 'legacy_plugins'
-            )
-        )
-
-        self.logger.info('Legacy plugin path: {0}'.format(
-            FTRACK_PYTHON_LEGACY_PLUGINS_PATH
-        ))
-
-        if os.path.isdir(FTRACK_PYTHON_LEGACY_PLUGINS_PATH):
-
-            entity = eventData['data']['context']['selection'][0]
-            task = ftrack.Task(entity['entityId'])
-            taskParent = task.getParent()
-
-            try:
-                environment['FS'] = str(int(taskParent.getFrameStart()))
-            except Exception:
-                environment['FS'] = '1'
-
-            try:
-                environment['FE'] = str(int(taskParent.getFrameEnd()))
-            except Exception:
-                environment['FE'] = '1'
-
-            environment['FTRACK_TASKID'] = task.getId()
-            environment['FTRACK_SHOTID'] = task.get('parent_id')
-
-            includeFoundryAssetManager = False
-
-            # Append legacy plugin base to PYTHONPATH.
-            environment['PYTHONPATH'] = (
-                os.pathsep.join([
-                    environment.get(
-                        'PYTHONPATH', os.environ.get('PYTHONPATH', '')
-                    ),
-                    FTRACK_PYTHON_LEGACY_PLUGINS_PATH
-                ])
-            )
-
-            # Load Nuke specific environment such as legacy plugins.
-            if applicationIdentifier.startswith('nuke'):
-                environment['NUKE_PATH'] = os.path.join(
-                    FTRACK_PYTHON_LEGACY_PLUGINS_PATH, 'ftrackNukePlugin'
-                )
-
-                includeFoundryAssetManager = True
-
-            # Load Hiero plugins if application is Hiero.
-            if (
-                applicationIdentifier.startswith('hiero') and
-                'player' not in applicationIdentifier
-            ):
-                environment['HIERO_PLUGIN_PATH'] = os.path.join(
-                    FTRACK_PYTHON_LEGACY_PLUGINS_PATH, 'ftrackHieroPlugin'
-                )
-
-                includeFoundryAssetManager = True
-
-            # Load Maya specific environment such as legacy plugins.
-            if applicationIdentifier.startswith('maya'):
-                MAYA_PLUGIN_PATH = os.path.join(
-                    FTRACK_PYTHON_LEGACY_PLUGINS_PATH, 'ftrackMayaPlugin'
-                )
-
-                environment['MAYA_PLUG_IN_PATH'] = MAYA_PLUGIN_PATH
-                environment['MAYA_SCRIPT_PATH'] = MAYA_PLUGIN_PATH
-
-                environment['PYTHONPATH'] = (
-                    os.pathsep.join([
-                        environment.get(
-                            'PYTHONPATH', os.environ.get('PYTHONPATH', '')
-                        ),
-                        MAYA_PLUGIN_PATH
-                    ])
-                )
-
-            # Add the foundry asset manager packages if application is
-            # Nuke, NukeStudio or Hiero.
-            if includeFoundryAssetManager:
-                environment['FOUNDRY_ASSET_PLUGIN_PATH'] = os.path.join(
-                    FTRACK_PYTHON_LEGACY_PLUGINS_PATH, 'ftrackProvider'
-                )
-
-                FOUNDRY_ASSET_MANAGER = os.path.join(
-                    FTRACK_PYTHON_LEGACY_PLUGINS_PATH,
-                    'theFoundry'
-                )
-
-                environment['PYTHONPATH'] = (
-                    os.pathsep.join([
-                        FOUNDRY_ASSET_MANAGER,
-                        environment.get(
-                            'PYTHONPATH', os.environ.get('PYTHONPATH', '')
-                        )
-                    ])
-                )
-
-        self.logger.info('Adding application specific environment: {0}'.format(
-            environment
-        ))
         return environment
 
 
