@@ -469,9 +469,9 @@ class LaunchApplicationHook(object):
             applicationRootPath = os.path.dirname(application['path'])
             options['cwd'] = applicationRootPath
 
+            # Ensure subprocess is detached so closing connect will not also
+            # close launched applications.
             if sys.platform == 'win32':
-                # Ensure subprocess is detached so closing connect will not also
-                # close launched applications.
                 options['creationflags'] = subprocess.CREATE_NEW_CONSOLE
             else:
                 options['preexec_fn'] = os.setsid
