@@ -654,7 +654,7 @@ class LaunchApplicationHook(object):
                     'COMMONPROGRAMW6432',
                     'COMMONPROGRAMFILES', 'COMMONPROGRAMFILES(X86)',
 
-                    'PROGRAMW6432', 'PROGRAMFILES', 'PROGRAMFILES(X86)'
+                    'PROGRAMW6432', 'PROGRAMFILES', 'PROGRAMFILES(X86)',
 
                     'PATH', 'PATHEXT',
 
