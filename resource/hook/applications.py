@@ -463,6 +463,12 @@ class LaunchApplicationHook(object):
                 close_fds=True
             )
 
+            # Ensure that current working directory is set to the root of the
+            # application being launched to avoid issues with applications
+            # locating shared libraries etc.
+            applicationRootPath = os.path.dirname(application['path'])
+            options['cwd'] = applicationRootPath
+
             if sys.platform == 'win32':
                 # Ensure subprocess is detached so closing connect will not also
                 # close launched applications.
