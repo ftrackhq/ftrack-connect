@@ -447,7 +447,7 @@ class LaunchApplicationHook(object):
         command = self._getApplicationLaunchCommand(application, context, data)
 
         environment = self._getApplicationEnvironment(
-            applicationIdentifier,
+            application,
             {
                 'data': event['data'],
                 'source': event['source']
@@ -618,7 +618,7 @@ class LaunchApplicationHook(object):
                 targetEnvironment[key] = sourceEnvironment[key]
 
     def _getApplicationEnvironment(
-        self, applicationIdentifier, eventData=None
+        self, application, eventData=None
     ):
         '''Return mapping of environment variables based on *eventData*.'''
         # Copy appropriate environment variables to new environment.
@@ -685,21 +685,6 @@ class LaunchApplicationHook(object):
                 )
             else:
                 environment['FTRACK_CONNECT_EVENT'] = applicationContext
-
-        hookResponse = ftrack.EVENT_HUB.publish(
-            ftrack.Event(
-                'ftrack.application.modify.environment',
-                data=dict(
-                    environment=environment,
-                    applicationIdentifier=applicationIdentifier,
-                    context=eventData['data']['context']
-                )
-            ),
-            synchronous=True
-        )
-
-        if hookResponse:
-            environment = hookResponse.pop()
 
         self.logger.debug('Setting new environment to {0}'.format(environment))
 
