@@ -50,7 +50,12 @@ class DiscoverApplicationsHook(object):
     identifier = ACTION_IDENTIFIER
 
     def __init__(self, applicationStore):
-        '''Instantiate the hook and setup logging.'''
+        '''Instantiate hook with *applicationStore*.
+
+        *applicationStore* should be an instance of
+        :class:`ftrack_connect.application.ApplicationStore`
+
+        '''
         super(DiscoverApplicationsHook, self).__init__()
         self.logger = logging.getLogger(
             __name__ + '.' + self.__class__.__name__
@@ -58,9 +63,7 @@ class DiscoverApplicationsHook(object):
         self.applicationStore = applicationStore
 
     def __call__(self, event):
-        '''Default action.discover hook.
-
-        The hook callback accepts an *event*.
+        '''Handle *event*.
 
         event['data'] should contain:
 
@@ -116,7 +119,12 @@ class DiscoverApplicationsHook(object):
 class LaunchApplicationHook(object):
 
     def __init__(self, launcher):
-        '''Initialise hook with *launcher*.'''
+        '''Initialise hook with *launcher*.
+
+        *launcher* should be an instance of
+        :class:`ftrack_connect.application.ApplicationLauncher`.
+
+        '''
         super(LaunchApplicationHook, self).__init__()
         self.logger = logging.getLogger(
             'ftrack.hook.' + self.__class__.__name__
