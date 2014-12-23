@@ -470,7 +470,15 @@ class ApplicationLauncher(object):
     def _getApplicationEnvironment(
         self, application, context=None
     ):
-        '''Return mapping of environment variables based on *eventData*.'''
+        '''Return mapping of environment for *application* using *context*.
+
+        *application* should be a mapping describing the application, as in the
+        :class:`ApplicationStore`.
+
+        *context* should provide additional information about how the
+        application should be launched.
+
+        '''
         # Copy appropriate environment variables to new environment.
         environment = {
             'FTRACK_EVENT_SERVER': ftrack.EVENT_HUB.getServerUrl()
