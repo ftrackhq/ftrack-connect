@@ -151,7 +151,7 @@ class LaunchApplicationHook(object):
         context.update(event['data']['actionData'])
         context['source'] = event['source']
 
-        self.launcher.launch(
+        return self.launcher.launch(
             applicationIdentifier, context
         )
 
