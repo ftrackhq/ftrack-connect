@@ -385,26 +385,6 @@ class ApplicationLauncher(object):
             'message': message
         }
 
-    def _conformEnvironment(self, mapping):
-        '''Ensure all entries in *mapping* are strings.
-
-        .. note::
-
-            The *mapping* is modified in place.
-
-        '''
-        if not isinstance(mapping, collections.MutableMapping):
-            return
-
-        for key, value in mapping.items():
-            if isinstance(value, collections.Mapping):
-                self._conformEnvironment(value)
-            else:
-                value = str(value)
-
-            del mapping[key]
-            mapping[str(key)] = value
-
     def _getApplicationLaunchCommand(self, application, context=None):
         '''Return *application* command based on OS and *context*.
 
@@ -487,18 +467,6 @@ class ApplicationLauncher(object):
                         lastDate = version.getDate()
         return latestComponent
 
-    def _mapEnvironmentVariables(self, keys, targetEnvironment,
-                                 sourceEnvironment=os.environ):
-        '''Map *keys* from *sourceEnvironment* to *targetEnvironment*.
-
-        Only map a key if it is present in *sourceEnvironment* and not already
-        present in *targetEnvironment*.
-
-        '''
-        for key in keys:
-            if key not in targetEnvironment and key in sourceEnvironment:
-                targetEnvironment[key] = sourceEnvironment[key]
-
     def _getApplicationEnvironment(
         self, application, context=None
     ):
@@ -578,6 +546,38 @@ class ApplicationLauncher(object):
         self.logger.debug('Setting new environment to {0}'.format(environment))
 
         return environment
+
+    def _mapEnvironmentVariables(self, keys, targetEnvironment,
+                                 sourceEnvironment=os.environ):
+        '''Map *keys* from *sourceEnvironment* to *targetEnvironment*.
+
+        Only map a key if it is present in *sourceEnvironment* and not already
+        present in *targetEnvironment*.
+
+        '''
+        for key in keys:
+            if key not in targetEnvironment and key in sourceEnvironment:
+                targetEnvironment[key] = sourceEnvironment[key]
+
+    def _conformEnvironment(self, mapping):
+        '''Ensure all entries in *mapping* are strings.
+
+        .. note::
+
+            The *mapping* is modified in place.
+
+        '''
+        if not isinstance(mapping, collections.MutableMapping):
+            return
+
+        for key, value in mapping.items():
+            if isinstance(value, collections.Mapping):
+                self._conformEnvironment(value)
+            else:
+                value = str(value)
+
+            del mapping[key]
+            mapping[str(key)] = value
 
 
 class ApplicationDiscoverer(object):
