@@ -551,8 +551,6 @@ class ApplicationLauncher(object):
             else:
                 environment['FTRACK_CONNECT_EVENT'] = applicationContext
 
-        self.logger.debug('Setting new environment to {0}'.format(environment))
-
         return environment
 
     def _mapEnvironmentVariables(self, keys, targetEnvironment,
