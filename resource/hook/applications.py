@@ -10,41 +10,6 @@ import ftrack_connect.application
 ACTION_IDENTIFIER = 'ftrack-connect-launch-applications-action'
 
 
-class LaunchApplicationHook(object):
-
-    def __init__(self, launcher):
-        '''Initialise hook with *launcher*.'''
-        super(LaunchApplicationHook, self).__init__()
-        self.logger = logging.getLogger(
-            'ftrack.hook.' + self.__class__.__name__
-        )
-        self.launcher = launcher
-
-    def __call__(self, event):
-        '''Handle *event*.
-
-        event['data'] should contain:
-
-            context - Context of request to help guide how to launch the
-                      application.
-            actionData - Is passed and should contain the applicationIdentifier
-                         and other values that can be used to provide
-                         additional information about how the application
-                         should be launched.
-        '''
-        applicationIdentifier = (
-            event['data']['actionData']['applicationIdentifier']
-        )
-        context = {}
-        context.update(event['data']['context'])
-        context.update(event['data']['actionData'])
-        context['source'] = event['source']
-
-        self.launcher.launch(
-            applicationIdentifier, context
-        )
-
-
 class DiscoverApplicationsHook(object):
     '''Default action.discover hook.
 
@@ -146,6 +111,41 @@ class DiscoverApplicationsHook(object):
         return {
             'items': items
         }
+
+
+class LaunchApplicationHook(object):
+
+    def __init__(self, launcher):
+        '''Initialise hook with *launcher*.'''
+        super(LaunchApplicationHook, self).__init__()
+        self.logger = logging.getLogger(
+            'ftrack.hook.' + self.__class__.__name__
+        )
+        self.launcher = launcher
+
+    def __call__(self, event):
+        '''Handle *event*.
+
+        event['data'] should contain:
+
+            context - Context of request to help guide how to launch the
+                      application.
+            actionData - Is passed and should contain the applicationIdentifier
+                         and other values that can be used to provide
+                         additional information about how the application
+                         should be launched.
+        '''
+        applicationIdentifier = (
+            event['data']['actionData']['applicationIdentifier']
+        )
+        context = {}
+        context.update(event['data']['context'])
+        context.update(event['data']['actionData'])
+        context['source'] = event['source']
+
+        self.launcher.launch(
+            applicationIdentifier, context
+        )
 
 
 def register(registry, **kw):
