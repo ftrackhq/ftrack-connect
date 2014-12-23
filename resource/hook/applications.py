@@ -2,6 +2,7 @@
 # :copyright: Copyright (c) 2014 ftrack
 
 import getpass
+import logging
 
 import ftrack
 import ftrack_connect.application
@@ -9,9 +10,47 @@ import ftrack_connect.application
 ACTION_IDENTIFIER = 'ftrack-connect-launch-applications-action'
 
 
+class LaunchApplicationHook(object):
+
+    def __init__(self, launcher):
+        '''Initialise hook with *launcher*.'''
+        super(LaunchApplicationHook, self).__init__()
+        self.logger = logging.getLogger(
+            'ftrack.hook.' + self.__class__.__name__
+        )
+        self.launcher = launcher
+
+    def __call__(self, event):
+        '''Handle *event*.
+
+        event['data'] should contain:
+
+            context - Context of request to help guide how to launch the
+                      application.
+            actionData - Is passed and should contain the applicationIdentifier
+                         and other values that can be used to provide
+                         additional information about how the application
+                         should be launched.
+        '''
+        applicationIdentifier = (
+            event['data']['actionData']['applicationIdentifier']
+        )
+        context = {}
+        context.update(event['data']['context'])
+        context.update(event['data']['actionData'])
+        context['source'] = event['source']
+
+        self.launcher.launch(
+            applicationIdentifier, context
+        )
+
+
 def register(registry, **kw):
     '''Register hooks.'''
     applicationStore = ftrack_connect.application.ApplicationStore()
+    applicationLauncher = ftrack_connect.application.ApplicationLauncher(
+        applicationStore
+    )
 
     ftrack.EVENT_HUB.subscribe(
         'topic=ftrack.action.discover and source.user.username={0}'.format(
@@ -27,5 +66,5 @@ def register(registry, **kw):
         'and data.actionIdentifier={1}'.format(
             getpass.getuser(), ACTION_IDENTIFIER
         ),
-        ftrack_connect.application.ApplicationLauncher(applicationStore)
+        LaunchApplicationHook(applicationLauncher)
     )

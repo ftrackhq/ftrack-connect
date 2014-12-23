@@ -276,24 +276,20 @@ class ApplicationStore(object):
 
 
 class ApplicationLauncher(object):
-    '''Default application launcher.
+    '''Launch applications described by an application store.
 
-    The class is callable and accepts information on the event, the application
-    identifier and the context it is launched from. When launching the
-    application it will configure the environment by copying environment
-    variables such as FTRACK_SERVER, FTRACK_APIKEY, etc. from the current
-    environment.
-
-    Launched applications are started detached so exiting ftrack connect will
+    Launched applications are started detached so exiting current process will
     not close launched applications.
-
-    When called it will return information on if the launch was successful
-    and a human readable message.
 
     '''
 
     def __init__(self, applicationStore):
-        '''Instantiate the hook and setup logging.'''
+        '''Instantiate launcher with *applicationStore* of applications.
+
+        *applicationStore* should be an instance of :class:`ApplicationStore`
+        holding information about applications that can be launched.
+
+        '''
         super(ApplicationLauncher, self).__init__()
         self.logger = logging.getLogger(
             __name__ + '.' + self.__class__.__name__
@@ -301,24 +297,19 @@ class ApplicationLauncher(object):
 
         self.applicationStore = applicationStore
 
-    def __call__(self, event):
-        '''Default action.launch hook.
+    def launch(self, applicationIdentifier, context=None):
+        '''Launch application matching *applicationIdentifier*.
 
-        The hook callback accepts an *event*.
+        *context* should provide information that can guide how to launch the
+        application.
 
-        event['data'] should contain:
+        Return a dictionary of information containing:
 
-            context - Context of request to help guide how to launch the
-                      application.
-            actionData - Is passed and should contain the applicationIdentifier
-                         and other values that can be used to provide
-                         additional information about how the application
-                         should be launched.
+            success - A boolean value indicating whether application launched
+                      successfully or not.
+            message - Any additional information (such as a failure message).
+
         '''
-        context = event['data']['context']
-        data = event['data']['actionData']
-        applicationIdentifier = data['applicationIdentifier']
-
         # Look up application.
         applicationIdentifierPattern = applicationIdentifier
         if applicationIdentifierPattern == 'hieroplayer':
@@ -338,21 +329,14 @@ class ApplicationLauncher(object):
             }
 
         # Construct command and environment.
-        command = self._getApplicationLaunchCommand(application, context, data)
-
-        environment = self._getApplicationEnvironment(
-            application,
-            {
-                'data': event['data'],
-                'source': event['source']
-            }
-        )
-
-        success = True
-        message = '{0} application started.'.format(application['label'])
+        command = self._getApplicationLaunchCommand(application, context)
+        environment = self._getApplicationEnvironment(application, context)
 
         # Environment must contain only strings.
         self._conformEnvironment(environment)
+
+        success = True
+        message = '{0} application started.'.format(application['label'])
 
         try:
             options = dict(
@@ -421,16 +405,14 @@ class ApplicationLauncher(object):
             del mapping[key]
             mapping[str(key)] = value
 
-    def _getApplicationLaunchCommand(self, application, context, data):
-        '''Return *application* command based on OS, *context* and *data*.
+    def _getApplicationLaunchCommand(self, application, context=None):
+        '''Return *application* command based on OS and *context*.
 
         *application* should be a mapping describing the application, as in the
-        :py:class:`ApplicationStore`.
+        :class:`ApplicationStore`.
 
-        *context* is the entity the application should be started for.
-
-        *data* provides additional information about how the application should
-        be launched.
+        *context* should provide additional information about how the
+        application should be launched.
 
         '''
         command = None
@@ -449,9 +431,9 @@ class ApplicationLauncher(object):
 
         # Figure out if the command should be started with the file path of
         # the latest published version.
-        if command is not None and data is not None:
+        if command is not None and context is not None:
             selection = context.get('selection')
-            if selection and data.get('launchWithLatest', False):
+            if selection and context.get('launchWithLatest', False):
                 entity = selection[0]
                 component = None
 
@@ -518,7 +500,7 @@ class ApplicationLauncher(object):
                 targetEnvironment[key] = sourceEnvironment[key]
 
     def _getApplicationEnvironment(
-        self, application, eventData=None
+        self, application, context=None
     ):
         '''Return mapping of environment variables based on *eventData*.'''
         # Copy appropriate environment variables to new environment.
@@ -571,7 +553,14 @@ class ApplicationLauncher(object):
         )
 
         # Add ftrack connect event to environment.
-        if eventData is not None:
+        if context is not None:
+            # For compatibility reconstruct an event like data structure.
+            # TODO: Encode context directly once other plugins that use
+            # FTRACK_CONNECT_EVENT have been updated.
+            eventData = {
+                'data': context,
+                'source': context['source']
+            }
             try:
                 applicationContext = base64.b64encode(
                     json.dumps(
