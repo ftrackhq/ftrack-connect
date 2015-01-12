@@ -87,6 +87,7 @@ Additional For building
 * `pyScss <https://github.com/Kronuz/pyScss>`_ >= 1.2.0, < 2
 * `Sphinx <http://sphinx-doc.org/>`_ >= 1.2.2, < 2
 * `sphinx_rtd_theme <https://github.com/snide/sphinx_rtd_theme>`_ >= 0.1.6, < 1
+* `Lowdown <https://bitbucket.org/ftrack/lowdown>`_ >= 0.1.0, < 1
 
 Additional For testing
 ----------------------

@@ -16,6 +16,7 @@ Welcome to the ftrack connect documentation.
     developing/index
     faq
     glossary
+    release/index
 
 ******************
 Indices and tables

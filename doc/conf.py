@@ -3,7 +3,6 @@
 
 '''ftrack connect documentation build configuration file.'''
 
-import sys
 import os
 import re
 
@@ -15,7 +14,8 @@ extensions = [
     'sphinx.ext.extlinks',
     'sphinx.ext.intersphinx',
     'sphinx.ext.todo',
-    'sphinx.ext.viewcode'
+    'sphinx.ext.viewcode',
+    'lowdown'
 ]
 
 
