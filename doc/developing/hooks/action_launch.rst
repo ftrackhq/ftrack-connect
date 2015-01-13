@@ -14,7 +14,7 @@ about launching actions from the web UI, see
 
 The list of actions is provided by the 
 :ref:`developing/hooks/action_discover` :term:`hook`. The *action.discover*
-hook provides a list of actions with ``actionData``. These parameters are
+hook provides a list of actions. All parameters from the actions are
 passed to this hook and can be used when running the action.
 
 The default hook is a placeholder and should be extended to include correct
@@ -26,18 +26,14 @@ Example event passed to hook::
         topic='ftrack.action.launch',
         data=dict(
             actionIdentifier='ftrack-connect-launch-applications-action',
-            actionData=dict(
-                applicationIdentifier='maya-2014',
-                foo='bar'
-            ),
-            context=dict(
-                selection=[
-                    dict(
-                        entityId='eb16970c-5fc6-11e2-bb9a-f23c91df25eb',
-                        entityType='task'
-                    )
-                ]
-            )
+            applicationIdentifier='maya-2014',
+            foo='bar',
+            selection=[
+                dict(
+                    entityId='eb16970c-5fc6-11e2-bb9a-f23c91df25eb',
+                    entityType='task'
+                )
+            ]
         )
     )
 

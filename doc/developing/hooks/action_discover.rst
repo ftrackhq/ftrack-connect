@@ -19,14 +19,12 @@ Example event passed to hook::
     Event(
         topic='ftrack.action.discover',
         data=dict(
-            context=dict(
-                selection=[
-                    dict(
-                        entityId='eb16970c-5fc6-11e2-bb9a-f23c91df25eb',
-                        entityType='task',
-                    )
-                ]
-            )
+            selection=[
+                dict(
+                    entityId='eb16970c-5fc6-11e2-bb9a-f23c91df25eb',
+                    entityType='task',
+                )
+            ]
         )
     )
 
@@ -38,24 +36,20 @@ Expects reply data in the form::
                 label='Mega Modeling 2014',
                 actionIdentifier='ftrack-connect-launch-applications-action',
                 icon='URL to custom icon or predefined name',
-                actionData=dict(
-                    applicationIdentifier='mega_modeling_2014'
-                )
+                applicationIdentifier='mega_modeling_2014'
             ),
             dict(
                 label='Professional Painter',
                 icon='URL to custom icon or predefined name',
-                actionIdentifier='ftrack-connect-launch-applications-action'
-                
+                actionIdentifier='ftrack-connect-launch-applications-action',
+                applicationIdentifier='professional_painter'
             ),
             dict(
                 label='Cool Compositor v2',
                 actionIdentifier='ftrack-connect-launch-applications-action'
                 icon='URL to custom icon or predefined name',
-                actionData=dict(
-                    applicationIdentifier='cc_v2',
-                    cc_plugins=['foo', 'bar']
-                )
+                applicationIdentifier='cc_v2',
+                cc_plugins=['foo', 'bar']
             )
         ]
     )
@@ -74,10 +68,8 @@ To add an action, add an item in the following format.
         label='Crazy Compositor v2',
         actionIdentifier='ftrack-connect-launch-applications-action',
         icon='URL to custom icon or predefined name',
-        actionData=dict(
-            cc_plugins=['foo', 'bar'],
-            applicationIdentifier='cc_v2'
-        )
+        cc_plugins=['foo', 'bar'],
+        applicationIdentifier='cc_v2'
     )
 
 The different options are:
@@ -91,12 +83,12 @@ The different options are:
     icon or the name of a predefined icon. Predefined icons are ``hiero``,
     ``hieroplayer``, ``nuke``, ``nukex``, ``maya``, ``premiere`` and 
     ``default``
-``actionData`` 
-    Optional and can contain any extra data you want to include in the event.
-    This data will be passed on to the 
+
+    In addition, you can add any extra data you want to include in the event.
+    The data returned will be passed on to the 
     :ref:`developing/hooks/action_launch` hook.
 
-    In the default hook actionData contains an ``applicationIdentifier``
+    In the default hook each item contains an ``applicationIdentifier``
     which is used to uniquely identify which application to start.
 
 Default hook
