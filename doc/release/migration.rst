@@ -24,6 +24,6 @@ Updated action hooks
 The default :ref:`discover <developing/hooks/action_discover>` and
 :ref:`launch <developing/hooks/action_launch>` action hooks has been updated
 to support the updated action format in ftrack 3.0.3. If you have created
-custom hooks, please make sure they are updated accordingly. In particular,
-the ``selection`` and contents of ``actionData`` to the root, ``event['data']``,
-level.
+custom hooks, please make sure they are updated accordingly. In the updated
+format of the event data ``selection`` and the contents of ``actionData`` has
+been moved to the root, ``event['data']``, level.
