@@ -530,23 +530,16 @@ class ApplicationLauncher(object):
 
         # Add ftrack connect event to environment.
         if context is not None:
-            # For compatibility reconstruct an event like data structure.
-            # TODO: Encode context directly once other plugins that use
-            # FTRACK_CONNECT_EVENT have been updated.
-            eventData = {
-                'data': context,
-                'source': context['source']
-            }
             try:
                 applicationContext = base64.b64encode(
                     json.dumps(
-                        eventData
+                        context
                     )
                 )
             except (TypeError, ValueError):
                 self.logger.exception(
                     'The eventData could not be converted correctly. {0}'
-                    .format(eventData)
+                    .format(context)
                 )
             else:
                 environment['FTRACK_CONNECT_EVENT'] = applicationContext
