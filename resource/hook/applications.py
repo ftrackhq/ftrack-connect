@@ -67,16 +67,15 @@ class DiscoverApplicationsHook(object):
 
         event['data'] should contain:
 
-            context - Context of request to help guide what applications can be
-                      launched.
-
+            selection
+                Selected task to discover applications for.
         '''
-        context = event['data']['context']
+        data = event['data']
 
         # If selection contains more than one item return early since
         # applications cannot be started for multiple items or if the
         # selected item is not a "task".
-        selection = context.get('selection', [])
+        selection = data.get('selection', [])
         if len(selection) != 1 or selection[0].get('entityType') != 'task':
             return
 
@@ -93,9 +92,7 @@ class DiscoverApplicationsHook(object):
                 'actionIdentifier': self.identifier,
                 'label': label,
                 'icon': application.get('icon', 'default'),
-                'actionData': {
-                    'applicationIdentifier': applicationIdentifier
-                }
+                'applicationIdentifier': applicationIdentifier
             })
 
             if applicationIdentifier.startswith('premiere_pro_cc'):
@@ -105,10 +102,8 @@ class DiscoverApplicationsHook(object):
                         label=label
                     ),
                     'icon': application.get('icon', 'default'),
-                    'actionData': {
-                        'launchWithLatest': True,
-                        'applicationIdentifier': applicationIdentifier
-                    }
+                    'launchWithLatest': True,
+                    'applicationIdentifier': applicationIdentifier
                 })
 
         return {
@@ -136,19 +131,14 @@ class LaunchApplicationHook(object):
 
         event['data'] should contain:
 
-            context - Context of request to help guide how to launch the
-                      application.
-            actionData - Is passed and should contain the applicationIdentifier
-                         and other values that can be used to provide
-                         additional information about how the application
-                         should be launched.
+            applicationIdentifier
+                Identifier for the application to be launched.
+            selection
+                A list of selected entities for which to launch the application
+                for.
         '''
-        applicationIdentifier = (
-            event['data']['actionData']['applicationIdentifier']
-        )
-        context = {}
-        context.update(event['data']['context'])
-        context.update(event['data']['actionData'])
+        applicationIdentifier = event['data']['applicationIdentifier']
+        context = event['data'].copy()
         context['source'] = event['source']
 
         return self.launcher.launch(
