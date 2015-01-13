@@ -14,8 +14,8 @@ about launching actions from the web UI, see
 
 The list of actions is provided by the 
 :ref:`developing/hooks/action_discover` :term:`hook`. The *action.discover*
-hook provides a list of actions. All parameters from the actions are
-passed to this hook and can be used when running the action.
+hook provides a list of actions. All parameters from these actions are
+passed to this hook and can be used when launching the action.
 
 The default hook is a placeholder and should be extended to include correct
 action commands.
