@@ -9,6 +9,13 @@ Release Notes
 
 .. release:: next
 
+    .. change:: change
+
+        Update default :ref:`action_discover <developing/hooks/action_discover>` and
+        :ref:`action_launch <developing/hooks/action_launch>` hooks to
+        support new format in ftrack 3.0.3.
+        :ref:`Read more <release/migration/0_1_3/developer_notes/updated_action_hooks>`
+
     .. change:: new
 
         Support launching applications with legacy ftrack plugins enabled.
