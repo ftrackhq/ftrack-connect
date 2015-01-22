@@ -29,6 +29,7 @@ class Publisher(QtGui.QWidget):
         '''Initiate a publish view.'''
         super(Publisher, self).__init__(parent)
         self._entity = None
+        self._manageData = False
 
         layout = QtGui.QVBoxLayout()
 
@@ -159,8 +160,28 @@ class Publisher(QtGui.QWidget):
 
                 self.entityBrowser.acceptButton.setDisabled(False)
 
+    @staticmethod
+    def _pickLocation(manageData=False):
+        '''Return a location based on *manageData*.'''
+        location = None
+
+        try:
+            location = next(
+                candidateLocation for candidateLocation in ftrack.getLocations()
+                if (
+                    manageData == False
+                    or not isinstance(candidateLocation, ftrack.UnmanagedLocation)
+                )
+            )
+
+        except StopIteration:
+            pass
+
+        return location
+
     def clear(self):
         '''Clear the publish view to it's initial state.'''
+        self._manageData = False
         self.assetSelector.setCurrentIndex(-1)
         self.versionDescription.clear()
         self.entityPath.clear()
@@ -173,6 +194,10 @@ class Publisher(QtGui.QWidget):
         '''Set the *entity* for the view.'''
         self._entity = entity
         self.entityChanged.emit(entity)
+
+    def setManageData(self, manageData):
+        '''Set *manageData*.'''
+        self._manageData = manageData
 
     def publish(self):
         '''Gather all data in publisher and publish version with components.'''
@@ -204,12 +229,12 @@ class Publisher(QtGui.QWidget):
             taskId = entity.getId()
             entity = entity.getParent()
 
-        defaultLocation = ftrack.pickLocation()
+        componentLocation = self._pickLocation(self._manageData)
 
         components = []
         for component in self.componentsList.items():
             components.append({
-                'locations': [defaultLocation],
+                'locations': [componentLocation],
                 'name': component['componentName'],
                 'filePath': component['resourceIdentifier']
             })

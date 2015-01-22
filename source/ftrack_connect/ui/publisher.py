@@ -119,6 +119,9 @@ class Publisher(ftrack_connect.ui.application.ApplicationPlugin):
                 an absolute path to an image file to set as the version's
                 thumbnail.
 
+            manageData
+                If set, a location which can manage data will be picked.
+
         Clear state, set the *entity* and request to start the publisher.
 
         '''
@@ -139,6 +142,11 @@ class Publisher(ftrack_connect.ui.application.ApplicationPlugin):
         thumbnail = event['data'].get('thumbnail')
         if thumbnail:
             self.publishView.thumbnailDropZone.setThumbnail(thumbnail)
+
+        # More information from event data
+        manageData = event['data'].get('manageData')
+        if manageData:
+            self.publishView.setManageData(True)
 
         entity = ftrack.Task(
             entity.get('entityId')
