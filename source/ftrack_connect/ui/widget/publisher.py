@@ -1,6 +1,8 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
+import logging
+
 from PySide import QtGui
 from PySide import QtCore
 import ftrack
@@ -164,10 +166,10 @@ class Publisher(QtGui.QWidget):
     def _pickLocation(manageData=False):
         '''Return a location based on *manageData*.'''
         location = None
-
+        locations = ftrack.getLocations(excludeInaccessible=True)
         try:
             location = next(
-                candidateLocation for candidateLocation in ftrack.getLocations()
+                candidateLocation for candidateLocation in locations
                 if (
                     manageData == False
                     or not isinstance(candidateLocation, ftrack.UnmanagedLocation)
@@ -176,6 +178,8 @@ class Publisher(QtGui.QWidget):
 
         except StopIteration:
             pass
+
+        logging.debug('Picked location {0}.'.format(location))
 
         return location
 
