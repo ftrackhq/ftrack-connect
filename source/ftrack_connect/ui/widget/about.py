@@ -5,10 +5,8 @@
 from PySide import QtGui, QtCore
 
 
-class AboutDialog(
-    QtGui.QDialog
-):
-    '''Custom blocking overlay for publisher.'''
+class AboutDialog(QtGui.QDialog):
+    '''About widget.'''
 
     def __init__(
         self, parent,
