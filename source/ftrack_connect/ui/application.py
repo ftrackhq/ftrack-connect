@@ -3,6 +3,7 @@
 
 import os
 import getpass
+import platform
 
 from PySide import QtGui
 from PySide import QtCore
@@ -391,6 +392,13 @@ class Application(QtGui.QMainWindow):
 
         aboutDialog = _about.AboutDialog(self)
 
+        # Import ftrack module and and try to get API version.
+        try:
+            import ftrack
+            apiVersion = ftrack.api.version_data.ftrackVersion
+        except Exception:
+            apiVersion = 'Unknown'
+
         aboutDialog.setInformation(
             version=ftrack_connect.__version__,
             server=os.environ.get('FTRACK_SERVER', 'Not set'),
@@ -401,7 +409,10 @@ class Application(QtGui.QMainWindow):
                 ),
                 'FTRACK_LOCATION_PLUGIN_PATH': (
                     os.environ.get('FTRACK_LOCATION_PLUGIN_PATH', 'Not set')
-                )
+                ),
+                'FTRACK_API_VERSION': apiVersion,
+                'PLATFORM': platform.platform(),
+                'PYTHON_VERSION': platform.python_version()
             }
         )
 
