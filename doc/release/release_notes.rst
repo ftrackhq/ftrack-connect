@@ -7,6 +7,14 @@
 Release Notes
 *************
 
+.. release:: next
+
+    .. change:: new
+
+        Added :ref:`About <faq/where_can_i_see_information_about_my_ftrack_connect>`
+        option to menu to display eg. version, logged in user and ftrack server
+        url.
+
 .. release:: 0.1.3
 
     .. change:: change
