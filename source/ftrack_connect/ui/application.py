@@ -3,16 +3,19 @@
 
 import os
 import getpass
+import platform
 
 from PySide import QtGui
 from PySide import QtCore
 
+import ftrack_connect
 import ftrack_connect.event_hub_thread
 import ftrack_connect.error
 import ftrack_connect.ui.theme
 from ftrack_connect.ui.widget import uncaught_error as _uncaught_error
 from ftrack_connect.ui.widget import tab_widget as _tab_widget
 from ftrack_connect.ui.widget import login as _login
+from ftrack_connect.ui.widget import about as _about
 from ftrack_connect.error import NotUniqueError as _NotUniqueError
 
 
@@ -255,6 +258,13 @@ class Application(QtGui.QMainWindow):
             'Change Theme', self,
             triggered=self.toggleTheme
         )
+
+        aboutAction = QtGui.QAction(
+            'About', self,
+            triggered=self.showAbout
+        )
+
+        menu.addAction(aboutAction)
         menu.addAction(focusAction)
         menu.addSeparator()
         menu.addAction(styleAction)
@@ -375,3 +385,35 @@ class Application(QtGui.QMainWindow):
         self.activateWindow()
         self.show()
         self.raise_()
+
+    def showAbout(self):
+        '''Display window with about information.'''
+        self.focus()
+
+        aboutDialog = _about.AboutDialog(self)
+
+        # Import ftrack module and and try to get API version.
+        try:
+            import ftrack
+            apiVersion = ftrack.api.version_data.ftrackVersion
+        except Exception:
+            apiVersion = 'Unknown'
+
+        aboutDialog.setInformation(
+            version=ftrack_connect.__version__,
+            server=os.environ.get('FTRACK_SERVER', 'Not set'),
+            user=getpass.getuser(),
+            debugData={
+                'FTRACK_EVENT_PLUGIN_PATH': (
+                    os.environ.get('FTRACK_EVENT_PLUGIN_PATH', 'Not set')
+                ),
+                'FTRACK_LOCATION_PLUGIN_PATH': (
+                    os.environ.get('FTRACK_LOCATION_PLUGIN_PATH', 'Not set')
+                ),
+                'FTRACK_API_VERSION': apiVersion,
+                'PLATFORM': platform.platform(),
+                'PYTHON_VERSION': platform.python_version()
+            }
+        )
+
+        aboutDialog.exec_()
