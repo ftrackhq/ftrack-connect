@@ -7,7 +7,8 @@
 Release Notes
 *************
 
-.. release:: next
+.. release:: 0.1.4
+    :date: 2015-01-23
 
     .. change:: new
 
@@ -15,7 +16,13 @@ Release Notes
         option to menu to display eg. version, logged in user and ftrack server
         url.
 
+    .. change:: change
+
+        Use a managed :term:`location` when publishing from adobe extensions to
+        prevent publishing temporary files.
+
 .. release:: 0.1.3
+    :date: 2015-01-14
 
     .. change:: change
 

@@ -458,13 +458,14 @@ class ApplicationLauncher(object):
         for version in versions:
             for component in version.getComponents():
                 fileSystemPath = component.getFilesystemPath()
-                if fileSystemPath.endswith(extension):
+                if fileSystemPath and fileSystemPath.endswith(extension):
                     if (
                         lastDate is None or
                         version.getDate() > lastDate
                     ):
                         latestComponent = component
                         lastDate = version.getDate()
+
         return latestComponent
 
     def _getApplicationEnvironment(
