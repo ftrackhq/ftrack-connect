@@ -7,7 +7,16 @@
 Release Notes
 *************
 
+.. release:: next
+    :date: 2015-XX-YY
+
+    .. change:: change
+
+        Use a managed :term:`location` when publishing from adobe extensions to
+        prevent publishing temporary files.
+
 .. release:: 0.1.3
+    :date: 2015-01-14
 
     .. change:: change
 
