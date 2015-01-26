@@ -24,22 +24,28 @@ DEFAULT_VERSION_EXPRESSION = re.compile(
 
 def prependPath(path, key, environment):
     '''Prepend *path* to *key* in *environment*.'''
-    environment[key] = (
-        os.pathsep.join([
-            path, environment.get(key, '')
-        ])
-    )
+    try:
+        environment[key] = (
+            os.pathsep.join([
+                path, environment[key]
+            ])
+        )
+    except KeyError:
+        environment[key] = path
 
     return environment
 
 
 def appendPath(path, key, environment):
     '''Append *path* to *key* in *environment*.'''
-    environment[key] = (
-        os.pathsep.join([
-            environment.get(key, ''), path
-        ])
-    )
+    try:
+        environment[key] = (
+            os.pathsep.join([
+                environment[key], path
+            ])
+        )
+    except KeyError:
+        environment[key] = path
 
     return environment
 
@@ -507,6 +513,7 @@ class ApplicationLauncher(object):
         environment = os.environ.copy()
 
         environment.pop('PYTHONHOME', None)
+        environment.pop('FTRACK_EVENT_PLUGIN_PATH', None)
 
         # Prepend discovered ftrack API to PYTHONPATH.
         environment = prependPath(
