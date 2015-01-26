@@ -22,6 +22,28 @@ DEFAULT_VERSION_EXPRESSION = re.compile(
 )
 
 
+def prependPath(path, key, environment):
+    '''Prepend *path* to *key* in *environment*.'''
+    environment[key] = (
+        os.pathsep.join([
+            path, environment.get(key, '')
+        ])
+    )
+
+    return environment
+
+
+def appendPath(path, key, environment):
+    '''Append *path* to *key* in *environment*.'''
+    environment[key] = (
+        os.pathsep.join([
+            environment.get(key, ''), path
+        ])
+    )
+
+    return environment
+
+
 class ApplicationStore(object):
     '''Discover and store available applications on this host.'''
 
@@ -480,53 +502,15 @@ class ApplicationLauncher(object):
         application should be launched.
 
         '''
-        # Copy appropriate environment variables to new environment.
-        environment = {
-            'FTRACK_EVENT_SERVER': ftrack.EVENT_HUB.getServerUrl()
-        }
+        # Copy all environment variables to new environment and strip the once
+        # we know cause problems if copied.
+        environment = os.environ.copy()
 
-        self._mapEnvironmentVariables(
-            [
-                'FTRACK_SERVER',
-                'FTRACK_PROXY',
-                'FTRACK_APIKEY',
-                'FTRACK_LOCATION_PLUGIN_PATH',
-                'LOGNAME',
-                'FTRACK_PREMIERE_PRESET_PATH'
-            ],
-            environment
-        )
-
-        if sys.platform == 'win32':
-            # Required for launching executables on Windows.
-            self._mapEnvironmentVariables(
-                ['SystemRoot', 'SystemDrive'], environment
-            )
-
-            # Many applications also need access to temporary storage and
-            # other standard Windows locations.
-            self._mapEnvironmentVariables(
-                [
-                    'APPDATA', 'LOCALAPPDATA',
-
-                    'COMMONPROGRAMW6432',
-                    'COMMONPROGRAMFILES', 'COMMONPROGRAMFILES(X86)',
-
-                    'PROGRAMW6432', 'PROGRAMFILES', 'PROGRAMFILES(X86)',
-
-                    'PATH', 'PATHEXT',
-
-                    'TMP', 'TEMP'
-                ],
-                environment
-            )
+        environment.pop('PYTHONHOME', None)
 
         # Prepend discovered ftrack API to PYTHONPATH.
-        environment['PYTHONPATH'] = (
-            os.pathsep.join([
-                os.path.dirname(ftrack.__file__),
-                os.environ.get('PYTHONPATH', '')
-            ])
+        environment = prependPath(
+            os.path.dirname(ftrack.__file__), 'PYTHONPATH', environment
         )
 
         # Add ftrack connect event to environment.
@@ -546,18 +530,6 @@ class ApplicationLauncher(object):
                 environment['FTRACK_CONNECT_EVENT'] = applicationContext
 
         return environment
-
-    def _mapEnvironmentVariables(self, keys, targetEnvironment,
-                                 sourceEnvironment=os.environ):
-        '''Map *keys* from *sourceEnvironment* to *targetEnvironment*.
-
-        Only map a key if it is present in *sourceEnvironment* and not already
-        present in *targetEnvironment*.
-
-        '''
-        for key in keys:
-            if key not in targetEnvironment and key in sourceEnvironment:
-                targetEnvironment[key] = sourceEnvironment[key]
 
     def _conformEnvironment(self, mapping):
         '''Ensure all entries in *mapping* are strings.
