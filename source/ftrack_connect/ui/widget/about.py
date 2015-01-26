@@ -74,7 +74,7 @@ class AboutDialog(QtGui.QDialog):
         debugData['SERVER'] = server
 
         debugInformation = ''
-        for key in debugData.keys():
+        for key in sorted(debugData.keys(), reverse=True):
             debugInformation = '{1}: {2}\n{0}'.format(
                 debugInformation, key, debugData[key]
             )

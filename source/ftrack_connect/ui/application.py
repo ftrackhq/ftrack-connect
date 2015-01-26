@@ -399,21 +399,18 @@ class Application(QtGui.QMainWindow):
         except Exception:
             apiVersion = 'Unknown'
 
+        environmentData = os.environ.copy()
+        environmentData.update({
+            'FTRACK_API_VERSION': apiVersion,
+            'PLATFORM': platform.platform(),
+            'PYTHON_VERSION': platform.python_version()
+        })
+
         aboutDialog.setInformation(
             version=ftrack_connect.__version__,
             server=os.environ.get('FTRACK_SERVER', 'Not set'),
             user=getpass.getuser(),
-            debugData={
-                'FTRACK_EVENT_PLUGIN_PATH': (
-                    os.environ.get('FTRACK_EVENT_PLUGIN_PATH', 'Not set')
-                ),
-                'FTRACK_LOCATION_PLUGIN_PATH': (
-                    os.environ.get('FTRACK_LOCATION_PLUGIN_PATH', 'Not set')
-                ),
-                'FTRACK_API_VERSION': apiVersion,
-                'PLATFORM': platform.platform(),
-                'PYTHON_VERSION': platform.python_version()
-            }
+            debugData=environmentData
         )
 
         aboutDialog.exec_()

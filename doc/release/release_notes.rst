@@ -7,6 +7,13 @@
 Release Notes
 *************
 
+.. release:: next
+    :date: 2015-xx-xx
+
+    .. change:: change
+
+        Include *all* environment variables when launching applications.
+
 .. release:: 0.1.4
     :date: 2015-01-23
 
