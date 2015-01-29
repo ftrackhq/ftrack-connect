@@ -117,7 +117,8 @@ class ApplicationStore(object):
         return applications
 
     def _searchFilesystem(self, expression, label, applicationIdentifier,
-                          versionExpression=None, icon=None):
+                          versionExpression=None, icon=None,
+                          launchArguments=None):
         '''
         Return list of applications found in filesystem matching *expression*.
 
@@ -149,6 +150,8 @@ class ApplicationStore(object):
         "application_name_{version}" where version is the first match in the
         regexp.
 
+        *launchArguments* may be specified as a list of arguments that should
+        used when launching the application.
         '''
         applications = []
 
@@ -200,6 +203,7 @@ class ApplicationStore(object):
                                     version=version
                                 ),
                                 'path': path,
+                                'launchArguments': launchArguments,
                                 'version': version,
                                 'label': label.format(version=version),
                                 'icon': icon
@@ -350,6 +354,11 @@ class ApplicationLauncher(object):
                 'Unable to find launch command for {0} on this platform.'
                 .format(application['identifier'])
             )
+
+        # Add any extra launch arguments if specified.
+        launchArguments = application.get('launchArguments')
+        if launchArguments:
+            command.extend(launchArguments)
 
         return command
 
