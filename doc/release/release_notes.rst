@@ -11,11 +11,11 @@ Release Notes
 .. release:: next
     :date: 2015-XX-XX
 
-    .. change:: fix
+    .. change:: fixed
 
         Unable to launch NukeX on Windows.
 
-    .. change:: fix
+    .. change:: fixed
 
         The wrong Nuke version is launched on Windows if several are installed.
 
