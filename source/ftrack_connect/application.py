@@ -220,8 +220,8 @@ class ApplicationStore(object):
         return applications
 
     def _searchFilesystem(self, expression, label, applicationIdentifier,
-                          versionExpression=None, launchArguments=None, 
-                          icon=None):
+                          versionExpression=None, icon=None,
+                          launchArguments=None):
         '''
         Return list of applications found in filesystem matching *expression*.
 
