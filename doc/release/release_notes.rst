@@ -19,6 +19,9 @@ Release Notes
 
         The wrong Nuke version is launched on Windows if several are installed.
 
+    .. change:: fixed
+
+        Hiero and Hiero Player are not discovered on Windows.
 
 .. release:: 0.1.5
     :date: 2015-01-26

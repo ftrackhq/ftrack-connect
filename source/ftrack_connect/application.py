@@ -195,17 +195,14 @@ class ApplicationStore(object):
             ))
 
             applications.extend(self._searchFilesystem(
-                expression=(
-                    prefix +
-                    ['The Foundry', 'HieroPlayer\d.+', 'hieroplayer.exe']
-                ),
+                expression=prefix + ['HieroPlayer\d.+', 'hieroplayer.exe'],
                 label='HieroPlayer {version}',
                 applicationIdentifier='hieroplayer_{version}',
                 icon='hieroplayer'
             ))
 
             applications.extend(self._searchFilesystem(
-                expression=prefix + ['The Foundry', 'Hiero\d.+', 'hiero.exe'],
+                expression=prefix + ['Hiero\d.+', 'hiero.exe'],
                 label='Hiero {version}',
                 applicationIdentifier='hiero_{version}',
                 icon='hiero'
