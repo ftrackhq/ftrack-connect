@@ -152,6 +152,12 @@ class ApplicationStore(object):
         elif sys.platform == 'win32':
             prefix = ['C:\\', 'Program Files.*']
 
+            # Specify custom expression for Nuke to ensure the complete version
+            # number (e.g. 9.0v3) is picked up.
+            nukeVersionExpression =  re.compile(
+                r'(?P<version>[\d.]+[vabc]+[\dvabc.]*)'
+            )
+
             applications.extend(self._searchFilesystem(
                 expression=(
                     prefix +
@@ -172,9 +178,20 @@ class ApplicationStore(object):
 
             applications.extend(self._searchFilesystem(
                 expression=prefix + ['Nuke.*', 'Nuke\d.+.exe'],
+                versionExpression=nukeVersionExpression,
                 label='Nuke {version}',
                 applicationIdentifier='nuke_{version}',
                 icon='nuke'
+            ))
+
+            # Add NukeX as a separate application
+            applications.extend(self._searchFilesystem(
+                expression=prefix + ['Nuke.*', 'Nuke\d.+.exe'],
+                versionExpression=nukeVersionExpression,
+                launchArguments=['--nukex'],
+                label='NukeX {version}',
+                applicationIdentifier='nukex_{version}',
+                icon='nukex'
             ))
 
             applications.extend(self._searchFilesystem(
@@ -203,7 +220,8 @@ class ApplicationStore(object):
         return applications
 
     def _searchFilesystem(self, expression, label, applicationIdentifier,
-                          versionExpression=None, icon=None):
+                          versionExpression=None, launchArguments=None, 
+                          icon=None):
         '''
         Return list of applications found in filesystem matching *expression*.
 
@@ -235,6 +253,8 @@ class ApplicationStore(object):
         "application_name_{version}" where version is the first match in the
         regexp.
 
+        *launchArguments* may be specified as a list of arguments that should
+        used when launching the application.
         '''
         applications = []
 
@@ -286,6 +306,7 @@ class ApplicationStore(object):
                                     version=version
                                 ),
                                 'path': path,
+                                'launchArguments': launchArguments,
                                 'version': version,
                                 'label': label.format(version=version),
                                 'icon': icon
@@ -454,6 +475,11 @@ class ApplicationLauncher(object):
 
                 if component is not None:
                     command.append(component.getFilesystemPath())
+
+        # Add any extra launch arguments if specified.
+        launchArguments = application.get('launchArguments')
+        if launchArguments:
+            command.extend(launchArguments)
 
         return command
 
