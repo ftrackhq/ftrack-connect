@@ -7,6 +7,15 @@
 Release Notes
 *************
 
+.. release:: 0.1.6
+    :date: 2015-01-26
+
+    .. change:: change
+        :tags: Developer
+
+        Moved logic for finding and starting applications supported by legacy
+        plugins from the ftrack connect core to the legacy plugins repository.
+
 .. release:: 0.1.5
     :date: 2015-01-26
 
