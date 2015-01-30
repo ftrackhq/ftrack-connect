@@ -8,13 +8,25 @@ Release Notes
 *************
 
 .. release:: 0.1.6
-    :date: 2015-01-26
+    :date: 2015-01-30
 
     .. change:: change
         :tags: Developer
 
         Moved logic for finding and starting applications supported by legacy
         plugins from the ftrack connect core to the legacy plugins repository.
+
+    .. change:: fixed
+
+        Unable to launch NukeX on Windows.
+
+    .. change:: fixed
+
+        Wrong Nuke version is launched on Windows if several are installed.
+
+    .. change:: fixed
+
+        Hiero and HieroPlayer are not discovered on Windows.
 
 .. release:: 0.1.5
     :date: 2015-01-26
