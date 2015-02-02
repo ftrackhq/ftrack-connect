@@ -105,94 +105,8 @@ class ApplicationStore(object):
         if sys.platform == 'darwin':
             prefix = ['/', 'Applications']
 
-            applications.extend(self._searchFilesystem(
-                expression=prefix + [
-                    'Adobe Premiere Pro CC .+', 'Adobe Premiere Pro CC .+.app'
-                ],
-                label='Premiere Pro CC {version}',
-                applicationIdentifier='premiere_pro_cc_{version}',
-                icon='premiere'
-            ))
-
-            applications.extend(self._searchFilesystem(
-                expression=prefix + ['Autodesk', 'maya.+', 'Maya.app'],
-                label='Maya {version}',
-                applicationIdentifier='maya_{version}',
-                icon='maya'
-            ))
-
-            applications.extend(self._searchFilesystem(
-                expression=prefix + ['Nuke.*', 'Nuke\d[\w.]+.app'],
-                label='Nuke {version}',
-                applicationIdentifier='nuke_{version}',
-                icon='nuke'
-            ))
-
-            applications.extend(self._searchFilesystem(
-                expression=prefix + ['Nuke.*', 'NukeX\d.+.app'],
-                label='NukeX {version}',
-                applicationIdentifier='nukex_{version}',
-                icon='nukex'
-            ))
-
-            applications.extend(self._searchFilesystem(
-                expression=prefix + ['HieroPlayer\d.*', 'HieroPlayer\d.+.app'],
-                label='HieroPlayer {version}',
-                applicationIdentifier='hieroplayer_{version}',
-                icon='hieroplayer'
-            ))
-
-            applications.extend(self._searchFilesystem(
-                expression=prefix + ['Hiero\d.+', 'Hiero\d.+.app'],
-                label='Hiero {version}',
-                applicationIdentifier='hiero_{version}',
-                icon='hiero'
-            ))
-
         elif sys.platform == 'win32':
             prefix = ['C:\\', 'Program Files.*']
-
-            applications.extend(self._searchFilesystem(
-                expression=(
-                    prefix +
-                    ['Adobe', 'Adobe Premiere Pro CC .+',
-                     'Adobe Premiere Pro.exe']
-                ),
-                label='Premiere Pro CC {version}',
-                applicationIdentifier='premiere_pro_cc_{version}',
-                icon='premiere'
-            ))
-
-            applications.extend(self._searchFilesystem(
-                expression=prefix + ['Autodesk', 'Maya.+', 'bin', 'maya.exe'],
-                label='Maya {version}',
-                applicationIdentifier='maya_{version}',
-                icon='maya'
-            ))
-
-            applications.extend(self._searchFilesystem(
-                expression=prefix + ['Nuke.*', 'Nuke\d.+.exe'],
-                label='Nuke {version}',
-                applicationIdentifier='nuke_{version}',
-                icon='nuke'
-            ))
-
-            applications.extend(self._searchFilesystem(
-                expression=(
-                    prefix +
-                    ['The Foundry', 'HieroPlayer\d.+', 'hieroplayer.exe']
-                ),
-                label='HieroPlayer {version}',
-                applicationIdentifier='hieroplayer_{version}',
-                icon='hieroplayer'
-            ))
-
-            applications.extend(self._searchFilesystem(
-                expression=prefix + ['The Foundry', 'Hiero\d.+', 'hiero.exe'],
-                label='Hiero {version}',
-                applicationIdentifier='hiero_{version}',
-                icon='hiero'
-            ))
 
         self.logger.debug(
             'Discovered applications:\n{0}'.format(
@@ -203,7 +117,8 @@ class ApplicationStore(object):
         return applications
 
     def _searchFilesystem(self, expression, label, applicationIdentifier,
-                          versionExpression=None, icon=None):
+                          versionExpression=None, icon=None,
+                          launchArguments=None):
         '''
         Return list of applications found in filesystem matching *expression*.
 
@@ -235,6 +150,8 @@ class ApplicationStore(object):
         "application_name_{version}" where version is the first match in the
         regexp.
 
+        *launchArguments* may be specified as a list of arguments that should
+        used when launching the application.
         '''
         applications = []
 
@@ -286,6 +203,7 @@ class ApplicationStore(object):
                                     version=version
                                 ),
                                 'path': path,
+                                'launchArguments': launchArguments,
                                 'version': version,
                                 'label': label.format(version=version),
                                 'icon': icon
@@ -437,23 +355,10 @@ class ApplicationLauncher(object):
                 .format(application['identifier'])
             )
 
-        # Figure out if the command should be started with the file path of
-        # the latest published version.
-        if command is not None and context is not None:
-            selection = context.get('selection')
-            if selection and context.get('launchWithLatest', False):
-                entity = selection[0]
-                component = None
-
-                if application['identifier'].startswith('premiere_pro_cc'):
-                    component = self._findLatestComponent(
-                        entity['entityId'],
-                        entity['entityType'],
-                        'prproj'
-                    )
-
-                if component is not None:
-                    command.append(component.getFilesystemPath())
+        # Add any extra launch arguments if specified.
+        launchArguments = application.get('launchArguments')
+        if launchArguments:
+            command.extend(launchArguments)
 
         return command
 
