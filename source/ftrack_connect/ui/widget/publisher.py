@@ -86,7 +86,7 @@ class Publisher(QtGui.QWidget):
 
         # Add asset options.
         self.assetOptions = _asset_options.AssetOptions()
-        self.entityChanged.connect(self.assetOptions.onEntityChanegd)
+        self.entityChanged.connect(self.assetOptions.setEntity)
         formLayout.addRow('Asset', self.assetOptions.radioButtonFrame)
         formLayout.addRow('Existing asset', self.assetOptions.existingAssetSelector)
         formLayout.addRow('Type', self.assetOptions.assetTypeSelector)

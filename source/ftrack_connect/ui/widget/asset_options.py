@@ -56,7 +56,7 @@ class AssetOptions(object):
         self._toggleFieldAndLabel(self.assetTypeSelector, False)
         self._toggleFieldAndLabel(self.assetNameLineEdit, False)
 
-    def onEntityChanegd(self, entity):
+    def setEntity(self, entity):
         '''Clear and reload existing assets when entity changes.'''
         self.existingAssetSelector.clear()
         self.existingAssetSelector.loadAssets(entity)
