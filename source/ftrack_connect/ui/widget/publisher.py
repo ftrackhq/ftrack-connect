@@ -9,7 +9,7 @@ import ftrack
 
 
 from ftrack_connect.ui.widget import entity_path as _entity_path
-from ftrack_connect.ui.widget import entity_browser as _entity_brower
+from ftrack_connect.ui.widget import entity_browser as _entity_browser
 from ftrack_connect.ui.widget import data_drop_zone as _data_drop_zone
 from ftrack_connect.ui.widget import components_list as _components_list
 from ftrack_connect.ui.widget import item_selector as _item_selector
@@ -66,7 +66,7 @@ class Publisher(QtGui.QWidget):
         linkedEntity.setLayout(QtGui.QHBoxLayout())
         linkedEntity.layout().setContentsMargins(0, 0, 0, 0)
 
-        self.entityBrowser = _entity_brower.EntityBrowser(parent=self)
+        self.entityBrowser = _entity_browser.EntityBrowser(parent=self)
         self.entityBrowser.setMinimumSize(600, 400)
         self.entityBrowser.selectionChanged.connect(
             self._onEntityBrowserSelectionChanged
