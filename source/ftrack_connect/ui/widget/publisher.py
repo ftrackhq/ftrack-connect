@@ -258,9 +258,10 @@ class Publisher(QtGui.QWidget):
     def _publish(
         self, entity=None, assetName=None, assetType=None,
         versionDescription='', taskId=None, components=None,
-        previewPath=None, thumbnailFilePath=None
+        previewPath=None, thumbnailFilePath=None, asset=None
     ):
-        '''Get or create an asset of *assetType* on *entity*.
+        '''If *asset* is specified, publish a new version of it. Otherwise, get
+        or create an asset of *assetType* on *entity*.
 
         *taskId*, *versionDescription*, *components*, *previewPath* and
         *thumbnailFilePath* are optional.
@@ -274,7 +275,7 @@ class Publisher(QtGui.QWidget):
         self.publishStarted.emit()
 
         try:
-            if not assetType:
+            if not (asset or assetType):
                 self.publishFinished.emit(False)
                 raise ftrack_connect.error.ConnectError('No asset type selected.')
 
@@ -282,15 +283,16 @@ class Publisher(QtGui.QWidget):
                 self.publishFinished.emit(False)
                 raise ftrack_connect.error.ConnectError('No entity found')
 
-            if assetName is None:
-                assetName = assetType.getName()
-
             if components is None:
                 components = []
 
-            asset = entity.createAsset(
-                assetName, assetType.getShort(), taskId
-            )
+            if not asset:
+                if assetName is None:
+                    assetName = assetType.getName()
+
+                asset = entity.createAsset(
+                    assetName, assetType.getShort(), taskId
+                )
 
             version = asset.createVersion(
                 versionDescription, taskId
