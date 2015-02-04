@@ -5,16 +5,19 @@ from PySide import QtGui
 import ftrack
 
 import ftrack_connect.asynchronous
+from ftrack_connect.ui.widget import item_selector as _item_selector
 
-
-class AssetTypeSelector(QtGui.QComboBox):
+class AssetTypeSelector(_item_selector.ItemSelector):
     '''Asset type selector widget.'''
 
     def __init__(self, *args, **kwargs):
         '''Instantiate the asset type selector.'''
-        super(AssetTypeSelector, self).__init__(*args, **kwargs)
-        itemDelegate = QtGui.QStyledItemDelegate()
-        self.setItemDelegate(itemDelegate)
+        super(AssetTypeSelector, self).__init__(
+            labelField='name',
+            defaultLabel='Unknown asset type',
+            emptyLabel='Select asset type',
+            **kwargs
+        )
         self.loadAssetTypes()
 
     @ftrack_connect.asynchronous.asynchronous
@@ -25,6 +28,4 @@ class AssetTypeSelector(QtGui.QComboBox):
             assetTypes,
             key=lambda assetType: assetType.getName()
         )
-
-        for assetType in assetTypes:
-            self.addItem(assetType.getName(), assetType)
+        self.setItems(assetTypes)
