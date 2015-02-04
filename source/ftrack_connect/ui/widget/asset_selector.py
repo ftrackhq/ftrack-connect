@@ -30,8 +30,15 @@ class AssetSelector(_item_selector.ItemSelector):
     @ftrack_connect.asynchronous.asynchronous
     def loadAssets(self, entity):
         '''Load assets and add to selector.'''
-        assets = entity.getAssets()
-        self.logger.debug('Loaded {0} assets'.format(len(assets)))
-        assets = sorted(assets, key=lambda asset: asset.getName())
+        assets = []
+        try:
+            assets = entity.getAssets()
+            self.logger.debug('Loaded {0} assets'.format(len(assets)))
+            assets = sorted(assets, key=lambda asset: asset.getName())
+        except AttributeError:
+            self.logger.warning(
+                'Unable to fetch assets for entity: {0}'.format(entity)
+            )
+
         self.setItems(assets)
 
