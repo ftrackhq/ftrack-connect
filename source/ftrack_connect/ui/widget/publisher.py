@@ -10,11 +10,11 @@ import ftrack
 
 from ftrack_connect.ui.widget import entity_path as _entity_path
 from ftrack_connect.ui.widget import entity_browser as _entity_brower
-from ftrack_connect.ui.widget import asset_type_selector as _asset_type_selector
 from ftrack_connect.ui.widget import data_drop_zone as _data_drop_zone
 from ftrack_connect.ui.widget import components_list as _components_list
 from ftrack_connect.ui.widget import item_selector as _item_selector
 from ftrack_connect.ui.widget import thumbnail_drop_zone as _thumbnail_drop_zone
+from ftrack_connect.ui.widget import asset_options as _asset_options
 
 import ftrack_connect.asynchronous
 import ftrack_connect.error
@@ -84,9 +84,14 @@ class Publisher(QtGui.QWidget):
             self._onEntityBrowseButtonClicked
         )
 
-        # Add asset selector.
-        self.assetSelector = _asset_type_selector.AssetTypeSelector()
-        formLayout.addRow('Asset type', self.assetSelector)
+        # Add asset options.
+        self.assetOptions = _asset_options.AssetOptions()
+        self.entityChanged.connect(self.assetOptions.onEntityChanegd)
+        formLayout.addRow('Asset', self.assetOptions.radioButtonFrame)
+        formLayout.addRow('Existing asset', self.assetOptions.existingAssetSelector)
+        formLayout.addRow('Type', self.assetOptions.assetTypeSelector)
+        formLayout.addRow('Name', self.assetOptions.assetNameLineEdit)
+        self.assetOptions.initializeFieldLabels(formLayout)
 
         # Add preview selector.
         self.previewSelector = _item_selector.ItemSelector(
@@ -190,7 +195,7 @@ class Publisher(QtGui.QWidget):
     def clear(self):
         '''Clear the publish view to it's initial state.'''
         self._manageData = False
-        self.assetSelector.setCurrentIndex(-1)
+        self.assetOptions.clear()
         self.versionDescription.clear()
         self.entityPath.clear()
         self.entityBrowser.setLocation([])
@@ -218,9 +223,9 @@ class Publisher(QtGui.QWidget):
 
         taskId = None
 
-        assetType = self.assetSelector.itemData(
-            self.assetSelector.currentIndex()
-        )
+        asset = self.assetOptions.getAsset()
+        assetType = self.assetOptions.getAssetType()
+        assetName = self.assetOptions.getAssetName()
 
         versionDescription = self.versionDescription.toPlainText()
 
@@ -248,9 +253,14 @@ class Publisher(QtGui.QWidget):
         thumbnailFilePath = self.thumbnailDropZone.getFilePath()
 
         self._publish(
-            entity=entity, assetType=assetType,
-            versionDescription=versionDescription, taskId=taskId,
-            components=components, previewPath=previewPath,
+            entity=entity,
+            asset=asset,
+            assetName=assetName,
+            assetType=assetType,
+            versionDescription=versionDescription,
+            taskId=taskId,
+            components=components,
+            previewPath=previewPath,
             thumbnailFilePath=thumbnailFilePath
         )
 
