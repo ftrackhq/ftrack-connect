@@ -48,7 +48,7 @@ class AssetNameEdit(QtGui.QLineEdit):
     '''
 
     def __init__(self, assetSelector, assetTypeSelector, **kwargs):
-        super(AssetNameValidator, self).__init__(**kwargs)
+        super(AssetNameEdit, self).__init__(**kwargs)
         self.setValidator(
             AssetNameValidator(assetSelector, assetTypeSelector)
         )

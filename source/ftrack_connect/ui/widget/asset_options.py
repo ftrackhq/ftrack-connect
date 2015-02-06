@@ -1,6 +1,8 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
+import logging
+
 from PySide import QtGui
 import ftrack
 
@@ -27,6 +29,10 @@ class AssetOptions(object):
         '''Instantiate the asset options.'''
         super(AssetOptions, self).__init__(*args, **kwargs)
 
+        self.logger = logging.getLogger(
+            __name__ + '.' + self.__class__.__name__
+        )
+
         self._hasEditedName = False
 
         self.radioButtonFrame = QtGui.QFrame()
@@ -43,11 +49,11 @@ class AssetOptions(object):
 
         self.existingAssetSelector = _asset_selector.AssetSelector()
         self.assetTypeSelector = _asset_type_selector.AssetTypeSelector()
-        self.assetTypeSelector.currentIndexChanged.connect(self._onAssetTypeChanged)
-
         self.assetNameLineEdit = _asset_name_edit.AssetNameEdit(
             self.existingAssetSelector, self.assetTypeSelector
         )
+
+        self.assetTypeSelector.currentIndexChanged.connect(self._onAssetTypeChanged)
         self.assetNameLineEdit.textEdited.connect(self._onAssetNameEdited)
 
     def initializeFieldLabels(self, layout):
@@ -63,6 +69,18 @@ class AssetOptions(object):
         '''Clear and reload existing assets when entity changes.'''
         self.existingAssetSelector.clear()
         self.existingAssetSelector.loadAssets(entity)
+
+    def setAsset(self, asset):
+        '''Select *asset*, add it to the selector if it does not exist.'''
+        self.logger.debug('Selecting asset: {0}'.format(asset))
+
+        if self.existingAssetSelector.findData(asset) == -1:
+            self.existingAssetSelector.addItem(asset.getName(), asset)
+            self.logger.debug('Added asset to selector')
+
+        self.existingAssetSelector.selectItem(asset)
+        self.existingAssetButton.setChecked(True)
+        self.logger.debug('Selected asset and switched state.')
 
     def _onAssetNameEdited(self, text):
         '''Set flag when user edits name.'''

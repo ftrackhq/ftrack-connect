@@ -27,6 +27,9 @@ class Publisher(QtGui.QWidget):
     publishStarted = QtCore.Signal()
     publishFinished = QtCore.Signal(bool)
 
+    #: Signal to emit when an asset is created.
+    assetCreated = QtCore.Signal(object)
+
     def __init__(self, parent=None):
         '''Initiate a publish view.'''
         super(Publisher, self).__init__(parent)
@@ -87,6 +90,7 @@ class Publisher(QtGui.QWidget):
         # Add asset options.
         self.assetOptions = _asset_options.AssetOptions()
         self.entityChanged.connect(self.assetOptions.setEntity)
+        self.assetCreated.connect(self.assetOptions.setAsset)
         formLayout.addRow('Asset', self.assetOptions.radioButtonFrame)
         formLayout.addRow('Existing asset', self.assetOptions.existingAssetSelector)
         formLayout.addRow('Type', self.assetOptions.assetTypeSelector)
@@ -303,6 +307,7 @@ class Publisher(QtGui.QWidget):
                 asset = entity.createAsset(
                     assetName, assetType.getShort(), taskId
                 )
+                self.assetCreated.emit(asset)
 
             version = asset.createVersion(
                 versionDescription, taskId
