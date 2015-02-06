@@ -5,6 +5,8 @@ from PySide import QtGui
 import ftrack
 
 import ftrack_connect.asynchronous
+from ftrack_connect.error import NotUniqueError
+from ftrack_connect.ui.widget import asset_name_edit as _asset_name_edit
 from ftrack_connect.ui.widget import asset_type_selector as _asset_type_selector
 from ftrack_connect.ui.widget import asset_selector as _asset_selector
 
@@ -39,13 +41,14 @@ class AssetOptions(object):
         self.existingAssetButton.toggled.connect(self._onExistingAssetToggled)
         self.radioButtonFrame.layout().addWidget(self.existingAssetButton)
 
+        self.existingAssetSelector = _asset_selector.AssetSelector()
         self.assetTypeSelector = _asset_type_selector.AssetTypeSelector()
         self.assetTypeSelector.currentIndexChanged.connect(self._onAssetTypeChanged)
 
-        self.assetNameLineEdit = QtGui.QLineEdit()
+        self.assetNameLineEdit = _asset_name_edit.AssetNameEdit(
+            self.existingAssetSelector, self.assetTypeSelector
+        )
         self.assetNameLineEdit.textEdited.connect(self._onAssetNameEdited)
-
-        self.existingAssetSelector = _asset_selector.AssetSelector()
 
     def initializeFieldLabels(self, layout):
         '''Get labels for widgets in *layout* and set initial state.'''
@@ -126,11 +129,16 @@ class AssetOptions(object):
         return assetType
 
     def getAssetName(self):
-        '''Return asset name, if new asset is selected.'''
+        '''Return asset name, if new asset is selected.
+
+        ..note ::
+
+            Raises NotUniqueError if asset name is not unique.
+        '''
         assetName = None
         if self.getState() == NEW_ASSET:
+            if not self.assetNameLineEdit.hasAcceptableInput():
+                raise NotUniqueError('Duplicate asset name for new asset.')
             assetName = self.assetNameLineEdit.text()
+
         return assetName
-
-
-
