@@ -7,10 +7,11 @@
 Release Notes
 *************
 
-.. release:: next
-    :date: 2015-XX-XX
+.. release:: 0.1.7
+    :date: 2015-02-03
 
     .. change:: fixed
+        :tags: Publisher
 
         Publisher is stuck in processing state if publish fails.
 
