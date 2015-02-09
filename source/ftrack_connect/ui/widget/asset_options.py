@@ -119,7 +119,7 @@ class AssetOptions(object):
         self._hasEditedName = False
         self.existingAssetButton.setChecked(False)
         self.newAssetButton.setChecked(False)
-        self.assetTypeSelector.clear()
+        self.assetTypeSelector.selectItem(None)
         self.assetNameLineEdit.clear()
         self.existingAssetSelector.clear()
 
