@@ -33,6 +33,7 @@ class AssetOptions(object):
             __name__ + '.' + self.__class__.__name__
         )
 
+        self._entity = None
         self._hasEditedName = False
 
         self.radioButtonFrame = QtGui.QFrame()
@@ -67,20 +68,15 @@ class AssetOptions(object):
 
     def setEntity(self, entity):
         '''Clear and reload existing assets when entity changes.'''
+        self._entity = entity
         self.existingAssetSelector.clear()
-        self.existingAssetSelector.loadAssets(entity)
+        self.reloadExistingAssets()
 
-    def setAsset(self, asset):
+    def reloadExistingAssets(self, asset=None):
         '''Select *asset*, add it to the selector if it does not exist.'''
-        self.logger.debug('Selecting asset: {0}'.format(asset))
-
-        if self.existingAssetSelector.findData(asset) == -1:
-            self.existingAssetSelector.addItem(asset.getName(), asset)
-            self.logger.debug('Added asset to selector')
-
-        self.existingAssetSelector.selectItem(asset)
+        self.logger.debug('Reloading assets for entity: {0}'.format(self._entity))
+        self.existingAssetSelector.loadAssets(self._entity, selectAsset=asset)
         self.existingAssetButton.setChecked(True)
-        self.logger.debug('Selected asset and switched state.')
 
     def _onAssetNameEdited(self, text):
         '''Set flag when user edits name.'''

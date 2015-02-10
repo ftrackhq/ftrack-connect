@@ -29,8 +29,11 @@ class AssetSelector(_item_selector.ItemSelector):
 
 
     @ftrack_connect.asynchronous.asynchronous
-    def loadAssets(self, entity):
-        '''Load assets and add to selector.'''
+    def loadAssets(self, entity, selectAsset=None):
+        '''Load assets for *entity* and set selector items.
+
+        If *selectAsset* is specified, select it after assets has loaded.
+        '''
         assets = []
         try:
             assets = entity.getAssets()
@@ -43,3 +46,6 @@ class AssetSelector(_item_selector.ItemSelector):
 
         self.setItems(assets)
 
+        if selectAsset:
+            self.logger.debug('Selecting asset: {0}'.format(selectAsset))
+            self.selectItem(selectAsset)
