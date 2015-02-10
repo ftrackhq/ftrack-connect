@@ -31,9 +31,7 @@ class AssetNameValidator(QtGui.QValidator):
                 isValid = False
                 break
 
-        if not isValid:
-            return QtGui.QValidator.Invalid
-        elif not value:
+        if not value or not isValid:
             return QtGui.QValidator.Intermediate
         else:
             return QtGui.QValidator.Acceptable
