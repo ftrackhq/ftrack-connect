@@ -70,9 +70,9 @@ class AssetOptions(object):
         '''Clear and reload existing assets when entity changes.'''
         self._entity = entity
         self.existingAssetSelector.clear()
-        self.reloadExistingAssets()
+        self.existingAssetSelector.loadAssets(self._entity)
 
-    def reloadExistingAssets(self, asset=None):
+    def setAsset(self, asset=None):
         '''Select *asset*, add it to the selector if it does not exist.'''
         self.logger.debug('Reloading assets for entity: {0}'.format(self._entity))
         self.existingAssetSelector.loadAssets(self._entity, selectAsset=asset)
