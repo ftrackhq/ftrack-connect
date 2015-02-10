@@ -26,7 +26,7 @@ class AssetNameValidator(QtGui.QValidator):
         for asset in self.assetSelector.items():
             if (
                 asset.get('typeid') == assetTypeId
-                and asset.get('name') == value
+                and asset.get('name').lower() == value.lower()
             ):
                 isValid = False
                 break
