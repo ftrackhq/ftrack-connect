@@ -36,6 +36,11 @@ class AssetSelector(_item_selector.ItemSelector):
         '''
         assets = []
         try:
+            # ftrack does not support having Tasks as parent for Assets.
+            # Therefore get parent shot/sequence etc.
+            if entity.getObjectType() == 'Task':
+                entity = entity.getParent()
+
             assets = entity.getAssets()
             self.logger.debug('Loaded {0} assets'.format(len(assets)))
             assets = sorted(assets, key=lambda asset: asset.getName())
