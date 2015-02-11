@@ -7,6 +7,16 @@
 Release Notes
 *************
 
+.. release:: next
+    :date: 2015-XX-XX
+
+    .. change:: changed
+        :tags: Publisher
+
+        Added the possibility to specify if you like to version up an existing
+        version or create a new version when publishing.
+        :ref:`Read more <using/publishing/choose_or_create_asset>`
+
 .. release:: 0.1.7
     :date: 2015-02-03
 
