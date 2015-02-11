@@ -67,6 +67,30 @@ To select the entity to link against, select an item in the list and then click
 the :guilabel:`Choose` button. Alternatively, to cancel making any changes
 click the :guilabel:`Cancel` button.
 
+.. _using/publishing/choose_or_create_asset:
+
+Choose or create asset
+======================
+
+You can now choose if you like to publish a new version of an previously
+published asset or if you like to publish the first version of a new asset.
+
+.. image:: /image/publisher_asset_options.png
+
+To create a new asset, select :guilabel:`Create new` and fill in the following
+options.
+
+:Type: The type of asset to publish. Choose from a list retrieved from the
+       connected ftrack server.
+:Name: The name of asset to publish. The name and type must be unique when
+       creating new assets.
+
+To publish a new version of an existing asset, select 
+:guilabel:`Version up existing` instead. In the list which is shown below the
+radio buttons, select the asset you wish to use.
+
+.. image:: /image/publisher_asset_existing.png
+
 Fill out remaining fields
 =========================
 
@@ -74,8 +98,6 @@ Fill out the remaining fields in the publisher.
 
 .. image:: /image/publisher_filled_out.png
 
-:Asset type: The type of asset to publish. Choose from a list retrieved from the
-             connected ftrack server.
 :Web playable: If you want one of the components to be encoded for playing on
                the web select it in this field from the list of components
                added.
