@@ -30,6 +30,11 @@ class Publisher(QtGui.QWidget):
     def __init__(self, parent=None):
         '''Initiate a publish view.'''
         super(Publisher, self).__init__(parent)
+
+        self.logger = logging.getLogger(
+            __name__ + '.' + self.__class__.__name__
+        )
+
         self._entity = None
         self._manageData = False
 
@@ -162,8 +167,7 @@ class Publisher(QtGui.QWidget):
 
                 self.entityBrowser.acceptButton.setDisabled(False)
 
-    @staticmethod
-    def _pickLocation(manageData=False):
+    def _pickLocation(self, manageData=False):
         '''Return a location based on *manageData*.'''
         location = None
         locations = ftrack.getLocations(excludeInaccessible=True)
@@ -179,7 +183,7 @@ class Publisher(QtGui.QWidget):
         except StopIteration:
             pass
 
-        logging.debug('Picked location {0}.'.format(location))
+        self.logger.debug('Picked location {0}.'.format(location))
 
         return location
 
@@ -211,8 +215,6 @@ class Publisher(QtGui.QWidget):
             raise ftrack_connect.error.ConnectError(
                 'No linked entity selected to publish against!'
             )
-
-        self.publishStarted.emit()
 
         taskId = None
 
@@ -267,53 +269,68 @@ class Publisher(QtGui.QWidget):
         containing name, filepath and a list of locations.
 
         '''
-        if not assetType:
-            self.publishFinished.emit(False)
-            raise ftrack_connect.error.ConnectError('No asset type selected.')
+        version = None
 
-        if not entity:
-            self.publishFinished.emit(False)
-            raise ftrack_connect.error.ConnectError('No entity found')
+        self.publishStarted.emit()
 
-        if assetName is None:
-            assetName = assetType.getName()
+        try:
+            if not assetType:
+                self.publishFinished.emit(False)
+                raise ftrack_connect.error.ConnectError('No asset type selected.')
 
-        if components is None:
-            components = []
+            if not entity:
+                self.publishFinished.emit(False)
+                raise ftrack_connect.error.ConnectError('No entity found')
 
-        asset = entity.createAsset(
-            assetName, assetType.getShort(), taskId
-        )
+            if assetName is None:
+                assetName = assetType.getName()
 
-        version = asset.createVersion(
-            versionDescription, taskId
-        )
+            if components is None:
+                components = []
 
-        for componentData in components:
-            component = version.createComponent(
-                componentData.get('name', None),
-                path=componentData.get('filePath'),
-                location=None
+            asset = entity.createAsset(
+                assetName, assetType.getShort(), taskId
             )
 
-            for location in componentData.get('locations', []):
-                location.addComponent(component)
-
-        if previewPath:
-            ftrack.EVENT_HUB.publish(
-                ftrack.Event(
-                    'ftrack.connect.publish.make-web-playable',
-                    data=dict(
-                        versionId=version.getId(),
-                        path=previewPath
-                    )
-                ),
-                synchronous=True
+            version = asset.createVersion(
+                versionDescription, taskId
             )
 
-        if thumbnailFilePath:
-            version.createThumbnail(thumbnailFilePath)
+            for componentData in components:
+                component = version.createComponent(
+                    componentData.get('name', None),
+                    path=componentData.get('filePath'),
+                    location=None
+                )
 
-        version.publish()
+                for location in componentData.get('locations', []):
+                    location.addComponent(component)
 
-        self.publishFinished.emit(True)
+            if previewPath:
+                ftrack.EVENT_HUB.publish(
+                    ftrack.Event(
+                        'ftrack.connect.publish.make-web-playable',
+                        data=dict(
+                            versionId=version.getId(),
+                            path=previewPath
+                        )
+                    ),
+                    synchronous=True
+                )
+
+            if thumbnailFilePath:
+                version.createThumbnail(thumbnailFilePath)
+
+            version.publish()
+
+            self.publishFinished.emit(True)
+
+        # Catch any errors, emit *publishFinished*, clean up and re-raise.
+        except Exception as error:
+            self.logger.exception('Failed to publish')
+            self.publishFinished.emit(False)
+
+            if version:
+                version.delete()
+
+            raise
