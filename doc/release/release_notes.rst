@@ -7,6 +7,15 @@
 Release Notes
 *************
 
+.. release:: next
+    :date: 2015-xx-xx
+
+    .. change:: new
+        :tags: Developer, Tutorial
+
+        Added tutorial on how to add you own custom applications and how
+        to modify the environment. :ref:`Read more <developing/tutorial/custom_applications>`
+
 .. release:: 0.1.7
     :date: 2015-02-03
 
