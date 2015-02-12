@@ -73,21 +73,22 @@ Choose or create asset
 ======================
 
 You can now choose if you like to publish a new version of an previously
-published asset or if you like to publish the first version of a new asset.
+published :term:`asset` or if you like to publish the first version of a new
+:term:`asset`.
 
 .. image:: /image/publisher_asset_options.png
 
-To create a new asset, select :guilabel:`Create new` and fill in the following
-options.
+To create a new :term:`asset`, select :guilabel:`Create new` and fill in the
+following options.
 
-:Type: The type of asset to publish. Choose from a list retrieved from the
-       connected ftrack server.
-:Name: The name of asset to publish. The name and type must be unique when
-       creating new assets.
+:Type: The type of :term:`asset` to publish. Choose from a list retrieved from
+       the connected :term:`ftrack` server.
+:Name: The name of :term:`asset` to publish. The name and type must be unique
+       when creating new assets.
 
-To publish a new version of an existing asset, select 
+To publish a new version of an existing :term:`asset`, select 
 :guilabel:`Version up existing` instead. In the list which is shown below the
-radio buttons, select the asset you wish to use.
+radio buttons, select the :term:`asset` you wish to use.
 
 .. image:: /image/publisher_asset_existing.png
 
