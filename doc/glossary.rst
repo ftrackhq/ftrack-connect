@@ -14,6 +14,10 @@ Glossary
         Used to extend or modify the default behaviour in ftrack connect. See
         :ref:`developing/hooks` for more information.
 
+    Houdini
+        Houdini is a 3D animation application software developed by
+        Side Effects Software. Visit the website at http://www.sidefx.com/
+
     JSON
         (JavaScript Object Notation), a lightweight data-interchange format.
         Visit the website at http://www.json.org/
