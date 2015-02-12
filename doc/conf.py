@@ -87,7 +87,13 @@ def autodoc_skip(app, what, name, obj, skip, options):
 
 intersphinx_mapping = {
     'python': ('http://docs.python.org/', None),
-    'ftrack': ('http://rtd.ftrack.com/docs/ftrack/en/3.0v1/', None)
+    'ftrack-connect-hieroplayer': (
+        'http://ftrack-connect-hieroplayer.rtd.ftrack.com/en/latest/', None
+    ),
+    'ftrack-connect-cinesync': (
+        'http://ftrack-connect-cinesync.rtd.ftrack.com/en/latest/', None
+    ),
+    'ftrack': ('http://ftrack.rtd.ftrack.com/en/latest/', None)
 }
 
 
