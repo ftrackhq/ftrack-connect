@@ -9,12 +9,12 @@ import ftrack
 
 
 from ftrack_connect.ui.widget import entity_path as _entity_path
-from ftrack_connect.ui.widget import entity_browser as _entity_brower
-from ftrack_connect.ui.widget import asset_type_selector as _asset_type_selector
+from ftrack_connect.ui.widget import entity_browser as _entity_browser
 from ftrack_connect.ui.widget import data_drop_zone as _data_drop_zone
 from ftrack_connect.ui.widget import components_list as _components_list
 from ftrack_connect.ui.widget import item_selector as _item_selector
 from ftrack_connect.ui.widget import thumbnail_drop_zone as _thumbnail_drop_zone
+from ftrack_connect.ui.widget import asset_options as _asset_options
 
 import ftrack_connect.asynchronous
 import ftrack_connect.error
@@ -26,6 +26,9 @@ class Publisher(QtGui.QWidget):
 
     publishStarted = QtCore.Signal()
     publishFinished = QtCore.Signal(bool)
+
+    #: Signal to emit when an asset is created.
+    assetCreated = QtCore.Signal(object)
 
     def __init__(self, parent=None):
         '''Initiate a publish view.'''
@@ -66,7 +69,7 @@ class Publisher(QtGui.QWidget):
         linkedEntity.setLayout(QtGui.QHBoxLayout())
         linkedEntity.layout().setContentsMargins(0, 0, 0, 0)
 
-        self.entityBrowser = _entity_brower.EntityBrowser(parent=self)
+        self.entityBrowser = _entity_browser.EntityBrowser(parent=self)
         self.entityBrowser.setMinimumSize(600, 400)
         self.entityBrowser.selectionChanged.connect(
             self._onEntityBrowserSelectionChanged
@@ -84,9 +87,15 @@ class Publisher(QtGui.QWidget):
             self._onEntityBrowseButtonClicked
         )
 
-        # Add asset selector.
-        self.assetSelector = _asset_type_selector.AssetTypeSelector()
-        formLayout.addRow('Asset type', self.assetSelector)
+        # Add asset options.
+        self.assetOptions = _asset_options.AssetOptions()
+        self.entityChanged.connect(self.assetOptions.setEntity)
+        self.assetCreated.connect(self.assetOptions.setAsset)
+        formLayout.addRow('Asset', self.assetOptions.radioButtonFrame)
+        formLayout.addRow('Existing asset', self.assetOptions.existingAssetSelector)
+        formLayout.addRow('Type', self.assetOptions.assetTypeSelector)
+        formLayout.addRow('Name', self.assetOptions.assetNameLineEdit)
+        self.assetOptions.initializeFieldLabels(formLayout)
 
         # Add preview selector.
         self.previewSelector = _item_selector.ItemSelector(
@@ -190,7 +199,7 @@ class Publisher(QtGui.QWidget):
     def clear(self):
         '''Clear the publish view to it's initial state.'''
         self._manageData = False
-        self.assetSelector.setCurrentIndex(-1)
+        self.assetOptions.clear()
         self.versionDescription.clear()
         self.entityPath.clear()
         self.entityBrowser.setLocation([])
@@ -218,9 +227,9 @@ class Publisher(QtGui.QWidget):
 
         taskId = None
 
-        assetType = self.assetSelector.itemData(
-            self.assetSelector.currentIndex()
-        )
+        asset = self.assetOptions.getAsset()
+        assetType = self.assetOptions.getAssetType()
+        assetName = self.assetOptions.getAssetName()
 
         versionDescription = self.versionDescription.toPlainText()
 
@@ -248,9 +257,14 @@ class Publisher(QtGui.QWidget):
         thumbnailFilePath = self.thumbnailDropZone.getFilePath()
 
         self._publish(
-            entity=entity, assetType=assetType,
-            versionDescription=versionDescription, taskId=taskId,
-            components=components, previewPath=previewPath,
+            entity=entity,
+            asset=asset,
+            assetName=assetName,
+            assetType=assetType,
+            versionDescription=versionDescription,
+            taskId=taskId,
+            components=components,
+            previewPath=previewPath,
             thumbnailFilePath=thumbnailFilePath
         )
 
@@ -258,9 +272,10 @@ class Publisher(QtGui.QWidget):
     def _publish(
         self, entity=None, assetName=None, assetType=None,
         versionDescription='', taskId=None, components=None,
-        previewPath=None, thumbnailFilePath=None
+        previewPath=None, thumbnailFilePath=None, asset=None
     ):
-        '''Get or create an asset of *assetType* on *entity*.
+        '''If *asset* is specified, publish a new version of it. Otherwise, get
+        or create an asset of *assetType* on *entity*.
 
         *taskId*, *versionDescription*, *components*, *previewPath* and
         *thumbnailFilePath* are optional.
@@ -274,7 +289,7 @@ class Publisher(QtGui.QWidget):
         self.publishStarted.emit()
 
         try:
-            if not assetType:
+            if not (asset or assetType):
                 self.publishFinished.emit(False)
                 raise ftrack_connect.error.ConnectError('No asset type selected.')
 
@@ -282,15 +297,17 @@ class Publisher(QtGui.QWidget):
                 self.publishFinished.emit(False)
                 raise ftrack_connect.error.ConnectError('No entity found')
 
-            if assetName is None:
-                assetName = assetType.getName()
-
             if components is None:
                 components = []
 
-            asset = entity.createAsset(
-                assetName, assetType.getShort(), taskId
-            )
+            if not asset:
+                if assetName is None:
+                    assetName = assetType.getName()
+
+                asset = entity.createAsset(
+                    assetName, assetType.getShort(), taskId
+                )
+                self.assetCreated.emit(asset)
 
             version = asset.createVersion(
                 versionDescription, taskId

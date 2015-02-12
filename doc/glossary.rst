@@ -10,6 +10,14 @@ Glossary
     API
         Application programming interface.
 
+    ftrack
+        Cloud based Creative Project management tool for Production Tracking,
+        Asset Management and Team Collaboration.
+
+        .. seealso::
+
+            `www.ftrack.com <https://www.ftrack.com>`_
+
     hook
         Used to extend or modify the default behaviour in ftrack connect. See
         :ref:`developing/hooks` for more information.
