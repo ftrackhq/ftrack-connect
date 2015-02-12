@@ -20,8 +20,8 @@ Adding your own custom applications
 
 The applications are added as regular :ref:`Actions <ftrack:developing/actions>`
 and in this example we'll create an :ref:`Action <ftrack:developing/actions>`
-to launch :term:`Houdini` with the current task and ftrack :term:`API`
-available.
+to launch :term:`Houdini` with the current task and the ftrack :term:`API`
+accessible within :term:`Houdini`.
 
 First create a new :term:`python` file called `example_houdini_hook.py` and
 open it in your favourite code editor.
@@ -331,7 +331,7 @@ Once again restart :term:`ftrack connect` to pick up the changes and open the
     hook :download:`example_houdini_hook.py </resource/example_houdini_hook.py>`.
 
 When :term:`Houdini` is running you can try to use the ftrack :term:`API`
-by opening the build-in python console and type
+by opening the built-in python console and type
     
     .. code-block:: python
 
