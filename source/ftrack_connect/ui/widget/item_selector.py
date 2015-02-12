@@ -61,7 +61,7 @@ class ItemSelector(QtGui.QComboBox):
 
         return foundIndex
 
-    def _selectItem(self, item):
+    def selectItem(self, item):
         '''Select item with the same id as *item*.
 
         If a matching item is not found, selects the first item
@@ -105,4 +105,4 @@ class ItemSelector(QtGui.QComboBox):
             self.addItem(label, item)
 
         # Re-select previously selected item
-        self._selectItem(currentItem)
+        self.selectItem(currentItem)
