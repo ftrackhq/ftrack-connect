@@ -337,3 +337,99 @@ by opening the build-in python console and type
 
         import ftrack
         print ftrack.getProjects()
+
+Modify environment before application start
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. note::
+    
+    This section assumes that you've followed the previous part of the tutorial
+    or that you've downloaded the complete hook
+    :download:`example_houdini_hook.py </resource/example_houdini_hook.py>`.
+
+Sometimes you want to modify the environment before starting an application
+for example adding paths to plugins or setting current user.
+
+To do this you'll need to modify the existing :py:class:`ftrack_connect.application.ApplicationLauncher` and override the
+:meth:`ftrack_connect.application.ApplicationLauncher._getApplicationEnvironment`.
+
+Start by adding the following class to your hook and modify the :meth:`register`
+to use the new launcher class.
+
+    .. code-block:: python
+
+        def register(registry, **kw):
+            '''Register hooks.'''
+
+            # Create store containing applications.
+            applicationStore = ApplicationStore()
+
+            # Create a launcher with the store containing applications.
+            launcher = ApplicationLauncher(
+                applicationStore
+            )
+
+            # Create action and register to respond to discover and launch actions.
+            action = HoudiniAction(applicationStore, launcher)
+            action.register()
+
+    .. code-block:: python
+
+        class ApplicationLauncher(ftrack_connect.application.ApplicationLauncher):
+            '''Custom launcher to modify environment before launch.'''
+
+            def _getApplicationEnvironment(
+                self, application, context=None
+            ):
+                '''Override to modify environment before launch.'''
+                
+                # Make sure to call super to retrieve original environment
+                # which contains the selection and ftrack API.
+                environment = super(
+                    ApplicationLauncher, self
+                )._getApplicationEnvironment(application, context)
+
+                # Append or Prepend values to the environment.
+                # Note that if you assign manually you will overwrite any
+                # existing values on that variable.
+
+
+                # Add my custom path to the HOUDINI_SCRIPT_PATH.
+                environment = ftrack_connect.application.appendPath(
+                    'path/to/my/custom/scripts',
+                    'HOUDINI_SCRIPT_PATH',
+                    environment
+                )
+
+                # Set an internal user id of some kind.
+                environment = ftrack_connect.application.appendPath(
+                    'my-unique-user-id-123',
+                    'STUDIO_SPECIFIC_USERID',
+                    environment
+                )
+
+                # Always return the environment at the end.
+                return environment
+
+In the overridden method we first call `super` to make sure that we still get
+the original environment created by :term:`ftrack connect`.
+
+After doing this we can append or prepend values to environment variables using
+the two utility methods :meth:`ftrack_connect.application.prependPath` and 
+:meth:`ftrack_connect.application.appendPath`.
+
+Once you've modified your hook restart :term:`ftrack connect` and launch
+:term:`Houdini`.
+
+When :term:`Houdini` has started you can validate that the environment is updated
+correct by starting the build-in python console and type:
+
+    .. code-block:: python
+
+        import os
+        print os.environ['STUDIO_SPECIFIC_USERID'] # my-unique-user-id-123
+
+.. note::
+
+    Download complete example hook with modified launcher
+    :download:`example_custom_launcher_houdini_hook.py </resource/example_custom_launcher_houdini_hook.py>`.
