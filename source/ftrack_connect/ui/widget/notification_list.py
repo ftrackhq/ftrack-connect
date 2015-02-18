@@ -39,9 +39,6 @@ class NotificationList(ftrack_connect.ui.widget.item_list.ItemList):
         )
         self.list.setShowGrid(False)
 
-        self.label = QtGui.QLabel('Notifications')
-        self.layout().insertWidget(0, self.label)
-
     def _createNotificationWidget(self, item):
         '''Return notification widget for *item*.
 
@@ -111,7 +108,7 @@ class Notification(QtGui.QWidget):
         layout.addLayout(toolbar)
 
         self._list = NotificationList(self)
-        self._list.setObjectName('time-log-list')
+        self._list.setObjectName('notification-list')
         layout.addWidget(self._list, stretch=1)
 
         self.overlay = ftrack_connect.ui.widget.overlay.BusyOverlay(

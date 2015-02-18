@@ -13,7 +13,7 @@ from ftrack_connect_nuke import ftrackConnector
 log = logging.getLogger(__name__)
 
 
-def _getNodeName(assetName):
+def _getNodeName(assetId):
     '''Return node name in scene by *assetName*.
 
     TODO: This should be done with something more unique than asset name.
@@ -21,11 +21,12 @@ def _getNodeName(assetName):
     '''
     nodes = {}
 
-    for node in nuke.allNodes('Read') + nuke.allNodes('Camera2'):
-        assetName = node.knob('assetName').value()
-        nodes[assetName] = node
+    for node in nuke.allNodes():
+        assetIdKnob = node.knob('assetId')
+        if assetIdKnob and assetIdKnob.value():
+            nodes[assetIdKnob.value()] = node
 
-    return nodes[assetName].name()
+    return nodes[assetId].name()
 
 
 def callback(event):
@@ -55,7 +56,7 @@ def callback(event):
 
     ftrackConnector.Connector.changeVersion(
         iAObj=importObj,
-        applicationObject=_getNodeName(result['asset']['name'])
+        applicationObject=_getNodeName(result['asset']['id'])
     )
 
 

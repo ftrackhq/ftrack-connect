@@ -26,18 +26,23 @@ class Notification(QtGui.QWidget):
     ):
         '''Initialise widget with initial component *value* and *parent*.'''
         super(Notification, self).__init__(parent=parent)
-        self.setLayout(QtGui.QHBoxLayout())
+        self.horizontalLayout = QtGui.QHBoxLayout()
+        verticalLayout = QtGui.QVBoxLayout()
+
+        self.setLayout(self.horizontalLayout)
+
+        self.horizontalLayout.addLayout(verticalLayout, stretch=1)
 
         self.textLabel = QtGui.QLabel()
-        self.layout().addWidget(self.textLabel, stretch=1)
+        verticalLayout.addWidget(self.textLabel)
 
         self.dateLabel = QtGui.QLabel()
-        self.layout().addWidget(self.dateLabel)
+        verticalLayout.addWidget(self.dateLabel)
 
         if hasattr(self, '_buttonText'):
             self.actionButton = QtGui.QPushButton(self._buttonText)
             self.actionButton.clicked.connect(self._onButtonClicked)
-            self.layout().addWidget(self.actionButton)
+            self.horizontalLayout.addWidget(self.actionButton)
 
         self.setDate(event['created_at'])
 
@@ -91,7 +96,7 @@ class VersionNotification(Notification):
 
     _type = 'version'
 
-    _buttonText = 'Version up'
+    _buttonText = 'Load version'
 
     def _load(self):
         '''Internal load of data from event.'''
@@ -102,7 +107,7 @@ class VersionNotification(Notification):
         ).all()
 
         self.setText(
-            '<b>{0} {1}</b>  New version available.'.format(
+            'Version <b style="color: #E6E6E6">{1}</b> of <b style="color: #E6E6E6">{0}</b> available.'.format(
                 version[0]['asset']['name'], version[0]['version']
             )
         )
@@ -130,13 +135,19 @@ class StatusNotification(Notification):
             data['statusid']['new'])
         ).all()
 
+        parentName = 'Unknown'
+        if self._event['parent_type'] == 'task':
+            parentName = session.query('select name from Context where id is "{0}"'.format(
+                self._event['parent_id'])
+            ).all()[0]['name']
+
         if status:
             status = status[0]
 
             self.setText(
-                'Status changed to '
-                '<span style="background-color:{0};">{1}'.format(
-                    status['color'], status['name']
+                'Status of <b style="color: #E6E6E6;">{2}</b> changed to '
+                '<span style="color: #E6E6E6;">{1}</span>'.format(
+                    status['color'], status['name'], parentName
                 )
             )
 
