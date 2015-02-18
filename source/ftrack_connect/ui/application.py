@@ -155,19 +155,24 @@ class Application(QtGui.QMainWindow):
         loginError will be emitted if this fails.
 
         '''
+        # Set environment variables supported by the old API.
         os.environ['FTRACK_SERVER'] = url
         os.environ['LOGNAME'] = username
         os.environ['FTRACK_APIKEY'] = apiKey
 
+        # Set environment variables supported by the new API.
+        os.environ['FTRACK_API_USER'] = username
+        os.environ['FTRACK_API_KEY'] = apiKey
+
         # Import ftrack module and catch any errors.
         try:
-            import ftrack
+            import ftrack_legacy
 
             # Force update the url of the server in case it was already set.
-            ftrack.xmlServer.__init__('{url}/client/'.format(url=url), False)
+            ftrack_legacy.xmlServer.__init__('{url}/client/'.format(url=url), False)
 
             # Force update event hub since it will set the url on initialise.
-            ftrack.EVENT_HUB.__init__()
+            ftrack_legacy.EVENT_HUB.__init__()
 
         except Exception as error:
 
@@ -180,8 +185,8 @@ class Application(QtGui.QMainWindow):
 
         # Access ftrack to validate login details.
         try:
-            ftrack.getUUID()
-        except ftrack.FTrackError as error:
+            ftrack_legacy.getUUID()
+        except ftrack_legacy.FTrackError as error:
             self.loginError.emit(str(error))
         else:
             # Store login details in settings.
@@ -196,15 +201,15 @@ class Application(QtGui.QMainWindow):
         '''Configure connect and load plugins.'''
 
         # Local import to avoid connection errors.
-        import ftrack
-        ftrack.setup()
+        import ftrack_legacy
+        ftrack_legacy.setup()
         self.tabPanel = _tab_widget.TabWidget()
         self.tabPanel.tabBar().setObjectName('application-tab-bar')
         self.setCentralWidget(self.tabPanel)
 
         self._discoverPlugins()
 
-        ftrack.EVENT_HUB.subscribe(
+        ftrack_legacy.EVENT_HUB.subscribe(
             'topic=ftrack.connect and source.user.username={0}'.format(
                 getpass.getuser()
             ),
@@ -394,8 +399,8 @@ class Application(QtGui.QMainWindow):
 
         # Import ftrack module and and try to get API version.
         try:
-            import ftrack
-            apiVersion = ftrack.api.version_data.ftrackVersion
+            import ftrack_legacy
+            apiVersion = ftrack_legacy.api.version_data.ftrackVersion
         except Exception:
             apiVersion = 'Unknown'
 
