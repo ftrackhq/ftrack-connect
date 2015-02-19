@@ -16,7 +16,9 @@ import ftrack_connect.worker
 _typeMapper = {
     'asset.published': 'version',
     'change.status.shot': 'status',
-    'change.status.task': 'status'
+    'change.status.task': 'status',
+    'update.custom_attribute.fstart': 'property',
+    'update.custom_attribute.fend': 'property'
 }
 
 
@@ -167,7 +169,14 @@ class Notification(QtGui.QWidget):
         if self._context['task']:
             cases.append(
                 'parent_id in ({task_ids}) and action in '
-                '("change.status.shot", "change.status.task"'.format(
+                '("change.status.shot", "change.status.task")'.format(
+                    task_ids=','.join(self._context['task'])
+                )
+            )
+
+            cases.append(
+                '(parent_id in ({task_ids}) and action in '
+                '("update.custom_attribute.fend", "update.custom_attribute.fstart"))'.format(
                     task_ids=','.join(self._context['task'])
                 )
             )
@@ -175,7 +184,7 @@ class Notification(QtGui.QWidget):
         if cases:
             events = session.query(
                 'select id, action, parent_id, parent_type, created_at, data '
-                'from Event where {0})'.format(' or '.join(cases))
+                'from Event where {0}'.format(' or '.join(cases))
             ).all()
 
             events.sort(key=lambda event: event['created_at'], reverse=True)

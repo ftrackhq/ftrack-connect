@@ -22,10 +22,47 @@ class WidgetHarness(Harness):
 
         notificationList = _notification_list.Notification()
 
+        notificationList.setStyleSheet('''
+
+            QPushButton {
+                border: 1px solid black;
+                border-radius: 2px;
+                background-color: #505050;
+                color: #F0F0F0;
+                padding: 4px;
+                min-width: 80px;
+            }
+
+            QFrame {
+                background-color: #2A2A2A;
+                color: #969696;
+            }
+
+            QLabel {
+                background-color: #323232;
+            }
+
+            QFrame#notification-list {
+                border: 0;
+                margin: 20px 0 0 0;
+            }
+
+            QFrame#notification-list QTableWidget {
+                background-color: transparent;
+                border: 0;
+            }
+
+            QFrame#notification-list QTableWidget::item {
+                background-color: #323232;
+                border-bottom: 1px solid #282828;
+                padding: 0;
+            }
+        ''')
+
         layout.addWidget(notificationList)
 
         notificationList.addContext(
-            '879f4658-c4dd-11e1-bf78-f23c91df25eb', 'task', False
+            '157271fc-5fc6-11e2-a771-f23c91df25eb', 'task', False
         )
 
         notificationList.addContext(

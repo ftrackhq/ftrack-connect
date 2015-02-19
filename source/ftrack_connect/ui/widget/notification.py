@@ -107,7 +107,7 @@ class VersionNotification(Notification):
         ).all()
 
         self.setText(
-            'Version <b style="color: #E6E6E6">{1}</b> of <b style="color: #E6E6E6">{0}</b> available.'.format(
+            'Version <span style="color: #E6E6E6">{1}</span> of <span style="color: #E6E6E6">{0}</span> available.'.format(
                 version[0]['asset']['name'], version[0]['version']
             )
         )
@@ -137,23 +137,59 @@ class StatusNotification(Notification):
 
         parentName = 'Unknown'
         if self._event['parent_type'] == 'task':
-            parentName = session.query('select name from Context where id is "{0}"'.format(
-                self._event['parent_id'])
+            parentName = session.query(
+                'select name from Context '
+                'where id is "{0}"'.format(
+                    self._event['parent_id']
+                )
             ).all()[0]['name']
 
         if status:
             status = status[0]
 
             self.setText(
-                'Status of <b style="color: #E6E6E6;">{2}</b> changed to '
-                '<span style="color: #E6E6E6;">{1}</span>'.format(
+                'Status of <span style="color: #E6E6E6;">{2}</span> changed '
+                'to <span style="color: #E6E6E6;">{1}</span>'.format(
                     status['color'], status['name'], parentName
                 )
             )
 
+
+class PropertyNotification(Notification):
+    '''Represent property notification.'''
+
+    _type = 'property'
+
+    _buttonText = 'Update'
+
+    def _load(self):
+        '''Internal load of data from event.'''
+        data = json.loads(self._event['data'])
+        value = data['value']
+
+        self.attributeName = self._event['action'].split('.')[-1]
+
+        self.oldValue = value['old']
+        self.newValue = value['new']
+
+        self.setText(
+            'Attribute <span style="color: #E6E6E6;">{0}</span>'
+            ' changed from {1} to {2}'.format(
+                self._event['action'].split('.')[-1],
+                self.oldValue,
+                self.newValue
+            )
+        )
+
     def value(self):
         '''Override and add extra information.'''
-        value = super(VersionNotification, self).value()
+        value = super(PropertyNotification, self).value()
+
+        value.update({
+            'new_value': self.newValue,
+            'old_value': self.oldValue,
+            'attribute_name': self.attributeName
+        })
 
         return value
 
