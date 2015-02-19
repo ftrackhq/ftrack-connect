@@ -174,7 +174,8 @@ class PropertyNotification(Notification):
 
         self.setText(
             'Attribute <span style="color: #E6E6E6;">{0}</span>'
-            ' changed from {1} to {2}'.format(
+            ' changed from <span style="color: #E6E6E6;">{1}</span> to '
+            '<span style="color: #E6E6E6;">{2}</span>'.format(
                 self._event['action'].split('.')[-1],
                 self.oldValue,
                 self.newValue
