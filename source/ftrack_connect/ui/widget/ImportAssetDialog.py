@@ -1,5 +1,7 @@
 from PySide import QtCore, QtGui
 
+import FnAssetAPI
+
 from ftrack_connect.connector import PanelComInstance
 from ftrack_connect.ui.widget.BrowseTasksSmallWidget import BrowseTasksSmallWidget
 from ftrack_connect.ui.widget.ListAssetsTableWidget import ListAssetsTableWidget
@@ -67,7 +69,7 @@ class FtrackImportAssetDialog(QtGui.QDialog):
 
         self.verticalLayout.addWidget(self.divider)
 
-        self.assetVersionDetailsWidget = AssetVersionDetailsWidget(self)
+        self.assetVersionDetailsWidget = AssetVersionDetailsWidget(self, connector=self.connector)
 
         self.verticalLayout.addWidget(self.assetVersionDetailsWidget, stretch=0)
 
@@ -169,6 +171,8 @@ class FtrackImportAssetDialog(QtGui.QDialog):
         self.listAssetsTableWidget.initView(ftrackId)
 
     def setMessage(self, message=''):
+        FnAssetAPI.logging.warning(message)
+        
         '''Display a message.'''
         if message is None:
             message = ''

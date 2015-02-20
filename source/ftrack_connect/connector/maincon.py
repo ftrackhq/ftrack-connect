@@ -535,7 +535,6 @@ class FTAssetHandler(object):
 
 _ftHandler = None
 
-
 class FTAssetHandlerInstance(object):
     def __init__(self):
         super(FTAssetHandlerInstance, self).__init__()

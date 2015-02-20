@@ -4,15 +4,20 @@ import os
 from PySide import QtCore, QtGui
 
 import ftrack
-from ftrack_connect_nuke.ftrackConnector.maincon import HelpFunctions
-from ftrack_connect_nuke.ftrackConnector import Connector
+from ftrack_connect.connector import HelpFunctions
 
 
 class AssetVersionDetailsWidget(QtGui.QWidget):
     
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, connector=None):
         '''Initialise widget.'''
         super(AssetVersionDetailsWidget, self).__init__(parent)
+        
+        if not connector:
+            raise ValueError('Please provide a connector object for %s' % self.__class__.__name__)
+
+        self.connector = connector
+
         self.headers = (
             'Asset', 'Author', 'Version', 'Date', 'Comment'
         )
@@ -71,7 +76,7 @@ class AssetVersionDetailsWidget(QtGui.QWidget):
             self.propertyTableWidget.resizeRowsToContents
         )
         
-        Connector.executeInThread(
+        self.connector.executeInThread(
             self._updateThumbnail, [self.thumbnailWidget, self.placholderThumbnail])
         
     def setAssetVersion(self, assetVersionId):
@@ -100,7 +105,7 @@ class AssetVersionDetailsWidget(QtGui.QWidget):
         if thumbnail is None:
             thumbnail = self.placholderThumbnail
         
-        Connector.executeInThread(
+        self.connector.executeInThread(
             self._updateThumbnail, [self.thumbnailWidget, thumbnail]
         )
         

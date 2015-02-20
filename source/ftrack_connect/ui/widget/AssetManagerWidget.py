@@ -2,7 +2,7 @@ from PySide import QtCore, QtGui
 
 import ftrack
 
-from ftrack_connect.connector import Connector, FTAssetObject
+from ftrack_connect.connector import FTAssetObject
 from ftrack_connect.ui.widget.InfoDialog import FtrackInfoDialog
 
 # import AssetManager_rc
@@ -215,7 +215,7 @@ class AssetManagerWidget(QtGui.QWidget):
                 for version in reversed(assetVersions):
                     versionNumberComboBox.addItem(str(version.getVersion()))
                     
-                conName = ftrackConnector.Connector.getConnectorName()
+                conName = self.connector.getConnectorName()
                 if conName in self.notVersionable:
                     if componentNameStr in self.notVersionable[conName]:
                         versionNumberComboBox.setEnabled(False)
@@ -302,7 +302,7 @@ class AssetManagerWidget(QtGui.QWidget):
         self.comment_dialog = FtrackInfoDialog()
         self.comment_dialog.show()
         self.comment_dialog.move(QtGui.QApplication.desktop().screen().rect().center() - self.comment_dialog.rect().center())
-        panelComInstance = ftrackConnector.panelcom.PanelComInstance.instance()
+        panelComInstance = PanelComInstance.instance()
         panelComInstance.infoListeners(taskId)
 
     @QtCore.Slot(int)
@@ -327,7 +327,7 @@ class AssetManagerWidget(QtGui.QWidget):
     @QtCore.Slot(str)
     def selectObject(self, objectName):
         #print objectName
-        ftrackConnector.Connector.selectObject(applicationObject=objectName)
+        self.connector.selectObject(applicationObject=objectName)
 
     @QtCore.Slot(str)
     def removeObject(self, objectName):
@@ -338,7 +338,7 @@ class AssetManagerWidget(QtGui.QWidget):
         msgBox.setDefaultButton(QtGui.QMessageBox.Ok)
         ret = msgBox.exec_()
         if ret == QtGui.QMessageBox.Ok:
-            ftrackConnector.Connector.removeObject(applicationObject=objectName)
+            self.connector.removeObject(applicationObject=objectName)
             foundItem = self.ui.AssertManagerTableWidget.findItems(objectName, QtCore.Qt.MatchExactly)
             self.ui.AssertManagerTableWidget.removeRow(foundItem[0].row())
             self.refreshAssetManager()
@@ -386,7 +386,7 @@ class AssetManagerWidget(QtGui.QWidget):
             selModel.select(index, QtGui.QItemSelectionModel.Select | QtGui.QItemSelectionModel.Rows)
 
     def getSceneSelection(self):
-        selectedAssets = ftrackConnector.Connector.getSelectedAssets()
+        selectedAssets = self.connector.getSelectedAssets()
         self.ui.AssertManagerTableWidget.selectionModel().clearSelection()
         for asset in selectedAssets:
             foundItem = self.ui.AssertManagerTableWidget.findItems(asset, QtCore.Qt.MatchExactly)
@@ -400,7 +400,7 @@ class AssetManagerWidget(QtGui.QWidget):
         for row in rows:
             objectName = self.ui.AssertManagerTableWidget.item(row, 8).text()
             objectNames.append(objectName)
-        ftrackConnector.Connector.selectObjects(objectNames)
+        self.connector.selectObjects(objectNames)
 
     def getCurrenRow(self):
         fw = QtGui.QApplication.focusWidget()
@@ -449,7 +449,7 @@ class AssetManagerWidget(QtGui.QWidget):
             assetVersionId=newftrackAssetVersion.getId()
         )
 
-        result = ftrackConnector.Connector.changeVersion(
+        result = self.connector.changeVersion(
             iAObj=importObj,
             applicationObject=objectName
         )
@@ -458,10 +458,10 @@ class AssetManagerWidget(QtGui.QWidget):
             cellWidget = self.ui.AssertManagerTableWidget.cellWidget(row, 0)
             if newVersion == latestVersion:
                 cellWidget.setStyleSheet("background-color: rgb(20, 161, 74);")
-                ftrackConnector.Connector.setNodeColor(applicationObject=objectName, latest=True)
+                self.connector.setNodeColor(applicationObject=objectName, latest=True)
             else:
                 cellWidget.setStyleSheet("background-color: rgb(227, 99, 22);")
-                ftrackConnector.Connector.setNodeColor(applicationObject=objectName, latest=False)
+                self.cnnector.setNodeColor(applicationObject=objectName, latest=False)
 
             self.ui.AssertManagerTableWidget.item(row, 14).setText(str(newVersion))
         else:

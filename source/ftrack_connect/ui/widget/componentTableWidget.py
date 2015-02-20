@@ -15,9 +15,13 @@ class ComponentTableWidget(QtGui.QTableWidget):
     
     importComponentSignal = QtCore.Signal(int)
 
-    def __init__(self, parent, connector):
+    def __init__(self, parent=None, connector=None):
         '''Initialise widget.'''
         super(ComponentTableWidget, self).__init__(parent)
+
+        if not connector:
+            raise ValueError('Please provide a connector object for %s' % self.__class__.__name__)
+    
         self.connector = connector
         self.workers = []
         self.columns = (

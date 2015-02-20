@@ -1,7 +1,5 @@
 from PySide import QtGui
 from PySide import QtXml
-from ftrack_connect_nuke import ftrackConnector
-
 
 class StackedOptionsWidget(QtGui.QStackedWidget):
     def __init__(self, parent, task=None, connector=None):
