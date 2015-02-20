@@ -4,6 +4,7 @@
 import random
 import uuid
 import datetime
+import getpass
 
 import ftrack
 from PySide import QtCore, QtGui
@@ -11,6 +12,20 @@ from PySide import QtCore, QtGui
 from harness import Harness
 
 import ftrack_connect.ui.widget.user_presence
+import ftrack_connect.crew_hub
+
+
+class MyCrewHub(ftrack_connect.crew_hub.CrewHub):
+
+    def isInterested(self, data):
+        if (
+            self._myData['context']['project_id'] ==
+            data['context']['project_id']
+        ):
+            return True
+
+        return False
+
 
 class WidgetHarness(Harness):
     '''Test harness for widget.'''
@@ -50,6 +65,11 @@ class WidgetHarness(Harness):
 
     def constructWidget(self):
         '''Return widget instance to test.'''
+        ftrack.setup()
+        import ftrack_connect.event_hub_thread
+        self.eventHubThread = ftrack_connect.event_hub_thread.EventHubThread()
+        self.eventHubThread.start()
+
         self.users = ftrack.getUsers()
         self.groups = ('Assigned', 'Related', 'Others', 'Contributors', 'Others')
         self.sessionIds = set()
@@ -63,44 +83,54 @@ class WidgetHarness(Harness):
         )
         widget.layout().addWidget(self.userPresence)
 
-        presenceButton = QtGui.QPushButton('Enter')
-        widget.layout().addWidget(presenceButton)
-        presenceButton.clicked.connect(self._addPresence)
-
-        heartbeatButton = QtGui.QPushButton('Heartbeat')
-        widget.layout().addWidget(heartbeatButton)
-        heartbeatButton.clicked.connect(self._addHeartbeat)
-
-        exitButton = QtGui.QPushButton('Exit')
-        widget.layout().addWidget(exitButton)
-        exitButton.clicked.connect(self._addExit)
-
         for user in self.users:
             self.userPresence.addUser(
                 user.getName(), user.getId(), random.choice(self.groups)
             )
 
+        self.crewHub = MyCrewHub(
+            onPresence=self._onPresence,
+            onHeartbeat=self._onHeartbeat,
+            onExit=self._onExit
+        )
+
+        user = ftrack.getUser(getpass.getuser())
+        data = {
+            'user': {
+                'name': user.getName(),
+                'id': user.getId()
+            },
+            'application': {
+                'identifier': 'nuke',
+                'label': 'Nuke'
+            },
+            'context': {
+                'project_id': 'my_project_id',
+                'containers': []
+            }
+        }
+
+        self.crewHub.enter(data)
+
         return widget
 
-    def _addPresence(self):
-        presence = self.generatePresence()
-        self.sessionIds.add(presence['session_id'])
-        self.userPresence._handlePresenceEvent(presence)
+    def _onPresence(self, data):
+        self.sessionIds.add(data['session_id'])
+        data['timestamp'] = datetime.datetime.utcnow()
+        self.userPresence._handlePresenceEvent(data)
 
-    def _addHeartbeat(self):
-        sessionId = random.choice(list(self.sessionIds))
+    def _onHeartbeat(self, data):
         self.userPresence._handleHeartbeatEvent({
             'timestamp': datetime.datetime.utcnow(),
             'activity': (
                 datetime.datetime.utcnow() -
-                datetime.timedelta(seconds = random.randint(1, 120))
+                datetime.timedelta(seconds=random.randint(1, 120))
             ),
-            'session_id': sessionId
+            'session_id': data['session_id']
         })
 
-    def _addExit(self):
-        sessionId = self.sessionIds.pop()
-        self.userPresence._handleExitEvent(sessionId)
+    def _onExit(self, data):
+        self.userPresence._handleExitEvent(data['session_id'])
 
 if __name__ == '__main__':
     raise SystemExit(

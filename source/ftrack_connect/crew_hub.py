@@ -22,7 +22,7 @@ class CrewHub(object):
     # The interval between heartbeats.
     HEARTBEAT_INTERVAL = 10
 
-    def __init__(self):
+    def __init__(self, onPresence=None, onHeartbeat=None, onExit=None):
         '''Initialise crew hub.'''
         super(CrewHub, self).__init__()
         self.logger = logging.getLogger(
@@ -30,6 +30,11 @@ class CrewHub(object):
         )
 
         self._subscriptions = {}
+        self._callbacks = {
+            'presence': onPresence,
+            'exit': onExit,
+            'heartbeat': onHeartbeat
+        }
 
     def enter(self, data):
         '''Broadcast presence with *data* and start sending out heartbeats.'''
@@ -83,14 +88,16 @@ class CrewHub(object):
             'time': time.time()
         }
 
-    def onHeartbeat(self, data):
-        '''Runs when a hearbeat is recieved for *data*.'''
+        if self._callbacks['presence'] is not None:
+            self._callbacks['presence'](data)
 
     def _onHeartbeat(self, event):
         '''Increase subscription time for *event*.'''
         sessionId = event['data']['session_id']
         self._subscriptions[sessionId]['time'] = time.time()
-        self.onHeartbeat(event['data'])
+
+        if self._callbacks['heartbeat'] is not None:
+            self._callbacks['heartbeat'](event['data'])
 
     def _initiateHartbeats(self):
         '''Initiate heartbeats.'''
@@ -113,6 +120,10 @@ class CrewHub(object):
             for key, value in self._subscriptions.items():
                 if time.time() > value['time'] + self.HEARTBEAT_INTERVAL * 2 + 1:
                     ftrack.EVENT_HUB.unsubscribe(value['subscription'])
+
+                    if self._callbacks['exit'] is not None:
+                        self._callbacks['exit'](value['data'])
+
                     del self._subscriptions[key]
 
             time.sleep(self.HEARTBEAT_INTERVAL)
