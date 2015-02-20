@@ -48,7 +48,7 @@ class UserPresence(QtGui.QWidget):
         self.userList.itemClicked.connect(self._itemClickedHandler)
 
     def addUser(self, name, userId, group):
-        self.logger.debug('addUser: {0}'.format(name))
+        self.logger.debug(u'addUser: {0}'.format(name))
         self.userList.addItem({
             'name': name,
             'userId': userId,
