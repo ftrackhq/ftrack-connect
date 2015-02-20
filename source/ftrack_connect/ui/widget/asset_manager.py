@@ -93,7 +93,12 @@ class FtrackAssetManagerDialog(QtGui.QDialog):
 
         self.connector = connector
         self.setMinimumWidth(400)
-        self.setSizePolicy(QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding))
+        self.setSizePolicy(
+            QtGui.QSizePolicy(
+                QtGui.QSizePolicy.Expanding, 
+                QtGui.QSizePolicy.Expanding
+            )
+        )
 
         self.centralwidget = QtGui.QWidget(self)
         self.verticalMainLayout = QtGui.QVBoxLayout(self)
@@ -104,7 +109,10 @@ class FtrackAssetManagerDialog(QtGui.QDialog):
         self.headerWidget.setTitle('Asset Manager')
         self.verticalMainLayout.addWidget(self.headerWidget)
 
-        self.assetManagerWidget = AssetManagerWidget(parent=self.centralwidget, connector=self.connector)
+        self.assetManagerWidget = AssetManagerWidget(
+            parent=self.centralwidget, 
+            connector=self.connector
+        )
 
         self.horizontalLayout.addWidget(self.assetManagerWidget)
         self.verticalMainLayout.addLayout(self.horizontalLayout)
@@ -113,7 +121,9 @@ class FtrackAssetManagerDialog(QtGui.QDialog):
         self.setWindowTitle("ftrackAssetManager")
 
         panelComInstance = PanelComInstance.instance()
-        panelComInstance.addRefreshListener(self.assetManagerWidget.refreshAssetManager)
+        panelComInstance.addRefreshListener(
+            self.assetManagerWidget.refreshAssetManager
+        )
 
 
 class AssetManagerWidget(QtGui.QWidget):
@@ -169,7 +179,9 @@ class AssetManagerWidget(QtGui.QWidget):
         ]
 
 
-        self.ui.AssertManagerTableWidget.setHorizontalHeaderLabels(self.columnHeaders)
+        self.ui.AssertManagerTableWidget.setHorizontalHeaderLabels(
+            self.columnHeaders
+        )
 
         self.ui.AssetManagerComboBoxModel = QtGui.QStandardItemModel()
 
@@ -187,16 +199,32 @@ class AssetManagerWidget(QtGui.QWidget):
         self.ui.AssetManagerComboBox.setModel(self.ui.AssetManagerComboBoxModel)
 
         self.signalMapperSelect = QtCore.QSignalMapper()
-        QtCore.QObject.connect(self.signalMapperSelect, QtCore.SIGNAL("mapped(QString)"), self.selectObject)
+        QtCore.QObject.connect(
+            self.signalMapperSelect, 
+            QtCore.SIGNAL("mapped(QString)"), 
+            self.selectObject
+        )
 
         self.signalMapperRemove = QtCore.QSignalMapper()
-        QtCore.QObject.connect(self.signalMapperRemove, QtCore.SIGNAL("mapped(QString)"), self.removeObject)
+        QtCore.QObject.connect(
+            self.signalMapperRemove, 
+            QtCore.SIGNAL("mapped(QString)"), 
+            self.removeObject
+        )
 
         self.signalMapperComment = QtCore.QSignalMapper()
-        QtCore.QObject.connect(self.signalMapperComment, QtCore.SIGNAL("mapped(QString)"), self.openComments)
+        QtCore.QObject.connect(
+            self.signalMapperComment, 
+            QtCore.SIGNAL("mapped(QString)"), 
+            self.openComments
+        )
 
         self.signalMapperChangeVersion = QtCore.QSignalMapper()
-        QtCore.QObject.connect(self.signalMapperChangeVersion, QtCore.SIGNAL("mapped(int)"), self.changeVersion)
+        QtCore.QObject.connect(
+            self.signalMapperChangeVersion,
+             QtCore.SIGNAL("mapped(int)"), 
+             self.changeVersion
+        )
 
         extraOptionsMenu = QtGui.QMenu(self.ui.menuButton)
         extraOptionsMenu.addAction('Get SceneSelection', self.getSceneSelection)
@@ -330,13 +358,14 @@ class AssetManagerWidget(QtGui.QWidget):
                 
                 self.signalMapperComment.setMapping(commentButton, str(assetVersion.getId()))
 
-        #self.ui.AssertManagerTableWidget.setSortingEnabled(True)
         self.ui.AssertManagerTableWidget.setHorizontalHeaderLabels(self.columnHeaders)
 
     def openComments(self, taskId):
         self.comment_dialog = FtrackInfoDialog()
         self.comment_dialog.show()
-        self.comment_dialog.move(QtGui.QApplication.desktop().screen().rect().center() - self.comment_dialog.rect().center())
+        self.comment_dialog.move(
+            QtGui.QApplication.desktop().screen().rect().center() - self.comment_dialog.rect().center()
+        )
         panelComInstance = PanelComInstance.instance()
         panelComInstance.infoListeners(taskId)
 
@@ -361,7 +390,6 @@ class AssetManagerWidget(QtGui.QWidget):
 
     @QtCore.Slot(str)
     def selectObject(self, objectName):
-        #print objectName
         self.connector.selectObject(applicationObject=objectName)
 
     @QtCore.Slot(str)
@@ -374,7 +402,9 @@ class AssetManagerWidget(QtGui.QWidget):
         ret = msgBox.exec_()
         if ret == QtGui.QMessageBox.Ok:
             self.connector.removeObject(applicationObject=objectName)
-            foundItem = self.ui.AssertManagerTableWidget.findItems(objectName, QtCore.Qt.MatchExactly)
+            foundItem = self.ui.AssertManagerTableWidget.findItems(
+                objectName, QtCore.Qt.MatchExactly
+            )
             self.ui.AssertManagerTableWidget.removeRow(foundItem[0].row())
             self.refreshAssetManager()
         else:

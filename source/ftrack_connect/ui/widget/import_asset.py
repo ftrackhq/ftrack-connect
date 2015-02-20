@@ -8,6 +8,7 @@ from ftrack_connect.ui.widget.component_table import ComponentTableWidget
 from ftrack_connect.ui.widget.import_options import ImportOptionsWidget
 from ftrack_connect.ui.widget.header import HeaderWidget
 
+
 class FtrackImportAssetDialog(QtGui.QDialog):
     importSignal = QtCore.Signal()
 
@@ -121,17 +122,17 @@ class FtrackImportAssetDialog(QtGui.QDialog):
         )
         
         self.browseTasksWidget.update()
-        
+    
     def importSelectedComponents(self):
         selectedRows = self.componentTableWidget.selectionModel().selectedRows()
         for r in selectedRows:
             self.onImportComponent(r.row())
-        
+    
     def importAllComponents(self):
         rowCount = self.componentTableWidget.rowCount()
         for i in range(rowCount):
             self.onImportComponent(i)
-        
+    
     def onImportComponent(self, row):
         '''Handle importing component.'''
         importOptions = self.importOptionsWidget.getOptions()
