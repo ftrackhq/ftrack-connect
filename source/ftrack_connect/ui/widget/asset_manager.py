@@ -6,7 +6,7 @@ from ftrack_connect.connector import FTAssetObject, PanelComInstance
 from ftrack_connect.ui.widget.info import FtrackInfoDialog
 from ftrack_connect.ui.widget.header import HeaderWidget
 
-# import AssetManager_rc
+import asset_manager_rc
 
 class Ui_AssetManager(object):
     def setupUi(self, AssetManager):

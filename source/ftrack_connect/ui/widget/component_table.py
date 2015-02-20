@@ -5,7 +5,7 @@ import os
 from PySide import QtCore, QtGui
 import ftrack
 
-from ftrack_connect.connector import Worker
+from ftrack_connect.worker import Worker
 
 
 class ComponentTableWidget(QtGui.QTableWidget):

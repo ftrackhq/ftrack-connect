@@ -1,7 +1,7 @@
 import os
 from PySide import QtCore, QtGui
 import webbrowser
-# import HeaderResources_rc
+import header_rc
 
 class Ui_Header(object):
     def setupUi(self, Header):

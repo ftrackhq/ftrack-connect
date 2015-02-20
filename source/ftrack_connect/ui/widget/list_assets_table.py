@@ -5,7 +5,6 @@ import ftrack
 
 from ftrack_connect.connector import FTAssetHandlerInstance
 
-
 class Ui_AssetVersionDetails(object):
     def setupUi(self, AssetVersionDetails):
         AssetVersionDetails.setObjectName("AssetVersionDetails")
@@ -142,7 +141,7 @@ class ListAssetsTableWidget(QtGui.QWidget):
             assetTypeItem = QtGui.QStandardItem(assetType.getName())
             assetTypeItem.type = assetType.getShort()
             self.assetTypeSelectorModel.appendRow(assetTypeItem)
-
+    
     @QtCore.Slot()
     def refreshView(self):
         selectedRows = self.assetTable.selectionModel().selectedRows()
@@ -154,13 +153,13 @@ class ListAssetsTableWidget(QtGui.QWidget):
         self.updateView(self.latestFtrackId)
         
         self.onVersionSelected(selRow)
-        
+
     @QtCore.Slot(str)
     def initView(self, ftrackId=None):
         self.updateView(ftrackId)
         if self.assetTable.rowCount()>0:
             self.onVersionSelected(0)
-
+    
     @QtCore.Slot(str)
     def updateView(self, ftrackId=None):
         '''Update to view entity identified by *ftrackId*.'''

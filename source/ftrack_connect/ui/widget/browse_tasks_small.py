@@ -4,6 +4,7 @@ import ftrack
 from browse_tasks import BrowseTasksWidget
 from ftrack_connect.connector import HelpFunctions
 
+import browse_tasks_small_rc
 
 class Ui_BrowseTasksSmall(object):
     def setupUi(self, BrowseTasksSmall):
