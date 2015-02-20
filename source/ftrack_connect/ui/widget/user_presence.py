@@ -1,12 +1,12 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
 
+import logging
 import uuid
 import random
 import datetime
 
 from PySide import QtGui, QtCore
-import ftrack
 
 import ftrack_connect.ui.widget.label
 import ftrack_connect.ui.widget.user_list
@@ -14,11 +14,14 @@ import ftrack_connect.ui.widget.user
 
 class UserPresence(QtGui.QWidget):
 
-    def __init__(self, users, groups, parent=None):
+    def __init__(self, groups, parent=None):
         '''Instantiate widget with *users* and *groups*.'''
         super(UserPresence, self).__init__(parent)
+        
+        self.logger = logging.getLogger(
+            __name__ + '.' + self.__class__.__name__
+        )
 
-        self._users = users
         self._groups = groups
 
         self.userList = ftrack_connect.ui.widget.user_list.UserList(
@@ -44,12 +47,13 @@ class UserPresence(QtGui.QWidget):
         self.userList.setFixedWidth(150)
         self.userList.itemClicked.connect(self._itemClickedHandler)
 
-        for user, group in self._users:
-            self.userList.addItem({
-                'name': user.getName(),
-                'userId': user.getId(),
-                'group': group
-            })
+    def addUser(self, name, userId, group):
+        self.logger.debug('addUser: {0}'.format(name))
+        self.userList.addItem({
+            'name': name,
+            'userId': userId,
+            'group': group
+        })
 
     def _handlePresenceEvent(self, presenceEnterEvent):
         '''Handle *presenceEnterEvent* from hub.
@@ -86,7 +90,7 @@ class UserPresence(QtGui.QWidget):
         )
 
     def _handleExitEvent(self, sessionId):
-        pass
+        self.userList.removeSession(sessionId)
 
     def _itemClickedHandler(self, value):
         if self._userInfo is None:

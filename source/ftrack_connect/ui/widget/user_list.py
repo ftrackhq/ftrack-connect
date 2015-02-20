@@ -87,6 +87,19 @@ class UserList(ftrack_connect.ui.widget.item_list.ItemList):
             'Session with id {0} could not be found.'.format(sessionId)
         )
 
+    def removeSession(self, sessionId):
+        for row in range(self.count()):
+            widget = self.list.widgetAt(row)
+            value = self.widgetItem(widget)
+            if isinstance(value, dict) and sessionId in value['applications']:
+                del value['applications'][sessionId]
+
+                widget.setValue(value)
+                return
+
+        raise ValueError(
+            'Session with id {0} could not be found.'.format(sessionId)
+        )
 
 
     def addItem(self, item, row=None):

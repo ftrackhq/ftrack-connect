@@ -26,7 +26,6 @@ class WidgetHarness(Harness):
         return {
             'user': {
                 'id': user.getId(),
-                'thumbnail': user.get('thumbid'),
                 'name': user.getName()
             },
             'application': random.choice([
@@ -52,24 +51,17 @@ class WidgetHarness(Harness):
     def constructWidget(self):
         '''Return widget instance to test.'''
         self.users = ftrack.getUsers()
-        self.groups = ('Assigned', 'Related', 'Others',)
+        self.groups = ('Assigned', 'Related', 'Others', 'Contributors', 'Others')
         self.sessionIds = set()
 
         widget = QtGui.QWidget()
         widget.setLayout(QtGui.QVBoxLayout())
         widget.setMinimumSize(QtCore.QSize(400, 600))
 
-        usersAndGroups = []
-        for user in self.users:
-            usersAndGroups.append(
-                (user, random.choice(self.groups))
-            )
-
         self.userPresence = ftrack_connect.ui.widget.user_presence.UserPresence(
-            usersAndGroups, self.groups
+            self.groups
         )
         widget.layout().addWidget(self.userPresence)
-
 
         presenceButton = QtGui.QPushButton('Enter')
         widget.layout().addWidget(presenceButton)
@@ -82,6 +74,11 @@ class WidgetHarness(Harness):
         exitButton = QtGui.QPushButton('Exit')
         widget.layout().addWidget(exitButton)
         exitButton.clicked.connect(self._addExit)
+
+        for user in self.users:
+            self.userPresence.addUser(
+                user.getName(), user.getId(), random.choice(self.groups)
+            )
 
         return widget
 
