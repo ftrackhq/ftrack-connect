@@ -1,20 +1,18 @@
 from PySide import QtCore, QtGui
 
-import FnAssetAPI
-
-from ftrack_connect.connector import PanelComInstance
-from ftrack_connect.ui.widget.BrowseTasksSmallWidget import BrowseTasksSmallWidget
-from ftrack_connect.ui.widget.ListAssetsTableWidget import ListAssetsTableWidget
-from ftrack_connect.ui.widget.AssetVersionDetailsWidget import AssetVersionDetailsWidget
-from ftrack_connect.ui.widget.componentTableWidget import ComponentTableWidget
-from ftrack_connect.ui.widget.ImportOptionsWidget import ImportOptionsWidget
-from ftrack_connect.ui.widget.HeaderWidget import HeaderWidget
-from ftrack_connect.connector import FTAssetObject
+from ftrack_connect.connector import PanelComInstance, FTAssetObject
+from ftrack_connect.ui.widget.browse_tasks_small import BrowseTasksSmallWidget
+from ftrack_connect.ui.widget.list_assets_table import ListAssetsTableWidget
+from ftrack_connect.ui.widget.asset_version_details import AssetVersionDetailsWidget
+from ftrack_connect.ui.widget.component_table import ComponentTableWidget
+from ftrack_connect.ui.widget.import_options import ImportOptionsWidget
+from ftrack_connect.ui.widget.header import HeaderWidget
 
 class FtrackImportAssetDialog(QtGui.QDialog):
     importSignal = QtCore.Signal()
 
     def __init__(self, parent=None, connector=None):
+
         if not connector:
             raise ValueError('Please provide a connector object for %s' % self.__class__.__name__)
 
@@ -22,8 +20,11 @@ class FtrackImportAssetDialog(QtGui.QDialog):
 
         self.connector = connector
 
-        self.setSizePolicy(QtGui.QSizePolicy.Expanding,
-                           QtGui.QSizePolicy.Expanding)
+        self.setSizePolicy(
+            QtGui.QSizePolicy.Expanding,
+            QtGui.QSizePolicy.Expanding
+        )
+
         self.setMinimumWidth(600)
 
         self.mainLayout = QtGui.QVBoxLayout(self)
@@ -51,7 +52,7 @@ class FtrackImportAssetDialog(QtGui.QDialog):
         self.headerWidget.setTitle('Import Asset')
         self.verticalLayout.addWidget(self.headerWidget, stretch=0)
 
-        self.browseTasksWidget = BrowseTasksSmallWidget(self)
+        self.browseTasksWidget = BrowseTasksSmallWidget(parent=self)
         self.verticalLayout.addWidget(self.browseTasksWidget, stretch=0)
         pos = self.headerWidget.rect().bottomRight().y()
         self.browseTasksWidget.setTopPosition(pos)
@@ -73,7 +74,7 @@ class FtrackImportAssetDialog(QtGui.QDialog):
 
         self.verticalLayout.addWidget(self.assetVersionDetailsWidget, stretch=0)
 
-        self.componentTableWidget = ComponentTableWidget(self, self.connector)
+        self.componentTableWidget = ComponentTableWidget(self, connector=self.connector)
 
         self.verticalLayout.addWidget(self.componentTableWidget, stretch=3)
         
@@ -91,7 +92,7 @@ class FtrackImportAssetDialog(QtGui.QDialog):
         
         self.horizontalLayout.setAlignment(QtCore.Qt.AlignRight)
 
-        self.importOptionsWidget = ImportOptionsWidget(self, connector=self.connector)
+        self.importOptionsWidget = ImportOptionsWidget(parent=self, connector=self.connector)
 
         self.verticalLayout.addWidget(self.importOptionsWidget, stretch=0)
 
@@ -105,7 +106,7 @@ class FtrackImportAssetDialog(QtGui.QDialog):
         panelComInstance = PanelComInstance.instance()
         panelComInstance.addSwitchedShotListener(self.browseTasksWidget.updateTask)
 
-        QtCore.QObject.connect(self.browseTasksWidget, QtCore.SIGNAL('clickedIdSignal(QString)'), self.clickedISignal)
+        QtCore.QObject.connect(self.browseTasksWidget, QtCore.SIGNAL('clickedIdSignal(QString)'), self.clickedIdSignal)
         
         QtCore.QObject.connect(self.importAllButton, QtCore.SIGNAL('clicked()'), self.importAllComponents)
         QtCore.QObject.connect(self.importSelectedButton, QtCore.SIGNAL('clicked()'), self.importSelectedComponents)
@@ -167,12 +168,10 @@ class FtrackImportAssetDialog(QtGui.QDialog):
         self.assetVersionDetailsWidget.setAssetVersion(assetVid)
         self.componentTableWidget.setAssetVersion(assetVid)
         
-    def clickedISignal(self, ftrackId):
+    def clickedIdSignal(self, ftrackId):
         self.listAssetsTableWidget.initView(ftrackId)
 
-    def setMessage(self, message=''):
-        FnAssetAPI.logging.warning(message)
-        
+    def setMessage(self, message=''):        
         '''Display a message.'''
         if message is None:
             message = ''

@@ -2,8 +2,9 @@ from PySide import QtCore, QtGui
 
 import ftrack
 
-from ftrack_connect.connector import FTAssetObject
-from ftrack_connect.ui.widget.InfoDialog import FtrackInfoDialog
+from ftrack_connect.connector import FTAssetObject, PanelComInstance
+from ftrack_connect.ui.widget.info import FtrackInfoDialog
+from ftrack_connect.ui.widget.header import HeaderWidget
 
 # import AssetManager_rc
 
@@ -79,6 +80,40 @@ class Ui_AssetManager(object):
         self.selectAllButton.setText(QtGui.QApplication.translate("AssetManager", "Select All", None, QtGui.QApplication.UnicodeUTF8))
         self.menuButton.setText(QtGui.QApplication.translate("AssetManager", "Extra", None, QtGui.QApplication.UnicodeUTF8))
         self.refreshButton.setText(QtGui.QApplication.translate("AssetManager", "Refresh", None, QtGui.QApplication.UnicodeUTF8))
+
+
+
+class FtrackAssetManagerDialog(QtGui.QDialog):
+    def __init__(self, parent=None, connector=None):
+
+        super(FtrackAssetManagerDialog, self).__init__(parent=parent)
+
+        if not connector:
+            raise ValueError('Please provide a connector object for %s' % self.__class__.__name__)
+
+        self.connector = connector
+        self.setMinimumWidth(400)
+        self.setSizePolicy(QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding))
+
+        self.centralwidget = QtGui.QWidget(self)
+        self.verticalMainLayout = QtGui.QVBoxLayout(self)
+        self.verticalMainLayout.setSpacing(6)
+        self.horizontalLayout = QtGui.QHBoxLayout()
+
+        self.headerWidget = HeaderWidget(self)
+        self.headerWidget.setTitle('Asset Manager')
+        self.verticalMainLayout.addWidget(self.headerWidget)
+
+        self.assetManagerWidget = AssetManagerWidget(parent=self.centralwidget, connector=self.connector)
+
+        self.horizontalLayout.addWidget(self.assetManagerWidget)
+        self.verticalMainLayout.addLayout(self.horizontalLayout)
+
+        self.setObjectName('ftrackAssetManager')
+        self.setWindowTitle("ftrackAssetManager")
+
+        panelComInstance = PanelComInstance.instance()
+        panelComInstance.addRefreshListener(self.assetManagerWidget.refreshAssetManager)
 
 
 class AssetManagerWidget(QtGui.QWidget):

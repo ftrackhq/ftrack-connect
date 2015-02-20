@@ -1,5 +1,5 @@
 from PySide import QtCore, QtGui
-from StackedOptionsWidget import StackedOptionsWidget
+from stacked_options import StackedOptionsWidget
 from ftrack_connect.connector import FTAssetHandlerInstance
 
 class Ui_ImportOptions(object):

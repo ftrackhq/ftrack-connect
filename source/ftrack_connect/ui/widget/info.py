@@ -3,8 +3,8 @@ import ftrack
 from PySide import QtGui
 
 from ftrack_connect.connector import PanelComInstance
-from ftrack_connect.ui.widget.WebViewWidget import WebViewWidget
-from ftrack_connect.ui.widget.HeaderWidget import HeaderWidget
+from ftrack_connect.ui.widget.web_view import WebViewWidget
+from ftrack_connect.ui.widget.header import HeaderWidget
 
 
 class FtrackInfoDialog(QtGui.QDialog):

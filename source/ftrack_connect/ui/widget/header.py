@@ -1,5 +1,6 @@
 import os
 from PySide import QtCore, QtGui
+import webbrowser
 # import HeaderResources_rc
 
 class Ui_Header(object):
@@ -81,7 +82,6 @@ class HeaderWidget(QtGui.QWidget):
         self.ui.titleLabel.setText(title)
         
     def openHelp(self):
-        import webbrowser
         webbrowser.open(self.helpUrl)
         
     def setHelpUrl(self, url):
