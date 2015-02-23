@@ -8,10 +8,16 @@ import uuid
 import tempfile
 import urlparse
 import traceback
+import glob
+import imp
+import urllib2
+import re
+import sys
 
-from PySide import QtGui
+from PySide import QtGui, QtNetwork, QtCore
 
 import ftrack
+
 
 def register_scheme(scheme):
     for method in filter(lambda s: s.startswith('uses_'), dir(urlparse)):
@@ -108,9 +114,12 @@ class Connector(object):
     # Use Qt to get a screengrab of current application
     @staticmethod
     def takeScreenshot():
-        from PySide import QtGui
-        fileName = os.path.join(tempfile.gettempdir(), str(uuid.uuid4()) + '.jpg')
-        QtGui.QPixmap.grabWindow(QtGui.QApplication.activeWindow().winId()).save(fileName, 'jpg')
+        fileName = os.path.join(
+            tempfile.gettempdir(), str(uuid.uuid4()) + '.jpg'
+        )
+        QtGui.QPixmap.grabWindow(
+            QtGui.QApplication.activeWindow().winId()
+        ).save(fileName, 'jpg')
         return fileName
 
     @staticmethod
@@ -123,21 +132,21 @@ class Connector(object):
     @classmethod
     def registerAssets(cls):
         if 'FTRACK_OVERRIDE_PATH' in os.environ:
-            import glob
-            import imp
             splitPath = os.environ['FTRACK_OVERRIDE_PATH'].split(os.pathsep)
             for path in splitPath:
                 for f in glob.glob(path + "/*.py"):
                     try:
-                        foo = imp.load_source(os.path.splitext(os.path.basename(f))[0], f)
+                        foo = imp.load_source(
+                            os.path.splitext(os.path.basename(f))[0], f
+                        )
                         if foo.connector() == cls.getConnectorName():
                             foo.registerAssetTypes()
                     except:
                         pass
 
-    # If the application supports threading this class can be implemented and used
     @staticmethod
     def executeInThread(function, arg):
+        '''Execute *function* in thread with *arg* if supported.'''
         function(*arg)
 
     # Make certain scene validations before actualy publishing
@@ -157,7 +166,6 @@ class Connector(object):
             for path in splittedPath:
                 fileName = os.path.join(path, 'postpublish.py')
                 if os.path.isfile(fileName):
-                    import imp
                     postPublishMod = imp.load_source('postPublishMod', fileName)
                     postPublishMod.postPublish(iAObj, publishedComponents)
 
@@ -259,8 +267,12 @@ class Connector(object):
                     component.setMeta(k, v)
 
             if progressCallback:
-                progressStep = (endProgress - startProgress) / len(publishedComponents)
-                progressCallback(startProgress + progressStep * (componentNumber + 1))
+                progressStep = (
+                    (endProgress - startProgress) / len(publishedComponents)
+                )
+                progressCallback(
+                    startProgress + progressStep * (componentNumber + 1)
+                )
 
         assetVersion.publish()
         Connector.postPublish(pubObj, publishedComponents)
@@ -325,8 +337,9 @@ class HelpFunctions(object):
             assetpath += '_' + component
 
         endOfPath = os.path.join(*[s[x] for x in range(1, len(s))])
-        #print endOfPath
-        assetabspath = os.path.join(showAssetRoot, endOfPath, assettype, assetpath)
+        assetabspath = os.path.join(
+            showAssetRoot, endOfPath, assettype, assetpath
+        )
         assetpath = os.path.join(endOfPath, assettype, assetpath)
 
         if(not os.path.isdir(assetabspath)):
@@ -351,7 +364,7 @@ class HelpFunctions(object):
                     shotparents.append('assetb')
                 else:
                     shotparents.append(t.getName())
-                
+
             path = shotparents + [task.getName()]
             if unders:
                 shotpath = '_'.join(path)
@@ -360,13 +373,10 @@ class HelpFunctions(object):
             else:
                 shotpath = '.'.join(path)
             path = shotpath
-
-        #path = path.replace(' ', '_')
         return path
 
     @staticmethod
     def getFileFromUrl(url, toFile=None, returnResponse=None):
-        import urllib2
         ftrackProxy = os.getenv('FTRACK_PROXY', '')
         ftrackServer = os.getenv('FTRACK_SERVER', '')
         if ftrackProxy != '':
@@ -392,35 +402,31 @@ class HelpFunctions(object):
             return response
 
         return html
-    
+
     @staticmethod
     def getFtrackQNetworkProxy():
-        from PySide import QtNetwork, QtCore
         ftrackProxy = os.getenv('FTRACK_PROXY', '')
         if ftrackProxy != '':
 
-            #must start with http, or overflow error
+            # Must start with http, or overflow error.
             if not ftrackProxy.startswith('http'):
-                ftrackProxy = "http://%s"%ftrackProxy
+                ftrackProxy = "http://%s" % ftrackProxy
 
             proxy_url = QtCore.QUrl(ftrackProxy)
             proxy = QtNetwork.QNetworkProxy(
-                QtNetwork.QNetworkProxy.HttpProxy, 
+                QtNetwork.QNetworkProxy.HttpProxy,
                 proxy_url.host(),
                 proxy_url.port(),
                 proxy_url.userName(),
                 proxy_url.password()
             )
-            
+
             return proxy
-        
+
         return None
 
     @staticmethod
     def getFileSequenceStartEnd(path):
-        import re
-        import glob
-        import sys
         try:
             if '%V' in path:
                 path = path.replace('%V', 'left')
@@ -430,7 +436,10 @@ class HelpFunctions(object):
 
             nukeFormatMatch = re.search('%\d+d', path)
             if nukeFormatMatch:
-                path = path[:nukeFormatMatch.start(0)] + '*' + path[nukeFormatMatch.end(0):]
+                path = (
+                    path[:nukeFormatMatch.start(0)] + '*' +
+                    path[nukeFormatMatch.end(0):]
+                )
 
             fileExtension = os.path.splitext(path)[1].replace('.', '\.')
             files = sorted(glob.glob(path))
@@ -438,7 +447,6 @@ class HelpFunctions(object):
             first = int(re.findall(regexp, files[0])[0])
             last = int(re.findall(regexp, files[-1])[0])
         except:
-            import traceback
             traceback.print_exc(file=sys.stdout)
             first = 1
             last = 1
@@ -478,7 +486,10 @@ class FTAssetType(object):
 
 # Class to easier store the variables passed around when importing
 class FTAssetObject(object):
-    def __init__(self, componentId='', filePath='', componentName='', assetVersionId='', options={}, taskId=''):
+    def __init__(
+        self, componentId='', filePath='', componentName='', assetVersionId='',
+        options={}, taskId=''
+    ):
         super(FTAssetObject, self).__init__()
         self.componentId = componentId
         self.filePath = filePath
@@ -493,13 +504,13 @@ class FTAssetObject(object):
             assetVersion = ftrack.AssetVersion(assetVersionId)
 
             assetVersionStr = str(assetVersion.getVersion())
-            
+
             self.assetVersion = assetVersionStr
 
             asset = assetVersion.getAsset()
             self.assetName = asset.getName()
             self.assetType = asset.getType().getShort()
-            
+
         if self.componentId != '':
             metaDict = ftrack.Component(self.componentId).getMeta()
             self.metadata = []
@@ -534,6 +545,7 @@ class FTAssetHandler(object):
             return None
 
 _ftHandler = None
+
 
 class FTAssetHandlerInstance(object):
     def __init__(self):

@@ -1,7 +1,11 @@
+# :coding: utf-8
+# :copyright: Copyright (c) 2015 ftrack
+
 from PySide import QtNetwork, QtCore
 
 
 class PersistentCookieJar(QtNetwork.QNetworkCookieJar):
+
     def save(self):
         cookieList = self.allCookies()
         data = QtCore.QByteArray()
