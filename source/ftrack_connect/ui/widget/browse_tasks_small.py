@@ -1,12 +1,18 @@
+# :coding: utf-8
+# :copyright: Copyright (c) 2014 ftrack
+
 import os
+
 from PySide import QtCore, QtGui
 import ftrack
+
 from browse_tasks import BrowseTasksWidget
 from ftrack_connect.connector import HelpFunctions
-
 import browse_tasks_small_rc
 
+
 class Ui_BrowseTasksSmall(object):
+
     def setupUi(self, BrowseTasksSmall):
         BrowseTasksSmall.setObjectName("BrowseTasksSmall")
         BrowseTasksSmall.resize(220, 49)
@@ -36,7 +42,9 @@ class Ui_BrowseTasksSmall(object):
         self.homeButton.setMaximumSize(QtCore.QSize(16777215, 27))
         self.homeButton.setText("")
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(":/home.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(
+            QtGui.QPixmap(":/home.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off
+        )
         self.homeButton.setIcon(icon)
         self.homeButton.setIconSize(QtCore.QSize(18, 18))
         self.homeButton.setObjectName("homeButton")
@@ -47,16 +55,34 @@ class Ui_BrowseTasksSmall(object):
         self.verticalLayout.addLayout(self.horizontalLayout)
 
         self.retranslateUi(BrowseTasksSmall)
-        QtCore.QObject.connect(self.browseTasksButton, QtCore.SIGNAL("clicked()"), BrowseTasksSmall.showHideTree)
-        QtCore.QObject.connect(self.cancelButton, QtCore.SIGNAL("clicked()"), BrowseTasksSmall.closeTree)
-        QtCore.QObject.connect(self.homeButton, QtCore.SIGNAL("clicked()"), BrowseTasksSmall.goHome)
+        QtCore.QObject.connect(
+            self.browseTasksButton, QtCore.SIGNAL("clicked()"),
+            BrowseTasksSmall.showHideTree
+        )
+        QtCore.QObject.connect(
+            self.cancelButton, QtCore.SIGNAL("clicked()"),
+            BrowseTasksSmall.closeTree
+        )
+        QtCore.QObject.connect(
+            self.homeButton, QtCore.SIGNAL("clicked()"),
+            BrowseTasksSmall.goHome
+        )
         QtCore.QMetaObject.connectSlotsByName(BrowseTasksSmall)
 
     def retranslateUi(self, BrowseTasksSmall):
-        BrowseTasksSmall.setWindowTitle(QtGui.QApplication.translate("BrowseTasksSmall", "Form", None, QtGui.QApplication.UnicodeUTF8))
-        self.shotLabel.setText(QtGui.QApplication.translate("BrowseTasksSmall", "Shot: ", None, QtGui.QApplication.UnicodeUTF8))
-        self.browseTasksButton.setText(QtGui.QApplication.translate("BrowseTasksSmall", "Select Task", None, QtGui.QApplication.UnicodeUTF8))
-        self.cancelButton.setText(QtGui.QApplication.translate("BrowseTasksSmall", "Cancel", None, QtGui.QApplication.UnicodeUTF8))
+        BrowseTasksSmall.setWindowTitle(QtGui.QApplication.translate(
+            "BrowseTasksSmall", "Form", None, QtGui.QApplication.UnicodeUTF8)
+        )
+        self.shotLabel.setText(QtGui.QApplication.translate(
+            "BrowseTasksSmall", "Shot: ", None, QtGui.QApplication.UnicodeUTF8)
+        )
+        self.browseTasksButton.setText(QtGui.QApplication.translate(
+            "BrowseTasksSmall", "Select Task", None,
+            QtGui.QApplication.UnicodeUTF8)
+        )
+        self.cancelButton.setText(QtGui.QApplication.translate(
+            "BrowseTasksSmall", "Cancel", None, QtGui.QApplication.UnicodeUTF8)
+        )
 
 
 class BrowseTasksSmallWidget(QtGui.QWidget):
@@ -77,10 +103,12 @@ class BrowseTasksSmallWidget(QtGui.QWidget):
 
         self.ui.browseTasksButton.setText(self.currentpath)
 
-        self.browseTasksWidget = BrowseTasksWidget(parent, startId=self.currentId, browseMode=browseMode)
+        self.browseTasksWidget = BrowseTasksWidget(
+            parent, startId=self.currentId, browseMode=browseMode
+        )
         self.browseTasksWidget.hide()
-        QtCore.QObject.connect(self.browseTasksWidget.ui.BrowseTasksTreeView, \
-                               QtCore.SIGNAL("doubleClicked(QModelIndex)"), \
+        QtCore.QObject.connect(self.browseTasksWidget.ui.BrowseTasksTreeView,
+                               QtCore.SIGNAL("doubleClicked(QModelIndex)"),
                                self.showHideTree)
         self.topPosition = 0
         self.update()
@@ -108,10 +136,9 @@ class BrowseTasksSmallWidget(QtGui.QWidget):
             ypos = self.topPosition
             heigth = windowHeight - self.height() - self.topPosition
 
-            self.browseTasksWidget.setGeometry(9, \
-                                               ypos + 6, \
-                                               windowWidth, \
-                                               heigth)
+            self.browseTasksWidget.setGeometry(
+                9, ypos + 6, windowWidth, heigth
+            )
             self.browseTasksWidget.show()
             self.browseTasksWidget.raise_()
 
@@ -130,7 +157,6 @@ class BrowseTasksSmallWidget(QtGui.QWidget):
             self.ui.browseTasksButton.setText(self.currentpath + ' (change)')
             self.clickedIdSignal.emit(self.currentId)
             self.browseTasksWidget.hide()
-            #print 'Emit signal'
         else:
             self.ui.browseTasksButton.setText('Select')
 
@@ -140,7 +166,7 @@ class BrowseTasksSmallWidget(QtGui.QWidget):
         self.update()
 
     def setTopPosition(self, topInt):
-        self.topPosition = topInt + self.height() - 7  # ui.browseTasksButton.y() + self.ui.browseTasksButton.size().height() + 20
+        self.topPosition = topInt + self.height() - 7
 
     def setLabelText(self, textLabel):
         self.ui.shotLabel.setText(textLabel)
@@ -150,9 +176,7 @@ class BrowseTasksSmallWidget(QtGui.QWidget):
         self.ui.cancelButton.hide()
         self.browseTasksWidget.hide()
         self.ui.browseTasksButton.setText(self.currentpath + ' (change)')
-        
+
     def goHome(self):
         self.initPaths()
         self.update()
-        #self.browseTasksWidget.setStartId(os.environ['FTRACK_SHOTID'])
-        #print 'hej'

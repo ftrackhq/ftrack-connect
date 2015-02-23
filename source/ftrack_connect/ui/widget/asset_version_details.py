@@ -1,3 +1,5 @@
+# :coding: utf-8
+# :copyright: Copyright (c) 2014 ftrack
 
 import os
 
@@ -8,13 +10,17 @@ from ftrack_connect.connector import HelpFunctions
 
 
 class AssetVersionDetailsWidget(QtGui.QWidget):
-    
+
     def __init__(self, parent=None, connector=None):
         '''Initialise widget.'''
         super(AssetVersionDetailsWidget, self).__init__(parent)
-        
+
         if not connector:
-            raise ValueError('Please provide a connector object for %s' % self.__class__.__name__)
+            raise ValueError(
+                'Please provide a connector object for {0}'.format(
+                    self.__class__.__name__
+                )
+            )
 
         self.connector = connector
 
@@ -25,28 +31,29 @@ class AssetVersionDetailsWidget(QtGui.QWidget):
                                     + '/img/thumbnail2.png')
         # TODO: Implement better caching system
         self.thumbnailCache = {}
-        
+
         self.build()
         self.postBuild()
-        
+
     def build(self):
         '''Build widgets and layout.'''
         self.setLayout(QtGui.QHBoxLayout())
         self.layout().setContentsMargins(0, 0, 0, 0)
-        
+
         self.thumbnailWidget = QtGui.QLabel()
         self.thumbnailWidget.setFrameStyle(QtGui.QFrame.StyledPanel)
         self.thumbnailWidget.setAlignment(QtCore.Qt.AlignCenter)
         self.thumbnailWidget.setFixedWidth(240)
-        
+
         self.layout().addWidget(self.thumbnailWidget)
-        
+
         self.propertyTableWidget = QtGui.QTableWidget()
-        self.propertyTableWidget.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
+        self.propertyTableWidget.setEditTriggers(
+            QtGui.QAbstractItemView.NoEditTriggers)
         self.propertyTableWidget.setSelectionMode(
             QtGui.QAbstractItemView.NoSelection
         )
-        
+
         self.propertyTableWidget.setRowCount(len(self.headers))
         self.propertyTableWidget.setVerticalHeaderLabels(self.headers)
 
@@ -75,40 +82,42 @@ class AssetVersionDetailsWidget(QtGui.QWidget):
         self.propertyTableWidget.horizontalHeader().sectionResized.connect(
             self.propertyTableWidget.resizeRowsToContents
         )
-        
+
         self.connector.executeInThread(
-            self._updateThumbnail, [self.thumbnailWidget, self.placholderThumbnail])
-        
+            self._updateThumbnail,
+            [self.thumbnailWidget, self.placholderThumbnail]
+        )
+
     def setAssetVersion(self, assetVersionId):
         '''Set the asset version to display details for.'''
         assetVersion = ftrack.AssetVersion(assetVersionId)
         asset = assetVersion.getAsset()
-        
+
         header = self.headers.index
-        
+
         item = self.propertyTableWidget.item(header('Asset'), 0)
         item.setText(asset.getName())
-        
+
         item = self.propertyTableWidget.item(header('Author'), 0)
         item.setText(assetVersion.getUser().getName())
-        
+
         item = self.propertyTableWidget.item(header('Version'), 0)
         item.setText(str(assetVersion.getVersion()))
-        
+
         item = self.propertyTableWidget.item(header('Date'), 0)
         item.setText(assetVersion.getDate().strftime('%c'))
-        
+
         item = self.propertyTableWidget.item(header('Comment'), 0)
         item.setText(assetVersion.getComment())
-        
+
         thumbnail = assetVersion.getThumbnail()
         if thumbnail is None:
             thumbnail = self.placholderThumbnail
-        
+
         self.connector.executeInThread(
             self._updateThumbnail, [self.thumbnailWidget, thumbnail]
         )
-        
+
     def _updateThumbnail(self, arg):
         '''Update thumbnail for *label* with image at *url*.'''
         label = arg[0]
@@ -120,7 +129,7 @@ class AssetVersionDetailsWidget(QtGui.QWidget):
             mode=QtCore.Qt.SmoothTransformation
         )
         label.setPixmap(scaledPixmap)
-        
+
     def _pixmapFromUrl(self, url):
         '''Retrieve *url* and return data as a pixmap.'''
         pixmap = self.thumbnailCache.get(url)
@@ -129,9 +138,9 @@ class AssetVersionDetailsWidget(QtGui.QWidget):
             pixmap = QtGui.QPixmap()
             pixmap.loadFromData(data)
             self.thumbnailCache[url] = pixmap
-        
+
         # Handle null pixmaps. E.g. JPG on Windows.
         if pixmap.isNull():
             pixmap = self.thumbnailCache.get(self.placholderThumbnail, pixmap)
-            
+
         return pixmap

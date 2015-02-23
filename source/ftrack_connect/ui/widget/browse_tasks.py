@@ -1,4 +1,8 @@
+# :coding: utf-8
+# :copyright: Copyright (c) 2014 ftrack
+
 import os
+
 from PySide import QtCore, QtGui
 import ftrack
 
@@ -6,6 +10,7 @@ from ftrack_connect.connector import HelpFunctions
 
 
 class Ui_BrowseTasks(object):
+
     def setupUi(self, BrowseTasks):
         BrowseTasks.setObjectName("BrowseTasks")
         BrowseTasks.resize(946, 660)
@@ -22,7 +27,9 @@ class Ui_BrowseTasks(object):
         palette = QtGui.QPalette()
         self.BrowseTasksTreeView.setPalette(palette)
         self.BrowseTasksTreeView.setStyleSheet("")
-        self.BrowseTasksTreeView.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
+        self.BrowseTasksTreeView.setEditTriggers(
+            QtGui.QAbstractItemView.NoEditTriggers
+        )
         self.BrowseTasksTreeView.setIndentation(10)
         self.BrowseTasksTreeView.setObjectName("BrowseTasksTreeView")
         self.BrowseTasksTreeView.header().setVisible(False)
@@ -30,16 +37,25 @@ class Ui_BrowseTasks(object):
         self.horizontalLayout.addLayout(self.verticalLayout)
 
         self.retranslateUi(BrowseTasks)
-        QtCore.QObject.connect(self.BrowseTasksTreeView, QtCore.SIGNAL("clicked(QModelIndex)"), BrowseTasks.updateAssetView)
-        QtCore.QObject.connect(self.BrowseProjectComboBox, QtCore.SIGNAL("currentIndexChanged(QString)"), BrowseTasks.setProjectFilter)
+        QtCore.QObject.connect(
+            self.BrowseTasksTreeView, QtCore.SIGNAL("clicked(QModelIndex)"),
+            BrowseTasks.updateAssetView
+        )
+        QtCore.QObject.connect(
+            self.BrowseProjectComboBox,
+            QtCore.SIGNAL("currentIndexChanged(QString)"),
+            BrowseTasks.setProjectFilter
+        )
         QtCore.QMetaObject.connectSlotsByName(BrowseTasks)
 
     def retranslateUi(self, BrowseTasks):
-        BrowseTasks.setWindowTitle(QtGui.QApplication.translate("BrowseTasks", "Form", None, QtGui.QApplication.UnicodeUTF8))
-
+        BrowseTasks.setWindowTitle(QtGui.QApplication.translate(
+            "BrowseTasks", "Form", None, QtGui.QApplication.UnicodeUTF8)
+        )
 
 
 class BrowseTasksItem(QtGui.QStandardItem):
+
     def __init__(self, text, version=False):
         QtGui.QStandardItem.__init__(self, text)
         self.version = version
@@ -74,13 +90,17 @@ class BrowseTasksWidget(QtGui.QWidget):
         self.ui.horizontalLayout.setContentsMargins(0, 0, 0, 0)
         self.ui.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.currentId = None
-        
+
         self.ui.BrowseTasksViewModel = QtGui.QStandardItemModel()
 
-        self.ui.BrowseTasksSelectionModel = QtGui.QItemSelectionModel(self.ui.BrowseTasksViewModel)
+        self.ui.BrowseTasksSelectionModel = QtGui.QItemSelectionModel(
+            self.ui.BrowseTasksViewModel
+        )
 
         self.ui.BrowseProjectComboBoxModel = QtGui.QStandardItemModel()
-        self.ui.BrowseProjectComboBox.setModel(self.ui.BrowseProjectComboBoxModel)
+        self.ui.BrowseProjectComboBox.setModel(
+            self.ui.BrowseProjectComboBoxModel
+        )
 
         itemProjCombo = BrowseTasksItem('Show All')
         itemProjCombo.id = ''
@@ -112,15 +132,18 @@ class BrowseTasksWidget(QtGui.QWidget):
             proj_root = shot.getProject().getName()
 
             if proj_root == proj.getName():
-                self.ui.BrowseProjectComboBox.setCurrentIndex(self.ui.BrowseProjectComboBoxModel.rowCount() - 1)
+                self.ui.BrowseProjectComboBox.setCurrentIndex(
+                    self.ui.BrowseProjectComboBoxModel.rowCount() - 1)
                 filterOnThis = projName
 
         self.setProjectFilter(filterOnThis)
 
         self.ui.BrowseTasksTreeView.setModel(self.ui.BrowseTasksViewModel)
-        self.ui.BrowseTasksTreeView.setSelectionModel(self.ui.BrowseTasksSelectionModel)
+        self.ui.BrowseTasksTreeView.setSelectionModel(
+            self.ui.BrowseTasksSelectionModel
+        )
         self.ui.BrowseTasksTreeView.setSortingEnabled(False)
-        
+
         if startId:
             self.currentId = startId
 
@@ -129,7 +152,7 @@ class BrowseTasksWidget(QtGui.QWidget):
         clickedItem = self.ui.BrowseTasksViewModel.itemFromIndex(modelindex)
         expand = None
         select = None
-        
+
         if clickedItem.type == 'show':
             clickedTask = ftrack.Project(clickedItem.id)
         elif clickedItem.type == 'task':
@@ -154,12 +177,16 @@ class BrowseTasksWidget(QtGui.QWidget):
                 if clickedObjectType != 'Sequence' or self.showShots:
                     children = clickedTask.getChildren()
 
-                    expand, select, expandItem, selectItem, retchildList = self.getTreeChildren(clickedItem, children)
+                    expand, select, expandItem, selectItem, retchildList = self.getTreeChildren(
+                        clickedItem, children
+                    )
                     childList += retchildList
 
                     if self.browseMode == 'Task':
                         tasks = clickedTask.getTasks()
-                        expandTask, selectTask, expandItemTask, selectItemTask, retchildList = self.getTreeChildren(clickedItem, tasks)
+                        expandTask, selectTask, expandItemTask, selectItemTask, retchildList = self.getTreeChildren(
+                            clickedItem, tasks
+                        )
                         childList += retchildList
 
                         if not expand:
@@ -171,7 +198,9 @@ class BrowseTasksWidget(QtGui.QWidget):
                             select = selectTask
 
             if len(childList) > 0:
-                sortedchildlist = sorted(childList, key=lambda a: a.text().lower())
+                sortedchildlist = sorted(
+                    childList, key=lambda a: a.text().lower()
+                )
                 clickedItem.appendColumn(sortedchildlist)
 
         self.ui.BrowseTasksTreeView.setModel(self.ui.BrowseTasksViewModel)
@@ -179,16 +208,22 @@ class BrowseTasksWidget(QtGui.QWidget):
 
         self.currentId = clickedItem.id
         if expand:
-            self.updateAssetView(self.ui.BrowseTasksViewModel.indexFromItem(expandItem))
+            self.updateAssetView(
+                self.ui.BrowseTasksViewModel.indexFromItem(expandItem)
+            )
         elif select:
             sortIndex = self.ui.BrowseTasksViewModel.indexFromItem(selectItem)
-            self.ui.BrowseTasksSelectionModel.select(sortIndex, QtGui.QItemSelectionModel.Clear | QtGui.QItemSelectionModel.Select)
+            self.ui.BrowseTasksSelectionModel.select(
+                sortIndex,
+                QtGui.QItemSelectionModel.Clear |
+                QtGui.QItemSelectionModel.Select
+            )
             self.currentId = self.startId
             self.clickedIdSignal.emit(self.startId)
             task = ftrack.Task(self.startId)
             self.currentPath = HelpFunctions.getPath(task)
         else:
-            if updateCurrentPath==True:
+            if updateCurrentPath == True:
                 self.currentPath = HelpFunctions.getPath(clickedTask)
                 self.clickedIdSignal.emit(clickedItem.id)
 
@@ -234,18 +269,16 @@ class BrowseTasksWidget(QtGui.QWidget):
         for i in range(rowCount):
             tableItem = self.ui.BrowseTasksViewModel.item(i, 0)
             rootItem = self.ui.BrowseTasksViewModel.invisibleRootItem().index()
-            #print tableItem.text().encode('ascii', 'ignore')
+
             if projectfilter not in tableItem.text():
                 showMe = True
             else:
                 showMe = False
             self.ui.BrowseTasksTreeView.setRowHidden(i, rootItem, showMe)
 
-        #self.ui.BrowseTasksSortModel.setFilterFixedString(projectfilter)
         foundItems = self.ui.BrowseTasksViewModel.findItems(projectfilter)
         if len(foundItems) > 0:
             for item in foundItems:
-                #self.updateAssetView(self.ui.BrowseTasksSortModel.mapFromSource(item.index()))
                 self.updateAssetView(item.index(), updateCurrentPath=False)
 
     def getCurrentId(self):

@@ -1,3 +1,6 @@
+# :coding: utf-8
+# :copyright: Copyright (c) 2014 ftrack
+
 import traceback
 import operator
 import os
@@ -9,10 +12,11 @@ from ftrack_connect.worker import Worker
 
 
 class ComponentTableWidget(QtGui.QTableWidget):
+
     '''Display components for asset version and manage importing.'''
-    
+
     COMPONENT_ROLE = (QtCore.Qt.UserRole + 1)
-    
+
     importComponentSignal = QtCore.Signal(int)
 
     def __init__(self, parent=None, connector=None):
@@ -20,8 +24,12 @@ class ComponentTableWidget(QtGui.QTableWidget):
         super(ComponentTableWidget, self).__init__(parent)
 
         if not connector:
-            raise ValueError('Please provide a connector object for %s' % self.__class__.__name__)
-    
+            raise ValueError(
+                'Please provide a connector object for {0}'.format(
+                    self.__class__.__name__
+                )
+            )
+
         self.connector = connector
         self.workers = []
         self.columns = (
@@ -33,23 +41,19 @@ class ComponentTableWidget(QtGui.QTableWidget):
 
     def build(self):
         '''Build widgets and layout.'''
-        #self.setSelectionMode(
-        #    QtGui.QAbstractItemView.MultiSelection
-        #)
-        
         self.setSelectionBehavior(
             QtGui.QAbstractItemView.SelectRows
         )
-        
+
         self.setTextElideMode(QtCore.Qt.ElideLeft)
         self.setWordWrap(False)
-        
+
         self.setRowCount(0)
         self.verticalHeader().hide()
 
         self.setColumnCount(len(self.columns))
         self.setHorizontalHeaderLabels(self.columns)
-        
+
         horizontalHeader = self.horizontalHeader()
         horizontalHeader.setResizeMode(QtGui.QHeaderView.ResizeToContents)
         horizontalHeader.setResizeMode(
@@ -64,19 +68,19 @@ class ComponentTableWidget(QtGui.QTableWidget):
             self.columns.index('Action'),
             100
         )
-        
+
     def postBuild(self):
         '''Perform post build operations.'''
         self.locationSignalMapper = QtCore.QSignalMapper(self)
         self.locationSignalMapper.mapped[int].connect(
             self.onLocationSelected
         )
-        
+
         self.actionSignalMapper = QtCore.QSignalMapper(self)
         self.actionSignalMapper.mapped.connect(
             self.onActionButtonClicked
         )
-    
+
     @QtCore.Slot(str)
     def setAssetVersion(self, assetVersionId):
         '''Update list of components for asset version with *assetVersionId*.'''
@@ -84,48 +88,52 @@ class ComponentTableWidget(QtGui.QTableWidget):
 
         assetVersion = ftrack.AssetVersion(assetVersionId)
         self.assetType = assetVersion.getAsset().getType().getShort()
-        
-        assetVersionComponents = sorted(assetVersion.getComponents(), key=lambda entity: entity.get('name'))
-        
+
+        assetVersionComponents = sorted(
+            assetVersion.getComponents(), key=lambda entity: entity.get('name')
+        )
+
         connectorName = self.connector.getConnectorName()
-        
+
         # Temporary alias
         column = self.columns.index
-        
+
         locations = ftrack.getLocations()
 
         for component in assetVersionComponents:
             componentName = component.getName()
-            
-            if (connectorName == 'nuke'
-                and 'proxy' in componentName):
-                #print 'Can\'t import proxy in nuke'
+
+            if (
+                connectorName == 'nuke' and 'proxy' in componentName
+            ):
                 pass
             else:
                 rowCount = self.rowCount()
                 self.insertRow(rowCount)
-                
+
                 componentItem = QtGui.QTableWidgetItem(componentName)
                 componentItem.setData(self.COMPONENT_ROLE, component)
-                self.setItem(rowCount, column('Component'),
-                                            componentItem)
-                
+                self.setItem(
+                    rowCount, column('Component'), componentItem
+                )
+
                 pathItem = QtGui.QTableWidgetItem('')
                 self.setItem(rowCount, column('Path'), pathItem)
-                
+
                 availabilityItem = QtGui.QTableWidgetItem('')
-                self.setItem(rowCount, column('Availability'),
-                                            availabilityItem)
-                
+                self.setItem(
+                    rowCount, column('Availability'), availabilityItem
+                )
+
                 actionItem = QtGui.QPushButton()
                 self.setCellWidget(rowCount, column('Action'), actionItem)
-                
+
                 actionItem.clicked.connect(self.actionSignalMapper.map)
                 self.actionSignalMapper.setMapping(actionItem, rowCount)
-                
+
                 locationItem = QtGui.QComboBox()
                 self.setCellWidget(rowCount, column('Location'), locationItem)
-                
+
                 # Map version widget to row number to enable simple lookup
                 locationItem.currentIndexChanged[int].connect(
                     self.locationSignalMapper.map
@@ -133,13 +141,13 @@ class ComponentTableWidget(QtGui.QTableWidget):
                 self.locationSignalMapper.setMapping(
                     locationItem, rowCount
                 )
-                
+
                 for location in locations:
                     # Don't show inaccessible locations
                     accessor = location.getAccessor()
                     if accessor is None:
                         continue
-                    
+
                     name = location.getName()
                     locationItem.addItem(name, location)
 
@@ -147,18 +155,18 @@ class ComponentTableWidget(QtGui.QTableWidget):
         '''Handle location selection.'''
         # Temporary alias
         column = self.columns.index
-        
+
         self.item(row, column('Availability')).setText('0%')
         self.item(row, column('Path')).setText('No location selected.')
-        
+
         actionItem = self.cellWidget(row, column('Action'))
         actionItem.setText('Import')
         actionItem.setEnabled(False)
         self._setButtonStyle(actionItem, 'standard')
-        
+
         componentItem = self.item(row, self.columns.index('Component'))
         component = componentItem.data(self.COMPONENT_ROLE)
-        
+
         locationItem = self.cellWidget(row, column('Location'))
         if not locationItem.count():
             return
@@ -211,19 +219,19 @@ class ComponentTableWidget(QtGui.QTableWidget):
         '''Handle transfer request.'''
         column = self.columns.index
         actionItem = self.cellWidget(row, column('Action'))
-        
+
         # TODO: Make more robust test.
         if actionItem.text() == 'Import':
             self.importComponentSignal.emit(row)
-            
+
         elif actionItem.text() == 'Transfer':
             locationItem = self.cellWidget(row, column('Location'))
             locationItem.setEnabled(False)
             location = locationItem.itemData(locationItem.currentIndex())
-        
+
             componentItem = self.item(row, column('Component'))
             component = componentItem.data(self.COMPONENT_ROLE)
-            
+
             # Unfortunately, this will destroy the push button, so have to
             # recreate it afterwards. If Qt adds a takeCellWidget this can be
             # improved.
@@ -233,20 +241,20 @@ class ComponentTableWidget(QtGui.QTableWidget):
                                transferProgressItem)
 
             transferProgressItem.setRange(0, 0)
-        
+
             try:
                 worker = Worker(self.transfer,
                                 [component, None, location],
                                 parent=self)
                 worker.start()
-         
+
                 while worker.isRunning():
                     app = QtGui.QApplication.instance()
                     app.processEvents()
-         
+
                 if worker.error:
                     raise worker.error[1], None, worker.error[2]
-            
+
             except Exception as error:
                 traceback.print_exc()
                 QtGui.QMessageBox.critical(
@@ -255,27 +263,27 @@ class ComponentTableWidget(QtGui.QTableWidget):
                     'Could not transfer to location!'
                     '\n{0}'.format(error)
                 )
-             
+
             finally:
                 transferProgressItem.setMaximum(1)
                 transferProgressItem.reset()
                 locationItem.setEnabled(True)
-                
+
                 # Have to recreate action button
                 actionItem = QtGui.QPushButton()
                 self.setCellWidget(row, column('Action'), actionItem)
-                
+
                 actionItem.clicked.connect(self.actionSignalMapper.map)
                 self.actionSignalMapper.setMapping(actionItem, row)
-                
+
                 self.onLocationSelected(row)
-    
+
     def transfer(self, component, sourceLocation, targetLocation):
         '''Transfer *component* from *sourceLocation* to *targetLocation*.
-        
+
         If sourceLocation is None, attempt to find a suitable source location
         automatically.
-        
+
         '''
         if sourceLocation is None:
             # Find a source location if possible.
@@ -284,24 +292,25 @@ class ComponentTableWidget(QtGui.QTableWidget):
             for location in locations:
                 if location.getAccessor() is not None:
                     accessibleLocations[location.getId()] = location
-            
-            availability = component.getAvailability(accessibleLocations.keys())
+
+            availability = component.getAvailability(
+                accessibleLocations.keys())
             candidates = []
             for locationId, available in availability.items():
                 if available == 100:
                     location = accessibleLocations[locationId]
                     candidates.append((location.getPriority(), location))
-            
+
             candidates.sort()
             if not candidates:
                 raise ftrack.FTrackError('Unable to find a suitable source '
                                          'location to transfer from.')
-            
+
             sourceLocation = candidates[0][1]
 
         componentInLocation = sourceLocation.getComponent(component)
         targetLocation.addComponent(componentInLocation)
-        
+
     @QtCore.Slot()
     def clear(self):
         self.clearContents()
@@ -309,27 +318,27 @@ class ComponentTableWidget(QtGui.QTableWidget):
 
     def _setButtonStyle(self, button, style):
         '''Helper method to change button style.
-        
+
         TODO: Move to separate style sheet and use object name to target.
         '''
         button.setStyleSheet('')
-            
+
         if style == 'standard':
-            
+
             gradientStartColor = '#1199dd'
             gradientStopColor = '#0066cc'
             borderColor = 'rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25)'
             textColor = '#ffffff'
-            
+
         elif style == 'alert':
             borderColor = 'rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25)'
             gradientStartColor = '#EE5F5B'
             gradientStopColor = '#BD362F'
             textColor = '#ffffff'
-        
+
         else:
             return
-        
+
         button.setStyleSheet('''
             QPushButton {{
                 color: {textColor};
