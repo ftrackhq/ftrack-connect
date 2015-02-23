@@ -16,9 +16,9 @@ class PersistentCookieJar(QtNetwork.QNetworkCookieJar):
                 data.append('\n')
         settings = QtCore.QSettings('ftrack', 'launchpad')
 
-        settings.setValue("Cookies", data)
+        settings.setValue('Cookies', data)
 
     def load(self):
         settings = QtCore.QSettings('ftrack', 'launchpad')
-        data = settings.value("Cookies")
+        data = settings.value('Cookies')
         self.setAllCookies(QtNetwork.QNetworkCookie.parseCookies(data))

@@ -1,5 +1,5 @@
 # :coding: utf-8
-# :copyright: Copyright (c) 2014 ftrack
+# :copyright: Copyright (c) 2015 ftrack
 
 import abc
 import os
@@ -134,7 +134,7 @@ class Connector(object):
         if 'FTRACK_OVERRIDE_PATH' in os.environ:
             splitPath = os.environ['FTRACK_OVERRIDE_PATH'].split(os.pathsep)
             for path in splitPath:
-                for f in glob.glob(path + "/*.py"):
+                for f in glob.glob(path + '/*.py'):
                     try:
                         foo = imp.load_source(
                             os.path.splitext(os.path.basename(f))[0], f
@@ -349,7 +349,7 @@ class HelpFunctions(object):
 
     @staticmethod
     def getUniqueNumber():
-        return str(datetime.datetime.today()).split(".")[1]
+        return str(datetime.datetime.today()).split('.')[1]
 
     @staticmethod
     def getPath(task, unders=False, slash=False):
@@ -410,7 +410,7 @@ class HelpFunctions(object):
 
             # Must start with http, or overflow error.
             if not ftrackProxy.startswith('http'):
-                ftrackProxy = "http://%s" % ftrackProxy
+                ftrackProxy = 'http://%s' % ftrackProxy
 
             proxy_url = QtCore.QUrl(ftrackProxy)
             proxy = QtNetwork.QNetworkProxy(
