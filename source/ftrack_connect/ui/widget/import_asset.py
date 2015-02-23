@@ -1,3 +1,6 @@
+# :coding: utf-8
+# :copyright: Copyright (c) 2015 ftrack
+
 from PySide import QtCore, QtGui
 
 from ftrack_connect.connector import PanelComInstance, FTAssetObject
@@ -15,7 +18,11 @@ class FtrackImportAssetDialog(QtGui.QDialog):
     def __init__(self, parent=None, connector=None):
 
         if not connector:
-            raise ValueError('Please provide a connector object for %s' % self.__class__.__name__)
+            raise ValueError(
+                'Please provide a connector object for {0}'.format(
+                    self.__class__.__name__
+                )
+            )
 
         super(FtrackImportAssetDialog, self).__init__(parent=parent)
 
@@ -41,7 +48,9 @@ class FtrackImportAssetDialog(QtGui.QDialog):
         self.scrollArea.setObjectName("scrollArea")
         self.scrollArea.setLineWidth(0)
         self.scrollArea.setFrameShape(QtGui.QFrame.NoFrame)
-        self.scrollArea.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.scrollArea.setHorizontalScrollBarPolicy(
+            QtCore.Qt.ScrollBarAlwaysOff
+        )
 
         self.mainWidget = QtGui.QWidget(self)
         self.scrollArea.setWidget(self.mainWidget)
@@ -71,72 +80,102 @@ class FtrackImportAssetDialog(QtGui.QDialog):
 
         self.verticalLayout.addWidget(self.divider)
 
-        self.assetVersionDetailsWidget = AssetVersionDetailsWidget(self, connector=self.connector)
+        self.assetVersionDetailsWidget = AssetVersionDetailsWidget(
+            self, connector=self.connector
+        )
 
-        self.verticalLayout.addWidget(self.assetVersionDetailsWidget, stretch=0)
+        self.verticalLayout.addWidget(
+            self.assetVersionDetailsWidget, stretch=0
+        )
 
-        self.componentTableWidget = ComponentTableWidget(self, connector=self.connector)
+        self.componentTableWidget = ComponentTableWidget(
+            self, connector=self.connector
+        )
 
         self.verticalLayout.addWidget(self.componentTableWidget, stretch=3)
-        
+
         self.horizontalLayout = QtGui.QHBoxLayout()
         self.verticalLayout.addLayout(self.horizontalLayout)
-        
+
         self.importAllButton = QtGui.QPushButton("Import All")
         self.importAllButton.setFixedWidth(120)
-        
+
         self.importSelectedButton = QtGui.QPushButton("Import Selected")
         self.importSelectedButton.setFixedWidth(120)
-        
+
         self.horizontalLayout.addWidget(self.importSelectedButton)
         self.horizontalLayout.addWidget(self.importAllButton)
-        
+
         self.horizontalLayout.setAlignment(QtCore.Qt.AlignRight)
 
-        self.importOptionsWidget = ImportOptionsWidget(parent=self, connector=self.connector)
+        self.importOptionsWidget = ImportOptionsWidget(
+            parent=self, connector=self.connector
+        )
 
         self.verticalLayout.addWidget(self.importOptionsWidget, stretch=0)
 
         self.messageLabel = QtGui.QLabel(self)
         self.messageLabel.setText(' \n ')
         self.verticalLayout.addWidget(self.messageLabel, stretch=0)
-        
+
         self.setObjectName('ftrackImportAsset')
         self.setWindowTitle("ftrackImportAsset")
-        
+
         panelComInstance = PanelComInstance.instance()
-        panelComInstance.addSwitchedShotListener(self.browseTasksWidget.updateTask)
+        panelComInstance.addSwitchedShotListener(
+            self.browseTasksWidget.updateTask
+        )
 
-        QtCore.QObject.connect(self.browseTasksWidget, QtCore.SIGNAL('clickedIdSignal(QString)'), self.clickedIdSignal)
-        
-        QtCore.QObject.connect(self.importAllButton, QtCore.SIGNAL('clicked()'), self.importAllComponents)
-        QtCore.QObject.connect(self.importSelectedButton, QtCore.SIGNAL('clicked()'), self.importSelectedComponents)
+        QtCore.QObject.connect(self.browseTasksWidget, QtCore.SIGNAL(
+            'clickedIdSignal(QString)'), self.clickedIdSignal
+        )
 
-        QtCore.QObject.connect(self.listAssetsTableWidget, QtCore.SIGNAL('assetVersionSelectedSignal(QString)'), self.clickedAssetVSignal)
-        QtCore.QObject.connect(self.listAssetsTableWidget, QtCore.SIGNAL('assetTypeSelectedSignal(QString)'), self.importOptionsWidget.setStackedWidget)
+        QtCore.QObject.connect(
+            self.importAllButton, QtCore.SIGNAL('clicked()'),
+            self.importAllComponents
+        )
+        QtCore.QObject.connect(
+            self.importSelectedButton, QtCore.SIGNAL('clicked()'),
+            self.importSelectedComponents
+        )
 
-        QtCore.QObject.connect(self, QtCore.SIGNAL('importSignal()'), panelComInstance.refreshListeners)
+        QtCore.QObject.connect(
+            self.listAssetsTableWidget,
+            QtCore.SIGNAL('assetVersionSelectedSignal(QString)'),
+            self.clickedAssetVSignal
+        )
+        QtCore.QObject.connect(
+            self.listAssetsTableWidget,
+            QtCore.SIGNAL('assetTypeSelectedSignal(QString)'),
+            self.importOptionsWidget.setStackedWidget
+        )
+
+        QtCore.QObject.connect(
+            self, QtCore.SIGNAL('importSignal()'),
+            panelComInstance.refreshListeners
+        )
 
         self.componentTableWidget.importComponentSignal.connect(
             self.onImportComponent
         )
-        
+
         self.browseTasksWidget.update()
-    
+
     def importSelectedComponents(self):
-        selectedRows = self.componentTableWidget.selectionModel().selectedRows()
+        selectedRows = self.componentTableWidget.selectionModel(
+        ).selectedRows()
         for r in selectedRows:
             self.onImportComponent(r.row())
-    
+
     def importAllComponents(self):
         rowCount = self.componentTableWidget.rowCount()
         for i in range(rowCount):
             self.onImportComponent(i)
-    
+
     def onImportComponent(self, row):
         '''Handle importing component.'''
         importOptions = self.importOptionsWidget.getOptions()
-        
+
         # TODO: Add methods to panels to ease retrieval of this data
         componentItem = self.componentTableWidget.item(
             row,
@@ -145,14 +184,14 @@ class FtrackImportAssetDialog(QtGui.QDialog):
         component = componentItem.data(
             self.componentTableWidget.COMPONENT_ROLE
         )
-    
+
         assetVersion = component.getVersion()
-        
+
         accessPath = self.componentTableWidget.item(
             row,
             self.componentTableWidget.columns.index('Path')
         ).text()
-        
+
         importObj = FTAssetObject(
             componentId=component.getId(),
             filePath=accessPath,
@@ -164,18 +203,18 @@ class FtrackImportAssetDialog(QtGui.QDialog):
 
         self.importSignal.emit()
         self.setMessage(message)
-        
+
     def clickedAssetVSignal(self, assetVid):
         self.assetVersionDetailsWidget.setAssetVersion(assetVid)
         self.componentTableWidget.setAssetVersion(assetVid)
-        
+
     def clickedIdSignal(self, ftrackId):
         self.listAssetsTableWidget.initView(ftrackId)
 
-    def setMessage(self, message=''):        
+    def setMessage(self, message=''):
         '''Display a message.'''
         if message is None:
             message = ''
-            
+
         message = 'Notice: \n' + message
         self.messageLabel.setText(message)

@@ -1,5 +1,8 @@
+# :coding: utf-8
+# :copyright: Copyright (c) 2015 ftrack
+
 import os
-import ftrack
+
 from PySide import QtGui
 
 from ftrack_connect.connector import PanelComInstance
@@ -8,12 +11,17 @@ from ftrack_connect.ui.widget.header import HeaderWidget
 
 
 class FtrackInfoDialog(QtGui.QDialog):
+
     def __init__(self, parent=None, connector=None):
         super(FtrackInfoDialog, self).__init__(parent=parent)
         self.connector = connector
 
         self.setMinimumWidth(400)
-        self.setSizePolicy(QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding))
+        self.setSizePolicy(
+            QtGui.QSizePolicy(
+                QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding
+            )
+        )
 
         self.centralwidget = QtGui.QWidget(self)
         self.verticalMainLayout = QtGui.QVBoxLayout(self)
@@ -31,7 +39,7 @@ class FtrackInfoDialog(QtGui.QDialog):
         self.verticalMainLayout.addLayout(self.horizontalLayout)
 
         self.setObjectName('ftrackInfo')
-        self.setWindowTitle("ftrackInfo")
+        self.setWindowTitle('ftrackInfo')
 
         self.homeTaskId = taskId
 
@@ -42,10 +50,9 @@ class FtrackInfoDialog(QtGui.QDialog):
 
     def setObject(self, taskId):
         obj = self.connector.objectById(taskId)
-        self.headerWidget.setTitle('Info panel')  # (' + obj.getParent().getName() + ' / ' + obj.getName() + ')')
+        self.headerWidget.setTitle('Info panel')
         url = obj.getWebWidgetUrl('info', theme='tf')
         self.infoWidget.setUrl(url)
 
     def updateObj(self, taskId):
         self.setObject(taskId)
-

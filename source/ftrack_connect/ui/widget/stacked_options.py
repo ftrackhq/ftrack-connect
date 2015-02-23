@@ -1,34 +1,44 @@
-from PySide import QtGui
-from PySide import QtXml
+# :coding: utf-8
+# :copyright: Copyright (c) 2015 ftrack
+
+from PySide import QtGui, QtXml
+
 
 class StackedOptionsWidget(QtGui.QStackedWidget):
+
     def __init__(self, parent, task=None, connector=None):
         super(StackedOptionsWidget, self).__init__(parent)
         if not connector:
-            raise ValueError('Please provide a connector object for %s' % self.__class__.__name__)
-        
+            raise ValueError(
+                'Please provide a connector object for {0}'.format(
+                    self.__class__.__name__
+                )
+            )
+
         self.xmlstring = None
         self.connector = connector
 
         if self.connector.getConnectorName() == 'nuke':
             p = self.palette()
             currentColor = p.color(QtGui.QPalette.Window)
-            p.setBrush(QtGui.QPalette.Window, QtGui.QBrush(currentColor.lighter(175)))
+            p.setBrush(
+                QtGui.QPalette.Window, QtGui.QBrush(currentColor.lighter(175))
+            )
             self.setPalette(p)
-            
+
     def resetOptions(self, xmlstring):
         widgetCount = self.count()
         for i in reversed(range(widgetCount)):
             widget = self.widget(i)
             self.removeWidget(widget)
             del widget
-            
+
         self.initStackedOptions(xmlstring)
-       
+
     def initStackedOptions(self, xmlstring, fromFile=False):
         self.stackedIndex = dict()
         self.stackedOptions = dict()
-        doc = QtXml.QDomDocument("optionsDocument")
+        doc = QtXml.QDomDocument('optionsDocument')
         if fromFile:
             pass
         else:
@@ -76,14 +86,20 @@ class StackedOptionsWidget(QtGui.QStackedWidget):
                         rowCount = 0
                         for k in range(rowElements.length()):
                             rowElement = rowElements.item(k).toElement()
-                            rowLayout, optionsCount = self.parseRow(rowElement, connectorName, mainLayout, assetTypeName)
+                            rowLayout, optionsCount = self.parseRow(
+                                rowElement, connectorName, mainLayout,
+                                assetTypeName
+                            )
                             if rowLayout:
                                 rowCount += optionsCount
                                 tabLayout.addLayout(rowLayout)
                         maxRowCount = max(rowCount, maxRowCount)
                         tabWidget.addTab(tab, tabName)
 
-                    spacerItem3 = QtGui.QSpacerItem(1, 1, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+                    spacerItem3 = QtGui.QSpacerItem(
+                        1, 1, QtGui.QSizePolicy.Minimum,
+                        QtGui.QSizePolicy.Expanding
+                    )
                     tabLayout.addItem(spacerItem3)
 
             self.addWidget(assetTypePages[i])
@@ -123,7 +139,9 @@ class StackedOptionsWidget(QtGui.QStackedWidget):
                 enabled = True
 
             optionElements = rowElement.elementsByTagName('option')
-            optionsCount = self.parseOptions(rowLayout, optionElements, assetTypeName, enabled)
+            optionsCount = self.parseOptions(
+                rowLayout, optionElements, assetTypeName, enabled
+            )
 
             return rowLayout, optionsCount
         else:
@@ -141,8 +159,7 @@ class StackedOptionsWidget(QtGui.QStackedWidget):
                 optionValue = False
             optionName = optionElement.attribute('name')
             self.stackedOptions[assetTypeName].append(optionName)
-            
-            # Float setting by Phil @ NHB 
+
             if optionType == 'float':
                 floatBox = QtGui.QDoubleSpinBox()
                 floatBox.setEnabled(enabled)
@@ -171,7 +188,8 @@ class StackedOptionsWidget(QtGui.QStackedWidget):
             if optionType == 'combo':
                 comboBox = QtGui.QComboBox()
                 comboBox.setEnabled(enabled)
-                optionitemElements = optionElement.elementsByTagName('optionitem')
+                optionitemElements = optionElement.elementsByTagName(
+                    'optionitem')
                 for t in range(optionitemElements.length()):
                     optionitemElement = optionitemElements.item(t).toElement()
                     optionitemValue = optionitemElement.attribute('name')
@@ -186,7 +204,9 @@ class StackedOptionsWidget(QtGui.QStackedWidget):
                 radioLayout = QtGui.QVBoxLayout()
                 radioLayout.setSpacing(1)
                 radioWidget.setLayout(radioLayout)
-                optionitemElements = optionElement.elementsByTagName('optionitem')
+                optionitemElements = optionElement.elementsByTagName(
+                    'optionitem'
+                )
                 for t in range(optionitemElements.length()):
                     optionitemElement = optionitemElements.item(t).toElement()
                     optionitemValue = optionitemElement.attribute('value')
