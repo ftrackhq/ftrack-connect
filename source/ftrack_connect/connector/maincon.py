@@ -147,7 +147,7 @@ class Connector(object):
     @staticmethod
     def executeInThread(function, arg):
         '''Execute *function* in thread with *arg* if supported.'''
-        function(*arg)
+        function(arg)
 
     # Make certain scene validations before actualy publishing
     @classmethod
