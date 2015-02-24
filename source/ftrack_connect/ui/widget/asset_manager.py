@@ -13,7 +13,10 @@ import asset_manager_rc
 
 
 class Ui_AssetManager(object):
+    '''Class to generate asset manager ui.'''
+
     def setupUi(self, AssetManager):
+        '''Setup ui for *AssetManager*.'''
         AssetManager.setObjectName('AssetManager')
         AssetManager.resize(549, 419)
         self.verticalLayout = QtGui.QVBoxLayout(AssetManager)
@@ -102,6 +105,7 @@ class Ui_AssetManager(object):
         QtCore.QMetaObject.connectSlotsByName(AssetManager)
 
     def retranslateUi(self, AssetManager):
+        '''Retranslate ui for *AssetManager*.'''
         AssetManager.setWindowTitle(
             QtGui.QApplication.translate(
                 'AssetManager', 'Form', None, QtGui.QApplication.UnicodeUTF8
@@ -139,8 +143,10 @@ class Ui_AssetManager(object):
 
 
 class FtrackAssetManagerDialog(QtGui.QDialog):
-    def __init__(self, parent=None, connector=None):
+    '''Class to represent an asset manager dialog.'''
 
+    def __init__(self, parent=None, connector=None):
+        '''Instantiate asset manager dialog with *connector*.'''
         super(FtrackAssetManagerDialog, self).__init__(parent=parent)
 
         if not connector:
@@ -186,10 +192,13 @@ class FtrackAssetManagerDialog(QtGui.QDialog):
 
 
 class AssetManagerWidget(QtGui.QWidget):
+    '''Asset manager widget'''
+
     notVersionable = dict()
     notVersionable['maya'] = ['alembic']
 
     def __init__(self, parent, task=None, connector=None):
+        '''Instantiate asset manager with *connector*.'''
         QtGui.QWidget.__init__(self, parent)
 
         if not connector:
@@ -313,6 +322,7 @@ class AssetManagerWidget(QtGui.QWidget):
 
     @QtCore.Slot()
     def refreshAssetManager(self):
+        '''Refresh assets in asset manager.'''
         assets = self.connector.getAssets()
 
         self.ui.AssertManagerTableWidget.setSortingEnabled(False)
@@ -494,6 +504,7 @@ class AssetManagerWidget(QtGui.QWidget):
         )
 
     def openComments(self, taskId):
+        '''Open comments dialog for *taskId*.'''
         self.comment_dialog = FtrackInfoDialog()
         self.comment_dialog.show()
         self.comment_dialog.move(
@@ -505,6 +516,7 @@ class AssetManagerWidget(QtGui.QWidget):
 
     @QtCore.Slot(int)
     def filterAssets(self, comboBoxIndex):
+        '''Filter asset based on *comboBoxIndex*.'''
         rowCount = self.ui.AssertManagerTableWidget.rowCount()
         if comboBoxIndex:
             comboItem = self.ui.AssetManagerComboBoxModel.item(comboBoxIndex)
@@ -524,13 +536,15 @@ class AssetManagerWidget(QtGui.QWidget):
 
     @QtCore.Slot(str)
     def selectObject(self, objectName):
+        '''Select object in scene from *objectName*.'''
         self.connector.selectObject(applicationObject=objectName)
 
     @QtCore.Slot(str)
     def removeObject(self, objectName):
+        '''Remove object with *objectName* from scene.'''
         msgBox = QtGui.QMessageBox()
-        msgBox.setText('Remove Asset.')
-        msgBox.setInformativeText('Are you sure??')
+        msgBox.setText('Remove asset.')
+        msgBox.setInformativeText('Are you sure you want to remove the asset?')
         msgBox.setStandardButtons(
             QtGui.QMessageBox.Ok | QtGui.QMessageBox.Cancel
         )
@@ -543,16 +557,16 @@ class AssetManagerWidget(QtGui.QWidget):
             )
             self.ui.AssertManagerTableWidget.removeRow(foundItem[0].row())
             self.refreshAssetManager()
-        else:
-            print 'You chickened out'
 
     def getSelectedRows(self):
+        '''Return selected rows.'''
         rows = []
         for idx in self.ui.AssertManagerTableWidget.selectionModel().selectedRows():
             rows.append(idx.row())
         return rows
 
     def versionDownSelected(self):
+        '''Version down selected assets.'''
         rows = self.getSelectedRows()
         for row in rows:
             currentComboIndex = self.ui.AssertManagerTableWidget.cellWidget(
@@ -571,6 +585,7 @@ class AssetManagerWidget(QtGui.QWidget):
             self.changeVersion(row, newVersion)
 
     def versionUpSelected(self):
+        '''Version up selected assets.'''
         rows = self.getSelectedRows()
         for row in rows:
             currentComboIndex = self.ui.AssertManagerTableWidget.cellWidget(
@@ -586,6 +601,7 @@ class AssetManagerWidget(QtGui.QWidget):
             self.changeVersion(row, newVersion)
 
     def versionLatestSelected(self):
+        '''Version up assets to latest.'''
         rows = self.getSelectedRows()
         for row in rows:
             newIndex = 0
@@ -598,6 +614,7 @@ class AssetManagerWidget(QtGui.QWidget):
             self.changeVersion(row, newVersion)
 
     def selectAll(self):
+        '''Select all assets rows.'''
         rowCount = self.ui.AssertManagerTableWidget.rowCount()
         for row in range(0, rowCount):
             index = self.ui.AssertManagerTableWidget.model().index(row, 0)
@@ -609,6 +626,7 @@ class AssetManagerWidget(QtGui.QWidget):
             )
 
     def getSceneSelection(self):
+        '''Get selection from scene.'''
         selectedAssets = self.connector.getSelectedAssets()
         self.ui.AssertManagerTableWidget.selectionModel().clearSelection()
         for asset in selectedAssets:
@@ -623,6 +641,7 @@ class AssetManagerWidget(QtGui.QWidget):
             )
 
     def setSceneSelection(self):
+        '''Set scene selection from selected rows.'''
         rows = self.getSelectedRows()
         objectNames = []
         for row in rows:
@@ -631,6 +650,7 @@ class AssetManagerWidget(QtGui.QWidget):
         self.connector.selectObjects(objectNames)
 
     def getCurrenRow(self):
+        '''Return current row.'''
         fw = QtGui.QApplication.focusWidget()
         modelindexComboBox = self.ui.AssertManagerTableWidget.indexAt(fw.pos())
         row = modelindexComboBox.row()
@@ -638,6 +658,7 @@ class AssetManagerWidget(QtGui.QWidget):
 
     @QtCore.Slot(int, str)
     def changeVersion(self, row, newVersion=None):
+        '''Change version of asset at *row* to *newVersion*.'''
         if row == -1:
             row = self.getCurrenRow()
 

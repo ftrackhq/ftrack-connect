@@ -10,6 +10,7 @@ from ftrack_connect.connector import HelpFunctions
 
 
 class AssetVersionDetailsWidget(QtGui.QWidget):
+    '''Asset version details widget.'''
 
     def __init__(self, parent=None, connector=None):
         '''Initialise widget.'''
