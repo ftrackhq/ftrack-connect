@@ -7,8 +7,10 @@ from ftrack_connect.connector import PersistentCookieJar, HelpFunctions
 
 
 class Ui_WebView(object):
+    '''Webview UI.'''
 
     def setupUi(self, WebView):
+        '''Setup UI for *WebView*.'''
         WebView.setObjectName('WebView')
         WebView.resize(688, 555)
         self.horizontalLayout = QtGui.QHBoxLayout(WebView)
@@ -26,6 +28,7 @@ class Ui_WebView(object):
         QtCore.QMetaObject.connectSlotsByName(WebView)
 
     def retranslateUi(self, WebView):
+        '''Translate text for *WebView*.'''
         WebView.setWindowTitle(
             QtGui.QApplication.translate(
                 'WebView', 'Form', None, QtGui.QApplication.UnicodeUTF8
@@ -34,14 +37,18 @@ class Ui_WebView(object):
 
 
 class WebPage(QtWebKit.QWebPage):
+    '''WebPage widget.'''
 
     def javaScriptConsoleMessage(self, msg, line, source):
+        '''Print javascript console message.'''
         print '%s line %d: %s' % (source, line, msg)
 
 
 class WebViewWidget(QtGui.QWidget):
+    '''Webview widget class.'''
 
     def __init__(self, parent, task=None):
+        '''Instansiate web view widget.'''
         QtGui.QWidget.__init__(self, parent)
         self.ui = Ui_WebView()
         self.ui.setupUi(self)
@@ -57,7 +64,9 @@ class WebViewWidget(QtGui.QWidget):
         self.ui.WebViewView.setPage(self.webPage)
 
     def sslErrorHandler(self, reply, errorList):
+        '''Handle ssl error.'''
         reply.ignoreSslErrors()
 
     def setUrl(self, url):
+        '''Set web view url to *url*.'''
         self.ui.WebViewView.load(QtCore.QUrl(url))

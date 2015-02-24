@@ -11,8 +11,10 @@ from ftrack_connect.ui.widget.header import HeaderWidget
 
 
 class FtrackInfoDialog(QtGui.QDialog):
+    '''Info dialog class.'''
 
     def __init__(self, parent=None, connector=None):
+        '''Instantiate info dialog class with *connector*.'''
         super(FtrackInfoDialog, self).__init__(parent=parent)
         self.connector = connector
 
@@ -49,10 +51,12 @@ class FtrackInfoDialog(QtGui.QDialog):
         panelComInstance.addInfoListener(self.updateObj)
 
     def setObject(self, taskId):
+        '''Set object to *taskId*.'''
         obj = self.connector.objectById(taskId)
         self.headerWidget.setTitle('Info panel')
         url = obj.getWebWidgetUrl('info', theme='tf')
         self.infoWidget.setUrl(url)
 
     def updateObj(self, taskId):
+        '''Update with *taskId*.'''
         self.setObject(taskId)

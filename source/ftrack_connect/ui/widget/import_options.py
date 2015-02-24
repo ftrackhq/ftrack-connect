@@ -8,8 +8,10 @@ from ftrack_connect.connector import FTAssetHandlerInstance
 
 
 class Ui_ImportOptions(object):
+    '''Import options UI.'''
 
     def setupUi(self, ImportOptions):
+        '''Setup UI for *ImportOptions*.'''
         ImportOptions.setObjectName("ImportOptions")
         ImportOptions.resize(451, 16)
         self.verticalLayout = QtGui.QVBoxLayout(ImportOptions)
@@ -27,6 +29,7 @@ class Ui_ImportOptions(object):
         QtCore.QMetaObject.connectSlotsByName(ImportOptions)
 
     def retranslateUi(self, ImportOptions):
+        '''Translate text for *ImportOptions*.'''
         ImportOptions.setWindowTitle(
             QtGui.QApplication.translate(
                 "ImportOptions", "Form", None, QtGui.QApplication.UnicodeUTF8
@@ -35,8 +38,10 @@ class Ui_ImportOptions(object):
 
 
 class ImportOptionsWidget(QtGui.QWidget):
+    '''Import options widget.'''
 
     def __init__(self, parent, task=None, connector=None):
+        '''Instansiate widget with *connector*.'''
         if not connector:
             raise ValueError(
                 'Please provide a connector object for %s'.format(
@@ -91,7 +96,9 @@ class ImportOptionsWidget(QtGui.QWidget):
 
     @QtCore.Slot(str)
     def setStackedWidget(self, stackName):
+        '''Set stacked widget page to *stackName*.'''
         self.stackedOptionsWidget.setCurrentPage(stackName)
 
     def getOptions(self):
+        '''Return options.'''
         return self.stackedOptionsWidget.getOptions()

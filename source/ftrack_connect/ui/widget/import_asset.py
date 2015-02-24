@@ -13,10 +13,12 @@ from ftrack_connect.ui.widget.header import HeaderWidget
 
 
 class FtrackImportAssetDialog(QtGui.QDialog):
+    '''Import asset dialog widget.'''
+
     importSignal = QtCore.Signal()
 
     def __init__(self, parent=None, connector=None):
-
+        '''Instantiate widget with *connector*.'''
         if not connector:
             raise ValueError(
                 'Please provide a connector object for {0}'.format(
@@ -162,12 +164,14 @@ class FtrackImportAssetDialog(QtGui.QDialog):
         self.browseTasksWidget.update()
 
     def importSelectedComponents(self):
+        '''Import selected components.'''
         selectedRows = self.componentTableWidget.selectionModel(
         ).selectedRows()
         for r in selectedRows:
             self.onImportComponent(r.row())
 
     def importAllComponents(self):
+        '''Import all components.'''
         rowCount = self.componentTableWidget.rowCount()
         for i in range(rowCount):
             self.onImportComponent(i)
@@ -205,14 +209,16 @@ class FtrackImportAssetDialog(QtGui.QDialog):
         self.setMessage(message)
 
     def clickedAssetVSignal(self, assetVid):
+        '''Set asset version to *assetVid*.'''
         self.assetVersionDetailsWidget.setAssetVersion(assetVid)
         self.componentTableWidget.setAssetVersion(assetVid)
 
     def clickedIdSignal(self, ftrackId):
+        '''Handle click signal.'''
         self.listAssetsTableWidget.initView(ftrackId)
 
     def setMessage(self, message=''):
-        '''Display a message.'''
+        '''Display a *message*.'''
         if message is None:
             message = ''
 
