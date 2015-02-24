@@ -10,8 +10,10 @@ import header_rc
 
 
 class Ui_Header(object):
+    '''UI header class.'''
 
     def setupUi(self, Header):
+        '''Setup UI for *Header*.'''
         Header.setObjectName("Header")
         Header.resize(198, 35)
         sizePolicy = QtGui.QSizePolicy(
@@ -74,6 +76,7 @@ class Ui_Header(object):
         QtCore.QMetaObject.connectSlotsByName(Header)
 
     def retranslateUi(self, Header):
+        '''Translate ui for *Header*.'''
         Header.setWindowTitle(QtGui.QApplication.translate(
             "Header", "Form", None, QtGui.QApplication.UnicodeUTF8)
         )
@@ -83,8 +86,10 @@ class Ui_Header(object):
 
 
 class HeaderWidget(QtGui.QWidget):
+    '''Header widget.'''
 
     def __init__(self, parent, task=None):
+        '''Instansiate widget.'''
         QtGui.QWidget.__init__(self, parent)
         self.ui = Ui_Header()
         self.ui.setupUi(self)
@@ -112,10 +117,13 @@ class HeaderWidget(QtGui.QWidget):
         self.setAutoFillBackground(True)
 
     def setTitle(self, title):
+        '''Set title of header to *title*.'''
         self.ui.titleLabel.setText(title)
 
     def openHelp(self):
+        '''Open help in browser.'''
         webbrowser.open(self.helpUrl)
 
     def setHelpUrl(self, url):
+        '''Set help url.'''
         self.helpUrl = url
