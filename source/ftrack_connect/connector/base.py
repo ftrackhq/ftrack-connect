@@ -18,102 +18,95 @@ from PySide import QtGui, QtNetwork, QtCore
 
 import ftrack
 
-
-def register_scheme(scheme):
-    for method in filter(lambda s: s.startswith('uses_'), dir(urlparse)):
-        getattr(urlparse, method).append(scheme)
-
-register_scheme('ftrack')
+# Append ftrack to urlparse.
+for method in filter(lambda s: s.startswith('uses_'), dir(urlparse)):
+    getattr(urlparse, method).append('ftrack')
 
 
 class Connector(object):
+    '''Main connector.'''
+
     __metaclass__ = abc.ABCMeta
 
     @abc.abstractmethod
     def __init__(self):
+        '''Instantiate base connector.'''
         super(Connector, self).__init__()
 
-    # Return array of asset-ids in scene
     @staticmethod
     @abc.abstractmethod
     def getAssets():
+        '''Return list of asset tuples from scene.'''
         pass
 
-    # Return full path filename
     @staticmethod
     @abc.abstractmethod
     def getFileName():
+        '''Return full path filename.'''
         pass
 
-    # Get some kind of handle to use
-    # when attaching panels
     @staticmethod
     @abc.abstractmethod
     def getMainWindow():
+        '''Return main window.'''
         pass
 
-    # Import asset into application
     @staticmethod
     @abc.abstractmethod
     def importAsset(iAObj):
+        '''Import asset into application.'''
         pass
 
-    # Set selection
     @staticmethod
     @abc.abstractmethod
     def selectObject(applicationObject=''):
+        '''Set selection from *applicationObject*.'''
         pass
 
-    # Remove object
     @staticmethod
     @abc.abstractmethod
     def removeObject(applicationObject=''):
+        '''Remove *applicationObject* from scene.'''
         pass
 
-    # Change version of asset
     @staticmethod
     @abc.abstractmethod
     def changeVersion(applicationObject=None, iAObj=None):
+        '''Change version of *applicationObject* and *iAObj*.'''
         pass
 
-    # Get selected objects in scene
     @staticmethod
     @abc.abstractmethod
     def getSelectedObjects():
+        '''Return selected objects from scene.'''
         pass
 
-    # Set node indication of version if this feature exist
     @staticmethod
     def setNodeColor(applicationObject='', latest=True):
+        '''Set node indication of version if this feature exist.'''
         pass
 
-    # Publish asset. Return array of components
     @staticmethod
     @abc.abstractmethod
     def publishAsset(iAObj=None):
+        '''Publish asset and return list of components.'''
         pass
 
-    # Init available dialogs
-    @staticmethod
-    @abc.abstractmethod
-    def init_dialogs(ftrackDialogs, availableDialogs=[]):
-        pass
-
-    # Return connector name
     @staticmethod
     @abc.abstractmethod
     def getConnectorName():
+        '''Return name of this connector.'''
         return 'main'
 
-    # Find a unique name to use when importing
     @staticmethod
     @abc.abstractmethod
     def getUniqueSceneName():
+        '''Return a unique scene name.'''
         pass
 
-    # Use Qt to get a screengrab of current application
     @staticmethod
     def takeScreenshot():
+        '''Save screenshot of current application and return file path.'''
         fileName = os.path.join(
             tempfile.gettempdir(), str(uuid.uuid4()) + '.jpg'
         )
@@ -125,12 +118,13 @@ class Connector(object):
     @staticmethod
     @abc.abstractmethod
     def batch():
-        print 'Maincon debug'
+        '''Return true if batch is enabled.'''
+        #: TODO: Clarify this and how it is used.
         return False
 
-    # Register custom assets from FTRACK_OVERRIDE_PATH
     @classmethod
     def registerAssets(cls):
+        '''Register custom assets from FTRACK_OVERRIDE_PATH.'''
         if 'FTRACK_OVERRIDE_PATH' in os.environ:
             splitPath = os.environ['FTRACK_OVERRIDE_PATH'].split(os.pathsep)
             for path in splitPath:
@@ -149,18 +143,18 @@ class Connector(object):
         '''Execute *function* in thread with *arg* if supported.'''
         function(arg)
 
-    # Make certain scene validations before actualy publishing
     @classmethod
     def prePublish(cls, iAObj):
+        '''Make certain scene validations before actualy publishing *iAObj*.'''
         parent = ftrack.Task(iAObj.taskId).getParent()
         if parent.get('entityType') == 'show':
             return None, 'Task parent cant be show'
         else:
             return True, ''
 
-    # Do things after publish as send email or other fun stuff
     @staticmethod
     def postPublish(iAObj=None, publishedComponents=None):
+        '''Run post publish for *iAObj* and *publishedComponents*.'''
         if 'FTRACK_OVERRIDE_PATH' in os.environ:
             splittedPath = os.environ['FTRACK_OVERRIDE_PATH'].split(os.pathsep)
             for path in splittedPath:
@@ -171,6 +165,7 @@ class Connector(object):
 
     @staticmethod
     def objectById(identifier):
+        '''Return object from *identifier*.'''
         obj = None
 
         if identifier != '':
@@ -213,7 +208,7 @@ class Connector(object):
                           moveFiles=False, copyFiles=True,
                           progressCallback=None, startProgress=0,
                           endProgress=100):
-
+        '''Publish asset files.'''
         if progressCallback:
             progressCallback(startProgress)
 
@@ -302,6 +297,8 @@ class Connector(object):
 
 
 class HelpFunctions(object):
+    '''Help functions.'''
+
     def __init__(self):
         super(HelpFunctions, self).__init__()
 
@@ -317,42 +314,13 @@ class HelpFunctions(object):
         return path
 
     @staticmethod
-    def createAssetFolder(assetVersionId='', component=None):
-        assetVersion = ftrack.AssetVersion(assetVersionId)
-        asset = assetVersion.getAsset()
-        assettype = asset.getType().getShort()
-        assetname = asset.getName()
-        zversion = str(assetVersion.getVersion()).zfill(3)
-
-        assetParent = asset.getParent()
-
-        showAssetRoot = assetParent.getProject().getPath(True)
-        shotPath = HelpFunctions.getPath(assetParent)
-
-        s = shotPath.split('.')
-        assetpath = '_'.join(s) + '_' + assetname + \
-            '_' + assettype + '_v' + zversion
-
-        if component:
-            assetpath += '_' + component
-
-        endOfPath = os.path.join(*[s[x] for x in range(1, len(s))])
-        assetabspath = os.path.join(
-            showAssetRoot, endOfPath, assettype, assetpath
-        )
-        assetpath = os.path.join(endOfPath, assettype, assetpath)
-
-        if(not os.path.isdir(assetabspath)):
-            os.makedirs(assetabspath, 00775)
-
-        return assetpath, assetabspath
-
-    @staticmethod
     def getUniqueNumber():
+        '''Return unique number.'''
         return str(datetime.datetime.today()).split('.')[1]
 
     @staticmethod
     def getPath(task, unders=False, slash=False):
+        '''Return path from *task*.'''
         path = ''
         if task.get('entityType') == 'show':
             path = task.getName()
@@ -377,6 +345,7 @@ class HelpFunctions(object):
 
     @staticmethod
     def getFileFromUrl(url, toFile=None, returnResponse=None):
+        '''Return file from *url.'''
         ftrackProxy = os.getenv('FTRACK_PROXY', '')
         ftrackServer = os.getenv('FTRACK_SERVER', '')
         if ftrackProxy != '':
@@ -405,6 +374,7 @@ class HelpFunctions(object):
 
     @staticmethod
     def getFtrackQNetworkProxy():
+        '''Return ftrack proxy if configured.'''
         ftrackProxy = os.getenv('FTRACK_PROXY', '')
         if ftrackProxy != '':
 
@@ -427,6 +397,7 @@ class HelpFunctions(object):
 
     @staticmethod
     def getFileSequenceStartEnd(path):
+        '''Return file sequence start and end from *path*.'''
         try:
             if '%V' in path:
                 path = path.replace('%V', 'left')
@@ -454,26 +425,32 @@ class HelpFunctions(object):
         return first, last
 
 
-# Base class for assets used when importing or publishing
 class FTAssetType(object):
+    '''Base class for assets used when importing or publishing.'''
+
     __metaclass__ = abc.ABCMeta
 
     def __init__(self):
+        '''Instantiate asset class.'''
         super(FTAssetType, self).__init__()
 
     @abc.abstractmethod
     def importAsset(self):
+        '''Import asset.'''
         pass
 
     @abc.abstractmethod
     def publishAsset(self):
+        '''Publish asset.'''
         pass
 
     @abc.abstractmethod
     def changeVersion(self):
+        '''Change version of asset.'''
         pass
 
     def getTotalSteps(self, steps=[]):
+        '''Return total steps.'''
         totalSteps = 0
         for step in steps:
             if step:
@@ -481,15 +458,18 @@ class FTAssetType(object):
         return totalSteps
 
     def validate(self):
+        '''Return true if valid.'''
         pass
 
 
-# Class to easier store the variables passed around when importing
 class FTAssetObject(object):
+    '''Class to easier store the variables passed around when importing.'''
+
     def __init__(
         self, componentId='', filePath='', componentName='', assetVersionId='',
         options={}, taskId=''
     ):
+        '''Instantiate asset object.'''
         super(FTAssetObject, self).__init__()
         self.componentId = componentId
         self.filePath = filePath
@@ -523,36 +503,46 @@ class FTAssetObject(object):
             self.zversion = '000'
 
 
-# Class for handling assets
 class FTAssetHandler(object):
+    '''Class for handling assets.'''
+
     def __init__(self):
+        '''Instantiate asset handler.'''
         super(FTAssetHandler, self).__init__()
         self.assetTypeClasses = dict()
 
     def registerAssetType(self, name, cls):
+        '''Register asset type *cls* with *name*.'''
         self.assetTypeClasses[name] = cls
 
     def getAssetTypes(self):
+        '''Return all registered asset types.'''
         assetTypes = []
         for key, value in self.assetTypeClasses.items():
             assetTypes.append(key)
         return assetTypes
 
     def getAssetClass(self, assetType):
+        '''Return asset class from *assetType* name.'''
         if assetType in self.assetTypeClasses:
             return self.assetTypeClasses[assetType]()
         else:
             return None
 
+# Variable to keep singleton asset handler.
 _ftHandler = None
 
 
 class FTAssetHandlerInstance(object):
+    '''Return singleton asset handler.'''
+
     def __init__(self):
+        '''Instantiate asset handler.'''
         super(FTAssetHandlerInstance, self).__init__()
 
     @staticmethod
     def instance():
+        '''Return singleton asset handler.'''
         global _ftHandler
         if not _ftHandler:
             _ftHandler = FTAssetHandler()
@@ -560,7 +550,10 @@ class FTAssetHandlerInstance(object):
 
 
 class FTComponent(object):
+    '''Component class.'''
+
     def __init__(self, path='', files=None, componentname='', metadata=[]):
+        '''Instantiate component.'''
         self.path = path
         self.files = files
         self.componentname = componentname

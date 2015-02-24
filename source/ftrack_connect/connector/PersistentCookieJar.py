@@ -5,8 +5,10 @@ from PySide import QtNetwork, QtCore
 
 
 class PersistentCookieJar(QtNetwork.QNetworkCookieJar):
+    '''Persistent CookieJar.'''
 
     def save(self):
+        '''Save all cookies to settings.'''
         cookieList = self.allCookies()
         data = QtCore.QByteArray()
 
@@ -19,6 +21,7 @@ class PersistentCookieJar(QtNetwork.QNetworkCookieJar):
         settings.setValue('Cookies', data)
 
     def load(self):
+        '''Load all cookies fro settings.'''
         settings = QtCore.QSettings('ftrack', 'launchpad')
         data = settings.value('Cookies')
         self.setAllCookies(QtNetwork.QNetworkCookie.parseCookies(data))
