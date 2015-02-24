@@ -14,6 +14,10 @@ import ftrack_connect.ui.widget.label
 
 class GroupHeader(QtGui.QLabel):
 
+    def __init__(self, parent=None):
+        super(GroupHeader, self).__init__(parent)
+        self.setObjectName('header')
+
     def value(self):
         return self.text()
 
@@ -32,6 +36,7 @@ class UserList(ftrack_connect.ui.widget.item_list.ItemList):
             widgetItem=lambda widget: widget.value(),
             parent=parent
         )
+        self.setObjectName('presence-list')
         self.list.setSelectionMode(
             QtGui.QAbstractItemView.NoSelection
         )
@@ -51,6 +56,14 @@ class UserList(ftrack_connect.ui.widget.item_list.ItemList):
         widget = ftrack_connect.ui.widget.user.User(**item)
         widget.itemClicked.connect(
             self.itemClicked.emit
+        )
+        widget.setStyleSheet(
+            '''
+                QWidget#user {
+                    background-color: transparent;
+                }
+
+            '''
         )
 
         return widget
@@ -101,6 +114,12 @@ class UserList(ftrack_connect.ui.widget.item_list.ItemList):
             'Session with id {0} could not be found.'.format(sessionId)
         )
 
+    def userExists(self, userId):
+        for value in self.items():
+            if isinstance(value, dict) and value['user_id'] == userId:
+                return True
+
+        return False
 
     def addItem(self, item, row=None):
         '''Add *item* at *row*.

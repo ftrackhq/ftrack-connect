@@ -7,8 +7,10 @@ import datetime
 
 import arrow
 from PySide import QtGui, QtCore
+import ftrack
 
 import ftrack_connect.ui.widget.label
+import ftrack_connect.ui.widget.thumbnail
 
 class UserExtended(QtGui.QWidget):
 
@@ -76,17 +78,29 @@ class User(QtGui.QWidget):
         self._userId = userId
         self._applications = applications
 
-        self.setLayout(QtGui.QVBoxLayout())
+        self.setObjectName('user')
+
+        self.setLayout(QtGui.QHBoxLayout())
+
+        thumbnailUrl = ftrack.User(userId).getThumbnail()
+        self.thumbnail = ftrack_connect.ui.widget.thumbnail.Thumbnail()
+        self.thumbnail.setFixedWidth(30)
+        self.thumbnail.setFixedHeight(30)
+        self.thumbnail.loadFromUrl(thumbnailUrl)
+        self.layout().addWidget(self.thumbnail)
+
+        nameAndActivity = QtGui.QWidget()
+        nameAndActivity.setLayout(QtGui.QVBoxLayout())
 
         self.nameLabel = ftrack_connect.ui.widget.label.Label()
-        self.nameLabel.setSizePolicy(
-            QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum
-        )
         self.nameLabel.setText(name)
-        self.layout().addWidget(self.nameLabel)
+        self.nameLabel.setObjectName('name')
+        nameAndActivity.layout().addWidget(self.nameLabel)
 
         self.activityLabel = ftrack_connect.ui.widget.label.Label()
-        self.layout().addWidget(self.activityLabel)
+        nameAndActivity.layout().addWidget(self.activityLabel)
+
+        self.layout().addWidget(nameAndActivity)
 
         self._refreshStyles()
         self._updateActivity()
@@ -113,7 +127,10 @@ class User(QtGui.QWidget):
             ''')
 
     def _updateActivity(self):
-        text = '-'
+        text = 'offline'
+
+        if self._isOnline():
+            text = ''
 
         if self._applications:
             activity = min(

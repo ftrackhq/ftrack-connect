@@ -27,7 +27,6 @@ class UserPresence(QtGui.QWidget):
         self.userList = ftrack_connect.ui.widget.user_list.UserList(
             groups=self._groups
         )
-        self.userList.setObjectName('time-log-list')
 
         self.userInfoContainer = QtGui.QWidget()
         self.userInfoContainer.setLayout(QtGui.QVBoxLayout())
@@ -44,16 +43,21 @@ class UserPresence(QtGui.QWidget):
         self.layout().addWidget(
             self.userInfoContainer, stretch=1
         )
-        self.userList.setFixedWidth(150)
+        self.userList.setFixedWidth(200)
         self.userList.itemClicked.connect(self._itemClickedHandler)
 
     def addUser(self, name, userId, group):
-        self.logger.debug(u'addUser: {0}'.format(name))
+        self.logger.debug(u'Adding user to user list: {0}'.format(name))
+        if self.userList.userExists(userId):
+            self.logger.debug(u'User with id {0} already exists'.format(userId))
+            return False
+
         self.userList.addItem({
             'name': name,
             'userId': userId,
             'group': group
         })
+        return True
 
     def _handlePresenceEvent(self, presenceEnterEvent):
         '''Handle *presenceEnterEvent* from hub.
