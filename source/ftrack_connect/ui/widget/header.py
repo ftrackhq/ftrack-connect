@@ -47,16 +47,16 @@ class Ui_Header(object):
         )
         self.horizontalLayout.addItem(spacerItem)
         self.userLabel = QtGui.QLabel(Header)
-        self.userButton = QtGui.QPushButton(Header)
-        self.userButton.setMinimumSize(QtCore.QSize(35, 35))
-        self.userButton.setMaximumSize(QtCore.QSize(35, 35))
-        self.userButton.setText("")
-        self.userButton.setIconSize(QtCore.QSize(30, 30))
-        self.userButton.setFlat(True)
-        self.userButton.setDisabled(True)
-        self.userButton.setObjectName("userButton")
+        self.userIcon = QtGui.QPushButton(Header)
+        self.userIcon.setMinimumSize(QtCore.QSize(35, 35))
+        self.userIcon.setMaximumSize(QtCore.QSize(35, 35))
+        self.userIcon.setText("")
+        self.userIcon.setIconSize(QtCore.QSize(30, 30))
+        self.userIcon.setFlat(True)
+        self.userIcon.setDisabled(True)
+        self.userIcon.setObjectName("ftrac-user-icon")
         self.horizontalLayout.addWidget(self.userLabel)
-        self.horizontalLayout.addWidget(self.userButton)
+        self.horizontalLayout.addWidget(self.userIcon)
 
 
 class SimpleHeaderWidget(QtGui.QWidget):
@@ -71,7 +71,7 @@ class SimpleHeaderWidget(QtGui.QWidget):
         self.resize(198, 35)
 
         icon = self.getUserIcon()
-        self.ui.userButton.setIcon(icon)
+        self.ui.userIcon.setIcon(icon)
         self.ui.userLabel.setText(self.current_user.getName())
 
         logoPixmap = QtGui.QPixmap(':ftrack/image/default/ftrackLogoLabel')
@@ -137,3 +137,6 @@ class HeaderWidget(QtGui.QWidget):
 
     def getCurrentUser(self):
         return self.header.current_user
+
+    def setTitle(self, title):
+        pass
