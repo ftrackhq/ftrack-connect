@@ -35,17 +35,14 @@ class Ui_Header(object):
             self.logoLabel.sizePolicy().hasHeightForWidth()
         )
         self.logoLabel.setSizePolicy(sizePolicy)
-        self.logoLabel.setMinimumSize(QtCore.QSize(21, 22))
-        self.logoLabel.setMaximumSize(QtCore.QSize(21, 22))
         self.logoLabel.setText("")
         self.logoLabel.setTextFormat(QtCore.Qt.AutoText)
-        self.logoLabel.setPixmap(QtGui.QPixmap(":/fbox.png"))
         self.logoLabel.setScaledContents(False)
         self.logoLabel.setObjectName("logoLabel")
         self.horizontalLayout.addWidget(self.logoLabel)
         self.titleLabel = QtGui.QLabel(Header)
-        font = QtGui.QFont()
-        font.setPointSize(14)
+        font = QtGui.QFont(':ftrack/font/main')
+        font.setPointSize(20)
         self.titleLabel.setFont(font)
         self.titleLabel.setObjectName("titleLabel")
         self.horizontalLayout.addWidget(self.titleLabel)
@@ -95,19 +92,13 @@ class SimpleHeaderWidget(QtGui.QWidget):
         self.ui.userButton.setIcon(icon)
         self.ui.userLabel.setText(self.current_user.getName())
 
-        logoPixmap = QtGui.QPixmap(':ftrack/image/light/ftrackLogoGrey')
+        logoPixmap = QtGui.QPixmap(':ftrack/image/default/ftrackLogoGrey')
         self.ui.logoLabel.setPixmap(
             logoPixmap.scaled(
                 self.ui.logoLabel.size(), QtCore.Qt.KeepAspectRatio
             )
         )
 
-        p = self.palette()
-        currentColor = p.color(QtGui.QPalette.Window)
-        p.setBrush(
-            QtGui.QPalette.Window, QtGui.QBrush(currentColor.darker(200))
-        )
-        self.setPalette(p)
         self.setAutoFillBackground(True)
 
     def getUserIcon(self):
