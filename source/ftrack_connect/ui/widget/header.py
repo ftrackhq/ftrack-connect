@@ -7,7 +7,7 @@ import webbrowser
 from PySide import QtCore, QtGui
 
 import header_rc
-
+import ftrack
 
 class Ui_Header(object):
 
@@ -53,23 +53,18 @@ class Ui_Header(object):
             40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum
         )
         self.horizontalLayout.addItem(spacerItem)
-        self.helpButton = QtGui.QPushButton(Header)
-        self.helpButton.setMinimumSize(QtCore.QSize(35, 35))
-        self.helpButton.setMaximumSize(QtCore.QSize(35, 35))
-        self.helpButton.setText("")
-        icon = QtGui.QIcon()
-        icon.addPixmap(
-            QtGui.QPixmap(":/help.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off
-        )
-        self.helpButton.setIcon(icon)
-        self.helpButton.setIconSize(QtCore.QSize(30, 30))
-        self.helpButton.setFlat(True)
-        self.helpButton.setObjectName("helpButton")
-        self.horizontalLayout.addWidget(self.helpButton)
+        self.userButton = QtGui.QPushButton(Header)
+        self.userButton.setMinimumSize(QtCore.QSize(35, 35))
+        self.userButton.setMaximumSize(QtCore.QSize(35, 35))
+        self.userButton.setText("")
+        self.userButton.setIconSize(QtCore.QSize(30, 30))
+        self.userButton.setFlat(True)
+        self.userButton.setObjectName("userButton")
+        self.horizontalLayout.addWidget(self.userButton)
 
         self.retranslateUi(Header)
         QtCore.QObject.connect(
-            self.helpButton, QtCore.SIGNAL("clicked()"), Header.openHelp
+            self.userButton, QtCore.SIGNAL("clicked()"), Header.openHelp
         )
         QtCore.QMetaObject.connectSlotsByName(Header)
 
@@ -86,21 +81,22 @@ class SimpleHeaderWidget(QtGui.QWidget):
 
     def __init__(self, parent=None, task=None):
         QtGui.QWidget.__init__(self, parent)
+
+        self.current_user = ftrack.User(os.getenv('LOGNAME'))
         self.ui = Ui_Header()
         self.ui.setupUi(self)
         self.setFixedHeight(40)
-        self.helpUrl = 'http://support.ftrack.com/'
+        self.resize(198, 35)
 
-        if (
-            'FTRACK_HEADER_LOGO' in os.environ and
-            os.environ['FTRACK_HEADER_LOGO'] != ''
-        ):
-            logoPixmap = QtGui.QPixmap(os.environ['FTRACK_HEADER_LOGO'])
-            self.ui.logoLabel.setPixmap(
-                logoPixmap.scaled(
-                    self.ui.logoLabel.size(), QtCore.Qt.KeepAspectRatio
-                )
+        icon = self.getUserIcon()
+        self.ui.userButton.setIcon(icon)
+
+        logoPixmap = QtGui.QPixmap(':ftrack/image/light/ftrackLogoGrey')
+        self.ui.logoLabel.setPixmap(
+            logoPixmap.scaled(
+                self.ui.logoLabel.size(), QtCore.Qt.KeepAspectRatio
             )
+        )
 
         p = self.palette()
         currentColor = p.color(QtGui.QPalette.Window)
@@ -110,16 +106,19 @@ class SimpleHeaderWidget(QtGui.QWidget):
         self.setPalette(p)
         self.setAutoFillBackground(True)
 
+    def getUserIcon(self):
+        import urllib
+        img = QtGui.QImage()
+        default_user_icon = os.environ["FTRACK_SERVER"] + "/img/userplaceholder.png"
+        user_icon = self.current_user.getThumbnail() or default_user_icon
+        img.loadFromData(urllib.urlopen(user_icon).read())
+        return QtGui.QIcon(QtGui.QPixmap(img))
+
     def setTitle(self, title):
         self.ui.titleLabel.setText(title)
 
     def openHelp(self):
         webbrowser.open(self.helpUrl)
-
-    def setHelpUrl(self, url):
-        self.helpUrl = url
-        self.__create_message_area()
-
 
 class HeaderWidget(QtGui.QWidget):
     def __init__(self, parent=None):
@@ -161,3 +160,6 @@ class HeaderWidget(QtGui.QWidget):
         self.message_area.setObjectName(class_type)
         self.message_area.setText(message)
         self.message_area.setVisible(True)
+
+    def getCurrentUser(self):
+        return self.header.current_user
