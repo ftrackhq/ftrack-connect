@@ -40,12 +40,8 @@ class Ui_Header(object):
         self.logoLabel.setScaledContents(False)
         self.logoLabel.setObjectName("logoLabel")
         self.horizontalLayout.addWidget(self.logoLabel)
-        self.titleLabel = QtGui.QLabel(Header)
-        font = QtGui.QFont(':ftrack/font/main')
-        font.setPointSize(20)
-        self.titleLabel.setFont(font)
-        self.titleLabel.setObjectName("titleLabel")
-        self.horizontalLayout.addWidget(self.titleLabel)
+
+
         spacerItem = QtGui.QSpacerItem(
             40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum
         )
@@ -61,20 +57,6 @@ class Ui_Header(object):
         self.userButton.setObjectName("userButton")
         self.horizontalLayout.addWidget(self.userLabel)
         self.horizontalLayout.addWidget(self.userButton)
-
-        self.retranslateUi(Header)
-        QtCore.QObject.connect(
-            self.userButton, QtCore.SIGNAL("clicked()"), Header.openHelp
-        )
-        QtCore.QMetaObject.connectSlotsByName(Header)
-
-    def retranslateUi(self, Header):
-        Header.setWindowTitle(QtGui.QApplication.translate(
-            "Header", "Form", None, QtGui.QApplication.UnicodeUTF8)
-        )
-        self.titleLabel.setText(QtGui.QApplication.translate(
-            "Header", "Title", None, QtGui.QApplication.UnicodeUTF8)
-        )
 
 
 class SimpleHeaderWidget(QtGui.QWidget):
@@ -92,7 +74,7 @@ class SimpleHeaderWidget(QtGui.QWidget):
         self.ui.userButton.setIcon(icon)
         self.ui.userLabel.setText(self.current_user.getName())
 
-        logoPixmap = QtGui.QPixmap(':ftrack/image/default/ftrackLogoGrey')
+        logoPixmap = QtGui.QPixmap(':ftrack/image/default/ftrackLogoLabel')
         self.ui.logoLabel.setPixmap(
             logoPixmap.scaled(
                 self.ui.logoLabel.size(), QtCore.Qt.KeepAspectRatio
@@ -143,8 +125,8 @@ class HeaderWidget(QtGui.QWidget):
         self.message_area.setVisible(False)
         self.layout.addWidget(self.message_area)
 
-    def setHeaderTitle(self, title):
-        self.header.ui.titleLabel.setText(title)
+    # def setHeaderTitle(self, title):
+    #     self.header.ui.titleLabel.setText(title)
 
     def setMessage(self, message, type='info'):
         message_types = ['info', 'warning', 'error']
