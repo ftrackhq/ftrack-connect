@@ -8,7 +8,6 @@ import json
 import arrow
 from PySide import QtGui
 import ftrack_legacy
-
 import ftrack
 
 # TODO: The Session should not be created here.
@@ -24,7 +23,7 @@ class Notification(QtGui.QWidget):
     def __init__(
         self, event=None, date=None, parent=None
     ):
-        '''Initialise widget with initial component *value* and *parent*.'''
+        '''Initialise widget with initial component *event* and *parent*.'''
         super(Notification, self).__init__(parent=parent)
         self.horizontalLayout = QtGui.QHBoxLayout()
         verticalLayout = QtGui.QVBoxLayout()
@@ -107,7 +106,10 @@ class VersionNotification(Notification):
         ).all()
 
         self.setText(
-            'Version <span style="color: #E6E6E6">{1}</span> of <span style="color: #E6E6E6">{0}</span> available.'.format(
+            (
+                'Version <span style="color: #E6E6E6">{1}</span> of '
+                '<span style="color: #E6E6E6">{0}</span> available.'
+            ).format(
                 version[0]['asset']['name'], version[0]['version']
             )
         )
