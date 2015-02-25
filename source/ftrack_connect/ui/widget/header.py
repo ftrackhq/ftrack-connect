@@ -53,13 +53,16 @@ class Ui_Header(object):
             40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum
         )
         self.horizontalLayout.addItem(spacerItem)
+        self.userLabel = QtGui.QLabel(Header)
         self.userButton = QtGui.QPushButton(Header)
         self.userButton.setMinimumSize(QtCore.QSize(35, 35))
         self.userButton.setMaximumSize(QtCore.QSize(35, 35))
         self.userButton.setText("")
         self.userButton.setIconSize(QtCore.QSize(30, 30))
         self.userButton.setFlat(True)
+        self.userButton.setDisabled(True)
         self.userButton.setObjectName("userButton")
+        self.horizontalLayout.addWidget(self.userLabel)
         self.horizontalLayout.addWidget(self.userButton)
 
         self.retranslateUi(Header)
@@ -90,6 +93,7 @@ class SimpleHeaderWidget(QtGui.QWidget):
 
         icon = self.getUserIcon()
         self.ui.userButton.setIcon(icon)
+        self.ui.userLabel.setText(self.current_user.getName())
 
         logoPixmap = QtGui.QPixmap(':ftrack/image/light/ftrackLogoGrey')
         self.ui.logoLabel.setPixmap(
