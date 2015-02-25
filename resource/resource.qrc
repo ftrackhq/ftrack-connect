@@ -4,6 +4,7 @@
         <file alias='ftrackLogoGreyDark'>image/logo_grey_dark.svg</file>
         <file alias='ftrackLogoColor'>image/logo_colour.svg</file>
         <file alias='boxShadow'>image/box_shadow.png</file>
+	<file alias='ftrackLogoLabel'>image/ftrack-logo-for-NUKE.png</file>
     </qresource>
     <qresource prefix='ftrack/style'>
         <file alias='light'>style_light.css</file>
