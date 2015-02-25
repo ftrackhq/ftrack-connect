@@ -135,6 +135,10 @@ class HeaderWidget(QtGui.QWidget):
         self.message_area.setText(message)
         self.message_area.setVisible(True)
 
+    def dismissMessage(self):
+        self.message_area.setText('')        
+        self.message_area.setVisible(False)
+
     def getCurrentUser(self):
         return self.header.current_user
 
