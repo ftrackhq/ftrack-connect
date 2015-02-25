@@ -2,7 +2,7 @@
 # :copyright: Copyright (c) 2014 ftrack
 
 from PySide import QtGui, QtCore
-import ftrack
+import ftrack_legacy
 
 import ftrack_connect.ui.application
 import ftrack_connect.ui.widget.overlay
@@ -111,8 +111,8 @@ class Publisher(ftrack_connect.ui.application.ApplicationPlugin):
 
         event['data'] may optionally contain:
 
-            components 
-                a list of dictionaries with name and path, used to 
+            components
+                a list of dictionaries with name and path, used to
                 automatically populate the list of components.
 
             thumbnail
@@ -148,13 +148,13 @@ class Publisher(ftrack_connect.ui.application.ApplicationPlugin):
         if manageData:
             self.publishView.setManageData(True)
 
-        entity = ftrack.Task(
+        entity = ftrack_legacy.Task(
             entity.get('entityId')
         )
         self.setEntity(entity)
         self.requestApplicationFocus.emit(self)
 
-        ftrack.EVENT_HUB.publishReply(
+        ftrack_legacy.EVENT_HUB.publishReply(
             sourceEvent=event,
             data={'message': 'Publisher started.'}
         )

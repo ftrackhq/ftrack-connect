@@ -2,7 +2,7 @@
 # :copyright: Copyright (c) 2014 ftrack
 
 from PySide import QtGui
-import ftrack
+import ftrack_legacy
 
 import ftrack_connect.asynchronous
 
@@ -27,7 +27,7 @@ class EntityPath(QtGui.QLineEdit):
 
         for entity in entities:
             if entity:
-                if isinstance(entity, ftrack.Show):
+                if isinstance(entity, ftrack_legacy.Show):
                     names.append(entity.getFullName())
                 else:
                     names.append(entity.getName())
