@@ -83,7 +83,7 @@ class Notification(QtGui.QWidget):
         '''Handle button clicked.'''
         ftrack_legacy.EVENT_HUB.publish(
             ftrack_legacy.Event(
-                'ftrack.connect.notification.{0._type}'.format(self),
+                'ftrack.crew.notification.{0._type}'.format(self),
                 data=self.value()
             ),
             synchronous=True
