@@ -117,7 +117,7 @@ class HeaderWidget(QtGui.QWidget):
 
     def __create_message_area(self):
         self.message_area = QtGui.QLabel('', parent=self)
-        self.message_area.setObjectName('ftrack-message-area-info')
+        self.message_area.setObjectName('ftrack-header-message-info')
         self.message_area.resize(QtCore.QSize(900, 80))
         self.message_area.setSizePolicy(
             QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Fixed
