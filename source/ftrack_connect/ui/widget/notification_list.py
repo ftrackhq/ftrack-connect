@@ -4,8 +4,7 @@
 from collections import defaultdict
 
 from PySide import QtGui, QtCore
-import ftrack
-import ftrack.formatter
+import ftrack_legacy
 
 from ftrack_connect.ui.widget.notification import _notifications
 from ftrack_connect.ui.widget.notification import Notification as _Notification
@@ -148,46 +147,36 @@ class Notification(QtGui.QWidget):
         if _reload:
             self.reload()
 
+    def removeContext(self, contextId, _reload=True):
+        '''Remove context with *contextId*.'''
+
+        for contextType, contextIds in self._context.items():
+            if contextId in contextIds:
+                contextIds.remove(contextId)
+
+                self._context[contextType] = contextIds
+                break
+
+        if _reload:
+            self.reload()
+
     def clear(self):
         '''Clear list of notifications.'''
         self._list.clearItems()
 
     def _reload(self):
-        session = ftrack.Session()
-
-        cases = []
+        '''Return events based on current context.'''
         events = []
+        response = ftrack_legacy.EVENT_HUB.publish(
+            ftrack_legacy.Event(
+                'ftrack.connect.notification.get-events',
+                data=dict(context=self._context)
+            ),
+            synchronous=True
+        )
 
-        if self._context['asset']:
-            cases.append(
-                '(feeds.owner_id in ({asset_ids}) and action is '
-                '"asset.published")'.format(
-                    asset_ids=','.join(self._context['asset'])
-                )
-            )
-
-        if self._context['task']:
-            cases.append(
-                'parent_id in ({task_ids}) and action in '
-                '("change.status.shot", "change.status.task")'.format(
-                    task_ids=','.join(self._context['task'])
-                )
-            )
-
-            cases.append(
-                '(parent_id in ({task_ids}) and action in '
-                '("update.custom_attribute.fend", "update.custom_attribute.fstart"))'.format(
-                    task_ids=','.join(self._context['task'])
-                )
-            )
-
-        if cases:
-            events = session.query(
-                'select id, action, parent_id, parent_type, created_at, data '
-                'from Event where {0}'.format(' or '.join(cases))
-            ).all()
-
-            events.sort(key=lambda event: event['created_at'], reverse=True)
+        if len(response):
+            events = response[0]
 
         return events
 

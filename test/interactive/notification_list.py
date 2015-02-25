@@ -69,6 +69,14 @@ class WidgetHarness(Harness):
             '01cfdcaa-c5ea-11e1-adec-f23c91df25eb', 'asset', False
         )
 
+        notificationList.addContext(
+            '01cfdcaa-c5ea-11e1-adec-f23c91df25es', 'asset', False
+        )
+
+        notificationList.removeContext(
+            '01cfdcaa-c5ea-11e1-adec-f23c91df25es', False
+        )
+
         notificationList.reload()
 
         return widget
