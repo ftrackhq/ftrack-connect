@@ -6,8 +6,7 @@ from collections import defaultdict
 from PySide import QtGui, QtCore
 import ftrack_legacy
 
-from ftrack_connect.ui.widget.notification import _notifications
-from ftrack_connect.ui.widget.notification import Notification as _Notification
+from ftrack_connect.ui.widget import notification_directive
 import ftrack_connect.ui.widget.item_list
 import ftrack_connect.ui.widget.overlay
 import ftrack_connect.worker
@@ -51,10 +50,10 @@ class NotificationList(ftrack_connect.ui.widget.item_list.ItemList):
             item = {}
 
         _type = item.pop('type', None)
-        notificationClass = _notifications.get(_type)
+        notificationClass = notification_directive.notifications.get(_type)
 
         if not notificationClass:
-            notificationClass = _Notification
+            notificationClass = notification_directive.Notification
 
         return notificationClass(**item)
 

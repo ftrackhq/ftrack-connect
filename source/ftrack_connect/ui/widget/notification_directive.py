@@ -208,4 +208,4 @@ def _mapNotifications():
 
     return notifications
 
-_notifications = _mapNotifications()
+notifications = _mapNotifications()
