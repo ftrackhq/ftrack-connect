@@ -1,9 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
 
-import functools
 import copy
-import datetime
 
 from PySide import QtGui, QtCore
 
@@ -41,7 +39,7 @@ class UserList(ftrack_connect.ui.widget.item_list.ItemList):
             QtGui.QAbstractItemView.NoSelection
         )
         self.list.setShowGrid(False)
-    
+
         for group in groups:
             self.addItem(group)
 

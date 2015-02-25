@@ -1,10 +1,6 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-import os
-import uuid
-import datetime
-
 import arrow
 from PySide import QtGui, QtCore
 import ftrack
@@ -12,9 +8,11 @@ import ftrack
 import ftrack_connect.ui.widget.label
 import ftrack_connect.ui.widget.thumbnail
 
+
 class UserExtended(QtGui.QWidget):
 
-    def __init__(self, name, userId, applications, group=None, parent=None
+    def __init__(
+        self, name, userId, applications, group=None, parent=None
     ):
         '''Initialise widget with initial component *value* and *parent*.'''
         super(UserExtended, self).__init__(parent=parent)
@@ -67,7 +65,8 @@ class User(QtGui.QWidget):
 
     itemClicked = QtCore.Signal(object)
 
-    def __init__(self, name, userId, applications=None, group=None, parent=None
+    def __init__(
+        self, name, userId, applications=None, group=None, parent=None
     ):
         '''Initialise widget with initial component *value* and *parent*.'''
         super(User, self).__init__(parent)
@@ -105,15 +104,13 @@ class User(QtGui.QWidget):
         self._refreshStyles()
         self._updateActivity()
 
-    def _isOnline(self):
-        filterTime = datetime.datetime.utcnow() - datetime.timedelta(seconds=30)
-        return any(
-            application['timestamp'] >= filterTime
-            for application in self._applications.values()
-        )
+    @property
+    def online(self):
+        '''Return if user is online or not.'''
+        return len(self._applications.values()) > 0
 
     def _refreshStyles(self):
-        if self._isOnline():
+        if self.online:
             self.setStyleSheet('''
                 QLabel {
                     color: black !important;
@@ -129,7 +126,7 @@ class User(QtGui.QWidget):
     def _updateActivity(self):
         text = 'offline'
 
-        if self._isOnline():
+        if self.online:
             text = ''
 
         if self._applications:

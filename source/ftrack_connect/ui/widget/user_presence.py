@@ -2,22 +2,20 @@
 # :copyright: Copyright (c) 2015 ftrack
 
 import logging
-import uuid
-import random
-import datetime
 
-from PySide import QtGui, QtCore
+from PySide import QtGui
 
 import ftrack_connect.ui.widget.label
 import ftrack_connect.ui.widget.user_list
 import ftrack_connect.ui.widget.user
+
 
 class UserPresence(QtGui.QWidget):
 
     def __init__(self, groups, parent=None):
         '''Instantiate widget with *users* and *groups*.'''
         super(UserPresence, self).__init__(parent)
-        
+
         self.logger = logging.getLogger(
             __name__ + '.' + self.__class__.__name__
         )
@@ -30,9 +28,6 @@ class UserPresence(QtGui.QWidget):
 
         self.userInfoContainer = QtGui.QWidget()
         self.userInfoContainer.setLayout(QtGui.QVBoxLayout())
-        # self.userInfoContainer.setSizePolicy(
-        #     QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum
-        # )
 
         self.setLayout(QtGui.QHBoxLayout())
         self._userInfo = None
@@ -49,7 +44,9 @@ class UserPresence(QtGui.QWidget):
     def addUser(self, name, userId, group):
         self.logger.debug(u'Adding user to user list: {0}'.format(name))
         if self.userList.userExists(userId):
-            self.logger.debug(u'User with id {0} already exists'.format(userId))
+            self.logger.debug(
+                u'User with id {0} already exists'.format(userId)
+            )
             return False
 
         self.userList.addItem({
@@ -57,44 +54,46 @@ class UserPresence(QtGui.QWidget):
             'userId': userId,
             'group': group
         })
+
         return True
 
-    def _handlePresenceEvent(self, presenceEnterEvent):
-        '''Handle *presenceEnterEvent* from hub.
-        
-        Structure of a presenceEnterEvent
+    def onEnter(self, data):
+        '''Handle enter events with *data*.
+
+        Structure of a data
         {
-            user
+            user=dict(
                 id
                 name
                 thumbnail
-            application
+            ),
+            application=dict(
                 identifier
                 label
                 activity
-            context
+            ),
+            context=dict(
                 containers
                 project_id
-            session_id <uuid>
-            timestamp <datetime>
+            ),
+            session_id=<uuid>
+            timestamp=<datetime>
         }
         '''
         self.userList.addSession(
-            presenceEnterEvent['user']['id'],
-            presenceEnterEvent['session_id'],
-            presenceEnterEvent['timestamp'],
-            presenceEnterEvent['application']
+            data['user']['id'], data['session_id'], data['timestamp'],
+            data['application']
         )
 
-    def _handleHeartbeatEvent(self, presenceHeartbeatEvent):
+    def onHeartbeat(self, data):
+        '''Handle heartbeat events with *data*.'''
         self.userList.updateSession(
-            presenceHeartbeatEvent['session_id'],
-            presenceHeartbeatEvent['timestamp'],
-            presenceHeartbeatEvent['activity']
+            data['session_id'], data['timestamp'], data.get('activity')
         )
 
-    def _handleExitEvent(self, sessionId):
-        self.userList.removeSession(sessionId)
+    def onExit(self, data):
+        '''Handle exit events with *data*.'''
+        self.userList.removeSession(data['session_id'])
 
     def _itemClickedHandler(self, value):
         if self._userInfo is None:
