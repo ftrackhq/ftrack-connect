@@ -77,7 +77,7 @@ class CrewHub(object):
 
         self._data.update(data)
 
-        subscriptionExporession = (
+        subscriptionExpression = (
             'topic=ftrack.crew.presence-enter '
             'and source.user.username != {0}'.format(
                 getpass.getuser()
@@ -85,7 +85,7 @@ class CrewHub(object):
         )
 
         ftrack.EVENT_HUB.subscribe(
-            subscriptionExporession,
+            subscriptionExpression,
             self._onPresenceEvent
         )
 
@@ -115,7 +115,7 @@ class CrewHub(object):
             if hasattr(self, '_onEnter'):
                 self._onEnter(event['data'])
 
-            return self.data
+        return self.data
 
     def isInterested(self, data):
         '''Return True if interested in *data*.'''
