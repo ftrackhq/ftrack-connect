@@ -82,13 +82,12 @@ class Ui_Header(object):
         )
 
 
-class HeaderWidget(QtGui.QWidget):
+class SimpleHeaderWidget(QtGui.QWidget):
 
-    def __init__(self, parent, task=None):
+    def __init__(self, parent=None, task=None):
         QtGui.QWidget.__init__(self, parent)
         self.ui = Ui_Header()
         self.ui.setupUi(self)
-        # self.setMaximumHeight(40)
         self.setFixedHeight(40)
         self.helpUrl = 'http://support.ftrack.com/'
 
@@ -119,3 +118,46 @@ class HeaderWidget(QtGui.QWidget):
 
     def setHelpUrl(self, url):
         self.helpUrl = url
+        self.__create_message_area()
+
+
+class HeaderWidget(QtGui.QWidget):
+    def __init__(self, parent=None):
+        super(HeaderWidget, self).__init__(parent=parent)
+        self.header = SimpleHeaderWidget()
+        self.layout = QtGui.QVBoxLayout()
+        self.setLayout(self.layout)
+        self.layout.addWidget(self.header)
+        self.__create_message_area()
+
+        self.resize(198, 35)
+        sizePolicy = QtGui.QSizePolicy(
+            QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Fixed
+        )
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        self.setSizePolicy(sizePolicy)
+
+
+    def __create_message_area(self):
+        self.message_area = QtGui.QLabel('', parent=self)
+        self.message_area.setObjectName('ftrack-message-area-info')
+        self.message_area.resize(QtCore.QSize(900, 80))
+        self.message_area.setSizePolicy(
+            QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Fixed
+        )
+        self.message_area.setVisible(False)
+        self.layout.addWidget(self.message_area)
+
+    def setHeaderTitle(self, title):
+        self.header.ui.titleLabel.setText(title)
+
+    def setMessage(self, message, type='info'):
+        message_types = ['info', 'warning', 'error']
+        if type not in message_types:
+            raise ValueError('Message type should be one of: %' ', '.join(message_types))
+
+        class_type = 'ftrack-header-message-%s' % type
+        self.message_area.setObjectName(class_type)
+        self.message_area.setText(message)
+        self.message_area.setVisible(True)
