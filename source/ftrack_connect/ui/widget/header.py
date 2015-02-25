@@ -125,9 +125,6 @@ class HeaderWidget(QtGui.QWidget):
         self.message_area.setVisible(False)
         self.layout.addWidget(self.message_area)
 
-    # def setHeaderTitle(self, title):
-    #     self.header.ui.titleLabel.setText(title)
-
     def setMessage(self, message, type='info'):
         message_types = ['info', 'warning', 'error']
         if type not in message_types:
