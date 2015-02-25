@@ -114,7 +114,7 @@ class TimeTracker(ftrack_connect.ui.application.ApplicationPlugin):
         self.assignedTimeLogList.clearItems()
 
         # Local import to allow configuring of ftrack API at runtime.
-        import ftrack
+        import ftrack_legacy
 
         # TODO: Get logged in user from ftrack API.
         # NOTE: The specific environment variable is used as it is explicitly
@@ -123,7 +123,7 @@ class TimeTracker(ftrack_connect.ui.application.ApplicationPlugin):
         if not username:
             return
 
-        assignedTasks = ftrack.User(username).getTasks(
+        assignedTasks = ftrack_legacy.User(username).getTasks(
             states=['NOT_STARTED', 'IN_PROGRESS', 'BLOCKED']
         )
 

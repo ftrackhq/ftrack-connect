@@ -2,7 +2,7 @@
 # :copyright: Copyright (c) 2014 ftrack
 
 from PySide import QtGui
-import ftrack
+import ftrack_legacy
 
 import ftrack_connect.asynchronous
 from ftrack_connect.ui.widget import item_selector as _item_selector
@@ -24,7 +24,7 @@ class AssetTypeSelector(_item_selector.ItemSelector):
     @ftrack_connect.asynchronous.asynchronous
     def loadAssetTypes(self):
         '''Load asset types and add to selector.'''
-        assetTypes = ftrack.getAssetTypes()
+        assetTypes = ftrack_legacy.getAssetTypes()
         assetTypes = sorted(
             assetTypes,
             key=lambda assetType: assetType.getName()

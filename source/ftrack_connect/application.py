@@ -11,7 +11,7 @@ import collections
 import base64
 import json
 
-import ftrack
+import ftrack_legacy
 
 #: Default expression to match version component of executable path.
 #: Will match last set of numbers in string where numbers may contain a digit
@@ -427,7 +427,7 @@ class ApplicationLauncher(object):
 
         # Prepend discovered ftrack API to PYTHONPATH.
         environment = prependPath(
-            os.path.dirname(ftrack.__file__), 'PYTHONPATH', environment
+            os.path.dirname(ftrack_legacy.__file__), 'PYTHONPATH', environment
         )
 
         # Add ftrack connect event to environment.
