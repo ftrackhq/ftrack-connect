@@ -8,7 +8,7 @@ import ftrack
 from ftrack_connect.connector import FTAssetObject, PanelComInstance
 from ftrack_connect.ui.widget.info import FtrackInfoDialog
 from ftrack_connect.ui.widget.header import HeaderWidget
-
+from ftrack_connect.ui.theme import applyTheme
 import asset_manager_rc
 
 
@@ -142,7 +142,7 @@ class FtrackAssetManagerDialog(QtGui.QDialog):
     def __init__(self, parent=None, connector=None):
 
         super(FtrackAssetManagerDialog, self).__init__(parent=parent)
-
+        applyTheme(self, 'integration')
         if not connector:
             raise ValueError(
                 'Please provide a connector object for {0}'.format(

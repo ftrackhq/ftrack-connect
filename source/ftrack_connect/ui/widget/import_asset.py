@@ -10,7 +10,7 @@ from ftrack_connect.ui.widget.asset_version_details import AssetVersionDetailsWi
 from ftrack_connect.ui.widget.component_table import ComponentTableWidget
 from ftrack_connect.ui.widget.import_options import ImportOptionsWidget
 from ftrack_connect.ui.widget.header import HeaderWidget
-
+from ftrack_connect.ui.theme import applyTheme
 
 class FtrackImportAssetDialog(QtGui.QDialog):
     importSignal = QtCore.Signal()
@@ -25,7 +25,7 @@ class FtrackImportAssetDialog(QtGui.QDialog):
             )
 
         super(FtrackImportAssetDialog, self).__init__(parent=parent)
-
+        applyTheme(self, 'integration')
         self.connector = connector
 
         self.setSizePolicy(
