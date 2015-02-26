@@ -77,7 +77,9 @@ class SimpleHeaderWidget(QtGui.QWidget):
         logoPixmap = QtGui.QPixmap(':ftrack/image/default/ftrackLogoLabel')
         self.ui.logoLabel.setPixmap(
             logoPixmap.scaled(
-                self.ui.logoLabel.size(), QtCore.Qt.KeepAspectRatio
+                self.ui.logoLabel.size(),
+                QtCore.Qt.KeepAspectRatio,
+                QtCore.Qt.SmoothTransformation
             )
         )
 
@@ -136,7 +138,7 @@ class HeaderWidget(QtGui.QWidget):
         self.message_area.setVisible(True)
 
     def dismissMessage(self):
-        self.message_area.setText('')        
+        self.message_area.setText('')
         self.message_area.setVisible(False)
 
     def getCurrentUser(self):
