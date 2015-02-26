@@ -10,7 +10,7 @@ from PySide import QtCore, QtGui
 
 from harness import Harness
 
-import ftrack_connect.ui.widget.user_presence
+import ftrack_connect.ui.widget.crew
 import ftrack_connect.crew_hub
 import ftrack_connect.event_hub_thread
 
@@ -44,21 +44,16 @@ class WidgetHarness(Harness):
         widget.setLayout(QtGui.QVBoxLayout())
         widget.setMinimumSize(QtCore.QSize(400, 600))
 
-        self.userPresence = ftrack_connect.ui.widget.user_presence.UserPresence(
-            self.groups
+        self.crewHub = MyCrewHub()
+        self.crew = ftrack_connect.ui.widget.crew.Crew(
+            self.groups, hub=self.crewHub
         )
-        widget.layout().addWidget(self.userPresence)
+        widget.layout().addWidget(self.crew)
 
         for user in self.users:
-            self.userPresence.addUser(
+            self.crew.addUser(
                 user.getName(), user.getId(), random.choice(self.groups)
             )
-
-        self.crewHub = MyCrewHub()
-
-        self.crewHub.onEnter.connect(self.userPresence.onEnter)
-        self.crewHub.onHeartbeat.connect(self.userPresence.onHeartbeat)
-        self.crewHub.onExit.connect(self.userPresence.onExit)
 
         user = ftrack.getUser(getpass.getuser())
         data = {
