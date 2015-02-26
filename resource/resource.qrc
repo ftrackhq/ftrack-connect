@@ -11,8 +11,10 @@
         <file alias='comment'>image/nuke_studio/ftrack-comment.svg</file>
         <file alias='folder'>image/nuke_studio/ftrack-folder.svg</file>
         <file alias='home'>image/nuke_studio/ftrack-home.svg</file>
+	<file alias='episode'>image/nuke_studio/ftrack-folder-episode.svg</file>
         <file alias='shot'>image/nuke_studio/ftrack-shot.svg</file>
         <file alias='task'>image/nuke_studio/ftrack-task.svg</file>
+        <file alias='check'>image/nuke_studio/ftrack-check.svg</file>
     </qresource>
 
     <qresource prefix='ftrack/style'>
