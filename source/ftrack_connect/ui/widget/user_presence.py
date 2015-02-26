@@ -42,6 +42,7 @@ class UserPresence(QtGui.QWidget):
         self.userList.itemClicked.connect(self._itemClickedHandler)
 
     def addUser(self, name, userId, group):
+        '''Add user with *name*, *userId* and *group*.'''
         self.logger.debug(u'Adding user to user list: {0}'.format(name))
         if self.userList.userExists(userId):
             self.logger.debug(
@@ -96,6 +97,7 @@ class UserPresence(QtGui.QWidget):
         self.userList.removeSession(data['session_id'])
 
     def _itemClickedHandler(self, value):
+        '''Handle item clicked event.'''
         if self._userInfo is None:
             self._userInfo = ftrack_connect.ui.widget.user.UserExtended(
                 value.get('name'),
@@ -105,7 +107,7 @@ class UserPresence(QtGui.QWidget):
 
             self.userInfoContainer.layout().addWidget(self._userInfo)
 
-        self._userInfo.updateInfo(
+        self._userInfo.updateInformation(
             value.get('name'),
             value.get('user_id'),
             value.get('applications')
