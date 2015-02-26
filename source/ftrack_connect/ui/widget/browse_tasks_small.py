@@ -117,6 +117,7 @@ class BrowseTasksSmallWidget(QtGui.QWidget):
                                QtCore.SIGNAL('doubleClicked(QModelIndex)'),
                                self.showHideTree)
         self.topPosition = 0
+        self.resizeEvent = self._updateWidgetGeometry
         self.update()
 
     def initPaths(self):
@@ -138,15 +139,8 @@ class BrowseTasksSmallWidget(QtGui.QWidget):
         if not self.showing:
             self.ui.cancelButton.show()
 
-            windowWidth = self.width()
-            windowHeight = self.parent.height()
+            self._updateWidgetGeometry()
 
-            ypos = self.topPosition
-            heigth = windowHeight - self.height() - self.topPosition
-
-            self.browseTasksWidget.setGeometry(
-                9, ypos + 6, windowWidth, heigth
-            )
             self.browseTasksWidget.show()
             self.browseTasksWidget.raise_()
 
@@ -159,6 +153,19 @@ class BrowseTasksSmallWidget(QtGui.QWidget):
             self.currentpath = self.browseTasksWidget.getCurrentPath()
             self.update()
             self.browseTasksWidget.hide()
+
+    def _updateWidgetGeometry(self, event=None):
+        windowWidth = self.width()
+        windowHeight = self.parent.height()
+
+        ypos = self.topPosition
+        ypos += self.ui.browseTasksButton.height()
+
+        height = windowHeight - self.height() - self.topPosition
+
+        self.browseTasksWidget.setGeometry(
+            9, ypos, windowWidth, height
+        )
 
     def update(self):
         '''Update text.'''
