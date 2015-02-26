@@ -11,21 +11,24 @@ import ftrack_connect.ui.widget.label
 
 
 class GroupHeader(QtGui.QLabel):
-
+    '''Group header widget.'''
     def __init__(self, parent=None):
         super(GroupHeader, self).__init__(parent)
         self.setObjectName('header')
 
     def value(self):
+        '''Return value for group header.'''
         return self.text()
 
 
 class UserList(ftrack_connect.ui.widget.item_list.ItemList):
-    '''.'''
+    '''User list widget.'''
+
+    #: Signal to handle click events.
     itemClicked = QtCore.Signal(object)
 
     def __init__(self, groups=None, parent=None):
-        '''Initialise widget with *parent*.'''
+        '''Initialise widget with *groups*.'''
         if groups is None:
             groups = []
 
@@ -67,8 +70,8 @@ class UserList(ftrack_connect.ui.widget.item_list.ItemList):
         return widget
 
     def addSession(self, userId, sessionId, timestamp, application):
+        '''Add session for *userId* with *sessionId*.'''
         for row in range(self.count()):
-
             widget = self.list.widgetAt(row)
             value = self.widgetItem(widget)
 
@@ -84,6 +87,7 @@ class UserList(ftrack_connect.ui.widget.item_list.ItemList):
         raise ValueError('User with id {0} could not be found.'.format(userId))
 
     def updateSession(self, sessionId, timestamp, activity):
+        '''Update a session with *sessionId*.'''
         for row in range(self.count()):
             widget = self.list.widgetAt(row)
             value = self.widgetItem(widget)
@@ -99,6 +103,7 @@ class UserList(ftrack_connect.ui.widget.item_list.ItemList):
         )
 
     def removeSession(self, sessionId):
+        '''Remove session with *sessionId*.'''
         for row in range(self.count()):
             widget = self.list.widgetAt(row)
             value = self.widgetItem(widget)
@@ -113,6 +118,7 @@ class UserList(ftrack_connect.ui.widget.item_list.ItemList):
         )
 
     def userExists(self, userId):
+        '''Return true if *userId* exists.'''
         for value in self.items():
             if isinstance(value, dict) and value['user_id'] == userId:
                 return True
@@ -125,10 +131,9 @@ class UserList(ftrack_connect.ui.widget.item_list.ItemList):
         If *row* is not specified, then append item to end of list.
 
         '''
-
         if not isinstance(item, basestring):
             group = item.get('group')
-            row = self.indexOfItem(group) 
+            row = self.indexOfItem(group)
 
             if row is None:
                 raise ValueError('group {0} not recognized'.format(group))
