@@ -1,6 +1,9 @@
+# :coding: utf-8
+# :copyright: Copyright (c) 2015 ftrack
 
 import os
 import urllib2
+
 from PySide import QtGui, QtCore
 
 
