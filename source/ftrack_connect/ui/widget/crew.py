@@ -31,9 +31,9 @@ class Crew(QtGui.QWidget):
 
         # Setup signal handlers if hub is configured.
         if hub:
-            hub.onEnter.connect(self.crew.onEnter)
-            hub.onHeartbeat.connect(self.crew.onHeartbeat)
-            hub.onExit.connect(self.crew.onExit)
+            hub.onEnter.connect(self.onEnter)
+            hub.onHeartbeat.connect(self.onHeartbeat)
+            hub.onExit.connect(self.onExit)
 
         self._groups = groups
 
