@@ -5,7 +5,7 @@ import random
 import getpass
 import uuid
 
-import ftrack
+import ftrack_legacy as ftrack
 from PySide import QtCore, QtGui
 
 from harness import Harness

@@ -9,7 +9,7 @@ import datetime
 import getpass
 
 from PySide import QtCore
-import ftrack
+import ftrack_legacy as ftrack
 
 
 class CrewHub(object):

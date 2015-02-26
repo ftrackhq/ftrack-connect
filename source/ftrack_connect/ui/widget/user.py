@@ -3,7 +3,7 @@
 
 import arrow
 from PySide import QtGui, QtCore
-import ftrack
+import ftrack_legacy as ftrack
 
 import ftrack_connect.ui.widget.label
 import ftrack_connect.ui.widget.thumbnail
