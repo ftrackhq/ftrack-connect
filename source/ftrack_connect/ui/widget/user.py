@@ -82,7 +82,6 @@ class User(QtGui.QWidget):
 
         self.setLayout(QtGui.QHBoxLayout())
 
-        # thumbnailUrl = ftrack.User(userId).getThumbnail()
         self.thumbnail = ftrack_connect.ui.widget.thumbnail.User()
         self.thumbnail.setFixedWidth(30)
         self.thumbnail.setFixedHeight(30)
