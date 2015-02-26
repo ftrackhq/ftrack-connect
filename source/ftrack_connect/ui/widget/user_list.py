@@ -58,14 +58,6 @@ class UserList(ftrack_connect.ui.widget.item_list.ItemList):
         widget.itemClicked.connect(
             self.itemClicked.emit
         )
-        widget.setStyleSheet(
-            '''
-                QWidget#user {
-                    background-color: transparent;
-                }
-
-            '''
-        )
 
         return widget
 
