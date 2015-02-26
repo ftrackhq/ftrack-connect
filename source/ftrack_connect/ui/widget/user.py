@@ -20,17 +20,13 @@ class UserExtended(QtGui.QWidget):
 
         self.applicationInfoWidget = QtGui.QLabel()
 
-        self._name = name
         self._userId = userId
         self._applications = applications
 
         self.setLayout(QtGui.QVBoxLayout())
 
-        self.nameLabel = ftrack_connect.ui.widget.label.Label()
-        self.layout().addWidget(self.nameLabel, stretch=0)
-
-        self.activityLabel = ftrack_connect.ui.widget.label.Label()
-        self.layout().addWidget(self.activityLabel, stretch=0)
+        self.user = User(name, userId, group=None, applications=applications)
+        self.layout().addWidget(self.user)
 
         self.layout().addWidget(self.applicationInfoWidget, stretch=0)
 
@@ -55,8 +51,13 @@ class UserExtended(QtGui.QWidget):
                 'User is offline'
             )
 
-        self.nameLabel.setText(name)
         self._userId = userId
+
+        self.user.setValue({
+            'name': name,
+            'user_id': userId,
+            'applications': applications
+        })
 
 
 class User(QtGui.QWidget):
@@ -66,26 +67,26 @@ class User(QtGui.QWidget):
     itemClicked = QtCore.Signal(object)
 
     def __init__(
-        self, name, userId, applications=None, group=None, parent=None
+        self, name, userId, group=None, applications=None, parent=None
     ):
         '''Initialise widget with initial component *value* and *parent*.'''
         super(User, self).__init__(parent)
         if applications is None:
             applications = {}
 
-        self._name = name
         self._userId = userId
         self._applications = applications
+        self._group = applications
 
         self.setObjectName('user')
 
         self.setLayout(QtGui.QHBoxLayout())
 
-        thumbnailUrl = ftrack.User(userId).getThumbnail()
-        self.thumbnail = ftrack_connect.ui.widget.thumbnail.Thumbnail()
+        # thumbnailUrl = ftrack.User(userId).getThumbnail()
+        self.thumbnail = ftrack_connect.ui.widget.thumbnail.User()
         self.thumbnail.setFixedWidth(30)
         self.thumbnail.setFixedHeight(30)
-        self.thumbnail.loadFromUrl(thumbnailUrl)
+        self.thumbnail.load(userId)
         self.layout().addWidget(self.thumbnail)
 
         nameAndActivity = QtGui.QWidget()
@@ -148,7 +149,7 @@ class User(QtGui.QWidget):
         '''Return dictionary with component data.'''
         return {
             'user_id': self._userId,
-            'name': self._name,
+            'name': self.nameLabel.text(),
             'applications': self._applications
         }
 
@@ -156,6 +157,11 @@ class User(QtGui.QWidget):
         '''Set *value* and update UI.'''
         self._applications = value.get('applications', {})
         self.nameLabel.setText(value['name'])
+
+        if self._userId != value['user_id']:
+            self.thumbnail.load(value['user_id'])
+
+        self._userId = value['user_id']
         self._updateActivity()
         self._refreshStyles()
 

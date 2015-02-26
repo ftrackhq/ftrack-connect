@@ -121,9 +121,9 @@ class Crew(QtGui.QWidget):
             )
 
             self.userInformation.layout().addWidget(self._userInfo)
-
-        self._userInfo.updateInformation(
-            value.get('name'),
-            value.get('user_id'),
-            value.get('applications')
-        )
+        else:
+            self._userInfo.updateInformation(
+                value.get('name'),
+                value.get('user_id'),
+                value.get('applications')
+            )

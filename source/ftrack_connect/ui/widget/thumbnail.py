@@ -5,13 +5,16 @@ import os
 import urllib2
 
 from PySide import QtGui, QtCore
+import ftrack_legacy as ftrack
+
+import ftrack_connect.worker
 
 
-class Thumbnail(QtGui.QLabel):
+class Base(QtGui.QLabel):
     '''Widget to load thumbnails from ftrack server.'''
 
     def __init__(self, parent=None):
-        super(Thumbnail, self).__init__(parent)
+        super(Base, self).__init__(parent)
 
         self.thumbnailCache = {}
         self.setFrameStyle(QtGui.QFrame.StyledPanel)
@@ -20,20 +23,43 @@ class Thumbnail(QtGui.QLabel):
         self.placholderThumbnail = (os.environ['FTRACK_SERVER']
                                     + '/img/thumbnail2.png')
 
-    def loadFromUrl(self, url):
-        '''Load thumbnail from *url* and display it.'''
-        self.setText('')
-        if url is None:
-            url = self.placholderThumbnail
-        pixmap = self._pixmapFromUrl(url)
+        self._worker = None
+
+    def load(self, reference):
+        '''Load thumbnail from *reference* and display it.'''
+        if self._worker and self._worker.isRunning():
+            while self._worker:
+                app = QtGui.QApplication.instance()
+                app.processEvents()
+
+        self._worker = ftrack_connect.worker.Worker(
+            self._download, [reference], parent=self
+        )
+
+        self._worker.start()
+        self._worker.finished.connect(self._workerFinnished)
+
+    def _workerFinnished(self):
+        '''Handler worker finished event.'''
+        if self._worker:
+            self._updatePixmapData(self._worker.result)
+        self._worker = None
+
+    def _updatePixmapData(self, data):
+        '''Update thumbnail with *data*.'''
+        pixmap = QtGui.QPixmap()
+        pixmap.loadFromData(data)
         scaledPixmap = pixmap.scaledToWidth(
             self.width(),
             mode=QtCore.Qt.SmoothTransformation
         )
         self.setPixmap(scaledPixmap)
 
-    def _getFileFromUrl(self, url):
+    def _download(self, url):
         '''Return thumbnail file from *url*.'''
+        if url is None:
+            url = self.placholderThumbnail
+
         ftrackProxy = os.getenv('FTRACK_PROXY', '')
         ftrackServer = os.getenv('FTRACK_SERVER', '')
         if ftrackProxy != '':
@@ -52,17 +78,9 @@ class Thumbnail(QtGui.QLabel):
 
         return html
 
-    def _pixmapFromUrl(self, url):
-        '''Retrieve *url* and return data as a pixmap.'''
-        pixmap = self.thumbnailCache.get(url)
-        if pixmap is None:
-            data = self._getFileFromUrl(url)
-            pixmap = QtGui.QPixmap()
-            pixmap.loadFromData(data)
-            self.thumbnailCache[url] = pixmap
 
-        # Handle null pixmaps. E.g. JPG on Windows.
-        if pixmap.isNull():
-            pixmap = self.thumbnailCache.get(self.placholderThumbnail, pixmap)
+class User(Base):
 
-        return pixmap
+    def _download(self, reference):
+        url = ftrack.User(reference).getThumbnail()
+        return super(User, self)._download(url)
