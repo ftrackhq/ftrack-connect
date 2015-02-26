@@ -29,7 +29,7 @@ class CrewHub(object):
     # Timeout for pruning inactive users.
     PRUNE_TIMEOUT = HEARTBEAT_INTERVAL * 2 + 1
 
-    def __init__(self, onPresence=None, onHeartbeat=None, onExit=None):
+    def __init__(self):
         '''Initialise crew hub.'''
         super(CrewHub, self).__init__()
         self.logger = logging.getLogger(
@@ -103,17 +103,15 @@ class CrewHub(object):
         '''Handle reply to enter event.'''
         if self.isInterested(event['data']):
             self._registerHeartbeatListener(event['data'])
-
-            if hasattr(self, '_onEnter'):
-                self._onEnter(event['data'])
+            
+            self._onEnter(event['data'])
 
     def _onPresenceEvent(self, event):
         '''Respond to presense event with my data.'''
         if self.isInterested(event['data']):
             self._registerHeartbeatListener(event['data'])
 
-            if hasattr(self, '_onEnter'):
-                self._onEnter(event['data'])
+            self._onEnter(event['data'])
 
         return self.data
 
@@ -166,8 +164,7 @@ class CrewHub(object):
                 if time.time() > value['time'] + self.PRUNE_TIMEOUT:
                     ftrack.EVENT_HUB.unsubscribe(value['subscription'])
 
-                    if hasattr(self, '_onExit'):
-                        self._onExit(value['data'])
+                    self._onExit(value['data'])
 
                     del self._subscriptions[key]
 
@@ -178,6 +175,22 @@ class CrewHub(object):
         return [
             subscription['data'] for subscription in self._subscriptions.values()
         ]
+
+    def _onEnter(self, data):
+        '''Handle on enter events.
+
+            Override this method to implement custom logic for presence enter
+            events.
+        '''
+        pass
+
+    def _onExit(self, data):
+        '''Handle on exit events.
+
+            Override this method to implement custom logic for presence exit
+            events.
+        '''
+        pass
 
 
 class SignalCrewHub(CrewHub, QtCore.QObject):
