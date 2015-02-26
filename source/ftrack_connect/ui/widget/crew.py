@@ -10,15 +10,30 @@ import ftrack_connect.ui.widget.user_list
 import ftrack_connect.ui.widget.user
 
 
-class UserPresence(QtGui.QWidget):
+class Crew(QtGui.QWidget):
+    '''User presence widget.'''
 
-    def __init__(self, groups, parent=None):
-        '''Instantiate widget with *users* and *groups*.'''
-        super(UserPresence, self).__init__(parent)
+    def __init__(self, groups, hub=None, parent=None):
+        '''Instantiate widget with *users* and *groups*.
+
+        If *hub* is configured the Crew widget will connect listeners for::
+
+            *onEnter*: enter event.
+            *onHeartbeat*: hearbeat event.
+            *onExit*: exit event.
+
+        '''
+        super(Crew, self).__init__(parent)
 
         self.logger = logging.getLogger(
             __name__ + '.' + self.__class__.__name__
         )
+
+        # Setup signal handlers if hub is configured.
+        if hub:
+            hub.onEnter.connect(self.crew.onEnter)
+            hub.onHeartbeat.connect(self.crew.onHeartbeat)
+            hub.onExit.connect(self.crew.onExit)
 
         self._groups = groups
 
