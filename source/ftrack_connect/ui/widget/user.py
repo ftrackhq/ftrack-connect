@@ -1,5 +1,5 @@
 # :coding: utf-8
-# :copyright: Copyright (c) 2014 ftrack
+# :copyright: Copyright (c) 2015 ftrack
 
 import arrow
 from PySide import QtGui, QtCore
@@ -10,6 +10,7 @@ import ftrack_connect.ui.widget.thumbnail
 
 
 class UserExtended(QtGui.QWidget):
+    '''Extended user information.'''
 
     def __init__(
         self, name, userId, applications, group=None, parent=None
@@ -26,9 +27,6 @@ class UserExtended(QtGui.QWidget):
         self.setLayout(QtGui.QVBoxLayout())
 
         self.nameLabel = ftrack_connect.ui.widget.label.Label()
-        # self.nameLabel.setSizePolicy(
-        #     QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum
-        # )
         self.layout().addWidget(self.nameLabel, stretch=0)
 
         self.activityLabel = ftrack_connect.ui.widget.label.Label()
@@ -39,9 +37,10 @@ class UserExtended(QtGui.QWidget):
         self.chatLabel = ftrack_connect.ui.widget.label.Label()
         self.layout().addWidget(self.chatLabel, stretch=1)
 
-        self.updateInfo(name, userId, applications)
+        self.updateInformation(name, userId, applications)
 
-    def updateInfo(self, name, userId, applications):
+    def updateInformation(self, name, userId, applications):
+        '''Update widget with *name*, *userId* and *applications*.'''
         if applications:
             applicationNames = []
 
@@ -49,7 +48,7 @@ class UserExtended(QtGui.QWidget):
                 applicationNames.append(application.get('label'))
 
             self.applicationInfoWidget.setText(
-                'Applications: ' + ', '.join(applicationNames)
+                u'Applications: {0}'.format(', '.join(applicationNames))
             )
         else:
             self.applicationInfoWidget.setText(
@@ -61,8 +60,9 @@ class UserExtended(QtGui.QWidget):
 
 
 class User(QtGui.QWidget):
-    '''Represent a component.'''
+    '''Represent a user.'''
 
+    #: Item click signal.
     itemClicked = QtCore.Signal(object)
 
     def __init__(
@@ -110,6 +110,7 @@ class User(QtGui.QWidget):
         return len(self._applications.values()) > 0
 
     def _refreshStyles(self):
+        '''Refresh styles for the user.'''
         if self.online:
             self.setStyleSheet('''
                 QLabel {
@@ -124,6 +125,7 @@ class User(QtGui.QWidget):
             ''')
 
     def _updateActivity(self):
+        '''Update activity.'''
         text = 'offline'
 
         if self.online:
@@ -139,6 +141,7 @@ class User(QtGui.QWidget):
         self.activityLabel.setText(text)
 
     def mousePressEvent(self, event):
+        '''Handle mouse preseed event.'''
         self.itemClicked.emit(self.value())
 
     def value(self):
@@ -150,6 +153,7 @@ class User(QtGui.QWidget):
         }
 
     def setValue(self, value):
+        '''Set *value* and update UI.'''
         self._applications = value.get('applications', {})
         self.nameLabel.setText(value['name'])
         self._updateActivity()
