@@ -41,8 +41,8 @@ class Crew(QtGui.QWidget):
             groups=self._groups
         )
 
-        self.userInfoContainer = QtGui.QWidget()
-        self.userInfoContainer.setLayout(QtGui.QVBoxLayout())
+        self.userInformation = QtGui.QWidget()
+        self.userInformation.setLayout(QtGui.QVBoxLayout())
 
         self.setLayout(QtGui.QHBoxLayout())
         self._userInfo = None
@@ -51,7 +51,7 @@ class Crew(QtGui.QWidget):
             self.userList, stretch=1
         )
         self.layout().addWidget(
-            self.userInfoContainer, stretch=1
+            self.userInformation, stretch=1
         )
         self.userList.setFixedWidth(200)
         self.userList.itemClicked.connect(self._itemClickedHandler)
@@ -120,7 +120,7 @@ class Crew(QtGui.QWidget):
                 value.get('applications')
             )
 
-            self.userInfoContainer.layout().addWidget(self._userInfo)
+            self.userInformation.layout().addWidget(self._userInfo)
 
         self._userInfo.updateInformation(
             value.get('name'),
