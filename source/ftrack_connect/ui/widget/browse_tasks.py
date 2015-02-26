@@ -10,8 +10,10 @@ from ftrack_connect.connector import HelpFunctions
 
 
 class Ui_BrowseTasks(object):
+    '''Browse tasks UI class.'''
 
     def setupUi(self, BrowseTasks):
+        '''Setup UI for *BrowseTasks*.'''
         BrowseTasks.setObjectName('BrowseTasks')
         BrowseTasks.resize(946, 660)
         BrowseTasks.setAutoFillBackground(True)
@@ -49,6 +51,7 @@ class Ui_BrowseTasks(object):
         QtCore.QMetaObject.connectSlotsByName(BrowseTasks)
 
     def retranslateUi(self, BrowseTasks):
+        '''Translate *BrowseTasks*.'''
         BrowseTasks.setWindowTitle(
             QtGui.QApplication.translate(
                 'BrowseTasks', 'Form', None, QtGui.QApplication.UnicodeUTF8
@@ -57,12 +60,15 @@ class Ui_BrowseTasks(object):
 
 
 class BrowseTasksItem(QtGui.QStandardItem):
+    '''Browse tasks item.'''
 
     def __init__(self, text, version=False):
+        '''Instantiate item with *text* and *version*.'''
         QtGui.QStandardItem.__init__(self, text)
         self.version = version
 
     def __lt__(self, other):
+        '''Return true if this item is less than *other*.'''
         if self.version:
             return QtGui.QStandardItem.__lt__(self, other)
         else:
@@ -70,9 +76,12 @@ class BrowseTasksItem(QtGui.QStandardItem):
 
 
 class BrowseTasksWidget(QtGui.QWidget):
+    '''Browse task widget class.'''
+
     clickedIdSignal = QtCore.Signal(str, name='clickedIdSignal')
 
     def __init__(self, parent, task=None, startId=None, browseMode='Shot'):
+        '''Instantiate browse tasks widget.'''
         QtGui.QWidget.__init__(self, parent)
         self.ui = Ui_BrowseTasks()
         self.ui.setupUi(self)
@@ -151,6 +160,7 @@ class BrowseTasksWidget(QtGui.QWidget):
 
     @QtCore.Slot(QtCore.QModelIndex, bool)
     def updateAssetView(self, modelindex, updateCurrentPath=True):
+        '''Update asset view for *modelindex*.'''
         clickedItem = self.ui.BrowseTasksViewModel.itemFromIndex(modelindex)
         expand = None
         select = None
@@ -230,6 +240,7 @@ class BrowseTasksWidget(QtGui.QWidget):
                 self.clickedIdSignal.emit(clickedItem.id)
 
     def getTreeChildren(self, clickedItem, children):
+        '''Return children.'''
         expand = None
         select = None
         expandItem = None
@@ -264,6 +275,7 @@ class BrowseTasksWidget(QtGui.QWidget):
 
     @QtCore.Slot(str)
     def setProjectFilter(self, projectfilter):
+        '''Set project filters from *projectfilter*.'''
         if projectfilter == 'Show All':
             projectfilter = ''
 
@@ -284,33 +296,26 @@ class BrowseTasksWidget(QtGui.QWidget):
                 self.updateAssetView(item.index(), updateCurrentPath=False)
 
     def getCurrentId(self):
+        '''Return the current id.'''
         return self.currentId
 
     def getCurrentPath(self):
+        '''Return current path.'''
         return self.currentPath
-        try:
-            task = ftrack.Task(self.currentId)
-            shotpath = task.getName()
-            taskParents = task.getParents()
-
-            for parent in taskParents:
-                shotpath = parent.getName() + '.' + shotpath
-
-            self.currentPath = shotpath
-            return self.currentPath
-        except:
-            return None
 
     def setStartId(self, fid):
+        '''Set start id to *fid*.'''
         shot = ftrack.Task(fid)
         parents = shot.getParents()
         self.parentIds = [x.getId() for x in parents]
 
     def setShowTasks(self, val):
+        '''Set browse mode.'''
         if val == True:
             self.browseMode = 'Task'
         else:
             self.browseMode = 'Shot'
 
     def setShowShots(self, val):
+        '''Set browse mode to *val*.'''
         self.showShots = val

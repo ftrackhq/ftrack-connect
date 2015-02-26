@@ -12,8 +12,10 @@ import browse_tasks_small_rc
 
 
 class Ui_BrowseTasksSmall(object):
+    '''Browse tasks small widget UI.'''
 
     def setupUi(self, BrowseTasksSmall):
+        '''Setup UI for *BrowseTasksSmall*.'''
         BrowseTasksSmall.setObjectName('BrowseTasksSmall')
         BrowseTasksSmall.resize(220, 49)
         self.verticalLayout = QtGui.QVBoxLayout(BrowseTasksSmall)
@@ -70,6 +72,7 @@ class Ui_BrowseTasksSmall(object):
         QtCore.QMetaObject.connectSlotsByName(BrowseTasksSmall)
 
     def retranslateUi(self, BrowseTasksSmall):
+        '''Translate *BrowseTasksSmall*.'''
         BrowseTasksSmall.setWindowTitle(QtGui.QApplication.translate(
             'BrowseTasksSmall', 'Form', None, QtGui.QApplication.UnicodeUTF8)
         )
@@ -86,9 +89,12 @@ class Ui_BrowseTasksSmall(object):
 
 
 class BrowseTasksSmallWidget(QtGui.QWidget):
+    '''Small browse tasks widget.'''
+
     clickedIdSignal = QtCore.Signal(str, name='clickedIdSignal')
 
     def __init__(self, parent, task=None, browseMode='Shot'):
+        '''Instantiate widget.'''
         QtGui.QWidget.__init__(self, parent)
         self.ui = Ui_BrowseTasksSmall()
         self.ui.setupUi(self)
@@ -114,6 +120,7 @@ class BrowseTasksSmallWidget(QtGui.QWidget):
         self.update()
 
     def initPaths(self):
+        '''Initiate paths.'''
         if self.browseMode == 'Shot':
             shot = ftrack.Shot(os.environ['FTRACK_SHOTID'])
             self.currentpath = HelpFunctions.getPath(shot)
@@ -127,6 +134,7 @@ class BrowseTasksSmallWidget(QtGui.QWidget):
 
     @QtCore.Slot()
     def showHideTree(self):
+        '''Toggle show / hide tree.'''
         if not self.showing:
             self.ui.cancelButton.show()
 
@@ -153,6 +161,7 @@ class BrowseTasksSmallWidget(QtGui.QWidget):
             self.browseTasksWidget.hide()
 
     def update(self):
+        '''Update text.'''
         if self.currentpath:
             self.ui.browseTasksButton.setText(self.currentpath + ' (change)')
             self.clickedIdSignal.emit(self.currentId)
@@ -162,21 +171,26 @@ class BrowseTasksSmallWidget(QtGui.QWidget):
 
     @QtCore.Slot()
     def updateTask(self):
+        '''Update task.'''
         self.initPaths()
         self.update()
 
     def setTopPosition(self, topInt):
+        '''Set top position to *topInt*.'''
         self.topPosition = topInt + self.height() - 7
 
     def setLabelText(self, textLabel):
+        '''Set shot label text.'''
         self.ui.shotLabel.setText(textLabel)
 
     def closeTree(self):
+        '''Hide tree.'''
         self.showing = False
         self.ui.cancelButton.hide()
         self.browseTasksWidget.hide()
         self.ui.browseTasksButton.setText(self.currentpath + ' (change)')
 
     def goHome(self):
+        '''Set home to path.'''
         self.initPaths()
         self.update()

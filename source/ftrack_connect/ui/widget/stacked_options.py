@@ -5,8 +5,10 @@ from PySide import QtGui, QtXml
 
 
 class StackedOptionsWidget(QtGui.QStackedWidget):
+    '''Stacked options widget.'''
 
     def __init__(self, parent, task=None, connector=None):
+        '''Instansiate stacked options widget with *connector*.'''
         super(StackedOptionsWidget, self).__init__(parent)
         if not connector:
             raise ValueError(
@@ -27,6 +29,7 @@ class StackedOptionsWidget(QtGui.QStackedWidget):
             self.setPalette(p)
 
     def resetOptions(self, xmlstring):
+        '''Reset options to *xmlstring*.'''
         widgetCount = self.count()
         for i in reversed(range(widgetCount)):
             widget = self.widget(i)
@@ -36,6 +39,7 @@ class StackedOptionsWidget(QtGui.QStackedWidget):
         self.initStackedOptions(xmlstring)
 
     def initStackedOptions(self, xmlstring, fromFile=False):
+        '''Initiate stacked options widget with *xmlstring*.'''
         self.stackedIndex = dict()
         self.stackedOptions = dict()
         doc = QtXml.QDomDocument('optionsDocument')
@@ -105,6 +109,7 @@ class StackedOptionsWidget(QtGui.QStackedWidget):
             self.addWidget(assetTypePages[i])
 
     def getOptions(self):
+        '''Return options.'''
         currentOptions = dict()
         for child in self.currentWidget().findChildren(QtGui.QDoubleSpinBox):
             currentOptions[child.objectName()] = float(child.value())
@@ -121,6 +126,7 @@ class StackedOptionsWidget(QtGui.QStackedWidget):
         return currentOptions
 
     def parseRow(self, rowElement, connectorName, mainLayout, assetTypeName):
+        '''Parse xml *rowElement*.'''
         accepts = rowElement.attribute('accepts')
         acceptsSplit = accepts.split(',')
         if accepts == '' or connectorName in acceptsSplit:
@@ -148,6 +154,7 @@ class StackedOptionsWidget(QtGui.QStackedWidget):
             return None, 0
 
     def parseOptions(self, rowLayout, optionElements, assetTypeName, enabled):
+        '''Parse options.'''
         optionsCount = 0
         for k in range(optionElements.length()):
             optionElement = optionElements.item(k).toElement()
@@ -223,6 +230,7 @@ class StackedOptionsWidget(QtGui.QStackedWidget):
         return optionsCount
 
     def setCurrentPage(self, pageName):
+        '''Set current page to *pageName*.'''
         if pageName in self.stackedIndex:
             newIndex = self.stackedIndex[pageName]
         else:
