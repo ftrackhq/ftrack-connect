@@ -11,10 +11,19 @@
         <file alias='comment'>image/nuke_studio/ftrack-comment.svg</file>
         <file alias='folder'>image/nuke_studio/ftrack-folder.svg</file>
         <file alias='home'>image/nuke_studio/ftrack-home.svg</file>
-	<file alias='episode'>image/nuke_studio/ftrack-folder-episode.svg</file>
+        <file alias='episode'>image/nuke_studio/ftrack-folder-episode.svg</file>
         <file alias='shot'>image/nuke_studio/ftrack-shot.svg</file>
         <file alias='task'>image/nuke_studio/ftrack-task.svg</file>
         <file alias='check'>image/nuke_studio/ftrack-check.svg</file>
+        <file alias='trash'>image/nuke_studio/ftrack-delete.svg</file>
+        <file alias='help'>image/nuke_studio/ftrack-help.svg</file>
+        <file alias='branch-closed'>image/nuke_studio/branch-closed.png</file>
+        <file alias='branch-open'>image/nuke_studio/branch-open.png</file>
+        <file alias='hand-scroll'>image/nuke_studio/handscroll.png</file>
+        <file alias='pencil'>image/nuke_studio/pencil.png</file>
+        <file alias='eraser'>image/nuke_studio/eraser.png</file>
+        <file alias='fit-screen'>image/nuke_studio/fit_screen.png</file>
+
     </qresource>
 
     <qresource prefix='ftrack/style'>
@@ -22,9 +31,11 @@
         <file alias='dark'>style_dark.css</file>
         <file alias='integration'>integration.css</file>
     </qresource>
+
     <qresource prefix='ftrack/font'>
         <file alias='main'>font/open_sans_regular.ttf</file>
     </qresource>
+
     <qresource prefix='ftrack/image/light'>
         <file alias='selectedTab'>image/light/selected_tab.png</file>
         <file alias='downArrow'>image/light/down_arrow.png</file>
