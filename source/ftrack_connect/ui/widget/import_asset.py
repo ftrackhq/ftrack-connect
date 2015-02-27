@@ -12,6 +12,7 @@ from ftrack_connect.ui.widget.import_options import ImportOptionsWidget
 from ftrack_connect.ui.widget.header import HeaderWidget
 from ftrack_connect.ui.theme import applyTheme
 
+
 class FtrackImportAssetDialog(QtGui.QDialog):
     '''Import asset dialog widget.'''
 

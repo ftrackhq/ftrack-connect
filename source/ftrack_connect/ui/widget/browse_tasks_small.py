@@ -8,7 +8,7 @@ import ftrack
 
 from browse_tasks import BrowseTasksWidget
 from ftrack_connect.connector import HelpFunctions
-import browse_tasks_small_rc
+from ftrack_connect.ui import resource
 
 
 class Ui_BrowseTasksSmall(object):
@@ -45,7 +45,7 @@ class Ui_BrowseTasksSmall(object):
         self.homeButton.setText('')
         icon = QtGui.QIcon()
         icon.addPixmap(
-            QtGui.QPixmap(':/home.png'), QtGui.QIcon.Normal, QtGui.QIcon.Off
+            QtGui.QPixmap(':ftrack/image/studio/home'), QtGui.QIcon.Normal, QtGui.QIcon.Off
         )
         self.homeButton.setIcon(icon)
         self.homeButton.setIconSize(QtCore.QSize(18, 18))
