@@ -123,6 +123,7 @@ class HeaderWidget(QtGui.QWidget):
             QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Fixed
         )
         self.message_area.setVisible(False)
+        self.message_area.setObjectName('ftrack-header-message-info')
         self.layout.addWidget(self.message_area)
 
     def setMessage(self, message, type='info'):
@@ -134,6 +135,10 @@ class HeaderWidget(QtGui.QWidget):
         class_type = 'ftrack-header-message-%s' % type
 
         self.message_area.setObjectName(class_type)
+        # for dynamic changes on property, the style has to be reapplied every time...
+        # http://www.qtcentre.org/threads/32140-Change-Stylesheet-Using-Dynamic-Property
+
+        self.setStyleSheet(self.styleSheet())
         self.message_area.setText(message)
         self.message_area.setVisible(True)
 
