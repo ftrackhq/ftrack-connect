@@ -116,10 +116,8 @@ class HeaderWidget(QtGui.QWidget):
         sizePolicy.setVerticalStretch(0)
         self.setSizePolicy(sizePolicy)
 
-
     def __create_message_area(self):
         self.message_area = QtGui.QLabel('', parent=self)
-        self.message_area.setObjectName('ftrack-header-message-info')
         self.message_area.resize(QtCore.QSize(900, 80))
         self.message_area.setSizePolicy(
             QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Fixed
@@ -128,11 +126,13 @@ class HeaderWidget(QtGui.QWidget):
         self.layout.addWidget(self.message_area)
 
     def setMessage(self, message, type='info'):
+
         message_types = ['info', 'warning', 'error']
         if type not in message_types:
             raise ValueError('Message type should be one of: %' ', '.join(message_types))
 
         class_type = 'ftrack-header-message-%s' % type
+
         self.message_area.setObjectName(class_type)
         self.message_area.setText(message)
         self.message_area.setVisible(True)
