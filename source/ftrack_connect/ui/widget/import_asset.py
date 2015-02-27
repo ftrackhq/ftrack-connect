@@ -207,7 +207,7 @@ class FtrackImportAssetDialog(QtGui.QDialog):
         message = self.connector.importAsset(importObj)
 
         self.importSignal.emit()
-        self.setMessage(message)
+        self.headerWidget.setMessage(message)
 
     def clickedAssetVSignal(self, assetVid):
         '''Set asset version to *assetVid*.'''
@@ -218,10 +218,3 @@ class FtrackImportAssetDialog(QtGui.QDialog):
         '''Handle click signal.'''
         self.listAssetsTableWidget.initView(ftrackId)
 
-    def setMessage(self, message=''):
-        '''Display a *message*.'''
-        if message is None:
-            message = ''
-
-        message = 'Notice: \n' + message
-        self.messageLabel.setText(message)
