@@ -1,0 +1,40 @@
+/*consistent base widgets size*/
+
+QSpinBox {
+  max-height: 25px;
+  min-height: 25px;
+}
+
+QComboBox {
+  max-height: 25px;
+  min-height: 25px;
+}
+
+QPushButton {
+  max-height: 25px;
+  min-height: 25px;
+}
+
+QLineEdit {
+  max-height: 25px;
+  min-height: 25px;
+}
+
+/*header messages*/
+QLabel#ftrack-header-message-error {
+  background-color: rgba(255,0,0, 200);
+  padding: 10px;
+  border: none;
+}
+
+QLabel#ftrack-header-message-info {
+  background-color: rgba(50, 147, 198, 200);
+  padding: 10px;
+  border: none;
+}
+
+QLabel#ftrack-header-message-warning {
+  background-color: rgba(238, 99, 76, 200);
+  padding: 10px;
+  border: none;
+}
