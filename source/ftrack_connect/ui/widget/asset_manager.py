@@ -9,8 +9,7 @@ from ftrack_connect.connector import FTAssetObject, PanelComInstance
 from ftrack_connect.ui.widget.info import FtrackInfoDialog
 from ftrack_connect.ui.widget.header import HeaderWidget
 from ftrack_connect.ui.theme import applyTheme
-import asset_manager_rc
-
+from ftrack_connect.ui import resource
 
 class Ui_AssetManager(object):
     '''Class to generate asset manager ui.'''
@@ -438,7 +437,7 @@ class AssetManagerWidget(QtGui.QWidget):
                 removeButton.setToolTip('Remove asset from scene')
                 icon = QtGui.QIcon()
                 icon.addPixmap(
-                    QtGui.QPixmap(':/remove.png'),
+                    QtGui.QPixmap(':ftrack/image/studio/trash'),
                     QtGui.QIcon.Normal,
                     QtGui.QIcon.Off
                 )
@@ -474,7 +473,7 @@ class AssetManagerWidget(QtGui.QWidget):
                 commentButton.setText('')
                 icon = QtGui.QIcon()
                 icon.addPixmap(
-                    QtGui.QPixmap(':/comment.png'), QtGui.QIcon.Normal,
+                    QtGui.QPixmap(':ftrack/image/studio/comment'), QtGui.QIcon.Normal,
                     QtGui.QIcon.Off
                 )
                 commentButton.setIcon(icon)

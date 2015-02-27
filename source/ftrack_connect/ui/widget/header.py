@@ -6,8 +6,8 @@ import webbrowser
 
 from PySide import QtCore, QtGui
 
-import header_rc
 import ftrack
+from ftrack_connect.ui import resource
 
 class Ui_Header(object):
 
