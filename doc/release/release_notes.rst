@@ -7,8 +7,14 @@
 Release Notes
 *************
 
-.. release:: next
-    :date: 2015-xx-xx
+.. release:: 0.1.8
+    :date: 2015-02-03
+
+    .. change:: fixed
+        :tags: Publisher
+
+        Publisher browser breaks when objects and files have non-ascii 
+        characters.
 
     .. change:: new
         :tags: Developer, Tutorial
