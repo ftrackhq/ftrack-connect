@@ -24,6 +24,8 @@
         <file alias='eraser'>image/nuke_studio/eraser.png</file>
         <file alias='fit-screen'>image/nuke_studio/fit_screen.png</file>
         <file alias='drag'>image/nuke_studio/drag.png</file>
+        <file alias='no-asset'>image/nuke_studio/no_asset.png</file>
+
     </qresource>
 
     <qresource prefix='ftrack/style'>
