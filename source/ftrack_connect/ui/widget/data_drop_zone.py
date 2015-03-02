@@ -73,7 +73,10 @@ def data(self, index, role):
 
         if column == 0:
             # Convert to unicode.
-            return item.name.decode('utf-8')
+            if isinstance(item.name, str):
+                return item.name.decode('utf-8')
+
+            return item.name
         elif column == 1:
             if item.size:
                 return item.size
@@ -143,7 +146,11 @@ class DataDropZone(QtGui.QFrame):
         if self._dialog.exec_():
             selected = self._dialog.selected()
             if selected:
-                self.dataSelected.emit(selected[0])
+                item = selected[0]
+                # Convert to unicode.
+                if isinstance(item, str):
+                    item = item.decode('utf-8')
+                self.dataSelected.emit(item)
 
     def _setDropZoneState(self, state='default'):
         '''Set drop zone state to *state*.
