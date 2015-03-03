@@ -69,6 +69,16 @@ class CrewHub(object):
 
         return data
 
+    @property
+    def sender(self):
+        '''Return sender data.'''
+        user = self.data['user']
+
+        return {
+            'name': user['name'],
+            'id': user['id']
+        }
+
     def enter(self, data=None):
         '''Broadcast presence with *data* and start sending out heartbeats.'''
 
@@ -98,12 +108,23 @@ class CrewHub(object):
         )
 
         self._initiateHeartbeats()
+        self._initiateChatSubscription()
+
+    def _initiateChatSubscription(self):
+        '''Subscribe to chat message events.'''
+        topic = 'topic=ftrack.chat.message and data.receiver={0}'.format(
+            self.sender['id']
+        )
+        ftrack.EVENT_HUB.subscribe(
+            topic,
+            self._onChatMessage
+        )
 
     def _onEnterReplyEvent(self, event):
         '''Handle reply to enter event.'''
         if self.isInterested(event['data']):
             self._registerHeartbeatListener(event['data'])
-            
+
             self._onEnter(event['data'])
 
     def _onPresenceEvent(self, event):
@@ -170,6 +191,28 @@ class CrewHub(object):
 
             time.sleep(self.HEARTBEAT_INTERVAL)
 
+    def _onChatMessage(self, event):
+        '''Handle message events.'''
+        pass
+
+    def sendMessage(self, receiverId, text):
+        '''Send *text* to subscribers.'''
+        data = dict(
+            sender=self.sender,
+            text=text,
+            receiver=receiverId,
+            date=str(datetime.datetime.utcnow()),
+            id=str(uuid.uuid1())
+        )
+        ftrack.EVENT_HUB.publish(
+            ftrack.Event(
+                topic='ftrack.chat.message',
+                data=data
+            )
+        )
+
+        return data
+
     def getSubscriptions(self):
         '''Return subscriptions and their data.'''
         return [
@@ -205,6 +248,9 @@ class SignalCrewHub(CrewHub, QtCore.QObject):
     #: Signal to emit on presence exit event.
     onExit = QtCore.Signal(object)
 
+    #: Signal to emit on chat messaged received.
+    onMessageReceived = QtCore.Signal(object)
+
     def _onHeartbeat(self, event):
         '''Increase subscription time for *event*.'''
         super(SignalCrewHub, self)._onHeartbeat(event)
@@ -217,3 +263,7 @@ class SignalCrewHub(CrewHub, QtCore.QObject):
     def _onExit(self, data):
         '''Handle exit events.'''
         self.onExit.emit(data)
+
+    def _onChatMessage(self, event):
+        '''Handle message *event* and emit signal.'''
+        self.onMessageReceived.emit(event['data'])

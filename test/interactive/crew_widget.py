@@ -40,7 +40,7 @@ class WidgetHarness(Harness):
 
         widget = QtGui.QWidget()
         widget.setLayout(QtGui.QVBoxLayout())
-        widget.setMinimumSize(QtCore.QSize(400, 600))
+        widget.setMinimumSize(QtCore.QSize(600, 600))
 
         self.crewHub = MyCrewHub()
         self.crew = ftrack_connect.ui.widget.crew.Crew(
