@@ -38,9 +38,6 @@ class CrewHub(object):
 
         self._subscriptions = {}
         self._data = dict(session_id=uuid.uuid1().hex)
-        self._user = None
-
-        self.setupChatSubscription()
 
     @property
     def data(self):
@@ -75,12 +72,11 @@ class CrewHub(object):
     @property
     def sender(self):
         '''Return sender data.'''
-        if self._user is None:
-            self._user = ftrack.User(getpass.getuser())
+        user = self.data
 
         return {
-            'name': self._user.getName(),
-            'id': self._user.getId()
+            'name': user['name'],
+            'id': user['id']
         }
 
     def enter(self, data=None):
@@ -112,8 +108,9 @@ class CrewHub(object):
         )
 
         self._initiateHeartbeats()
+        self._initiateChatSubscription()
 
-    def setupChatSubscription(self):
+    def _initiateChatSubscription(self):
         '''Subscribe to chat message events.'''
         topic = 'topic=ftrack.chat.message and data.receiver={0}'.format(
             self.sender['id']
@@ -127,7 +124,7 @@ class CrewHub(object):
         '''Handle reply to enter event.'''
         if self.isInterested(event['data']):
             self._registerHeartbeatListener(event['data'])
-            
+
             self._onEnter(event['data'])
 
     def _onPresenceEvent(self, event):
