@@ -25,8 +25,7 @@ class Ui_Header(object):
         Header.setSizePolicy(sizePolicy)
         self.horizontalLayout = QtGui.QHBoxLayout(Header)
         self.horizontalLayout.setSpacing(6)
-        self.horizontalLayout.setContentsMargins(9, 0, -1, 0)
-        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.horizontalLayout.setContentsMargins(1, 0, 1, 0)
         self.logoLabel = QtGui.QLabel(Header)
         sizePolicy = QtGui.QSizePolicy(
             QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed
@@ -38,11 +37,7 @@ class Ui_Header(object):
         )
         self.logoLabel.setSizePolicy(sizePolicy)
         self.logoLabel.setText("")
-        self.logoLabel.setTextFormat(QtCore.Qt.AutoText)
-        self.logoLabel.setScaledContents(False)
-        self.logoLabel.setObjectName("logoLabel")
         self.horizontalLayout.addWidget(self.logoLabel)
-
 
         spacerItem = QtGui.QSpacerItem(
             40, 20, QtGui.QSizePolicy.Expanding,
