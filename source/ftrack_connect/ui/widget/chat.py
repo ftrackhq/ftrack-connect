@@ -63,9 +63,6 @@ class Feed(ftrack_connect.ui.widget.item_list.ItemList):
         )
         self.list.setShowGrid(False)
 
-        self.label = QtGui.QLabel('Messages')
-        self.layout().insertWidget(0, self.label)
-
     def _createChatMessageWidget(self, message):
         '''Create a message widget from *message*.'''
         return Message(
