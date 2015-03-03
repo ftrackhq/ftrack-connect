@@ -3,7 +3,7 @@
 
 import arrow
 from PySide import QtGui, QtCore
-import ftrack_legacy as ftrack
+import copy
 
 import ftrack_connect.ui.widget.label
 import ftrack_connect.ui.widget.thumbnail
@@ -55,7 +55,7 @@ class UserExtended(QtGui.QWidget):
 
         self.user.setValue({
             'name': name,
-            'user_id': userId,
+            'userId': userId,
             'applications': applications
         })
 
@@ -76,7 +76,7 @@ class User(QtGui.QWidget):
 
         self._userId = userId
         self._applications = applications
-        self._group = applications
+        self._group = group
 
         self.setObjectName('user')
 
@@ -103,6 +103,14 @@ class User(QtGui.QWidget):
 
         self._refreshStyles()
         self._updateActivity()
+
+    @property
+    def group(self):
+        return self._group
+
+    @group.setter
+    def group(self, value):
+        self._group = value
 
     @property
     def online(self):
@@ -145,11 +153,12 @@ class User(QtGui.QWidget):
         self.itemClicked.emit(self.value())
 
     def value(self):
-        '''Return dictionary with component data.'''
+        '''Return dictionary with user data.'''
         return {
-            'user_id': self._userId,
+            'userId': self._userId,
             'name': self.nameLabel.text(),
-            'applications': self._applications
+            'applications': self._applications,
+            'group': self.group
         }
 
     def setValue(self, value):
@@ -157,10 +166,10 @@ class User(QtGui.QWidget):
         self._applications = value.get('applications', {})
         self.nameLabel.setText(value['name'])
 
-        if self._userId != value['user_id']:
-            self.thumbnail.load(value['user_id'])
+        if self._userId != value['userId']:
+            self.thumbnail.load(value['userId'])
 
-        self._userId = value['user_id']
+        self._userId = value['userId']
         self._updateActivity()
         self._refreshStyles()
 
@@ -171,3 +180,30 @@ class User(QtGui.QWidget):
     def setId(self, componentId):
         '''Set id to *componentId*.'''
         self._id = componentId
+
+    def addSession(self, sessionId, timestamp, application):
+        '''Add new session.'''
+        value = self.value()
+
+        application = copy.deepcopy(application)
+        application['timestamp'] = timestamp
+        value['applications'][sessionId] = application
+
+        self.setValue(value)
+
+    def updateSession(self, sessionId, timestamp, activity):
+        '''Update a session with *sessionId*.'''
+        value = self.value()
+
+        value['applications'][sessionId]['timestamp'] = timestamp
+        value['applications'][sessionId]['activity'] = activity
+
+        self.setValue(value)
+
+    def removeSession(self, sessionId):
+        '''Remove session with *sessionId*.'''
+        value = self.value()
+        if sessionId in value['applications']:
+            del value['applications'][sessionId]
+
+            self.setValue(value)

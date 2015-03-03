@@ -37,7 +37,7 @@ class WidgetHarness(Harness):
             )
         ]
         self.groups = (
-            'Assigned', 'Related', 'Others', 'Contributors', 'Others'
+            'Assigned', 'Related', 'Contributors', 'Others'
         )
 
         widget = QtGui.QWidget()
@@ -52,7 +52,7 @@ class WidgetHarness(Harness):
 
         for user in self.users:
             self.crew.addUser(
-                user.getName(), user.getId(), random.choice(self.groups)
+                user.getName(), user.getId()
             )
 
         user = ftrack.getUser(getpass.getuser())

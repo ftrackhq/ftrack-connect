@@ -35,6 +35,11 @@ class Crew(QtGui.QWidget):
             hub.onHeartbeat.connect(self.onHeartbeat)
             hub.onExit.connect(self.onExit)
 
+        groups = [group.lower() for group in groups]
+
+        if 'offline' not in groups:
+            groups.append('offline')
+
         self._groups = groups
 
         self.userList = ftrack_connect.ui.widget.user_list.UserList(
@@ -56,7 +61,7 @@ class Crew(QtGui.QWidget):
         self.userList.setFixedWidth(200)
         self.userList.itemClicked.connect(self._itemClickedHandler)
 
-    def addUser(self, name, userId, group):
+    def addUser(self, name, userId, group='offline'):
         '''Add user with *name*, *userId* and *group*.'''
         self.logger.debug(u'Adding user to user list: {0}'.format(name))
         if self.userList.userExists(userId):
@@ -65,13 +70,17 @@ class Crew(QtGui.QWidget):
             )
             return False
 
-        self.userList.addItem({
+        self.userList.addUser({
             'name': name,
             'userId': userId,
             'group': group
         })
 
         return True
+
+    def classifyUser(self, data):
+        '''Return group that user belongs to based on *data*.'''
+        return 'assigned'
 
     def onEnter(self, data):
         '''Handle enter events with *data*.
@@ -96,27 +105,46 @@ class Crew(QtGui.QWidget):
             timestamp=<datetime>
         }
         '''
-        self.userList.addSession(
-            data['user']['id'], data['session_id'], data['timestamp'],
-            data['application']
+        if not self.userList.userExists(data['user']['id']):
+            self.userList.addUser({
+                'name': data['user']['name'],
+                'userId': data['user']['id'],
+                'group': 'offline'
+            })
+
+        user = self.userList.getUser(data['user']['id'])
+
+        group = self.classifyUser(user)
+        user.group = group
+
+        user.addSession(
+            data['session_id'], data['timestamp'], data['application']
         )
+
+        self.userList.updatePosition(user)
 
     def onHeartbeat(self, data):
         '''Handle heartbeat events with *data*.'''
-        self.userList.updateSession(
-            data['session_id'], data['timestamp'], data.get('activity')
-        )
+        user = self.userList.getUser(data['user']['id'])
+        if user:
+            user.updateSession(
+                data['session_id'], data['timestamp'], data.get('activity')
+            )
 
     def onExit(self, data):
         '''Handle exit events with *data*.'''
-        self.userList.removeSession(data['session_id'])
+        user = self.userList.getUser(data['user']['id'])
+        if user:
+            user.removeSession(data['session_id'])
+
+        self.userList.updatePosition(user)
 
     def _itemClickedHandler(self, value):
         '''Handle item clicked event.'''
         if self._userInfo is None:
             self._userInfo = ftrack_connect.ui.widget.user.UserExtended(
                 value.get('name'),
-                value.get('user_id'),
+                value.get('userId'),
                 value.get('applications')
             )
 
@@ -124,6 +152,6 @@ class Crew(QtGui.QWidget):
         else:
             self._userInfo.updateInformation(
                 value.get('name'),
-                value.get('user_id'),
+                value.get('userId'),
                 value.get('applications')
             )
