@@ -196,12 +196,11 @@ class Crew(QtGui.QWidget):
 
     def _itemClickedHandler(self, value):
         '''Handle item clicked event.'''
-        self.currentUserId = value['user_id']
+        self.currentUserId = value['userId']
 
         if self._extendedUser is None:
             self._extendedUser = ftrack_connect.ui.widget.user.UserExtended(
                 value.get('name'),
-                value.get('userId'),
                 self.currentUserId,
                 value.get('applications')
             )
