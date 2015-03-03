@@ -45,7 +45,8 @@ class Ui_Header(object):
 
 
         spacerItem = QtGui.QSpacerItem(
-            40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum
+            40, 20, QtGui.QSizePolicy.Expanding,
+            QtGui.QSizePolicy.Minimum
         )
         self.horizontalLayout.addItem(spacerItem)
         self.userLabel = QtGui.QLabel(Header)
