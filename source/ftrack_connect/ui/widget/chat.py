@@ -90,10 +90,12 @@ class Chat(QtGui.QWidget):
         self.setLayout(QtGui.QVBoxLayout())
 
         self._chatFeed = Feed(parent)
-        self.layout().addWidget(self._chatFeed)
+        self.layout().addWidget(self._chatFeed, stretch=1)
 
         self._messageArea = QtGui.QTextEdit()
-        self.layout().addWidget(self._messageArea)
+        self._messageArea.setMinimumHeight(30)
+        self._messageArea.setMaximumHeight(75)
+        self.layout().addWidget(self._messageArea, stretch=0)
 
         self._sendMessageButton = QtGui.QPushButton('Submit')
         self.layout().addWidget(self._sendMessageButton)
@@ -102,6 +104,7 @@ class Chat(QtGui.QWidget):
 
     def load(self, history):
         '''Load chat *history*'''
+        self._chatFeed.clearItems()
         for message in history:
             self.addMessage(message)
 

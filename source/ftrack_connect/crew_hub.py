@@ -115,10 +115,11 @@ class CrewHub(object):
 
     def setupChatSubscription(self):
         '''Subscribe to chat message events.'''
+        topic = 'topic=ftrack.chat.message and data.receiver={0}'.format(
+            self.sender['id']
+        )
         ftrack.EVENT_HUB.subscribe(
-            'topic=ftrack.chat.message and data.receiver.id="{0}"'.format(
-                self.sender['id']
-            ),
+            topic,
             self._onChatMessage
         )
 

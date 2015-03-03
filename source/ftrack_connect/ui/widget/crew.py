@@ -14,6 +14,19 @@ import ftrack_connect.ui.widget.chat
 CHAT_MESSAGES = dict()
 
 
+def addMessageHistory(id, message):
+    '''Add *message* to history with *id*.'''
+    if id not in CHAT_MESSAGES:
+        CHAT_MESSAGES[id] = []
+
+    CHAT_MESSAGES[id].append(message)
+
+
+def getMessageHistory(id):
+    '''Return message history.'''
+    return CHAT_MESSAGES.get(id, [])
+
+
 class Crew(QtGui.QWidget):
     '''User presence widget.'''
 
@@ -29,6 +42,7 @@ class Crew(QtGui.QWidget):
         '''
         super(Crew, self).__init__(parent)
 
+        self.currentUserId = None
         self.hub = hub
 
         self.logger = logging.getLogger(
@@ -122,10 +136,18 @@ class Crew(QtGui.QWidget):
         self.userList.removeSession(data['session_id'])
 
     def onMessageReceived(self, message):
-        self.chat.addMessage(message)
+        '''Handle *message* received.'''
+        sender = message['sender']['id']
+        addMessageHistory(sender, message)
+
+        if sender == self.currentUserId:
+            self.chat.addMessage(message)
 
     def onChatMessageSubmitClicked(self, messageText):
+        '''Handle message submitted clicked.'''
         message = self.hub.sendMessage(self.currentUserId, messageText)
+        message['me'] = True
+        addMessageHistory(message['receiver'], message)
         self.chat.addMessage(message)
 
     def _itemClickedHandler(self, value):
@@ -140,7 +162,9 @@ class Crew(QtGui.QWidget):
             )
 
             self.userContainer.layout().addWidget(self._extendedUser)
-            self.userContainer.layout().addWidget(self.chat)
+            self.userContainer.layout().addWidget(
+                self.chat, stretch=1
+            )
         else:
             self._extendedUser.updateInformation(
                 value.get('name'),
@@ -148,6 +172,4 @@ class Crew(QtGui.QWidget):
                 value.get('applications')
             )
 
-        self.chat.load(
-            self.currentUserId, CHAT_MESSAGES.get(self.currentUserId, [])
-        )
+        self.chat.load(getMessageHistory(self.currentUserId))
