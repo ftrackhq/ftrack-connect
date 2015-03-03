@@ -11,7 +11,7 @@ from ftrack_connect.ui.widget.component_table import ComponentTableWidget
 from ftrack_connect.ui.widget.import_options import ImportOptionsWidget
 from ftrack_connect.ui.widget.header import HeaderWidget
 from ftrack_connect.ui.theme import applyTheme
-
+from ftrack_connect.ui import resource
 
 class FtrackImportAssetDialog(QtGui.QDialog):
     '''Import asset dialog widget.'''
