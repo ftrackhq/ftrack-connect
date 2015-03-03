@@ -251,6 +251,7 @@ class SignalCrewHub(CrewHub, QtCore.QObject):
     #: Signal to emit on presence exit event.
     onExit = QtCore.Signal(object)
 
+    #: Signal to emit on chat messaged received.
     onMessageReceived = QtCore.Signal(object)
 
     def _onHeartbeat(self, event):

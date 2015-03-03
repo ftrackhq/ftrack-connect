@@ -11,8 +11,10 @@ CHAT_MESSAGES = dict()
 
 
 class Message(QtGui.QWidget):
+    '''Represent a chat message.'''
 
     def __init__(self, text, name, me=False, parent=None):
+        '''Initialise widget with *text* and *name*.'''
         super(Message, self).__init__(parent)
 
         self.setLayout(QtGui.QVBoxLayout())
@@ -65,13 +67,13 @@ class Feed(ftrack_connect.ui.widget.item_list.ItemList):
         self.layout().insertWidget(0, self.label)
 
     def _createChatMessageWidget(self, message):
-        '''.'''
+        '''Create a message widget from *message*.'''
         return Message(
             message['text'], message['sender']['name'], message.get('me', False)
         )
 
     def addItem(self, item, row=None):
-        '''.'''
+        '''Add *item* to feed.'''
         if row is None:
             row = self.count()
 
@@ -109,9 +111,11 @@ class Chat(QtGui.QWidget):
             self.addMessage(message)
 
     def _handleMessageSendClick(self):
+        '''Handle chat message send clicked event.'''
         text = self._messageArea.toPlainText()
         self.chatMessageSubmitted.emit(text)
         self._messageArea.setText('')
 
     def addMessage(self, message):
+        '''Add *message* to feed.'''
         self._chatFeed.addItem(message)
