@@ -102,9 +102,19 @@ class FtrackImportAssetDialog(QtGui.QDialog):
 
         self.importAllButton = QtGui.QPushButton("Import All")
         self.importAllButton.setFixedWidth(120)
+        self.importAllButton.setObjectName('ftrack-import-btn')
 
         self.importSelectedButton = QtGui.QPushButton("Import Selected")
         self.importSelectedButton.setFixedWidth(120)
+        self.importAllButton.setObjectName('ftrack-import-btn')
+
+        self.setStyleSheet('''
+        #ftrack-import-btn {
+            background-color: qlineargradient(
+                    x1: 0, y1: 0, x2: 0, y2: 1,
+                    stop: 0 #1CBC90, stop: 1 #158F6D);
+        }
+        ''')
 
         self.horizontalLayout.addWidget(self.importSelectedButton)
         self.horizontalLayout.addWidget(self.importAllButton)

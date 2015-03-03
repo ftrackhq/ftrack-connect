@@ -325,8 +325,8 @@ class ComponentTableWidget(QtGui.QTableWidget):
 
         if style == 'standard':
 
-            gradientStartColor = '#1199dd'
-            gradientStopColor = '#0066cc'
+            gradientStartColor = '#3498DB'
+            gradientStopColor = '#2C81BA'
             borderColor = 'rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25)'
             textColor = '#ffffff'
 
@@ -343,7 +343,7 @@ class ComponentTableWidget(QtGui.QTableWidget):
             QPushButton {{
                 color: {textColor};
                 border: 1px solid {borderColor};
-                border-radius: 3px;
+                border-radius: 1px;
                 background-color: qlineargradient(
                     x1: 0, y1: 0, x2: 0, y2: 1,
                     stop: 0 {gradientStartColor}, stop: 1 {gradientStopColor}
