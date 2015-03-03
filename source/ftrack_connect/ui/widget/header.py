@@ -62,8 +62,10 @@ class SimpleHeaderWidget(QtGui.QWidget):
         self.setFixedHeight(40)
         self.resize(198, 35)
         self.ui.userIcon.load(logname)
-        self.ui.userLabel.setText(ftrack.User(logname).getName())
-
+        self.ui.userLabel.setText(
+            ftrack.User(logname).getName().title()
+        )
+        self.ui.userLabel.setStyleSheet('color:white')
         logoPixmap = QtGui.QPixmap(':ftrack/image/default/ftrackLogoLabel')
         self.ui.logoLabel.setPixmap(
             logoPixmap.scaled(
