@@ -72,7 +72,7 @@ class CrewHub(object):
     @property
     def sender(self):
         '''Return sender data.'''
-        user = self.data
+        user = self.data['user']
 
         return {
             'name': user['name'],

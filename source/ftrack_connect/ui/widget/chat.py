@@ -7,9 +7,6 @@ from PySide import QtGui, QtCore
 import ftrack_connect.ui.widget.item_list
 
 
-CHAT_MESSAGES = dict()
-
-
 class Message(QtGui.QWidget):
     '''Represent a chat message.'''
 
@@ -69,7 +66,7 @@ class Feed(ftrack_connect.ui.widget.item_list.ItemList):
             message['text'], message['sender']['name'], message.get('me', False)
         )
 
-    def addItem(self, item, row=None):
+    def addMessage(self, item, row=None):
         '''Add *item* to feed.'''
         if row is None:
             row = self.count()
@@ -99,7 +96,7 @@ class Chat(QtGui.QWidget):
         self._sendMessageButton = QtGui.QPushButton('Submit')
         self.layout().addWidget(self._sendMessageButton)
 
-        self._sendMessageButton.clicked.connect(self._handleMessageSendClick)
+        self._sendMessageButton.clicked.connect(self._onSubmitButtonClicked)
 
     def load(self, history):
         '''Load chat *history*'''
@@ -107,7 +104,7 @@ class Chat(QtGui.QWidget):
         for message in history:
             self.addMessage(message)
 
-    def _handleMessageSendClick(self):
+    def _onSubmitButtonClicked(self):
         '''Handle chat message send clicked event.'''
         text = self._messageArea.toPlainText()
         self.chatMessageSubmitted.emit(text)
@@ -115,4 +112,4 @@ class Chat(QtGui.QWidget):
 
     def addMessage(self, message):
         '''Add *message* to feed.'''
-        self._chatFeed.addItem(message)
+        self._chatFeed.addMessage(message)
