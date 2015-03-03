@@ -20,6 +20,11 @@ QLineEdit {
   min-height: 25px;
 }
 
+QToolButton {
+  max-height: 25px;
+  min-height: 25px;
+}
+
 /*header messages*/
 QLabel#ftrack-header-message-error {
   background-color: rgba(178,0,0, 255);

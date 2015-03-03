@@ -80,16 +80,28 @@ class Base(QtGui.QLabel):
 
     def paintEvent(self, event):
         painter = QtGui.QPainter(self)
-        brush = QtGui.QBrush(self.pixmap())
-        painter.setBrush(brush)
-        painter.setPen(QtGui.QColor(1,1,1,128))
-        painter.drawRoundedRect(
-            0, 0,
-            self.width(), self.height(),
-            self.width()/2, self.height()/2
+        painter.setRenderHints(
+            QtGui.QPainter.Antialiasing,
+            True
         )
-        painter.setRenderHint(
-            QtGui.QPainter.HighQualityAntialiasing, True
+
+        brush = QtGui.QBrush(
+            self.pixmap()
+        )
+
+        painter.setBrush(brush)
+
+        painter.setPen(
+            QtGui.QPen(
+                QtGui.QColor(0, 0, 0, 0)
+            )
+        )
+
+        painter.drawEllipse(
+            QtCore.QRectF(
+                0, 0,
+                self.width(), self.height()
+            )
         )
 
 class User(Base):
