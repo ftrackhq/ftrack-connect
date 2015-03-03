@@ -8,6 +8,23 @@ from PySide import QtGui
 import ftrack_connect.ui.widget.label
 import ftrack_connect.ui.widget.user_list
 import ftrack_connect.ui.widget.user
+import ftrack_connect.ui.widget.chat
+
+
+CHAT_MESSAGES = dict()
+
+
+def addMessageHistory(id, message):
+    '''Add *message* to history with *id*.'''
+    if id not in CHAT_MESSAGES:
+        CHAT_MESSAGES[id] = []
+
+    CHAT_MESSAGES[id].append(message)
+
+
+def getMessageHistory(id):
+    '''Return message history.'''
+    return CHAT_MESSAGES.get(id, [])
 
 
 class Crew(QtGui.QWidget):
@@ -25,15 +42,12 @@ class Crew(QtGui.QWidget):
         '''
         super(Crew, self).__init__(parent)
 
+        self.currentUserId = None
+        self.hub = hub
+
         self.logger = logging.getLogger(
             __name__ + '.' + self.__class__.__name__
         )
-
-        # Setup signal handlers if hub is configured.
-        if hub:
-            hub.onEnter.connect(self.onEnter)
-            hub.onHeartbeat.connect(self.onHeartbeat)
-            hub.onExit.connect(self.onExit)
 
         self._groups = groups
 
@@ -41,20 +55,30 @@ class Crew(QtGui.QWidget):
             groups=self._groups
         )
 
-        self.userInformation = QtGui.QWidget()
-        self.userInformation.setLayout(QtGui.QVBoxLayout())
+        self.userContainer = QtGui.QWidget()
+        self.userContainer.setLayout(QtGui.QVBoxLayout())
 
         self.setLayout(QtGui.QHBoxLayout())
-        self._userInfo = None
+
+        self._extendedUser = None
+        self.chat = ftrack_connect.ui.widget.chat.Chat(parent)
+        self.chat.chatMessageSubmitted.connect(self.onChatMessageSubmitClicked)
 
         self.layout().addWidget(
             self.userList, stretch=1
         )
         self.layout().addWidget(
-            self.userInformation, stretch=1
+            self.userContainer, stretch=1
         )
         self.userList.setFixedWidth(200)
         self.userList.itemClicked.connect(self._itemClickedHandler)
+
+        # Setup signal handlers if hub is configured.
+        if hub:
+            hub.onEnter.connect(self.onEnter)
+            hub.onHeartbeat.connect(self.onHeartbeat)
+            hub.onExit.connect(self.onExit)
+            hub.onMessageReceived.connect(self.onMessageReceived)
 
     def addUser(self, name, userId, group):
         '''Add user with *name*, *userId* and *group*.'''
@@ -111,19 +135,41 @@ class Crew(QtGui.QWidget):
         '''Handle exit events with *data*.'''
         self.userList.removeSession(data['session_id'])
 
+    def onMessageReceived(self, message):
+        '''Handle *message* received.'''
+        sender = message['sender']['id']
+        addMessageHistory(sender, message)
+
+        if sender == self.currentUserId:
+            self.chat.addMessage(message)
+
+    def onChatMessageSubmitClicked(self, messageText):
+        '''Handle message submitted clicked.'''
+        message = self.hub.sendMessage(self.currentUserId, messageText)
+        message['me'] = True
+        addMessageHistory(message['receiver'], message)
+        self.chat.addMessage(message)
+
     def _itemClickedHandler(self, value):
         '''Handle item clicked event.'''
-        if self._userInfo is None:
-            self._userInfo = ftrack_connect.ui.widget.user.UserExtended(
+        self.currentUserId = value['user_id']
+
+        if self._extendedUser is None:
+            self._extendedUser = ftrack_connect.ui.widget.user.UserExtended(
                 value.get('name'),
-                value.get('user_id'),
+                self.currentUserId,
                 value.get('applications')
             )
 
-            self.userInformation.layout().addWidget(self._userInfo)
+            self.userContainer.layout().addWidget(self._extendedUser)
+            self.userContainer.layout().addWidget(
+                self.chat, stretch=1
+            )
         else:
-            self._userInfo.updateInformation(
+            self._extendedUser.updateInformation(
                 value.get('name'),
-                value.get('user_id'),
+                self.currentUserId,
                 value.get('applications')
             )
+
+        self.chat.load(getMessageHistory(self.currentUserId))
