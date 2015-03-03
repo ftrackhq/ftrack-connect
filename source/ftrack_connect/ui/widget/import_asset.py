@@ -165,7 +165,7 @@ class FtrackImportAssetDialog(QtGui.QDialog):
         )
 
         self.browseTasksWidget.update()
-        self.setStyleSheet('''
+        self.setStyleSheet(self.styleSheet()+'''
         QPushButton[text~="Import"] {
             background-color: qlineargradient(
                     x1: 0, y1: 0, x2: 0, y2: 1,
@@ -220,7 +220,8 @@ class FtrackImportAssetDialog(QtGui.QDialog):
         message = self.connector.importAsset(importObj)
 
         self.importSignal.emit()
-        self.headerWidget.setMessage(message)
+        asset_name = component.getParents()[0].getAsset().getName()
+        self.headerWidget.setMessage('Imported asset "%s"' % asset_name)
 
     def clickedAssetVSignal(self, assetVid):
         '''Set asset version to *assetVid*.'''
