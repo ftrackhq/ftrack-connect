@@ -10,10 +10,15 @@ import ftrack_connect.ui.widget.user_list
 import ftrack_connect.ui.widget.user
 
 
+def defaultClassifier(user):
+    '''Default user classifier.'''
+    return 'others'
+
+
 class Crew(QtGui.QWidget):
     '''User presence widget.'''
 
-    def __init__(self, groups, hub=None, parent=None):
+    def __init__(self, groups, hub=None, classifier=None, parent=None):
         '''Instantiate widget with *users* and *groups*.
 
         If *hub* is configured the Crew widget will connect listeners for::
@@ -29,6 +34,12 @@ class Crew(QtGui.QWidget):
             __name__ + '.' + self.__class__.__name__
         )
 
+        # If not classifier is specified return default `other` group.
+        if not classifier:
+            classifier = defaultClassifier
+
+        self._classifier = classifier
+
         # Setup signal handlers if hub is configured.
         if hub:
             hub.onEnter.connect(self.onEnter)
@@ -36,6 +47,9 @@ class Crew(QtGui.QWidget):
             hub.onExit.connect(self.onExit)
 
         groups = [group.lower() for group in groups]
+
+        if 'others' not in groups:
+            groups.append('others')
 
         if 'offline' not in groups:
             groups.append('offline')
@@ -78,10 +92,6 @@ class Crew(QtGui.QWidget):
 
         return True
 
-    def classifyUser(self, data):
-        '''Return group that user belongs to based on *data*.'''
-        return 'assigned'
-
     def onEnter(self, data):
         '''Handle enter events with *data*.
 
@@ -114,7 +124,7 @@ class Crew(QtGui.QWidget):
 
         user = self.userList.getUser(data['user']['id'])
 
-        group = self.classifyUser(user)
+        group = self._classifier(user)
         user.group = group
 
         user.addSession(

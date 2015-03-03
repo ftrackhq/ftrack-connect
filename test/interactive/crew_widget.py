@@ -1,9 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
 
-import random
 import getpass
-import uuid
 
 import ftrack_legacy as ftrack
 from PySide import QtCore, QtGui
@@ -57,14 +55,13 @@ class WidgetHarness(Harness):
 
         user = ftrack.getUser(getpass.getuser())
         data = {
-            'session_id': uuid.uuid1().hex,
             'user': {
                 'name': user.getName(),
                 'id': user.getId()
             },
             'application': {
-                'identifier': 'nuke',
-                'label': 'Nuke'
+                'identifier': 'ftrack',
+                'label': 'ftrack'
             },
             'context': {
                 'project_id': 'my_project_id',
