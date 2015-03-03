@@ -8,6 +8,8 @@ from PySide import QtCore, QtGui
 
 import ftrack
 from ftrack_connect.ui import resource
+from thumbnail import User
+
 
 class Ui_Header(object):
 
@@ -47,14 +49,8 @@ class Ui_Header(object):
         )
         self.horizontalLayout.addItem(spacerItem)
         self.userLabel = QtGui.QLabel(Header)
-        self.userIcon = QtGui.QPushButton(Header)
-        self.userIcon.setMinimumSize(QtCore.QSize(35, 35))
-        self.userIcon.setMaximumSize(QtCore.QSize(35, 35))
-        self.userIcon.setText("")
-        self.userIcon.setIconSize(QtCore.QSize(30, 30))
-        self.userIcon.setFlat(True)
-        self.userIcon.setDisabled(True)
-        self.userIcon.setObjectName("ftrac-user-icon")
+        self.userIcon = User()
+        self.userIcon.setFixedSize(40, 40)
         self.horizontalLayout.addWidget(self.userLabel)
         self.horizontalLayout.addWidget(self.userIcon)
 
@@ -64,15 +60,13 @@ class SimpleHeaderWidget(QtGui.QWidget):
     def __init__(self, parent=None, task=None):
         QtGui.QWidget.__init__(self, parent)
 
-        self.current_user = ftrack.User(os.getenv('LOGNAME'))
+        logname = os.getenv('LOGNAME')
         self.ui = Ui_Header()
         self.ui.setupUi(self)
         self.setFixedHeight(40)
         self.resize(198, 35)
-
-        icon = self.getUserIcon()
-        self.ui.userIcon.setIcon(icon)
-        self.ui.userLabel.setText(self.current_user.getName())
+        self.ui.userIcon.load(logname)
+        self.ui.userLabel.setText(logname)
 
         logoPixmap = QtGui.QPixmap(':ftrack/image/default/ftrackLogoLabel')
         self.ui.logoLabel.setPixmap(
@@ -84,14 +78,6 @@ class SimpleHeaderWidget(QtGui.QWidget):
         )
 
         self.setAutoFillBackground(True)
-
-    def getUserIcon(self):
-        import urllib
-        img = QtGui.QImage()
-        default_user_icon = os.environ["FTRACK_SERVER"] + "/img/userplaceholder.png"
-        user_icon = self.current_user.getThumbnail() or default_user_icon
-        img.loadFromData(urllib.urlopen(user_icon).read())
-        return QtGui.QIcon(QtGui.QPixmap(img))
 
     def setTitle(self, title):
         self.ui.titleLabel.setText(title)
