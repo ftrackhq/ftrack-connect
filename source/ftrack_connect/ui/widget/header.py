@@ -46,7 +46,7 @@ class Ui_Header(object):
         self.horizontalLayout.addItem(spacerItem)
         self.userLabel = QtGui.QLabel(Header)
         self.userIcon = User()
-        self.userIcon.setFixedSize(40, 40)
+        self.userIcon.setFixedSize(35, 35)
         self.horizontalLayout.addWidget(self.userLabel)
         self.horizontalLayout.addWidget(self.userIcon)
 
