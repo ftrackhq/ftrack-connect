@@ -2,7 +2,7 @@
 # :copyright: Copyright (c) 2015 ftrack
 
 import os
-import webbrowser
+# import webbrowser
 
 from PySide import QtCore, QtGui
 
@@ -11,127 +11,149 @@ from ftrack_connect.ui import resource
 from thumbnail import User
 
 
-class Ui_Header(object):
+class HeaderWidget(QtGui.QFrame):
+    def __init__(self, parent=None):
+        super(HeaderWidget, self).__init__(parent=parent)
+        self.setObjectName('ftrack-header-widget')
+        self.main_layout = QtGui.QVBoxLayout()
+        self.main_layout.setContentsMargins(0, 0, 0, 0)
+        self.main_layout.setAlignment(
+            QtCore.Qt.AlignTop
+        )
+        self.setLayout(self.main_layout)
 
-    def setupUi(self, Header):
-        Header.setObjectName("Header")
-        Header.resize(198, 35)
-        sizePolicy = QtGui.QSizePolicy(
-            QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Fixed
+        # Logo & User ID
+        self.id_container = QtGui.QWidget(self)
+        self.id_container_layout = QtGui.QHBoxLayout()
+        self.id_container_layout.setContentsMargins(0, 0, 0, 0)
+        self.id_container_layout.setSpacing(0)
+        self.id_container_layout.setAlignment(
+            QtCore.Qt.AlignTop
         )
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(Header.sizePolicy().hasHeightForWidth())
-        Header.setSizePolicy(sizePolicy)
-        self.horizontalLayout = QtGui.QHBoxLayout(Header)
-        self.horizontalLayout.setSpacing(6)
-        self.horizontalLayout.setContentsMargins(1, 0, 1, 0)
-        self.logoLabel = QtGui.QLabel(Header)
-        sizePolicy = QtGui.QSizePolicy(
-            QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed
-        )
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.logoLabel.sizePolicy().hasHeightForWidth()
-        )
-        self.logoLabel.setSizePolicy(sizePolicy)
-        self.logoLabel.setText("")
-        self.horizontalLayout.addWidget(self.logoLabel)
+        self.id_container.setLayout(self.id_container_layout)
 
-        spacerItem = QtGui.QSpacerItem(
-            40, 20, QtGui.QSizePolicy.Expanding,
+        spacer = QtGui.QSpacerItem(
+            0,
+            0,
+            QtGui.QSizePolicy.Expanding,
             QtGui.QSizePolicy.Minimum
         )
-        self.horizontalLayout.addItem(spacerItem)
-        self.userLabel = QtGui.QLabel(Header)
-        self.userIcon = User()
-        self.userIcon.setFixedSize(35, 35)
-        self.horizontalLayout.addWidget(self.userLabel)
-        self.horizontalLayout.addWidget(self.userIcon)
+
+        self.logo = FtrackLogo(self)
+        self.user_id = UserId(self)
+
+        self.id_container_layout.addWidget(self.logo)
+        self.id_container_layout.addItem(spacer)
+        self.id_container_layout.addWidget(self.user_id)
+
+        # Message
+        self.message_container = QtGui.QWidget(self)
+        self.message_container.hide()
+        self.message_container_layout = QtGui.QHBoxLayout()
+        self.message_container_layout.setContentsMargins(0, 0, 0, 0)
+        self.message_container_layout.setSpacing(0)
+        self.message_container.setLayout(self.message_container_layout)
+
+        self.message_box = MessageBox(self)
+        self.message_container_layout.addWidget(self.message_box)
+
+        # Add (Logo & User ID) & Message
+        self.main_layout.addWidget(self.id_container)
+        self.main_layout.addWidget(self.message_container)
+
+    def setMessage(self, message, level='info'):
+        self.message_container.show()
+        self.message_box.setMessage(message, level)
+
+    def dismissMessage(self):
+        self.message_container.hide()
+        self.message_box.dismissMessage()
 
 
-class SimpleHeaderWidget(QtGui.QWidget):
-
-    def __init__(self, parent=None, task=None):
-        QtGui.QWidget.__init__(self, parent)
-
-        logname = os.getenv('LOGNAME')
-        self.ui = Ui_Header()
-        self.ui.setupUi(self)
-        self.setFixedHeight(40)
-        self.resize(198, 35)
-        self.ui.userIcon.load(logname)
-        self.ui.userLabel.setText(
-            ftrack.User(logname).getName().title()
+class FtrackLogo(QtGui.QLabel):
+    def __init__(self, parent=None):
+        super(FtrackLogo, self).__init__(parent=parent)
+        self.setObjectName('ftrack-logo-widget')
+        self.main_layout = QtGui.QHBoxLayout()
+        self.main_layout.setContentsMargins(0, 0, 0, 0)
+        self.main_layout.setSpacing(0)
+        self.main_layout.setAlignment(
+            QtCore.Qt.AlignTop
         )
-        self.ui.userLabel.setStyleSheet('color:white')
+        self.setLayout(self.main_layout)
+
         logoPixmap = QtGui.QPixmap(':ftrack/image/default/ftrackLogoLabel')
-        self.ui.logoLabel.setPixmap(
+        self.setPixmap(
             logoPixmap.scaled(
-                self.ui.logoLabel.size(),
+                self.size(),
                 QtCore.Qt.KeepAspectRatio,
                 QtCore.Qt.SmoothTransformation
             )
         )
 
-        self.setAutoFillBackground(True)
 
-    def setTitle(self, title):
-        self.ui.titleLabel.setText(title)
-
-    def openHelp(self):
-        webbrowser.open(self.helpUrl)
-
-class HeaderWidget(QtGui.QWidget):
+class UserId(QtGui.QWidget):
     def __init__(self, parent=None):
-        super(HeaderWidget, self).__init__(parent=parent)
-        self.header = SimpleHeaderWidget()
-        self.layout = QtGui.QVBoxLayout()
-        self.setLayout(self.layout)
-        self.layout.addWidget(self.header)
-        self.__create_message_area()
-
-        self.resize(198, 35)
-        sizePolicy = QtGui.QSizePolicy(
-            QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Fixed
+        super(UserId, self).__init__(parent=parent)
+        self.setObjectName('ftrack-userid-widget')
+        self.main_layout = QtGui.QHBoxLayout()
+        self.main_layout.setContentsMargins(0, 0, 0, 0)
+        self.main_layout.setAlignment(
+            QtCore.Qt.AlignRight
         )
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        self.setSizePolicy(sizePolicy)
+        self.setLayout(self.main_layout)
 
-    def __create_message_area(self):
-        self.message_area = QtGui.QLabel('', parent=self)
-        self.message_area.resize(QtCore.QSize(900, 80))
-        self.message_area.setSizePolicy(
-            QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Fixed
+        self.label = QtGui.QLabel(self)
+        self.image = User(self)
+        self.image.setFixedSize(35, 35)
+
+        self.main_layout.addWidget(self.label)
+        self.main_layout.addWidget(self.image)
+
+        logname = os.getenv('LOGNAME')
+        self.image.load(logname)
+        self.label.setText(ftrack.User(logname).getName().title())
+
+
+class MessageBox(QtGui.QWidget):
+    def __init__(self, parent=None):
+        super(MessageBox, self).__init__(parent=parent)
+        self.setObjectName('ftrack-message-box')
+        self.main_layout = QtGui.QHBoxLayout()
+        self.main_layout.setContentsMargins(0, 0, 0, 0)
+        self.main_layout.setSpacing(0)
+        self.main_layout.setAlignment(
+            QtCore.Qt.AlignTop
         )
-        self.message_area.setVisible(False)
-        self.message_area.setObjectName('ftrack-header-message-info')
-        self.layout.addWidget(self.message_area)
+        self.setLayout(self.main_layout)
 
-    def setMessage(self, message, type='info'):
+        self.label = QtGui.QLabel(parent=self)
+        self.label.resize(QtCore.QSize(900, 80))
 
+        self.label.setSizePolicy(
+            QtGui.QSizePolicy.Expanding,
+            QtGui.QSizePolicy.Fixed
+        )
+        self.label.hide()
+        self.label.setObjectName('ftrack-header-message-info')
+
+        self.main_layout.addWidget(self.label)
+
+    def setMessage(self, message, level):
         message_types = ['info', 'warning', 'error']
-        if type not in message_types:
-            raise ValueError('Message type should be one of: %' ', '.join(message_types))
+        if level not in message_types:
+            raise ValueError(
+                'Message type should be one of: %s' % ', '.join(message_types)
+            )
 
-        class_type = 'ftrack-header-message-%s' % type
+        class_type = 'ftrack-header-message-%s' % level
 
-        self.message_area.setObjectName(class_type)
-        # for dynamic changes on property, the style has to be reapplied every time...
-        # http://www.qtcentre.org/threads/32140-Change-Stylesheet-Using-Dynamic-Property
+        self.label.setObjectName(class_type)
 
         self.setStyleSheet(self.styleSheet())
-        self.message_area.setText(message)
-        self.message_area.setVisible(True)
+        self.label.setText(message)
+        self.label.setVisible(True)
 
     def dismissMessage(self):
-        self.message_area.setText('')
-        self.message_area.setVisible(False)
-
-    def getCurrentUser(self):
-        return self.header.current_user
-
-    def setTitle(self, title):
-        pass
+        self.label.setText('')
+        self.label.setVisible(False)

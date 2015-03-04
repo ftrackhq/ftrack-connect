@@ -62,7 +62,6 @@ class FtrackImportAssetDialog(QtGui.QDialog):
         self.mainWidget.setLayout(self.verticalLayout)
 
         self.headerWidget = HeaderWidget(self)
-        self.headerWidget.setTitle('Import Asset')
         self.verticalLayout.addWidget(self.headerWidget, stretch=0)
 
         self.browseTasksWidget = BrowseTasksSmallWidget(parent=self)

@@ -53,7 +53,6 @@ class FtrackInfoDialog(QtGui.QDialog):
     def setObject(self, taskId):
         '''Set object to *taskId*.'''
         obj = self.connector.objectById(taskId)
-        self.headerWidget.setTitle('Info panel')
         url = obj.getWebWidgetUrl('info', theme='tf')
         self.infoWidget.setUrl(url)
 

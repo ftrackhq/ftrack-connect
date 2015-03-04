@@ -170,7 +170,6 @@ class FtrackAssetManagerDialog(QtGui.QDialog):
         self.horizontalLayout = QtGui.QHBoxLayout()
 
         self.headerWidget = HeaderWidget(self)
-        self.headerWidget.setTitle('Asset Manager')
         self.verticalMainLayout.addWidget(self.headerWidget)
 
         self.assetManagerWidget = AssetManagerWidget(
