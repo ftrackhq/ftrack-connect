@@ -4,11 +4,11 @@
 from PySide import QtGui, QtCore
 
 
-def applyTheme(widget, theme='light'):
+def applyTheme(widget, theme='light', baseTheme=None):
     '''Apply *theme* to *widget*.'''
     # Set base style.
-    if QtGui.QApplication.style().objectName() != 'cleanlooks':
-        QtGui.QApplication.setStyle('cleanlooks')
+    if baseTheme and QtGui.QApplication.style().objectName() != baseTheme:
+        QtGui.QApplication.setStyle(baseTheme)
 
     # Load main font file
     QtGui.QFontDatabase.addApplicationFont(

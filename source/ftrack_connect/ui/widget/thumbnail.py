@@ -6,7 +6,6 @@ import urllib2
 
 from PySide import QtGui, QtCore
 import ftrack_legacy as ftrack
-
 import ftrack_connect.worker
 
 
@@ -77,6 +76,32 @@ class Base(QtGui.QLabel):
             html = response.read()
 
         return html
+
+    def paintEvent(self, event):
+        painter = QtGui.QPainter(self)
+        painter.setRenderHints(
+            QtGui.QPainter.Antialiasing,
+            True
+        )
+
+        brush = QtGui.QBrush(
+            self.pixmap()
+        )
+
+        painter.setBrush(brush)
+
+        painter.setPen(
+            QtGui.QPen(
+                QtGui.QColor(0, 0, 0, 0)
+            )
+        )
+
+        painter.drawEllipse(
+            QtCore.QRectF(
+                0, 0,
+                self.width(), self.height()
+            )
+        )
 
 
 class User(Base):
