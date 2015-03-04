@@ -165,17 +165,6 @@ class FtrackImportAssetDialog(QtGui.QDialog):
         )
 
         self.browseTasksWidget.update()
-        self.setStyleSheet(self.styleSheet()+'''
-        QPushButton[text~="Import"] {
-            background-color: qlineargradient(
-                    x1: 0, y1: 0, x2: 0, y2: 1,
-                    stop: 0 #1CBC90, stop: 1 #158F6D );
-            max-height: 25px;
-            min-height: 25px;
-            border: none;
-            border-radius: 1px;
-        }
-        ''')
 
     def importSelectedComponents(self):
         '''Import selected components.'''
