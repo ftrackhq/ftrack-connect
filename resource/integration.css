@@ -24,6 +24,7 @@ QLineEdit {
 QLabel#ftrack-header-message-error {
   background-color:  rgb(231, 76, 60, 255);
   padding: 10px;
+  color: #FAFAFA;
   border: none;
   font-family: url(':ftrack/font/main');
   font-size: 20;
@@ -33,6 +34,7 @@ QLabel#ftrack-header-message-error {
 QLabel#ftrack-header-message-info {
   background-color: rgba(52, 152, 219, 255);
   padding: 10px;
+  color: #FAFAFA;
   border: none;
   font-family: url(':ftrack/font/main');
   font-size: 20;
@@ -42,6 +44,7 @@ QLabel#ftrack-header-message-info {
 QLabel#ftrack-header-message-warning {
   background-color: rgba(238, 99, 76, 255);
   padding: 10px;
+  color: #FAFAFA;
   border: none;
   font-family: url(':ftrack/font/main');
   font-size: 20;
