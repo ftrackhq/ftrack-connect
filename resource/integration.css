@@ -22,7 +22,7 @@ QLineEdit {
 
 /*header messages*/
 QLabel#ftrack-header-message-error {
-  background-color: rgba(178,0,0, 255);
+  background-color:  rgb(231, 76, 60, 255);
   padding: 10px;
   border: none;
   font-family: url(':ftrack/font/main');
