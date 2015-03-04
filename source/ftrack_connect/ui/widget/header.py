@@ -2,18 +2,21 @@
 # :copyright: Copyright (c) 2015 ftrack
 
 import os
-# import webbrowser
 
 from PySide import QtCore, QtGui
 
 import ftrack
 from ftrack_connect.ui import resource
-from thumbnail import User
+import thumbnail
 
 
-class HeaderWidget(QtGui.QFrame):
-    def __init__(self, parent=None):
-        super(HeaderWidget, self).__init__(parent=parent)
+class Header(QtGui.QFrame):
+    '''Header widget with name and thumbnail.'''
+
+    def __init__(self, username, parent=None):
+        '''Instantiate the header widget for a user with *username*.'''
+
+        super(Header, self).__init__(parent=parent)
         self.setObjectName('ftrack-header-widget')
         self.main_layout = QtGui.QVBoxLayout()
         self.main_layout.setContentsMargins(0, 0, 0, 0)
@@ -39,12 +42,12 @@ class HeaderWidget(QtGui.QFrame):
             QtGui.QSizePolicy.Minimum
         )
 
-        self.logo = FtrackLogo(self)
-        self.user_id = UserId(self)
+        self.logo = Logo(self)
+        self.user = User(username, self)
 
         self.id_container_layout.addWidget(self.logo)
         self.id_container_layout.addItem(spacer)
-        self.id_container_layout.addWidget(self.user_id)
+        self.id_container_layout.addWidget(self.user)
 
         # Message
         self.message_container = QtGui.QWidget(self)
@@ -62,17 +65,23 @@ class HeaderWidget(QtGui.QFrame):
         self.main_layout.addWidget(self.message_container)
 
     def setMessage(self, message, level='info'):
+        '''Set *message* with severity *level*.'''
         self.message_container.show()
         self.message_box.setMessage(message, level)
 
     def dismissMessage(self):
+        '''Dismiss message.'''
         self.message_container.hide()
         self.message_box.dismissMessage()
 
 
-class FtrackLogo(QtGui.QLabel):
+class Logo(QtGui.QLabel):
+    '''Logo widget.'''
+
     def __init__(self, parent=None):
-        super(FtrackLogo, self).__init__(parent=parent)
+        '''Instantiate logo widget.'''
+        super(Logo, self).__init__(parent=parent)
+
         self.setObjectName('ftrack-logo-widget')
         self.main_layout = QtGui.QHBoxLayout()
         self.main_layout.setContentsMargins(0, 0, 0, 0)
@@ -92,9 +101,13 @@ class FtrackLogo(QtGui.QLabel):
         )
 
 
-class UserId(QtGui.QWidget):
-    def __init__(self, parent=None):
-        super(UserId, self).__init__(parent=parent)
+class User(QtGui.QWidget):
+    '''User name and logo widget.'''
+
+    def __init__(self, username, parent=None):
+        '''Instantiate user name and logo widget using *username*.'''
+
+        super(User, self).__init__(parent=parent)
         self.setObjectName('ftrack-userid-widget')
         self.main_layout = QtGui.QHBoxLayout()
         self.main_layout.setContentsMargins(0, 0, 0, 0)
@@ -104,19 +117,22 @@ class UserId(QtGui.QWidget):
         self.setLayout(self.main_layout)
 
         self.label = QtGui.QLabel(self)
-        self.image = User(self)
+        self.image = thumbnail.User(self)
         self.image.setFixedSize(35, 35)
 
         self.main_layout.addWidget(self.label)
         self.main_layout.addWidget(self.image)
 
-        logname = os.getenv('LOGNAME')
-        self.image.load(logname)
-        self.label.setText(ftrack.User(logname).getName().title())
+        self.image.load(username)
+        self.label.setText(ftrack.User(username).getName().title())
 
 
 class MessageBox(QtGui.QWidget):
+    '''Message widget.'''
+
     def __init__(self, parent=None):
+        '''Instantiate message widget.'''
+
         super(MessageBox, self).__init__(parent=parent)
         self.setObjectName('ftrack-message-box')
         self.main_layout = QtGui.QHBoxLayout()
@@ -140,6 +156,7 @@ class MessageBox(QtGui.QWidget):
         self.main_layout.addWidget(self.label)
 
     def setMessage(self, message, level):
+        '''Set *message* and *level*.'''
         message_types = ['info', 'warning', 'error']
         if level not in message_types:
             raise ValueError(
@@ -155,5 +172,6 @@ class MessageBox(QtGui.QWidget):
         self.label.setVisible(True)
 
     def dismissMessage(self):
+        '''Dismiss the message.'''
         self.label.setText('')
         self.label.setVisible(False)

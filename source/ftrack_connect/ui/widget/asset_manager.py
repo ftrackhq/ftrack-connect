@@ -1,15 +1,18 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
 
+import getpass
+
 from PySide import QtCore, QtGui
 
 import ftrack
 
 from ftrack_connect.connector import FTAssetObject, PanelComInstance
 from ftrack_connect.ui.widget.info import FtrackInfoDialog
-from ftrack_connect.ui.widget.header import HeaderWidget
+from ftrack_connect.ui.widget import header
 from ftrack_connect.ui.theme import applyTheme
 from ftrack_connect.ui import resource
+
 
 class Ui_AssetManager(object):
     '''Class to generate asset manager ui.'''
@@ -169,7 +172,7 @@ class FtrackAssetManagerDialog(QtGui.QDialog):
         self.verticalMainLayout.setSpacing(6)
         self.horizontalLayout = QtGui.QHBoxLayout()
 
-        self.headerWidget = HeaderWidget(self)
+        self.headerWidget = header.Header(getpass.getuser(), self)
         self.verticalMainLayout.addWidget(self.headerWidget)
 
         self.assetManagerWidget = AssetManagerWidget(

@@ -1,6 +1,8 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
 
+import getpass
+
 from PySide import QtCore, QtGui
 
 from ftrack_connect.connector import PanelComInstance, FTAssetObject
@@ -9,9 +11,10 @@ from ftrack_connect.ui.widget.list_assets_table import ListAssetsTableWidget
 from ftrack_connect.ui.widget.asset_version_details import AssetVersionDetailsWidget
 from ftrack_connect.ui.widget.component_table import ComponentTableWidget
 from ftrack_connect.ui.widget.import_options import ImportOptionsWidget
-from ftrack_connect.ui.widget.header import HeaderWidget
+from ftrack_connect.ui.widget import header
 from ftrack_connect.ui.theme import applyTheme
 from ftrack_connect.ui import resource
+
 
 class FtrackImportAssetDialog(QtGui.QDialog):
     '''Import asset dialog widget.'''
@@ -61,7 +64,7 @@ class FtrackImportAssetDialog(QtGui.QDialog):
         self.verticalLayout = QtGui.QVBoxLayout()
         self.mainWidget.setLayout(self.verticalLayout)
 
-        self.headerWidget = HeaderWidget(self)
+        self.headerWidget = header.Header(getpass.getuser(), self)
         self.verticalLayout.addWidget(self.headerWidget, stretch=0)
 
         self.browseTasksWidget = BrowseTasksSmallWidget(parent=self)
