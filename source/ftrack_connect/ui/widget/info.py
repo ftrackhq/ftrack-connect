@@ -2,12 +2,13 @@
 # :copyright: Copyright (c) 2015 ftrack
 
 import os
+import getpass
 
 from PySide import QtGui
 
 from ftrack_connect.connector import PanelComInstance
 from ftrack_connect.ui.widget.web_view import WebViewWidget
-from ftrack_connect.ui.widget.header import HeaderWidget
+from ftrack_connect.ui.widget import header
 
 
 class FtrackInfoDialog(QtGui.QDialog):
@@ -32,7 +33,7 @@ class FtrackInfoDialog(QtGui.QDialog):
         shotId = os.getenv('FTRACK_SHOTID')
         taskId = os.getenv('FTRACK_TASKID', shotId)
 
-        self.headerWidget = HeaderWidget(self)
+        self.headerWidget = header.Header(getpass.getuser(), self)
 
         self.verticalMainLayout.addWidget(self.headerWidget)
 
