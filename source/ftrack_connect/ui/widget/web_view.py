@@ -54,7 +54,7 @@ class WebViewWidget(QtGui.QWidget):
         self.ui.setupUi(self)
 
         self.webPage = WebPage()
-        self.persCookieJar = PersistentCookieJar.PersistentCookieJar(self)
+        self.persCookieJar = PersistentCookieJar(self)
         self.persCookieJar.load()
 
         proxy = HelpFunctions.getFtrackQNetworkProxy()

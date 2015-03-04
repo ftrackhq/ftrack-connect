@@ -504,7 +504,7 @@ class AssetManagerWidget(QtGui.QWidget):
 
     def openComments(self, taskId):
         '''Open comments dialog for *taskId*.'''
-        self.comment_dialog = FtrackInfoDialog()
+        self.comment_dialog = FtrackInfoDialog(connector=self.connector)
         self.comment_dialog.show()
         self.comment_dialog.move(
             QtGui.QApplication.desktop().screen().rect().center()
@@ -713,7 +713,7 @@ class AssetManagerWidget(QtGui.QWidget):
                 )
             else:
                 cellWidget.setStyleSheet('background-color: rgb(227, 99, 22);')
-                self.cnnector.setNodeColor(
+                self.connector.setNodeColor(
                     applicationObject=objectName, latest=False
                 )
 
