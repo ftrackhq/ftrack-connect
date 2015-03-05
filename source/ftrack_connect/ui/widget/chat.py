@@ -30,7 +30,7 @@ class Message(QtGui.QWidget):
             self.sender.setStyleSheet(
                 '''
                     QLabel {
-                        color: rgba(238, 99, 76, 255);
+                        color: #1CBC90;
                     }
                 '''
             )
