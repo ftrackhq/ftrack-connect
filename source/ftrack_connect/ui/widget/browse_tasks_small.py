@@ -4,7 +4,7 @@
 import os
 
 from PySide import QtCore, QtGui
-import ftrack
+import ftrack_legacy as ftrack
 
 from browse_tasks import BrowseTasksWidget
 from ftrack_connect.connector import HelpFunctions

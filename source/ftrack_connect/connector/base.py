@@ -16,7 +16,7 @@ import sys
 
 from PySide import QtGui, QtNetwork, QtCore
 
-import ftrack
+import ftrack_legacy as ftrack
 
 # Append ftrack to urlparse.
 for method in filter(lambda s: s.startswith('uses_'), dir(urlparse)):

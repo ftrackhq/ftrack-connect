@@ -3,7 +3,7 @@
 
 from PySide import QtGui, QtCore
 
-import ftrack
+import ftrack_legacy as ftrack
 
 import ftrack_connect.ui.widget.entity_browser as _entity_browser
 import ftrack_connect.ui.widget.entity_path as _entity_path
