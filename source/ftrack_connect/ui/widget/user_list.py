@@ -96,14 +96,15 @@ class UserList(ftrack_connect.ui.widget.item_list.ItemList):
 
     def updatePosition(self, user):
         '''Update position of *user* based on user's group.'''
-        row = self.indexOfItem(user.value())
 
-        if row:
-            self.removeItem(row)
+        if not user.online:
+            user.group = 'offline'
 
-            value = user.value()
+        row = self.indexOfItem(user.group.capitalize())
 
-            if not user.online:
-                value['group'] = 'offline'
+        if row is None:
+            raise ValueError('group {0} not recognized'.format(user.group))
 
-            self.addUser(value)
+        row += 1
+
+        self.list.moveWidget(user, row)
