@@ -146,6 +146,13 @@ class Notification(QtGui.QWidget):
         if _reload:
             self.reload()
 
+    def clearContext(self, _reload=True):
+        '''Clear context and *_reload*.'''
+        self._context = defaultdict(list)
+
+        if _reload:
+            self.reload()
+
     def removeContext(self, contextId, _reload=True):
         '''Remove context with *contextId*.'''
 

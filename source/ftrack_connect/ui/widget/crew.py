@@ -27,7 +27,7 @@ def getMessageHistory(id):
     return CHAT_MESSAGES.get(id, [])
 
 
-def defaultClassifier(user):
+def defaultClassifier(userId):
     '''Default user classifier.'''
     return 'others'
 
@@ -161,7 +161,7 @@ class Crew(QtGui.QWidget):
 
         user = self.userList.getUser(data['user']['id'])
 
-        group = self._classifier(user)
+        group = self._classifier(user._userId)
         user.group = group
 
         user.addSession(
