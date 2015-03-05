@@ -213,12 +213,13 @@ class Connector(object):
             progressCallback(startProgress)
 
         for componentNumber, ftComponent in enumerate(publishedComponents):
-            if ftComponent.componentname != 'thumbnail':
+            path = HelpFunctions.safeString(ftComponent.path)
 
+            if ftComponent.componentname != 'thumbnail':
                 location = Connector.pickLocation(copyFiles=copyFiles)
                 component = assetVersion.createComponent(
                     name=ftComponent.componentname,
-                    path=ftComponent.path,
+                    path=path,
                     location=None
                 )
                 try:
@@ -244,7 +245,7 @@ class Connector(object):
                     return
 
             else:
-                thumb = assetVersion.createThumbnail(ftComponent.path)
+                thumb = assetVersion.createThumbnail(path)
                 try:
                     currentTask = assetVersion.getTask()
                     currentTask.setThumbnail(thumb)
@@ -262,12 +263,8 @@ class Connector(object):
                     component.setMeta(k, v)
 
             if progressCallback:
-                progressStep = (
-                    (endProgress - startProgress) / len(publishedComponents)
-                )
-                progressCallback(
-                    startProgress + progressStep * (componentNumber + 1)
-                )
+                progressStep = (endProgress - startProgress) / len(publishedComponents)
+                progressCallback(startProgress + progressStep * (componentNumber + 1))
 
         assetVersion.publish()
         Connector.postPublish(pubObj, publishedComponents)
@@ -301,6 +298,14 @@ class HelpFunctions(object):
 
     def __init__(self):
         super(HelpFunctions, self).__init__()
+
+    @staticmethod
+    def safeString(string):
+        '''Return utf-8 encoded string from unicode *string*.'''
+        if isinstance(string, unicode):
+            return string.encode('utf-8')
+
+        return string
 
     @staticmethod
     def temporaryDirectory():

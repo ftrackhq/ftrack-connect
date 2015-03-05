@@ -408,7 +408,7 @@ class AssetManagerWidget(QtGui.QWidget):
                     i, 6, latestVersionNumber
                 )
 
-                assetName = QtGui.QTableWidgetItem(str(asset.getName()))
+                assetName = QtGui.QTableWidgetItem(asset.getName())
                 assetName.setToolTip(asset.getName())
                 self.ui.AssertManagerTableWidget.setItem(i, 7, assetName)
 
