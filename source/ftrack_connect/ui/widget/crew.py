@@ -89,13 +89,20 @@ class Crew(QtGui.QWidget):
         self.chat = ftrack_connect.ui.widget.chat.Chat(parent)
         self.chat.chatMessageSubmitted.connect(self.onChatMessageSubmitClicked)
 
+        self.userContainer.layout().addWidget(
+            self.chat, stretch=1
+        )
+
         self.layout().addWidget(
             self.userList, stretch=1
         )
         self.layout().addWidget(
-            self.userContainer, stretch=1
+            self.userContainer, stretch=3
         )
-        self.userList.setFixedWidth(200)
+
+        self.userContainer.hide()
+
+        self.userList.setMinimumWidth(180)
         self.userList.itemClicked.connect(self._itemClickedHandler)
 
         # Setup signal handlers if hub is configured.
@@ -205,10 +212,8 @@ class Crew(QtGui.QWidget):
                 value.get('applications')
             )
 
-            self.userContainer.layout().addWidget(self._extendedUser)
-            self.userContainer.layout().addWidget(
-                self.chat, stretch=1
-            )
+            self.userContainer.layout().insertWidget(0, self._extendedUser)
+            self.userContainer.show()
         else:
             self._extendedUser.updateInformation(
                 value.get('name'),
