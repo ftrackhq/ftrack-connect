@@ -23,13 +23,14 @@ class Message(QtGui.QWidget):
         self.layout().addWidget(self.sender)
 
         self.text = QtGui.QLabel(text)
+        self.text.setWordWrap(True)
         self.layout().addWidget(self.text)
 
         if me:
             self.sender.setStyleSheet(
                 '''
                     QLabel {
-                        color: green;
+                        color: rgba(238, 99, 76, 255);
                     }
                 '''
             )
@@ -37,7 +38,7 @@ class Message(QtGui.QWidget):
             self.sender.setStyleSheet(
                 '''
                     QLabel {
-                        color: blue;
+                        color: rgba(52, 152, 219, 255);
                     }
                 '''
             )
@@ -55,6 +56,7 @@ class Feed(ftrack_connect.ui.widget.item_list.ItemList):
             widgetItem=lambda widget: widget.value(),
             parent=parent
         )
+        self.setObjectName('message-feed')
         self.list.setSelectionMode(
             QtGui.QAbstractItemView.NoSelection
         )
@@ -74,7 +76,38 @@ class Feed(ftrack_connect.ui.widget.item_list.ItemList):
         super(Feed, self).addItem(item, row=row)
 
 
-class Chat(QtGui.QWidget):
+class ChatTextEdit(QtGui.QTextEdit):
+
+    # Signal emitted when return is pressed on it's own.
+    returnPressed = QtCore.Signal()
+
+    def __init__(self, *args, **kwargs):
+        super(ChatTextEdit, self).__init__(*args, **kwargs)
+
+        # Install event filter at application level in order to handle
+        # return pressed events
+        application = QtCore.QCoreApplication.instance()
+        application.installEventFilter(self)
+
+    def eventFilter(self, obj, event):
+        '''Filter *event* sent to *obj*.'''
+        if obj == self:
+
+            if event.type() == QtCore.QEvent.KeyPress:
+
+                if event.key() in (QtCore.Qt.Key_Enter, QtCore.Qt.Key_Return):
+
+                    # If nativeModifiers if not equal to 0 that means return
+                    # was pressed in combination with something else.
+                    if event.nativeModifiers() == 0:
+                        self.returnPressed.emit()
+                        return True
+
+        # Let event propagate.
+        return False
+
+
+class Chat(QtGui.QFrame):
     '''Chat widget.'''
 
     chatMessageSubmitted = QtCore.Signal(object)
@@ -84,19 +117,18 @@ class Chat(QtGui.QWidget):
         super(Chat, self).__init__(parent)
 
         self.setLayout(QtGui.QVBoxLayout())
+        self.layout().setContentsMargins(0, 0, 0, 0)
+        self.layout().setSpacing(0)
+        self.setObjectName('chat-widget')
 
         self._chatFeed = Feed(parent)
         self.layout().addWidget(self._chatFeed, stretch=1)
 
-        self._messageArea = QtGui.QTextEdit()
+        self._messageArea = ChatTextEdit(self)
         self._messageArea.setMinimumHeight(30)
         self._messageArea.setMaximumHeight(75)
+        self._messageArea.returnPressed.connect(self.onReturnPressed)
         self.layout().addWidget(self._messageArea, stretch=0)
-
-        self._sendMessageButton = QtGui.QPushButton('Submit')
-        self.layout().addWidget(self._sendMessageButton)
-
-        self._sendMessageButton.clicked.connect(self._onSubmitButtonClicked)
 
     def load(self, history):
         '''Load chat *history*'''
@@ -104,8 +136,8 @@ class Chat(QtGui.QWidget):
         for message in history:
             self.addMessage(message)
 
-    def _onSubmitButtonClicked(self):
-        '''Handle chat message send clicked event.'''
+    def onReturnPressed(self):
+        '''Handle return pressed events.'''
         text = self._messageArea.toPlainText()
         self.chatMessageSubmitted.emit(text)
         self._messageArea.setText('')

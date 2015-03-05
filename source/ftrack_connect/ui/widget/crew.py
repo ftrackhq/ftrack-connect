@@ -47,6 +47,9 @@ class Crew(QtGui.QWidget):
         '''
         super(Crew, self).__init__(parent)
 
+        self.setObjectName('crew')
+        self.setContentsMargins(0, 0, 0, 0)
+
         self.currentUserId = None
         self.hub = hub
 
@@ -80,13 +83,17 @@ class Crew(QtGui.QWidget):
             groups=self._groups
         )
 
-        self.userContainer = QtGui.QWidget()
+        self.userContainer = QtGui.QFrame()
+        self.userContainer.setObjectName('user-container')
         self.userContainer.setLayout(QtGui.QVBoxLayout())
+        self.userContainer.layout().setContentsMargins(0, 0, 0, 0)
 
         self.setLayout(QtGui.QHBoxLayout())
+        self.layout().setContentsMargins(0, 0, 0, 0)
+        self.layout().setSpacing(0)
 
         self._extendedUser = None
-        self.chat = ftrack_connect.ui.widget.chat.Chat(parent)
+        self.chat = ftrack_connect.ui.widget.chat.Chat()
         self.chat.chatMessageSubmitted.connect(self.onChatMessageSubmitClicked)
 
         self.userContainer.layout().addWidget(

@@ -9,7 +9,7 @@ import ftrack_connect.ui.widget.label
 import ftrack_connect.ui.widget.thumbnail
 
 
-class UserExtended(QtGui.QWidget):
+class UserExtended(QtGui.QFrame):
     '''Extended user information.'''
 
     def __init__(
@@ -30,9 +30,6 @@ class UserExtended(QtGui.QWidget):
 
         self.layout().addWidget(self.applicationInfoWidget, stretch=0)
 
-        self.chatLabel = ftrack_connect.ui.widget.label.Label()
-        self.layout().addWidget(self.chatLabel, stretch=1)
-
         self.updateInformation(name, userId, applications)
 
     def updateInformation(self, name, userId, applications):
@@ -46,10 +43,9 @@ class UserExtended(QtGui.QWidget):
             self.applicationInfoWidget.setText(
                 u'Applications: {0}'.format(', '.join(applicationNames))
             )
+            self.applicationInfoWidget.show()
         else:
-            self.applicationInfoWidget.setText(
-                'User is offline'
-            )
+            self.applicationInfoWidget.hide()
 
         self._userId = userId
 
@@ -122,13 +118,13 @@ class User(QtGui.QWidget):
         if self.online:
             self.setStyleSheet('''
                 QLabel {
-                    color: black !important;
+                    color: white !important;
                 }
             ''')
         else:
             self.setStyleSheet('''
                 QLabel {
-                    color: grey !important;
+                    color: #585858 !important;
                 }
             ''')
 
