@@ -45,7 +45,7 @@ class Ui_BrowseTasksSmall(object):
         self.homeButton.setText('')
         icon = QtGui.QIcon()
         icon.addPixmap(
-            QtGui.QPixmap(':ftrack/image/studio/home'), QtGui.QIcon.Normal, QtGui.QIcon.Off
+            QtGui.QPixmap(':ftrack/image/integration/home'), QtGui.QIcon.Normal, QtGui.QIcon.Off
         )
         self.homeButton.setIcon(icon)
         self.homeButton.setIconSize(QtCore.QSize(18, 18))
