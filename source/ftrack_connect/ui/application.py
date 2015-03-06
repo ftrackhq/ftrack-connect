@@ -89,6 +89,7 @@ class Application(QtGui.QMainWindow):
     def setTheme(self, theme):
         '''Set *theme*.'''
         self._theme = theme
+        ftrack_connect.ui.theme.applyFont()
         ftrack_connect.ui.theme.applyTheme(self, self._theme, 'cleanlooks')
 
     def toggleTheme(self):

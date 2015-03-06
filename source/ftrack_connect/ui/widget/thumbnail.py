@@ -8,6 +8,9 @@ from PySide import QtGui, QtCore
 import ftrack_legacy as ftrack
 import ftrack_connect.worker
 
+# Cache of thumbnail images.
+IMAGE_CACHE = dict()
+
 
 class Base(QtGui.QLabel):
     '''Widget to load thumbnails from ftrack server.'''
@@ -23,9 +26,14 @@ class Base(QtGui.QLabel):
                                     + '/img/thumbnail2.png')
 
         self._worker = None
+        self.__loadingReference = None
 
     def load(self, reference):
         '''Load thumbnail from *reference* and display it.'''
+        if reference in IMAGE_CACHE:
+            self._updatePixmapData(IMAGE_CACHE[reference])
+            return
+
         if self._worker and self._worker.isRunning():
             while self._worker:
                 app = QtGui.QApplication.instance()
@@ -35,14 +43,18 @@ class Base(QtGui.QLabel):
             self._download, [reference], parent=self
         )
 
+        self.__loadingReference = reference
         self._worker.start()
         self._worker.finished.connect(self._workerFinnished)
 
     def _workerFinnished(self):
         '''Handler worker finished event.'''
         if self._worker:
+            IMAGE_CACHE[self.__loadingReference] = self._worker.result
             self._updatePixmapData(self._worker.result)
+
         self._worker = None
+        self.__loadingReference = None
 
     def _updatePixmapData(self, data):
         '''Update thumbnail with *data*.'''

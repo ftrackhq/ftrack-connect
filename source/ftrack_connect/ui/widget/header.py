@@ -10,6 +10,10 @@ from ftrack_connect.ui import resource
 import thumbnail
 
 
+# Cache of user names.
+NAME_CACHE = dict()
+
+
 class Header(QtGui.QFrame):
     '''Header widget with name and thumbnail.'''
 
@@ -124,7 +128,11 @@ class User(QtGui.QWidget):
         self.main_layout.addWidget(self.image)
 
         self.image.load(username)
-        self.label.setText(ftrack.User(username).getName().title())
+
+        if username not in NAME_CACHE:
+            NAME_CACHE[username] = ftrack.User(username).getName().title()
+
+        self.label.setText(NAME_CACHE[username])
 
 
 class MessageBox(QtGui.QWidget):

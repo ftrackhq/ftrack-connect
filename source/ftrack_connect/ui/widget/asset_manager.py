@@ -408,7 +408,7 @@ class AssetManagerWidget(QtGui.QWidget):
                     i, 6, latestVersionNumber
                 )
 
-                assetName = QtGui.QTableWidgetItem(str(asset.getName()))
+                assetName = QtGui.QTableWidgetItem(asset.getName())
                 assetName.setToolTip(asset.getName())
                 self.ui.AssertManagerTableWidget.setItem(i, 7, assetName)
 
@@ -439,7 +439,7 @@ class AssetManagerWidget(QtGui.QWidget):
                 removeButton.setToolTip('Remove asset from scene')
                 icon = QtGui.QIcon()
                 icon.addPixmap(
-                    QtGui.QPixmap(':ftrack/image/studio/trash'),
+                    QtGui.QPixmap(':ftrack/image/integration/trash'),
                     QtGui.QIcon.Normal,
                     QtGui.QIcon.Off
                 )
@@ -475,7 +475,7 @@ class AssetManagerWidget(QtGui.QWidget):
                 commentButton.setText('')
                 icon = QtGui.QIcon()
                 icon.addPixmap(
-                    QtGui.QPixmap(':ftrack/image/studio/comment'), QtGui.QIcon.Normal,
+                    QtGui.QPixmap(':ftrack/image/integration/comment'), QtGui.QIcon.Normal,
                     QtGui.QIcon.Off
                 )
                 commentButton.setIcon(icon)

@@ -255,7 +255,7 @@ class BrowseTasksWidget(QtGui.QWidget):
                     childName = child.getName()
                     if childName == '':
                         continue
-                itemChild = BrowseTasksItem(str(childName))
+                itemChild = BrowseTasksItem(childName)
                 itemChild.id = child.getId()
 
                 try:
