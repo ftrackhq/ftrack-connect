@@ -159,7 +159,7 @@ class BrowseTasksSmallWidget(QtGui.QWidget):
         windowHeight = self.parent.height()
 
         ypos = self.topPosition
-        ypos += self.ui.browseTasksButton.height()
+        ypos += self.ui.browseTasksButton.height() - 15
 
         height = windowHeight - self.height() - self.topPosition
 
