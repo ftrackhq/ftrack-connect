@@ -7,7 +7,7 @@ from PySide import QtGui, QtCore
 import ftrack_connect.ui.widget.item_list
 
 
-class Message(QtGui.QWidget):
+class Message(QtGui.QFrame):
     '''Represent a chat message.'''
 
     def __init__(self, text, name, me=False, parent=None):
@@ -15,16 +15,20 @@ class Message(QtGui.QWidget):
         super(Message, self).__init__(parent)
 
         self.setLayout(QtGui.QVBoxLayout())
+        self.layout().setContentsMargins(0, 0, 0, 0)
+        self.layout().setSpacing(0)
 
         if me:
             name = 'You'
 
         self.sender = QtGui.QLabel(name)
-        self.layout().addWidget(self.sender)
+        self.layout().addWidget(self.sender, stretch=0)
 
         self.text = QtGui.QLabel(text)
         self.text.setWordWrap(True)
-        self.layout().addWidget(self.text)
+        self.text.setObjectName('message-text')
+
+        self.layout().addWidget(self.text, stretch=1)
 
         if me:
             self.sender.setStyleSheet(
@@ -43,7 +47,7 @@ class Message(QtGui.QWidget):
                 '''
             )
             self.sender.setAlignment(QtCore.Qt.AlignRight)
-            self.text.setAlignment(QtCore.Qt.AlignRight)
+            self.text.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignRight)
 
 
 class Feed(ftrack_connect.ui.widget.item_list.ItemList):
@@ -74,6 +78,14 @@ class Feed(ftrack_connect.ui.widget.item_list.ItemList):
             row = self.count()
 
         super(Feed, self).addItem(item, row=row)
+
+        self.list.verticalScrollBar().setMaximum(
+            self.list.verticalScrollBar().maximum() + self.list.verticalScrollBar().singleStep()
+        )
+
+        self.list.verticalScrollBar().setValue(
+            self.list.verticalScrollBar().maximum()
+        )
 
 
 class ChatTextEdit(QtGui.QTextEdit):
@@ -139,8 +151,10 @@ class Chat(QtGui.QFrame):
     def onReturnPressed(self):
         '''Handle return pressed events.'''
         text = self._messageArea.toPlainText()
-        self.chatMessageSubmitted.emit(text)
-        self._messageArea.setText('')
+
+        if text:
+            self.chatMessageSubmitted.emit(text)
+            self._messageArea.setText('')
 
     def addMessage(self, message):
         '''Add *message* to feed.'''
