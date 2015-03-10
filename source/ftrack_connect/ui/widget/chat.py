@@ -65,11 +65,13 @@ class Feed(ftrack_connect.ui.widget.item_list.ItemList):
             QtGui.QAbstractItemView.NoSelection
         )
         self.list.setShowGrid(False)
+        self._verticalScrollBar = self.list.verticalScrollBar()
 
     def _createChatMessageWidget(self, message):
         '''Create a message widget from *message*.'''
         return Message(
-            message['text'], message['sender']['name'], message.get('me', False)
+            message['text'], message['sender']['name'],
+            message.get('me', False)
         )
 
     def addMessage(self, item, row=None):
@@ -79,12 +81,13 @@ class Feed(ftrack_connect.ui.widget.item_list.ItemList):
 
         super(Feed, self).addItem(item, row=row)
 
-        self.list.verticalScrollBar().setMaximum(
-            self.list.verticalScrollBar().maximum() + self.list.verticalScrollBar().singleStep()
+        currentMaximum = self._verticalScrollBar.maximum()
+        self._verticalScrollBar.setMaximum(
+            currentMaximum + self._verticalScrollBar.singleStep()
         )
 
-        self.list.verticalScrollBar().setValue(
-            self.list.verticalScrollBar().maximum()
+        self._verticalScrollBar.setValue(
+            self._verticalScrollBar.maximum()
         )
 
 
