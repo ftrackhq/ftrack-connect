@@ -175,7 +175,7 @@ class Notification(QtGui.QWidget):
         events = []
         response = ftrack_legacy.EVENT_HUB.publish(
             ftrack_legacy.Event(
-                'ftrack.connect.notification.get-events',
+                'ftrack.crew.notification.get-events',
                 data=dict(context=self._context)
             ),
             synchronous=True
