@@ -56,7 +56,7 @@ class UserExtended(QtGui.QFrame):
         })
 
 
-class User(QtGui.QWidget):
+class User(QtGui.QFrame):
     '''Represent a user.'''
 
     #: Item click signal.
@@ -84,8 +84,11 @@ class User(QtGui.QWidget):
         self.thumbnail.load(userId)
         self.layout().addWidget(self.thumbnail)
 
+        self.layout().setContentsMargins(0, 0, 0, 0)
+
         nameAndActivity = QtGui.QWidget()
         nameAndActivity.setLayout(QtGui.QVBoxLayout())
+        nameAndActivity.layout().setContentsMargins(0, 0, 0, 0)
 
         self.nameLabel = ftrack_connect.ui.widget.label.Label()
         self.nameLabel.setText(name)
@@ -93,6 +96,7 @@ class User(QtGui.QWidget):
         nameAndActivity.layout().addWidget(self.nameLabel)
 
         self.activityLabel = ftrack_connect.ui.widget.label.Label()
+        self.activityLabel.setObjectName('user-activity')
         nameAndActivity.layout().addWidget(self.activityLabel)
 
         self.layout().addWidget(nameAndActivity)
@@ -117,7 +121,7 @@ class User(QtGui.QWidget):
         '''Refresh styles for the user.'''
         if self.online:
             self.setStyleSheet('''
-                QLabel {
+                QLabel#name {
                     color: white !important;
                 }
             ''')

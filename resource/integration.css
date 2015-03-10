@@ -56,15 +56,29 @@ QLabel#ftrack-header-message-warning {
 /* USER LIST */
 
 GroupHeader {
-  color: #585858;
-  font-size: 11px;
+    color: #585858;
+    font-size: 11px;
 }
 
 UserList {
-  background-color: #323232;
-  border: none;
-  border-right: 1px solid #040404;
-  margin: 0;
+    background-color: #323232;
+    border: none;
+    border-right: 1px solid #040404;
+    margin: 0;
+}
+
+UserList GroupHeader, UserList User#user {
+    margin-left: 10px;
+}
+
+UserList User#user{
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+User QLabel#user-activity {
+    color: #585858;
+    font-size: 11px;
 }
 
 QFrame#presence-list QTableWidget {
