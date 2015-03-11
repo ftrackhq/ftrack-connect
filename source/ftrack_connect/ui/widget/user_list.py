@@ -108,3 +108,14 @@ class UserList(ftrack_connect.ui.widget.item_list.ItemList):
         row += 1
 
         self.list.moveWidget(user, row)
+
+    def users(self):
+        '''Return list of users.'''
+        users = []
+        for item in self.items():
+            if isinstance(item, dict):
+                user = self.getUser(item.get('userId'))
+                if user:
+                    users.append(user)
+
+        return users

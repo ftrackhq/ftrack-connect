@@ -119,6 +119,17 @@ class Crew(QtGui.QWidget):
             hub.onExit.connect(self.onExit)
             hub.onMessageReceived.connect(self.onMessageReceived)
 
+    def classifyOnlineUsers(self):
+        '''Classify all online users and move them to correct group.'''
+        users = self.userList.users()
+
+        for user in users:
+            group = self._classifier(user._userId)
+            if group != user.group and user.online:
+                user.group = group
+
+                self.userList.updatePosition(user)
+
     def addUser(self, name, userId, group='offline'):
         '''Add user with *name*, *userId* and *group*.'''
         self.logger.debug(u'Adding user to user list: {0}'.format(name))
