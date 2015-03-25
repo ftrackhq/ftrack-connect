@@ -145,6 +145,11 @@ class Chat(QtGui.QFrame):
         self._messageArea.returnPressed.connect(self.onReturnPressed)
         self.layout().addWidget(self._messageArea, stretch=0)
 
+        self._sendMessageButton = QtGui.QPushButton('Submit')
+        self.layout().addWidget(self._sendMessageButton, stretch=0)
+
+        self._sendMessageButton.clicked.connect(self.onReturnPressed)
+
     def load(self, history):
         '''Load chat *history*'''
         self._chatFeed.clearItems()
