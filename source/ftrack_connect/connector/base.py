@@ -16,7 +16,7 @@ import sys
 
 from PySide import QtGui, QtNetwork, QtCore
 
-import ftrack
+import ftrack_legacy as ftrack
 
 # Append ftrack to urlparse.
 for method in filter(lambda s: s.startswith('uses_'), dir(urlparse)):
@@ -495,6 +495,7 @@ class FTAssetObject(object):
             asset = assetVersion.getAsset()
             self.assetName = asset.getName()
             self.assetType = asset.getType().getShort()
+            self.assetId = asset.getId()
 
         if self.componentId != '':
             metaDict = ftrack.Component(self.componentId).getMeta()

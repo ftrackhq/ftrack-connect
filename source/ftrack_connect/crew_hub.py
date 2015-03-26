@@ -38,6 +38,7 @@ class CrewHub(object):
 
         self._subscriptions = {}
         self._data = dict(session_id=uuid.uuid1().hex)
+        self._last_activity = None
 
     @property
     def data(self):
@@ -66,6 +67,7 @@ class CrewHub(object):
         data = self._data.copy()
 
         data['timestamp'] = str(datetime.datetime.utcnow())
+        data['activity'] = self._last_activity
 
         return data
 
@@ -86,6 +88,12 @@ class CrewHub(object):
             data = dict()
 
         self._data.update(data)
+
+        # Set last activity when logging in the first time.
+        # This will give the other user an indication on how long you've
+        # been online.
+        # TODO: Update this value when user is active in host application.
+        self._last_activity = str(datetime.datetime.utcnow())
 
         subscriptionExpression = (
             'topic=ftrack.crew.presence-enter '

@@ -5,7 +5,7 @@ import os
 
 from PySide import QtCore, QtGui
 
-import ftrack
+import ftrack_legacy as ftrack
 from ftrack_connect.ui import resource
 import thumbnail
 

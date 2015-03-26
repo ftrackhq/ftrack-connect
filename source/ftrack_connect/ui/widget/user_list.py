@@ -1,8 +1,6 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
 
-import copy
-
 from PySide import QtGui, QtCore
 
 import ftrack_connect.ui.widget.item_list
@@ -44,7 +42,7 @@ class UserList(ftrack_connect.ui.widget.item_list.ItemList):
         self.list.setShowGrid(False)
 
         for group in groups:
-            self.addItem(group)
+            self.addUser(group.capitalize())
 
     def _createWidget(self, item):
         '''Return user widget for *item*.'''
@@ -61,63 +59,25 @@ class UserList(ftrack_connect.ui.widget.item_list.ItemList):
 
         return widget
 
-    def addSession(self, userId, sessionId, timestamp, application):
-        '''Add session for *userId* with *sessionId*.'''
-        for row in range(self.count()):
-            widget = self.list.widgetAt(row)
-            value = self.widgetItem(widget)
-
-            if isinstance(value, dict) and value.get('user_id') == userId:
-                application = copy.deepcopy(application)
-                application['timestamp'] = timestamp
-                value['applications'][sessionId] = application
-
-                widget.setValue(value)
-
-                return
-
-        raise ValueError('User with id {0} could not be found.'.format(userId))
-
-    def updateSession(self, sessionId, timestamp, activity):
-        '''Update a session with *sessionId*.'''
-        for row in range(self.count()):
-            widget = self.list.widgetAt(row)
-            value = self.widgetItem(widget)
-            if isinstance(value, dict) and sessionId in value['applications']:
-                value['applications'][sessionId]['timestamp'] = timestamp
-                value['applications'][sessionId]['activity'] = activity
-
-                widget.setValue(value)
-                return
-
-        raise ValueError(
-            'Session with id {0} could not be found.'.format(sessionId)
-        )
-
-    def removeSession(self, sessionId):
-        '''Remove session with *sessionId*.'''
-        for row in range(self.count()):
-            widget = self.list.widgetAt(row)
-            value = self.widgetItem(widget)
-            if isinstance(value, dict) and sessionId in value['applications']:
-                del value['applications'][sessionId]
-
-                widget.setValue(value)
-                return
-
-        raise ValueError(
-            'Session with id {0} could not be found.'.format(sessionId)
-        )
-
     def userExists(self, userId):
         '''Return true if *userId* exists.'''
-        for value in self.items():
-            if isinstance(value, dict) and value['user_id'] == userId:
-                return True
+        if self.getUser(userId):
+            return True
 
         return False
 
-    def addItem(self, item, row=None):
+    def getUser(self, userId):
+        '''Return user if in list otherwise None.'''
+        for row in range(self.count()):
+            widget = self.list.widgetAt(row)
+            value = self.widgetItem(widget)
+
+            if isinstance(value, dict) and value['userId'] == userId:
+                return widget
+
+        return None
+
+    def addUser(self, item, row=None):
         '''Add *item* at *row*.
 
         If *row* is not specified, then append item to end of list.
@@ -125,7 +85,7 @@ class UserList(ftrack_connect.ui.widget.item_list.ItemList):
         '''
         if not isinstance(item, basestring):
             group = item.get('group')
-            row = self.indexOfItem(group)
+            row = self.indexOfItem(group.capitalize())
 
             if row is None:
                 raise ValueError('group {0} not recognized'.format(group))
@@ -133,3 +93,29 @@ class UserList(ftrack_connect.ui.widget.item_list.ItemList):
             row += 1
 
         return super(UserList, self).addItem(item, row=row)
+
+    def updatePosition(self, user):
+        '''Update position of *user* based on user's group.'''
+
+        if not user.online:
+            user.group = 'offline'
+
+        row = self.indexOfItem(user.group.capitalize())
+
+        if row is None:
+            raise ValueError('group {0} not recognized'.format(user.group))
+
+        row += 1
+
+        self.list.moveWidget(user, row)
+
+    def users(self):
+        '''Return list of users.'''
+        users = []
+        for item in self.items():
+            if isinstance(item, dict):
+                user = self.getUser(item.get('userId'))
+                if user:
+                    users.append(user)
+
+        return users

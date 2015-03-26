@@ -370,10 +370,10 @@ class ApplicationLauncher(object):
 
         '''
         if entityType == 'task':
-            task = ftrack.Task(entityId)
+            task = ftrack_legacy.Task(entityId)
             versions = task.getAssetVersions()
         elif entityType == 'assetversion':
-            versions = [ftrack.AssetVersion(entityId)]
+            versions = [ftrack_legacy.AssetVersion(entityId)]
         else:
             self.logger.debug(
                 (
@@ -422,7 +422,8 @@ class ApplicationLauncher(object):
 
         # Add FTRACK_EVENT_SERVER variable.
         environment = prependPath(
-            ftrack.EVENT_HUB.getServerUrl(), 'FTRACK_EVENT_SERVER', environment
+            ftrack_legacy.EVENT_HUB.getServerUrl(),
+            'FTRACK_EVENT_SERVER', environment
         )
 
         # Prepend discovered ftrack API to PYTHONPATH.

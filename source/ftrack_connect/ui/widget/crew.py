@@ -27,10 +27,15 @@ def getMessageHistory(id):
     return CHAT_MESSAGES.get(id, [])
 
 
+def defaultClassifier(userId):
+    '''Default user classifier.'''
+    return 'others'
+
+
 class Crew(QtGui.QWidget):
     '''User presence widget.'''
 
-    def __init__(self, groups, hub=None, parent=None):
+    def __init__(self, groups, hub=None, classifier=None, parent=None):
         '''Instantiate widget with *users* and *groups*.
 
         If *hub* is configured the Crew widget will connect listeners for::
@@ -42,6 +47,9 @@ class Crew(QtGui.QWidget):
         '''
         super(Crew, self).__init__(parent)
 
+        self.setObjectName('crew')
+        self.setContentsMargins(0, 0, 0, 0)
+
         self.currentUserId = None
         self.hub = hub
 
@@ -49,28 +57,59 @@ class Crew(QtGui.QWidget):
             __name__ + '.' + self.__class__.__name__
         )
 
+        # If not classifier is specified return default `other` group.
+        if not classifier:
+            classifier = defaultClassifier
+
+        self._classifier = classifier
+
+        # Setup signal handlers if hub is configured.
+        if hub:
+            hub.onEnter.connect(self.onEnter)
+            hub.onHeartbeat.connect(self.onHeartbeat)
+            hub.onExit.connect(self.onExit)
+
+        groups = [group.lower() for group in groups]
+
+        if 'others' not in groups:
+            groups.append('others')
+
+        if 'offline' not in groups:
+            groups.append('offline')
+
         self._groups = groups
 
         self.userList = ftrack_connect.ui.widget.user_list.UserList(
             groups=self._groups
         )
 
-        self.userContainer = QtGui.QWidget()
+        self.userContainer = QtGui.QFrame()
+        self.userContainer.setObjectName('user-container')
         self.userContainer.setLayout(QtGui.QVBoxLayout())
+        self.userContainer.layout().setContentsMargins(0, 0, 0, 0)
 
         self.setLayout(QtGui.QHBoxLayout())
+        self.layout().setContentsMargins(0, 0, 0, 0)
+        self.layout().setSpacing(0)
 
         self._extendedUser = None
-        self.chat = ftrack_connect.ui.widget.chat.Chat(parent)
+        self.chat = ftrack_connect.ui.widget.chat.Chat()
         self.chat.chatMessageSubmitted.connect(self.onChatMessageSubmitClicked)
+
+        self.userContainer.layout().addWidget(
+            self.chat, stretch=1
+        )
 
         self.layout().addWidget(
             self.userList, stretch=1
         )
         self.layout().addWidget(
-            self.userContainer, stretch=1
+            self.userContainer, stretch=3
         )
-        self.userList.setFixedWidth(200)
+
+        self.userContainer.hide()
+
+        self.userList.setMinimumWidth(180)
         self.userList.itemClicked.connect(self._itemClickedHandler)
 
         # Setup signal handlers if hub is configured.
@@ -80,7 +119,18 @@ class Crew(QtGui.QWidget):
             hub.onExit.connect(self.onExit)
             hub.onMessageReceived.connect(self.onMessageReceived)
 
-    def addUser(self, name, userId, group):
+    def classifyOnlineUsers(self):
+        '''Classify all online users and move them to correct group.'''
+        users = self.userList.users()
+
+        for user in users:
+            group = self._classifier(user._userId)
+            if group != user.group and user.online:
+                user.group = group
+
+                self.userList.updatePosition(user)
+
+    def addUser(self, name, userId, group='offline'):
         '''Add user with *name*, *userId* and *group*.'''
         self.logger.debug(u'Adding user to user list: {0}'.format(name))
         if self.userList.userExists(userId):
@@ -89,7 +139,7 @@ class Crew(QtGui.QWidget):
             )
             return False
 
-        self.userList.addItem({
+        self.userList.addUser({
             'name': name,
             'userId': userId,
             'group': group
@@ -120,20 +170,39 @@ class Crew(QtGui.QWidget):
             timestamp=<datetime>
         }
         '''
-        self.userList.addSession(
-            data['user']['id'], data['session_id'], data['timestamp'],
-            data['application']
+        if not self.userList.userExists(data['user']['id']):
+            self.userList.addUser({
+                'name': data['user']['name'],
+                'userId': data['user']['id'],
+                'group': 'offline'
+            })
+
+        user = self.userList.getUser(data['user']['id'])
+
+        group = self._classifier(user._userId)
+        user.group = group
+
+        user.addSession(
+            data['session_id'], data['timestamp'], data['application']
         )
+
+        self.userList.updatePosition(user)
 
     def onHeartbeat(self, data):
         '''Handle heartbeat events with *data*.'''
-        self.userList.updateSession(
-            data['session_id'], data['timestamp'], data.get('activity')
-        )
+        user = self.userList.getUser(data['user']['id'])
+        if user:
+            user.updateSession(
+                data['session_id'], data['timestamp'], data.get('activity')
+            )
 
     def onExit(self, data):
         '''Handle exit events with *data*.'''
-        self.userList.removeSession(data['session_id'])
+        user = self.userList.getUser(data['user']['id'])
+        if user:
+            user.removeSession(data['session_id'])
+
+        self.userList.updatePosition(user)
 
     def onMessageReceived(self, message):
         '''Handle *message* received.'''
@@ -152,7 +221,7 @@ class Crew(QtGui.QWidget):
 
     def _itemClickedHandler(self, value):
         '''Handle item clicked event.'''
-        self.currentUserId = value['user_id']
+        self.currentUserId = value['userId']
 
         if self._extendedUser is None:
             self._extendedUser = ftrack_connect.ui.widget.user.UserExtended(
@@ -161,10 +230,8 @@ class Crew(QtGui.QWidget):
                 value.get('applications')
             )
 
-            self.userContainer.layout().addWidget(self._extendedUser)
-            self.userContainer.layout().addWidget(
-                self.chat, stretch=1
-            )
+            self.userContainer.layout().insertWidget(0, self._extendedUser)
+            self.userContainer.show()
         else:
             self._extendedUser.updateInformation(
                 value.get('name'),

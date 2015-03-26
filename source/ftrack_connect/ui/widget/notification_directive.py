@@ -150,7 +150,7 @@ class StatusNotification(Notification):
             status = status[0]
 
             self.setText(
-                'Status of <span style="color: #E6E6E6;">{2}</span> changed '
+                u'Status of <span style="color: #E6E6E6;">{2}</span> changed '
                 'to <span style="color: #E6E6E6;">{1}</span>'.format(
                     status['color'], status['name'], parentName
                 )
@@ -175,7 +175,7 @@ class PropertyNotification(Notification):
         self.newValue = value['new']
 
         self.setText(
-            'Attribute <span style="color: #E6E6E6;">{0}</span>'
+            u'Attribute <span style="color: #E6E6E6;">{0}</span>'
             ' changed from <span style="color: #E6E6E6;">{1}</span> to '
             '<span style="color: #E6E6E6;">{2}</span>'.format(
                 self._event['action'].split('.')[-1],
