@@ -27,9 +27,9 @@ def getMessageHistory(id):
     return CHAT_MESSAGES.get(id, [])
 
 
-def defaultClassifier(userId):
+def defaultClassifier(userId, applications):
     '''Default user classifier.'''
-    return 'others'
+    return 'others', False
 
 
 class Crew(QtGui.QWidget):
@@ -124,9 +124,11 @@ class Crew(QtGui.QWidget):
         users = self.userList.users()
 
         for user in users:
-            group = self._classifier(user._userId)
+            applications = user.value()['applications']
+            group, highlight = self._classifier(user._userId, applications)
             if group != user.group and user.online:
                 user.group = group
+                uset.setHighlight(highlight)
 
                 self.userList.updatePosition(user)
 
@@ -179,12 +181,16 @@ class Crew(QtGui.QWidget):
 
         user = self.userList.getUser(data['user']['id'])
 
-        group = self._classifier(user._userId)
-        user.group = group
-
         user.addSession(
-            data['session_id'], data['timestamp'], data['application']
+            data['session_id'], data['timestamp'], data['context'],
+            data['application']
         )
+
+        applications = user.value()['applications']
+
+        group, highlight = self._classifier(user._userId, applications)
+        user.group = group
+        user.setHighlight(highlight)
 
         self.userList.updatePosition(user)
 
