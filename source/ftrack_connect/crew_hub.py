@@ -71,6 +71,19 @@ class CrewHub(object):
 
         return data
 
+    def updatePresence(self, data):
+        '''Update presence with new *data*.'''
+        self._data.update(data)
+        self._last_activity = str(datetime.datetime.utcnow())
+
+        ftrack.EVENT_HUB.publish(
+            ftrack.Event(
+                topic='ftrack.crew.presence-enter',
+                data=self.data
+            ),
+            onReply=self._onEnterReplyEvent
+        )
+
     @property
     def sender(self):
         '''Return sender data.'''
