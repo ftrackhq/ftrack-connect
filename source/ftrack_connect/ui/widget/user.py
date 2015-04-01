@@ -128,6 +128,13 @@ class User(QtGui.QFrame):
                     color: white !important;
                 }
             '''
+                
+            if self._highlight:
+                style += '''
+                    QFrame#user {
+                        background-color: rgba(238, 99, 76, 255) !important;
+                    }
+                '''
         else:
             style += '''
                 QLabel {
@@ -135,12 +142,6 @@ class User(QtGui.QFrame):
                 }
             '''
 
-        if self._highlight:
-            style += '''
-                QFrame#user {
-                    background-color: rgba(238, 99, 76, 255) !important;
-                }
-            '''
 
         self.setStyleSheet(style)
 
