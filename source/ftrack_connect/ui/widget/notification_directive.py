@@ -197,6 +197,42 @@ class PropertyNotification(Notification):
         return value
 
 
+class AssignmentNotification(Notification):
+    '''Represent property notification.'''
+
+    _type = 'assignment'
+
+    _buttonText = 'Open'
+
+    def _load(self):
+        '''Internal load of data from event.'''
+        self._taskId = self._event['parent_id']
+
+        task = session.query(
+            'select name, parent.name from Task where id is "{0}"'.format(
+                self._taskId
+            )
+        ).all()[0]
+
+        self.setText(
+            u'Assigned to <span style="color: #E6E6E6;">{0}</span> on '
+            '<span style="color: #E6E6E6;">{1}</span>'.format(
+                task['name'],
+                task['parent']['name']
+            )
+        )
+
+    def value(self):
+        '''Override and add extra information.'''
+        value = super(AssignmentNotification, self).value()
+
+        value.update({
+            'task_id': self._taskId
+        })
+
+        return value
+
+
 def _mapNotifications():
     '''Return dictionary with all notification subclasses.'''
     notifications = {}

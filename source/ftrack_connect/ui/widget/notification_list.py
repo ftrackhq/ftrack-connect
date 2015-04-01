@@ -16,7 +16,8 @@ _typeMapper = {
     'change.status.shot': 'status',
     'change.status.task': 'status',
     'update.custom_attribute.fstart': 'property',
-    'update.custom_attribute.fend': 'property'
+    'update.custom_attribute.fend': 'property',
+    'db.append.task:user': 'assignment'
 }
 
 
