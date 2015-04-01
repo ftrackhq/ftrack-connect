@@ -132,6 +132,7 @@ class User(QtGui.QFrame):
                 }
             ''')
 
+
     def _updateActivity(self):
         '''Update activity.'''
         text = 'offline'
@@ -140,11 +141,22 @@ class User(QtGui.QFrame):
             text = ''
 
         if self._applications:
-            activity = min(
-                application.get('activity')
-                for application in self._applications.values()
+            latest_active_application = self._applications.values()[0]
+            for application in self._applications.values():
+                if (application.get('activity') < latest_active_application.get('activity')):
+                    latest_active_application = application
+
+            activity = latest_active_application.get('activity')
+            context_name = latest_active_application.get('context_name')
+            if context_name:
+                context_name += ' '
+            else:
+                context_name = ''
+
+            text = '{context_name}'.format(
+                context_name=context_name
+#                time=arrow.get(activity).humanize()
             )
-            text = arrow.get(activity).humanize()
 
         self.activityLabel.setText(text)
 
