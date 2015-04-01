@@ -101,6 +101,8 @@ class User(QtGui.QFrame):
 
         self.layout().addWidget(nameAndActivity)
 
+        self._highlight = False
+
         self._refreshStyles()
         self._updateActivity()
 
@@ -119,18 +121,33 @@ class User(QtGui.QFrame):
 
     def _refreshStyles(self):
         '''Refresh styles for the user.'''
+        style = ''
         if self.online:
-            self.setStyleSheet('''
+            style += '''
                 QLabel#name {
                     color: white !important;
                 }
-            ''')
+            '''
         else:
-            self.setStyleSheet('''
+            style += '''
                 QLabel {
                     color: #585858 !important;
                 }
-            ''')
+            '''
+
+        if self._highlight:
+            style += '''
+                QFrame#user {
+                    background-color: rgba(238, 99, 76, 255) !important;
+                }
+            '''
+
+        self.setStyleSheet(style)
+
+    def setHighlight(self, highlight):
+        '''Highlight user background if *highlight* is true.'''
+        self._highlight = highlight
+        self._refreshStyles()
 
     def _updateActivity(self):
         '''Update activity.'''
@@ -140,11 +157,22 @@ class User(QtGui.QFrame):
             text = ''
 
         if self._applications:
-            activity = min(
-                application.get('activity')
-                for application in self._applications.values()
+            latest_active_application = self._applications.values()[0]
+            for application in self._applications.values():
+                if (application.get('activity') < latest_active_application.get('activity')):
+                    latest_active_application = application
+
+            activity = latest_active_application.get('activity')
+            context_name = latest_active_application.get('context_name')
+            if context_name:
+                context_name += ' '
+            else:
+                context_name = ''
+
+            text = '{context_name}'.format(
+                context_name=context_name
+#                time=arrow.get(activity).humanize()
             )
-            text = arrow.get(activity).humanize()
 
         self.activityLabel.setText(text)
 
@@ -181,12 +209,13 @@ class User(QtGui.QFrame):
         '''Set id to *componentId*.'''
         self._id = componentId
 
-    def addSession(self, sessionId, timestamp, application):
+    def addSession(self, sessionId, timestamp, context, application):
         '''Add new session.'''
         value = self.value()
 
         application = copy.deepcopy(application)
         application['timestamp'] = timestamp
+        application['context'] = context
         value['applications'][sessionId] = application
 
         self.setValue(value)
