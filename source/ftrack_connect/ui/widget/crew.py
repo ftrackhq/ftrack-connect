@@ -1,7 +1,9 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
 
+import uuid
 import logging
+import webbrowser
 
 from PySide import QtGui
 
@@ -68,6 +70,7 @@ class Crew(QtGui.QWidget):
             hub.onEnter.connect(self.onEnter)
             hub.onHeartbeat.connect(self.onHeartbeat)
             hub.onExit.connect(self.onExit)
+            hub.onVideoConference.connect(self.onVideoConference)
 
         groups = [group.lower() for group in groups]
 
@@ -194,6 +197,33 @@ class Crew(QtGui.QWidget):
 
         self.userList.updatePosition(user)
 
+    def _onConferenceRequestClicked(self, userId):
+        '''Handle conference clicked event and emit event from event hub.'''
+        service = {
+            'name': 'room',
+            'data': 'https://room.co/#/ftrack-{0}'.format(
+                uuid.uuid4().hex[0:16]
+            )
+        }
+
+        self.hub.requestVideoConference(userId, service)
+        webbrowser.open(service['data'])
+
+    def onVideoConference(self, data):
+        '''Handle video conference event with *data*.'''
+        message = QtGui.QMessageBox()
+        message.setText('Room conference                                     ')
+        message.setInformativeText(
+            ('{0} has requested a video conference with you. Do you want to '
+            'join?').format(data['sender']['name'])
+        )
+        message.setStandardButtons(QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
+        message.setDefaultButton(QtGui.QMessageBox.Yes)
+        result = message.exec_()
+
+        if result == QtGui.QMessageBox.Yes:
+            webbrowser.open(data['service']['data'])
+
     def onHeartbeat(self, data):
         '''Handle heartbeat events with *data*.'''
         user = self.userList.getUser(data['user']['id'])
@@ -234,6 +264,9 @@ class Crew(QtGui.QWidget):
                 value.get('name'),
                 self.currentUserId,
                 value.get('applications')
+            )
+            self._extendedUser.conferenceRequest.connect(
+                self._onConferenceRequestClicked
             )
 
             self.userContainer.layout().insertWidget(0, self._extendedUser)

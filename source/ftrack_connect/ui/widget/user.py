@@ -12,6 +12,8 @@ import ftrack_connect.ui.widget.thumbnail
 class UserExtended(QtGui.QFrame):
     '''Extended user information.'''
 
+    conferenceRequest = QtCore.Signal(object)
+
     def __init__(
         self, name, userId, applications, group=None, parent=None
     ):
@@ -25,12 +27,29 @@ class UserExtended(QtGui.QFrame):
 
         self.setLayout(QtGui.QVBoxLayout())
 
-        self.user = User(name, userId, group=None, applications=applications)
-        self.layout().addWidget(self.user)
+        topRow = QtGui.QWidget()
+        topRow.setLayout(QtGui.QHBoxLayout())
 
+        self.user = User(name, userId, group=None, applications=applications)
+        topRow.layout().addWidget(self.user, stretch=1)
+        self.videoConferenceStart = QtGui.QPushButton(
+            QtGui.QIcon(
+                QtGui.QPixmap(':/ftrack/image/dark/phone')
+            ),
+            ''
+        )
+        topRow.layout().addWidget(self.videoConferenceStart, stretch=0)
+
+        self.layout().addWidget(topRow, stretch=0)
         self.layout().addWidget(self.applicationInfoWidget, stretch=0)
 
+        self.videoConferenceStart.clicked.connect(self._onConferenceClicked)
+
         self.updateInformation(name, userId, applications)
+
+    def _onConferenceClicked(self):
+        '''Handle conference clicked event.'''
+        self.conferenceRequest.emit(self._userId)
 
     def updateInformation(self, name, userId, applications):
         '''Update widget with *name*, *userId* and *applications*.'''

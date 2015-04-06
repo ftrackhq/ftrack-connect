@@ -53,6 +53,7 @@
         <file alias='home'>image/light/home.png</file>
         <file alias='shot'>image/light/shot.png</file>
         <file alias='task'>image/light/task.png</file>
+        <file alias='phone'>image/light/phone.png</file>
         <file alias='ftrackLogoColor'>image/logo_colour.svg</file>
         <file alias='ftrackLogoGrey'>image/logo_grey_dark.svg</file>
         <file alias='radiobutton_unchecked'>image/light/radiobutton/radiobutton_unchecked.png</file>
@@ -77,6 +78,7 @@
         <file alias='home'>image/dark/home.png</file>
         <file alias='shot'>image/dark/shot.png</file>
         <file alias='task'>image/dark/task.png</file>
+        <file alias='phone'>image/dark/phone.png</file>
         <file alias='ftrackLogoColor'>image/logo_colour.svg</file>
         <file alias='ftrackLogoGrey'>image/logo_grey.svg</file>
         <file alias='ftrackLogoGrey'>image/logo_grey_dark.svg</file>

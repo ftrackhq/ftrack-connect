@@ -130,6 +130,25 @@ class CrewHub(object):
 
         self._initiateHeartbeats()
         self._initiateChatSubscription()
+        self._initiateVideoConferenceSubscription()
+
+    def requestVideoConference(self, receiverId, service):
+        '''Request a video conference with *receiverId*.'''
+        data = dict(
+            sender=self.sender,
+            receiver=receiverId,
+            service=service,
+            date=str(datetime.datetime.utcnow()),
+            id=str(uuid.uuid1())
+        )
+        ftrack.EVENT_HUB.publish(
+            ftrack.Event(
+                topic='ftrack.videoconference.request',
+                data=data
+            )
+        )
+
+        return data
 
     def _initiateChatSubscription(self):
         '''Subscribe to chat message events.'''
@@ -139,6 +158,16 @@ class CrewHub(object):
         ftrack.EVENT_HUB.subscribe(
             topic,
             self._onChatMessage
+        )
+
+    def _initiateVideoConferenceSubscription(self):
+        '''Subscribe to room events.'''
+        topic = 'topic=ftrack.videoconference.request and data.receiver={0}'.format(
+            self.sender['id']
+        )
+        ftrack.EVENT_HUB.subscribe(
+            topic,
+            self._onVideoConferenceMessage
         )
 
     def _onEnterReplyEvent(self, event):
@@ -216,6 +245,10 @@ class CrewHub(object):
         '''Handle message events.'''
         pass
 
+    def _onVideoConferenceMessage(self, event):
+        '''Handle message events.'''
+        pass
+
     def sendMessage(self, receiverId, text):
         '''Send *text* to subscribers.'''
         data = dict(
@@ -272,6 +305,9 @@ class SignalCrewHub(CrewHub, QtCore.QObject):
     #: Signal to emit on chat messaged received.
     onMessageReceived = QtCore.Signal(object)
 
+    #: Signal to emit on conference event.
+    onVideoConference = QtCore.Signal(object)
+
     def _onHeartbeat(self, event):
         '''Increase subscription time for *event*.'''
         super(SignalCrewHub, self)._onHeartbeat(event)
@@ -288,3 +324,7 @@ class SignalCrewHub(CrewHub, QtCore.QObject):
     def _onChatMessage(self, event):
         '''Handle message *event* and emit signal.'''
         self.onMessageReceived.emit(event['data'])
+
+    def _onVideoConferenceMessage(self, event):
+        '''Handle video conference *event* and emit signal.'''
+        self.onVideoConference.emit(event['data'])
