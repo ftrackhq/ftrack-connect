@@ -129,7 +129,7 @@ class User(QtGui.QFrame):
                 }
             '''
 
-            if True:
+            if self._highlight:
                 self.activityLabel.setStyleSheet('''
                     QLabel {
                         color: rgba(238, 99, 76, 200) !important;
