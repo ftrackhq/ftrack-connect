@@ -198,7 +198,7 @@ class PropertyNotification(Notification):
 
 
 class AssignmentNotification(Notification):
-    '''Represent property notification.'''
+    '''Represent assignment notification.'''
 
     _type = 'assignment'
 
