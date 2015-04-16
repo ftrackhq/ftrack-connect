@@ -4,16 +4,16 @@
 from PySide import QtGui, QtCore
 
 
-def applyTheme(widget, theme='light'):
+def applyFont(font=':/ftrack/font/main'):
+    '''Add application font.'''
+    QtGui.QFontDatabase.addApplicationFont(font)
+
+
+def applyTheme(widget, theme='light', baseTheme=None):
     '''Apply *theme* to *widget*.'''
     # Set base style.
-    if QtGui.QApplication.style().objectName() != 'cleanlooks':
-        QtGui.QApplication.setStyle('cleanlooks')
-
-    # Load main font file
-    QtGui.QFontDatabase.addApplicationFont(
-        ':/ftrack/font/main'
-    )
+    if baseTheme and QtGui.QApplication.style().objectName() != baseTheme:
+        QtGui.QApplication.setStyle(baseTheme)
 
     # Load stylesheet from resource file and apply.
     fileObject = QtCore.QFile(':/ftrack/style/{0}'.format(theme))

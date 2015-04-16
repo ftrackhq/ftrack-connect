@@ -3,10 +3,101 @@
 
 import logging
 import os
+import re
 
 from PySide import QtGui, QtCore
+from PySide.QtCore import Qt
+
 import riffle.browser
+import riffle.model
+
 import clique
+import clique.collection
+import clique.sorted_set
+
+
+def __init__(self, head, tail, padding, indexes=None):
+    '''Initialise collection.
+    *head* is the leading common part whilst *tail* is the trailing
+    common part.
+    *padding* specifies the "width" of the numerical component. An index
+    will be padded with zeros to fill this width. A *padding* of zero
+    implies no padding and width may be any size so long as no leading
+    zeros are present.
+    *indexes* can specify a set of numerical indexes to initially populate
+    the collection with.
+    .. note::
+        After instantiation, the ``indexes`` attribute cannot be set to a
+        new value using assignment::
+            >>> collection.indexes = [1, 2, 3]
+            AttributeError: Cannot set attribute defined as unsettable.
+        Instead, manipulate it directly::
+            >>> collection.indexes.clear()
+            >>> collection.indexes.update([1, 2, 3])
+    '''
+    super(clique.collection.Collection, self).__init__()
+    self.__dict__['indexes'] = clique.sorted_set.SortedSet()
+    try:
+        head = head.encode('utf-8')
+    except UnicodeDecodeError:
+        pass
+
+    try:
+        tail = tail.encode('utf-8')
+    except UnicodeDecodeError:
+        pass
+
+    self._head = head
+    self._tail = tail
+    self.padding = padding
+    self._update_expression()
+
+    if indexes is not None:
+        self.indexes.update(indexes)
+
+clique.collection.Collection.__init__ = __init__ 
+
+
+def data(self, index, role):
+    '''Return data for *index* according to *role*.'''
+    if not index.isValid():
+        return None
+
+    column = index.column()
+    item = index.internalPointer()
+
+    if role == self.ITEM_ROLE:
+        return item
+
+    elif role == Qt.DisplayRole:
+
+        if column == 0:
+            # Convert to unicode.
+            if isinstance(item.name, str):
+                return item.name.decode('utf-8')
+
+            return item.name
+        elif column == 1:
+            if item.size:
+                return item.size
+        elif column == 2:
+            return item.type
+        elif column == 3:
+            if item.modified is not None:
+                # Convert to unicode.
+                return item.modified.strftime('%c').decode('utf-8')
+
+    elif role == Qt.DecorationRole:
+        if column == 0:
+            return self.iconFactory.icon(item)
+
+    elif role == Qt.TextAlignmentRole:
+        if column == 1:
+            return Qt.AlignRight
+        else:
+            return Qt.AlignLeft
+
+riffle.model.Filesystem.data = data
 
 
 class DataDropZone(QtGui.QFrame):
@@ -55,7 +146,11 @@ class DataDropZone(QtGui.QFrame):
         if self._dialog.exec_():
             selected = self._dialog.selected()
             if selected:
-                self.dataSelected.emit(selected[0])
+                item = selected[0]
+                # Convert to unicode.
+                if isinstance(item, str):
+                    item = item.decode('utf-8')
+                self.dataSelected.emit(item)
 
     def _setDropZoneState(self, state='default'):
         '''Set drop zone state to *state*.

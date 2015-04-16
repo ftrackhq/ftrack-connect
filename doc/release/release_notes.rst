@@ -7,8 +7,22 @@
 Release Notes
 *************
 
-.. release:: next
-    :date: 2015-xx-xx
+.. release:: 0.1.9
+    :date: 2015-03-18
+
+    .. change:: new
+        :tags: Developer
+
+        Added base widgets and connectors to be used by application plugins.
+
+.. release:: 0.1.8
+    :date: 2015-03-02
+
+    .. change:: fixed
+        :tags: Publisher
+
+        Publisher browser breaks when objects and files have non-ascii 
+        characters.
 
     .. change:: new
         :tags: Developer, Tutorial

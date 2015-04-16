@@ -4,14 +4,40 @@
         <file alias='ftrackLogoGreyDark'>image/logo_grey_dark.svg</file>
         <file alias='ftrackLogoColor'>image/logo_colour.svg</file>
         <file alias='boxShadow'>image/box_shadow.png</file>
+        <file alias='ftrackLogoLabel'>image/ftrack_logo_gray.svg</file>
     </qresource>
+
+    <qresource prefix='ftrack/image/integration'>
+        <file alias='comment'>image/integration/ftrack-comment.svg</file>
+        <file alias='folder'>image/integration/ftrack-folder.svg</file>
+        <file alias='home'>image/integration/ftrack-home.svg</file>
+        <file alias='episode'>image/integration/ftrack-folder-episode.svg</file>
+        <file alias='shot'>image/integration/ftrack-shot.svg</file>
+        <file alias='task'>image/integration/ftrack-task.svg</file>
+        <file alias='check'>image/integration/ftrack-check.svg</file>
+        <file alias='trash'>image/integration/ftrack-delete.svg</file>
+        <file alias='help'>image/integration/ftrack-help.svg</file>
+        <file alias='branch-closed'>image/integration/branch-closed.png</file>
+        <file alias='branch-open'>image/integration/branch-open.png</file>
+        <file alias='hand-scroll'>image/integration/handscroll.png</file>
+        <file alias='pencil'>image/integration/pencil.png</file>
+        <file alias='eraser'>image/integration/eraser.png</file>
+        <file alias='fit-screen'>image/integration/fit_screen.png</file>
+        <file alias='drag'>image/integration/drag.png</file>
+        <file alias='no-asset'>image/integration/no_asset.png</file>
+
+    </qresource>
+
     <qresource prefix='ftrack/style'>
         <file alias='light'>style_light.css</file>
         <file alias='dark'>style_dark.css</file>
+        <file alias='integration'>integration.css</file>
     </qresource>
+
     <qresource prefix='ftrack/font'>
         <file alias='main'>font/open_sans_regular.ttf</file>
     </qresource>
+
     <qresource prefix='ftrack/image/light'>
         <file alias='selectedTab'>image/light/selected_tab.png</file>
         <file alias='downArrow'>image/light/down_arrow.png</file>
