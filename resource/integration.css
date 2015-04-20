@@ -51,4 +51,59 @@ QLabel#ftrack-header-message-warning {
   font-weight: bold;
 }
 
+/*
+EntityBrowser
+*/
 
+EntityBrowser QTabBar {
+    border: 1px solid "#646464";
+    background: "#2A2A2A";
+}
+
+
+EntityBrowser QTabBar::tab {
+    background: "#646464";
+    min-width: 0px;
+    padding: 2px 8px;
+    color: "white";
+    border-radius: 3px;
+    margin: 3px;
+    margin-right: 0px;
+}
+
+
+EntityBrowser QTabBar::tab:selected {
+    color: "white";
+}
+
+
+EntityBrowser QTabBar::tab:hover {
+    background-color: "#D6D6D6";
+    border-color: "#000000";
+    color: "black"
+
+}
+
+
+EntityBrowser QTableView {
+    border: 1px solid '#2A2A2A';
+    outline: 0;
+}
+
+EntityBrowser QTableView::item
+{
+    border: 0px;
+    padding: 5px;
+    background: '#646464';
+    color: white;
+}
+
+EntityBrowser QTableView::item:selected
+{
+    background: "#D6D6D6";
+    color: black
+}
+
+EntityBrowser QHeaderView {
+    background-color: "#2A2A2A";
+}
