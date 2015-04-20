@@ -107,3 +107,14 @@ EntityBrowser QTableView::item:selected
 EntityBrowser QHeaderView {
     background-color: "#2A2A2A";
 }
+
+EntityBrowser QToolButton {
+     background-color: "#2A2A2A";
+     border-color: "#D6D6D6";
+
+}
+
+EntityBrowser QToolButton:hover {
+     background-color: "#D6D6D6";
+}
+
