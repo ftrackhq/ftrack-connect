@@ -1,8 +1,8 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
-
+import os
 import getpass
-
+import ftrack
 from PySide import QtCore, QtGui
 
 from ftrack_connect.connector import PanelComInstance, FTAssetObject
@@ -13,6 +13,7 @@ from ftrack_connect.ui.widget.component_table import ComponentTableWidget
 from ftrack_connect.ui.widget.import_options import ImportOptionsWidget
 from ftrack_connect.ui.widget import header
 from ftrack_connect.ui.theme import applyTheme
+from ftrack_connect.ui.widget.context_selector import ContextSelector
 from ftrack_connect.ui import resource
 
 
@@ -33,6 +34,12 @@ class FtrackImportAssetDialog(QtGui.QDialog):
         super(FtrackImportAssetDialog, self).__init__(parent=parent)
         applyTheme(self, 'integration')
         self.connector = connector
+
+        self.currentEntity = ftrack.Task(
+            os.getenv('FTRACK_TASKID',
+                os.getenv('FTRACK_SHOTID')
+            )
+        )
 
         self.setSizePolicy(
             QtGui.QSizePolicy.Expanding,
@@ -67,11 +74,14 @@ class FtrackImportAssetDialog(QtGui.QDialog):
         self.headerWidget = header.Header(getpass.getuser(), self)
         self.verticalLayout.addWidget(self.headerWidget, stretch=0)
 
-        self.browseTasksWidget = BrowseTasksSmallWidget(parent=self)
+        self.browseTasksWidget = ContextSelector(
+            currentEntity=self.currentEntity, parent=self
+        )
+
         self.verticalLayout.addWidget(self.browseTasksWidget, stretch=0)
-        pos = self.headerWidget.rect().bottomRight().y()
-        self.browseTasksWidget.setTopPosition(pos)
-        self.browseTasksWidget.setLabelText('Import from')
+        #pos = self.headerWidget.rect().bottomRight().y()
+        #self.browseTasksWidget.setTopPosition(pos)
+        #self.browseTasksWidget.setLabelText('Import from')
 
         self.listAssetsTableWidget = ListAssetsTableWidget(self)
 
@@ -130,7 +140,7 @@ class FtrackImportAssetDialog(QtGui.QDialog):
 
         panelComInstance = PanelComInstance.instance()
         panelComInstance.addSwitchedShotListener(
-            self.browseTasksWidget.updateTask
+            self.browseTasksWidget.reset
         )
 
         QtCore.QObject.connect(self.browseTasksWidget, QtCore.SIGNAL(
@@ -166,7 +176,7 @@ class FtrackImportAssetDialog(QtGui.QDialog):
             self.onImportComponent
         )
 
-        self.browseTasksWidget.update()
+        self.browseTasksWidget.reset()
 
     def importSelectedComponents(self):
         '''Import selected components.'''
