@@ -24,6 +24,8 @@ class ContextSelector(QtGui.QWidget):
         self.entityBrowseButton = QtGui.QPushButton('Browse')
 
         layout = QtGui.QHBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)
+
         self.setLayout(layout)
 
         layout.addWidget(self.entityPath)
