@@ -79,9 +79,6 @@ class FtrackImportAssetDialog(QtGui.QDialog):
         )
 
         self.verticalLayout.addWidget(self.browseTasksWidget, stretch=0)
-        #pos = self.headerWidget.rect().bottomRight().y()
-        #self.browseTasksWidget.setTopPosition(pos)
-        #self.browseTasksWidget.setLabelText('Import from')
 
         self.listAssetsTableWidget = ListAssetsTableWidget(self)
 
@@ -143,34 +140,19 @@ class FtrackImportAssetDialog(QtGui.QDialog):
             self.browseTasksWidget.reset
         )
 
-        QtCore.QObject.connect(self.browseTasksWidget, QtCore.SIGNAL(
-            'clickedIdSignal(QString)'), self.clickedIdSignal
-        )
+        self.browseTasksWidget.entityChanged.connect(self.clickedIdSignal)
 
-        QtCore.QObject.connect(
-            self.importAllButton, QtCore.SIGNAL('clicked()'),
-            self.importAllComponents
-        )
-        QtCore.QObject.connect(
-            self.importSelectedButton, QtCore.SIGNAL('clicked()'),
+        self.importAllButton.clicked.connect(self.importAllComponents)
+        self.importSelectedButton.clicked.connect(
             self.importSelectedComponents
         )
-
-        QtCore.QObject.connect(
-            self.listAssetsTableWidget,
-            QtCore.SIGNAL('assetVersionSelectedSignal(QString)'),
+        self.listAssetsTableWidget.assetVersionSelectedSignal[str].connect(
             self.clickedAssetVSignal
         )
-        QtCore.QObject.connect(
-            self.listAssetsTableWidget,
-            QtCore.SIGNAL('assetTypeSelectedSignal(QString)'),
+        self.listAssetsTableWidget.assetTypeSelectedSignal[str].connect(
             self.importOptionsWidget.setStackedWidget
         )
-
-        QtCore.QObject.connect(
-            self, QtCore.SIGNAL('importSignal()'),
-            panelComInstance.refreshListeners
-        )
+        self.importSignal.connect(panelComInstance.refreshListeners)
 
         self.componentTableWidget.importComponentSignal.connect(
             self.onImportComponent
@@ -193,8 +175,6 @@ class FtrackImportAssetDialog(QtGui.QDialog):
 
     def onImportComponent(self, row):
         '''Handle importing component.'''
-        importOptions = self.importOptionsWidget.getOptions()
-
         # TODO: Add methods to panels to ease retrieval of this data
         componentItem = self.componentTableWidget.item(
             row,
@@ -206,23 +186,13 @@ class FtrackImportAssetDialog(QtGui.QDialog):
 
         assetVersion = component.getVersion()
 
-        accessPath = self.componentTableWidget.item(
-            row,
-            self.componentTableWidget.columns.index('Path')
-        ).text()
-
-        importObj = FTAssetObject(
-            componentId=component.getId(),
-            filePath=accessPath,
-            componentName=component.getName(),
-            assetVersionId=assetVersion.getId(),
-            options=importOptions
-        )
-        message = self.connector.importAsset(importObj)
-
         self.importSignal.emit()
         asset_name = component.getParents()[0].getAsset().getName()
-        self.headerWidget.setMessage('Imported asset "%s"' % asset_name)
+        self.headerWidget.setMessage(
+            'Imported %s.%s:v%s' % (
+                asset_name, component.getName(), assetVersion
+                )
+        )
 
     def clickedAssetVSignal(self, assetVid):
         '''Set asset version to *assetVid*.'''
