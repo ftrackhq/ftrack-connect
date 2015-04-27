@@ -179,9 +179,9 @@ class DataDropZone(QtGui.QFrame):
             localPath = path.toLocalFile()
             if os.path.isfile(localPath):
                 validPaths.append(localPath)
-                self.log.debug('Dropped file: {0}'.format(localPath))
+                self.log.debug(u'Dropped file: {0}'.format(localPath))
             else:
-                message = 'Invalid file: "{0}" is not a valid file.'.format(
+                message = u'Invalid file: "{0}" is not a valid file.'.format(
                     localPath
                 )
                 if os.path.isdir(localPath):
@@ -221,7 +221,7 @@ class DataDropZone(QtGui.QFrame):
             event.mimeData()
         )
 
-        self.log.debug('Paths: {0}'.format(paths))
+        self.log.debug(u'Paths: {0}'.format(paths))
 
         # Use frames pattern instead of default digits pattern to only match
         # frame sequences.
@@ -233,8 +233,8 @@ class DataDropZone(QtGui.QFrame):
             ]
         )
 
-        self.log.debug('Sequences: {0}'.format(sequences))
-        self.log.debug('Remainders: {0}'.format(remainders))
+        self.log.debug(u'Sequences: {0}'.format(sequences))
+        self.log.debug(u'Remainders: {0}'.format(remainders))
 
         for sequence in sequences:
             self.dataSelected.emit(sequence.format())

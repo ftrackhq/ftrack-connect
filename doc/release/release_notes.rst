@@ -7,6 +7,14 @@
 Release Notes
 *************
 
+.. release:: next
+    :date: 2015-XX-YY
+
+    .. change:: fixed
+        :tags: Publisher
+
+        Can not add files via drag and drop with non-ascii characters in the path.
+
 .. release:: 0.1.9
     :date: 2015-03-18
 
