@@ -740,11 +740,11 @@ class AssetManagerWidget(QtGui.QWidget):
         '''Update signal mapper with updated widgets'''
         name = self.ui.AssertManagerTableWidget.item(row, 8).text()
 
-        remove_wid = self.ui.AssertManagerTableWidget.cellWidget(row, 11)
-        self.signalMapperRemove.setMapping(remove_wid, unicode(name))
+        removeWidget = self.ui.AssertManagerTableWidget.cellWidget(row, 11)
+        self.signalMapperRemove.setMapping(removeWidget, unicode(name))
 
-        select_wid = self.ui.AssertManagerTableWidget.cellWidget(row, 9)
-        self.signalMapperSelect.setMapping(select_wid, unicode(name))
+        selectWidget = self.ui.AssertManagerTableWidget.cellWidget(row, 9)
+        self.signalMapperSelect.setMapping(selectWidget, unicode(name))
 
-        version_wid = self.ui.AssertManagerTableWidget.cellWidget(row, 5)
-        self.signalMapperChangeVersion.setMapping(version_wid, -1)
+        versionWidget = self.ui.AssertManagerTableWidget.cellWidget(row, 5)
+        self.signalMapperChangeVersion.setMapping(versionWidget, -1)
