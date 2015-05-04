@@ -728,8 +728,8 @@ class AssetManagerWidget(QtGui.QWidget):
                 row, 14
             ).setText(str(newVersion))
             if diff:
-                new_name = list(diff)[0][1]
-                self.ui.AssertManagerTableWidget.item(row, 8).setText(new_name)
+                newName = list(diff)[0][1]
+                self.ui.AssertManagerTableWidget.item(row, 8).setText(newName)
             self.updateActions(row)
         else:
             cellWidget = self.ui.AssertManagerTableWidget.cellWidget(row, 5)
