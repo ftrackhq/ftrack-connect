@@ -730,13 +730,13 @@ class AssetManagerWidget(QtGui.QWidget):
             if diff:
                 newName = list(diff)[0][1]
                 self.ui.AssertManagerTableWidget.item(row, 8).setText(newName)
-            self.updateActions(row)
+            self.updateSignalMapper(row)
         else:
             cellWidget = self.ui.AssertManagerTableWidget.cellWidget(row, 5)
             fallbackIndex = cellWidget.findText(currentVersion)
             cellWidget.setCurrentIndex(fallbackIndex)
 
-    def updateActions(self, row):
+    def updateSignalMapper(self, row):
         name = self.ui.AssertManagerTableWidget.item(row, 8).text()
 
         remove_wid = self.ui.AssertManagerTableWidget.cellWidget(row, 11)
