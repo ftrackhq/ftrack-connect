@@ -11,7 +11,7 @@ import collections
 import base64
 import json
 
-import ftrack_legacy
+import ftrack
 
 #: Default expression to match version component of executable path.
 #: Will match last set of numbers in string where numbers may contain a digit
@@ -370,10 +370,10 @@ class ApplicationLauncher(object):
 
         '''
         if entityType == 'task':
-            task = ftrack_legacy.Task(entityId)
+            task = ftrack.Task(entityId)
             versions = task.getAssetVersions()
         elif entityType == 'assetversion':
-            versions = [ftrack_legacy.AssetVersion(entityId)]
+            versions = [ftrack.AssetVersion(entityId)]
         else:
             self.logger.debug(
                 (
@@ -422,13 +422,13 @@ class ApplicationLauncher(object):
 
         # Add FTRACK_EVENT_SERVER variable.
         environment = prependPath(
-            ftrack_legacy.EVENT_HUB.getServerUrl(),
+            ftrack.EVENT_HUB.getServerUrl(),
             'FTRACK_EVENT_SERVER', environment
         )
 
         # Prepend discovered ftrack API to PYTHONPATH.
         environment = prependPath(
-            os.path.dirname(ftrack_legacy.__file__), 'PYTHONPATH', environment
+            os.path.dirname(ftrack.__file__), 'PYTHONPATH', environment
         )
 
         # Add ftrack connect event to environment.

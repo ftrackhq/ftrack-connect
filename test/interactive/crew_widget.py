@@ -3,7 +3,7 @@
 
 import getpass
 
-import ftrack_legacy as ftrack
+import ftrack
 from PySide import QtCore, QtGui
 
 from harness import Harness

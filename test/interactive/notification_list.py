@@ -2,13 +2,13 @@
 # :copyright: Copyright (c) 2015 ftrack
 
 from PySide import QtGui
-import ftrack_legacy
+import ftrack
 
 from ftrack_connect.ui.widget import notification_list as _notification_list
 from harness import Harness
 
 
-ftrack_legacy.setup()
+ftrack.setup()
 
 
 class WidgetHarness(Harness):

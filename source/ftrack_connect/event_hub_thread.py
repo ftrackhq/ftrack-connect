@@ -10,6 +10,6 @@ class EventHubThread(QtCore.QThread):
     def run(self):
         '''Listen for events.'''
         # Deferred import to allow server configuration to be set in UI.
-        import ftrack_legacy
+        import ftrack
 
-        ftrack_legacy.EVENT_HUB.wait()
+        ftrack.EVENT_HUB.wait()

@@ -4,7 +4,7 @@
 from collections import defaultdict
 
 from PySide import QtGui, QtCore
-import ftrack_legacy
+import ftrack
 
 from ftrack_connect.ui.widget import notification_directive
 import ftrack_connect.ui.widget.item_list
@@ -174,8 +174,8 @@ class Notification(QtGui.QWidget):
     def _reload(self):
         '''Return events based on current context.'''
         events = []
-        response = ftrack_legacy.EVENT_HUB.publish(
-            ftrack_legacy.Event(
+        response = ftrack.EVENT_HUB.publish(
+            ftrack.Event(
                 'ftrack.crew.notification.get-events',
                 data=dict(context=self._context)
             ),

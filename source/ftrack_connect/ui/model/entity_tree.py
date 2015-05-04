@@ -5,7 +5,7 @@
 
 from PySide import QtGui, QtCore
 
-import ftrack_legacy
+import ftrack
 
 import ftrack_connect.worker
 
@@ -19,10 +19,10 @@ def ItemFactory(entity):
     if not entity:
         return Root()
 
-    elif isinstance(entity, ftrack_legacy.Project):
+    elif isinstance(entity, ftrack.Project):
         return Project(entity)
 
-    elif isinstance(entity, ftrack_legacy.Task):
+    elif isinstance(entity, ftrack.Task):
         if entity.getObjectType() == 'Task':
             return Task(entity)
         else:
@@ -172,7 +172,7 @@ class Root(Item):
     def _fetchChildren(self):
         '''Fetch and return new child items.'''
         children = []
-        for entity in ftrack_legacy.getProjects():
+        for entity in ftrack.getProjects():
             children.append(Project(entity))
 
         return children

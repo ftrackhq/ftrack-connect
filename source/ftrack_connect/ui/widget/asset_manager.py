@@ -5,7 +5,7 @@ import getpass
 
 from PySide import QtCore, QtGui
 
-import ftrack_legacy as ftrack
+import ftrack
 
 from ftrack_connect.connector import FTAssetObject, PanelComInstance
 from ftrack_connect.ui.widget.info import FtrackInfoDialog

@@ -2,7 +2,7 @@
 # :copyright: Copyright (c) 2014 ftrack
 
 from PySide import QtGui, QtCore
-import ftrack_legacy
+import ftrack
 
 import ftrack_connect.ui.application
 import ftrack_connect.ui.widget.overlay
@@ -148,13 +148,13 @@ class Publisher(ftrack_connect.ui.application.ApplicationPlugin):
         if manageData:
             self.publishView.setManageData(True)
 
-        entity = ftrack_legacy.Task(
+        entity = ftrack.Task(
             entity.get('entityId')
         )
         self.setEntity(entity)
         self.requestApplicationFocus.emit(self)
 
-        ftrack_legacy.EVENT_HUB.publishReply(
+        ftrack.EVENT_HUB.publishReply(
             sourceEvent=event,
             data={'message': 'Publisher started.'}
         )
