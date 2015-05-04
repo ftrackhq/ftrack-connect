@@ -737,6 +737,7 @@ class AssetManagerWidget(QtGui.QWidget):
             cellWidget.setCurrentIndex(fallbackIndex)
 
     def updateSignalMapper(self, row):
+        '''Update signal mapper with updated widgets'''
         name = self.ui.AssertManagerTableWidget.item(row, 8).text()
 
         remove_wid = self.ui.AssertManagerTableWidget.cellWidget(row, 11)
