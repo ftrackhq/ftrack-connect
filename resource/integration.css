@@ -55,14 +55,8 @@ QLabel#ftrack-header-message-warning {
 EntityBrowser
 */
 
-EntityBrowser QTabBar {
-    border: 1px solid "#646464";
-    background: "#2A2A2A";
-}
-
-
 EntityBrowser QTabBar::tab {
-    background: "#646464";
+    background: "#5a5a5a";
     min-width: 0px;
     padding: 2px 8px;
     color: "white";
@@ -88,33 +82,5 @@ EntityBrowser QTabBar::tab:hover {
 EntityBrowser QTableView {
     border: 1px solid '#2A2A2A';
     outline: 0;
-}
-
-EntityBrowser QTableView::item
-{
-    border: 0px;
-    padding: 5px;
-    background: '#646464';
-    color: white;
-}
-
-EntityBrowser QTableView::item:selected
-{
-    background: "#D6D6D6";
-    color: black
-}
-
-EntityBrowser QHeaderView {
-    background-color: "#2A2A2A";
-}
-
-EntityBrowser QToolButton {
-     background-color: "#2A2A2A";
-     border-color: "#D6D6D6";
-
-}
-
-EntityBrowser QToolButton:hover {
-     background-color: "#D6D6D6";
 }
 
