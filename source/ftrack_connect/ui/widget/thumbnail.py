@@ -5,7 +5,7 @@ import os
 import urllib2
 
 from PySide import QtGui, QtCore
-import ftrack_legacy as ftrack
+import ftrack
 import ftrack_connect.worker
 
 # Cache of thumbnail images.

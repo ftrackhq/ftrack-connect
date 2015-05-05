@@ -4,7 +4,7 @@
 import logging
 import os
 
-import ftrack_legacy as ftrack
+import ftrack
 
 log = logging.getLogger(__name__)
 

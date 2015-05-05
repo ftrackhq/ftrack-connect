@@ -7,11 +7,11 @@ import json
 
 import arrow
 from PySide import QtGui
-import ftrack_legacy
 import ftrack
+import ftrack_api
 
 # TODO: The Session should not be created here.
-session = ftrack.Session()
+session = ftrack_api.Session()
 
 
 class Notification(QtGui.QWidget):
@@ -81,8 +81,8 @@ class Notification(QtGui.QWidget):
 
     def _onButtonClicked(self):
         '''Handle button clicked.'''
-        ftrack_legacy.EVENT_HUB.publish(
-            ftrack_legacy.Event(
+        ftrack.EVENT_HUB.publish(
+            ftrack.Event(
                 'ftrack.crew.notification.{0._type}'.format(self),
                 data=self.value()
             ),

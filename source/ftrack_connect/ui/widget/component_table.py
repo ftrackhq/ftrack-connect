@@ -6,7 +6,7 @@ import operator
 import os
 
 from PySide import QtCore, QtGui
-import ftrack_legacy as ftrack
+import ftrack
 
 from ftrack_connect.worker import Worker
 

@@ -5,7 +5,7 @@ import logging
 
 from PySide import QtGui
 from PySide import QtCore
-import ftrack_legacy
+import ftrack
 
 
 from ftrack_connect.ui.widget import entity_path as _entity_path
@@ -166,11 +166,11 @@ class Publisher(QtGui.QWidget):
 
             # Prevent selecting Projects or Tasks directly under a Project to
             # match web interface behaviour.
-            if isinstance(entity, ftrack_legacy.Task):
+            if isinstance(entity, ftrack.Task):
                 objectType = entity.getObjectType()
                 if (
                     objectType == 'Task'
-                    and isinstance(entity.getParent(), ftrack_legacy.Project)
+                    and isinstance(entity.getParent(), ftrack.Project)
                 ):
                     return
 
@@ -179,13 +179,13 @@ class Publisher(QtGui.QWidget):
     def _pickLocation(self, manageData=False):
         '''Return a location based on *manageData*.'''
         location = None
-        locations = ftrack_legacy.getLocations(excludeInaccessible=True)
+        locations = ftrack.getLocations(excludeInaccessible=True)
         try:
             location = next(
                 candidateLocation for candidateLocation in locations
                 if (
                     manageData == False
-                    or not isinstance(candidateLocation, ftrack_legacy.UnmanagedLocation)
+                    or not isinstance(candidateLocation, ftrack.UnmanagedLocation)
                 )
             )
 
@@ -324,8 +324,8 @@ class Publisher(QtGui.QWidget):
                     location.addComponent(component)
 
             if previewPath:
-                ftrack_legacy.EVENT_HUB.publish(
-                    ftrack_legacy.Event(
+                ftrack.EVENT_HUB.publish(
+                    ftrack.Event(
                         'ftrack.connect.publish.make-web-playable',
                         data=dict(
                             versionId=version.getId(),

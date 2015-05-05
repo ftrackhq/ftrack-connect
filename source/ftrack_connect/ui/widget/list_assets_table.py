@@ -5,7 +5,7 @@ import sys
 import traceback
 
 from PySide import QtCore, QtGui
-import ftrack_legacy as ftrack
+import ftrack
 
 from ftrack_connect.connector import FTAssetHandlerInstance
 
