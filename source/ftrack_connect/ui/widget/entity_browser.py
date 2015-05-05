@@ -46,6 +46,7 @@ class EntityBrowser(QtGui.QDialog):
         self.headerLayout.addWidget(self.navigationBar, stretch=1)
 
         self.navigateUpButton = QtGui.QToolButton()
+        self.navigateUpButton.setObjectName('entity-browser-up-button')
         self.navigateUpButton.setIcon(
             QtGui.QIcon(':ftrack/image/light/upArrowDark')
         )
@@ -53,6 +54,8 @@ class EntityBrowser(QtGui.QDialog):
         self.headerLayout.addWidget(self.navigateUpButton)
 
         self.reloadButton = QtGui.QToolButton()
+        self.reloadButton.setObjectName('entity-browser-reload-button')
+
         self.reloadButton.setIcon(
             QtGui.QIcon(':ftrack/image/light/reload')
         )

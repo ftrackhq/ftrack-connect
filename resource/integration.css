@@ -84,3 +84,13 @@ EntityBrowser QTableView {
     outline: 0;
 }
 
+
+EntityBrowser QToolButton#entity-browser-up-button {
+  qproperty-icon: url(":ftrack/image/dark/upArrow");
+}
+
+EntityBrowser QToolButton#entity-browser-reload-button {
+  qproperty-icon: url(":ftrack/image/dark/reload");
+}
+
+
