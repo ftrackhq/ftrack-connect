@@ -383,7 +383,7 @@ class AssetManagerWidget(QtGui.QWidget):
                 )
 
                 versionNumberComboBox.currentIndexChanged[str].connect(
-                    self.signalMapperChangeVersion
+                    self.signalMapperChangeVersion.map
                 )
 
                 self.signalMapperChangeVersion.setMapping(
@@ -412,7 +412,7 @@ class AssetManagerWidget(QtGui.QWidget):
                 self.ui.AssertManagerTableWidget.setCellWidget(
                     i, 9, selectButton
                 )
-                selectButton.clicked.connect(self.signalMapperSelect())
+                selectButton.clicked.connect(self.signalMapperSelect.map)
 
                 self.signalMapperSelect.setMapping(selectButton, assets[i][1])
 
@@ -433,7 +433,7 @@ class AssetManagerWidget(QtGui.QWidget):
                 self.ui.AssertManagerTableWidget.setCellWidget(
                     i, 11, removeButton
                 )
-                removeButton.clicked.connect(self.signalMapperRemove)
+                removeButton.clicked.connect(self.signalMapperRemove.map)
                 self.signalMapperRemove.setMapping(removeButton, assets[i][1])
 
                 assetId = QtGui.QTableWidgetItem(str(asset.getId()))
@@ -473,7 +473,7 @@ class AssetManagerWidget(QtGui.QWidget):
                     i, 15, commentButton
                 )
 
-                commentButton.clicked.connect(self.signalMapperComment)
+                commentButton.clicked.connect(self.signalMapperComment.map)
 
                 self.signalMapperComment.setMapping(
                     commentButton, str(assetVersion.getId())
