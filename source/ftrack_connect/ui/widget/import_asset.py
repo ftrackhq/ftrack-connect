@@ -6,7 +6,6 @@ import ftrack
 from PySide import QtCore, QtGui
 
 from ftrack_connect.connector import PanelComInstance, FTAssetObject
-from ftrack_connect.ui.widget.browse_tasks_small import BrowseTasksSmallWidget
 from ftrack_connect.ui.widget.list_assets_table import ListAssetsTableWidget
 from ftrack_connect.ui.widget.asset_version_details import AssetVersionDetailsWidget
 from ftrack_connect.ui.widget.component_table import ComponentTableWidget

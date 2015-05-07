@@ -284,7 +284,9 @@ class AssetManagerWidget(QtGui.QWidget):
             assetTypeItem.type = assetType.getShort()
             self.ui.AssetManagerComboBoxModel.appendRow(assetTypeItem)
 
-        self.ui.AssetManagerComboBox.setModel(self.ui.AssetManagerComboBoxModel)
+        self.ui.AssetManagerComboBox.setModel(
+            self.ui.AssetManagerComboBoxModel
+        )
 
         self.signalMapperSelect = QtCore.QSignalMapper()
         QtCore.QObject.connect(
@@ -315,8 +317,14 @@ class AssetManagerWidget(QtGui.QWidget):
         )
 
         extraOptionsMenu = QtGui.QMenu(self.ui.menuButton)
-        extraOptionsMenu.addAction('Get SceneSelection', self.getSceneSelection)
-        extraOptionsMenu.addAction('Set SceneSelection', self.setSceneSelection)
+        extraOptionsMenu.addAction(
+            'Get SceneSelection',
+            self.getSceneSelection
+        )
+        extraOptionsMenu.addAction(
+            'Set SceneSelection',
+            self.setSceneSelection
+        )
         self.ui.menuButton.setMenu(extraOptionsMenu)
 
         self.refreshAssetManager()
@@ -414,7 +422,9 @@ class AssetManagerWidget(QtGui.QWidget):
 
                 assetNameInScene = QtGui.QTableWidgetItem(assets[i][1])
                 assetNameInScene.setToolTip(assets[i][1])
-                self.ui.AssertManagerTableWidget.setItem(i, 8, assetNameInScene)
+                self.ui.AssertManagerTableWidget.setItem(
+                    i, 8, assetNameInScene
+                )
 
                 selectButton = QtGui.QPushButton('S')
                 selectButton.setToolTip('Select asset in scene')
@@ -475,7 +485,10 @@ class AssetManagerWidget(QtGui.QWidget):
                 commentButton.setText('')
                 icon = QtGui.QIcon()
                 icon.addPixmap(
-                    QtGui.QPixmap(':ftrack/image/integration/comment'), QtGui.QIcon.Normal,
+                    QtGui.QPixmap(
+                        ':ftrack/image/integration/comment'
+                        ),
+                    QtGui.QIcon.Normal,
                     QtGui.QIcon.Off
                 )
                 commentButton.setIcon(icon)
@@ -634,7 +647,9 @@ class AssetManagerWidget(QtGui.QWidget):
             foundItem = self.ui.AssertManagerTableWidget.findItems(
                 asset, QtCore.Qt.MatchExactly
             )
-            index = self.ui.AssertManagerTableWidget.indexFromItem(foundItem[0])
+            index = self.ui.AssertManagerTableWidget.indexFromItem(
+                foundItem[0]
+            )
             selModel = self.ui.AssertManagerTableWidget.selectionModel()
             selModel.select(
                 index, QtGui.QItemSelectionModel.Select |
