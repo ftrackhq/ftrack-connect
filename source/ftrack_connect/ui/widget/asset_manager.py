@@ -701,10 +701,15 @@ class AssetManagerWidget(QtGui.QWidget):
             assetVersionId=newftrackAssetVersion.getId()
         )
 
+        before = set(self.connector.getAssets())
+
         result = self.connector.changeVersion(
             iAObj=importObj,
             applicationObject=objectName
         )
+        after = set(self.connector.getAssets())
+
+        diff = after.difference(before)
 
         if result:
             cellWidget = self.ui.AssertManagerTableWidget.cellWidget(row, 0)
@@ -722,7 +727,24 @@ class AssetManagerWidget(QtGui.QWidget):
             self.ui.AssertManagerTableWidget.item(
                 row, 14
             ).setText(str(newVersion))
+            if diff:
+                newName = list(diff)[0][1]
+                self.ui.AssertManagerTableWidget.item(row, 8).setText(newName)
+            self.updateSignalMapper(row)
         else:
             cellWidget = self.ui.AssertManagerTableWidget.cellWidget(row, 5)
             fallbackIndex = cellWidget.findText(currentVersion)
             cellWidget.setCurrentIndex(fallbackIndex)
+
+    def updateSignalMapper(self, row):
+        '''Update signal mapper with updated widgets'''
+        name = self.ui.AssertManagerTableWidget.item(row, 8).text()
+
+        removeWidget = self.ui.AssertManagerTableWidget.cellWidget(row, 11)
+        self.signalMapperRemove.setMapping(removeWidget, unicode(name))
+
+        selectWidget = self.ui.AssertManagerTableWidget.cellWidget(row, 9)
+        self.signalMapperSelect.setMapping(selectWidget, unicode(name))
+
+        versionWidget = self.ui.AssertManagerTableWidget.cellWidget(row, 5)
+        self.signalMapperChangeVersion.setMapping(versionWidget, -1)
