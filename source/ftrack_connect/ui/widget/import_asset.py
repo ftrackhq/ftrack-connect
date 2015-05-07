@@ -175,6 +175,8 @@ class FtrackImportAssetDialog(QtGui.QDialog):
 
     def onImportComponent(self, row):
         '''Handle importing component.'''
+        importOptions = self.importOptionsWidget.getOptions()
+
         # TODO: Add methods to panels to ease retrieval of this data
         componentItem = self.componentTableWidget.item(
             row,
@@ -188,9 +190,30 @@ class FtrackImportAssetDialog(QtGui.QDialog):
 
         self.importSignal.emit()
         asset_name = component.getParents()[0].getAsset().getName()
+
+        accessPath = self.componentTableWidget.item(
+            row,
+            self.componentTableWidget.columns.index('Path')
+        ).text()
+
+        importObj = FTAssetObject(
+            componentId=component.getId(),
+            filePath=accessPath,
+            componentName=component.getName(),
+            assetVersionId=assetVersion.getId(),
+            options=importOptions
+        )
+        try:
+            self.connector.importAsset(importObj)
+        except Exception, e:
+            self.headerWidget.setMessage(
+                str(e.message), 'error'
+            )
+            return
+
         self.headerWidget.setMessage(
             'Imported %s.%s:v%s' % (
-                asset_name, component.getName(), assetVersion
+                asset_name, component.getName(), assetVersion.getVersion()
                 )
         )
 
