@@ -51,4 +51,46 @@ QLabel#ftrack-header-message-warning {
   font-weight: bold;
 }
 
+/*
+EntityBrowser
+*/
+
+EntityBrowser QTabBar::tab {
+    background: "#5a5a5a";
+    min-width: 0px;
+    padding: 2px 8px;
+    color: "white";
+    border-radius: 3px;
+    margin: 3px;
+    margin-right: 0px;
+}
+
+
+EntityBrowser QTabBar::tab:selected {
+    color: "white";
+}
+
+
+EntityBrowser QTabBar::tab:hover {
+    background-color: "#D6D6D6";
+    border-color: "#000000";
+    color: "black"
+
+}
+
+
+EntityBrowser QTableView {
+    border: 1px solid '#2A2A2A';
+    outline: 0;
+}
+
+
+EntityBrowser QToolButton#entity-browser-up-button {
+  qproperty-icon: url(":ftrack/image/dark/upArrow");
+}
+
+EntityBrowser QToolButton#entity-browser-reload-button {
+  qproperty-icon: url(":ftrack/image/dark/reload");
+}
+
 
