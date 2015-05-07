@@ -22,8 +22,9 @@ class Base(QtGui.QLabel):
         self.setFrameStyle(QtGui.QFrame.StyledPanel)
         self.setAlignment(QtCore.Qt.AlignCenter)
 
-        self.placholderThumbnail = (os.environ['FTRACK_SERVER']
-                                    + '/img/thumbnail2.png')
+        self.placholderThumbnail = (
+            os.environ['FTRACK_SERVER'] + '/img/thumbnail2.png'
+        )
 
         self._worker = None
         self.__loadingReference = None
@@ -116,8 +117,8 @@ class Base(QtGui.QLabel):
             )
         )
 
-class User(Base):
 
+class User(Base):
     def _download(self, reference):
         url = ftrack.User(reference).getThumbnail()
         return super(User, self)._download(url)
