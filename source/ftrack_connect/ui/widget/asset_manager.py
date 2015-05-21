@@ -75,35 +75,32 @@ class Ui_AssetManager(object):
         self.verticalLayout.addWidget(self.AssertManagerTableWidget)
 
         self.retranslateUi(AssetManager)
-        QtCore.QObject.connect(
-            self.refreshButton, QtCore.SIGNAL('clicked()'),
+
+        # signals
+        self.refreshButton.clicked.connect(
             AssetManager.refreshAssetManager
         )
-        QtCore.QObject.connect(
-            self.AssetManagerComboBox,
-            QtCore.SIGNAL('currentIndexChanged(int)'),
+
+        self.AssetManagerComboBox.currentIndexChanged[int].connect(
             AssetManager.filterAssets
         )
-        QtCore.QObject.connect(
-            self.versionDownButton,
-            QtCore.SIGNAL('clicked()'),
+
+        self.versionDownButton.clicked.connect(
             AssetManager.versionDownSelected
         )
-        QtCore.QObject.connect(
-            self.versionUpButton,
-            QtCore.SIGNAL('clicked()'),
+
+        self.versionUpButton.clicked.connect(
             AssetManager.versionUpSelected
         )
-        QtCore.QObject.connect(
-            self.latestButton,
-            QtCore.SIGNAL('clicked()'),
+
+        self.latestButton.clicked.connect(
             AssetManager.versionLatestSelected
         )
-        QtCore.QObject.connect(
-            self.selectAllButton,
-            QtCore.SIGNAL('clicked()'),
+
+        self.selectAllButton.clicked.connect(
             AssetManager.selectAll
         )
+
         QtCore.QMetaObject.connectSlotsByName(AssetManager)
 
     def retranslateUi(self, AssetManager):
@@ -196,7 +193,7 @@ class AssetManagerWidget(QtGui.QWidget):
     '''Asset manager widget'''
 
     notVersionable = dict()
-    notVersionable['maya'] = ['alembic']
+    notVersionable['maya'] = []
 
     def __init__(self, parent, task=None, connector=None):
         '''Instantiate asset manager with *connector*.'''
@@ -284,39 +281,31 @@ class AssetManagerWidget(QtGui.QWidget):
             assetTypeItem.type = assetType.getShort()
             self.ui.AssetManagerComboBoxModel.appendRow(assetTypeItem)
 
-        self.ui.AssetManagerComboBox.setModel(self.ui.AssetManagerComboBoxModel)
+        self.ui.AssetManagerComboBox.setModel(
+            self.ui.AssetManagerComboBoxModel
+        )
 
         self.signalMapperSelect = QtCore.QSignalMapper()
-        QtCore.QObject.connect(
-            self.signalMapperSelect,
-            QtCore.SIGNAL('mapped(QString)'),
-            self.selectObject
-        )
+        self.signalMapperSelect.mapped[str].connect(self.selectObject)
 
         self.signalMapperRemove = QtCore.QSignalMapper()
-        QtCore.QObject.connect(
-            self.signalMapperRemove,
-            QtCore.SIGNAL('mapped(QString)'),
-            self.removeObject
-        )
+        self.signalMapperRemove.mapped[str].connect(self.removeObject)
 
         self.signalMapperComment = QtCore.QSignalMapper()
-        QtCore.QObject.connect(
-            self.signalMapperComment,
-            QtCore.SIGNAL('mapped(QString)'),
-            self.openComments
-        )
+        self.signalMapperComment.mapped[str].connect(self.openComments)
 
         self.signalMapperChangeVersion = QtCore.QSignalMapper()
-        QtCore.QObject.connect(
-            self.signalMapperChangeVersion,
-            QtCore.SIGNAL('mapped(int)'),
-            self.changeVersion
-        )
+        self.signalMapperChangeVersion.mapped[int].connect(self.changeVersion)
 
         extraOptionsMenu = QtGui.QMenu(self.ui.menuButton)
-        extraOptionsMenu.addAction('Get SceneSelection', self.getSceneSelection)
-        extraOptionsMenu.addAction('Set SceneSelection', self.setSceneSelection)
+        extraOptionsMenu.addAction(
+            'Get SceneSelection',
+            self.getSceneSelection
+        )
+        extraOptionsMenu.addAction(
+            'Set SceneSelection',
+            self.setSceneSelection
+        )
         self.ui.menuButton.setMenu(extraOptionsMenu)
 
         self.refreshAssetManager()
@@ -392,11 +381,11 @@ class AssetManagerWidget(QtGui.QWidget):
                 self.ui.AssertManagerTableWidget.setCellWidget(
                     i, 5, versionNumberComboBox
                 )
-                QtCore.QObject.connect(
-                    versionNumberComboBox,
-                    QtCore.SIGNAL('currentIndexChanged(QString)'),
-                    self.signalMapperChangeVersion, QtCore.SLOT('map()')
+
+                versionNumberComboBox.currentIndexChanged[str].connect(
+                    self.signalMapperChangeVersion.map
                 )
+
                 self.signalMapperChangeVersion.setMapping(
                     versionNumberComboBox, -1
                 )
@@ -414,20 +403,17 @@ class AssetManagerWidget(QtGui.QWidget):
 
                 assetNameInScene = QtGui.QTableWidgetItem(assets[i][1])
                 assetNameInScene.setToolTip(assets[i][1])
-                self.ui.AssertManagerTableWidget.setItem(i, 8, assetNameInScene)
+                self.ui.AssertManagerTableWidget.setItem(
+                    i, 8, assetNameInScene
+                )
 
                 selectButton = QtGui.QPushButton('S')
                 selectButton.setToolTip('Select asset in scene')
                 self.ui.AssertManagerTableWidget.setCellWidget(
                     i, 9, selectButton
                 )
+                selectButton.clicked.connect(self.signalMapperSelect.map)
 
-                QtCore.QObject.connect(
-                    selectButton,
-                    QtCore.SIGNAL('clicked()'),
-                    self.signalMapperSelect,
-                    QtCore.SLOT('map()')
-                )
                 self.signalMapperSelect.setMapping(selectButton, assets[i][1])
 
                 replaceButton = QtGui.QPushButton('R')
@@ -447,13 +433,7 @@ class AssetManagerWidget(QtGui.QWidget):
                 self.ui.AssertManagerTableWidget.setCellWidget(
                     i, 11, removeButton
                 )
-
-                QtCore.QObject.connect(
-                    removeButton,
-                    QtCore.SIGNAL('clicked()'),
-                    self.signalMapperRemove,
-                    QtCore.SLOT('map()')
-                )
+                removeButton.clicked.connect(self.signalMapperRemove.map)
                 self.signalMapperRemove.setMapping(removeButton, assets[i][1])
 
                 assetId = QtGui.QTableWidgetItem(str(asset.getId()))
@@ -475,7 +455,10 @@ class AssetManagerWidget(QtGui.QWidget):
                 commentButton.setText('')
                 icon = QtGui.QIcon()
                 icon.addPixmap(
-                    QtGui.QPixmap(':ftrack/image/integration/comment'), QtGui.QIcon.Normal,
+                    QtGui.QPixmap(
+                        ':ftrack/image/integration/comment'
+                        ),
+                    QtGui.QIcon.Normal,
                     QtGui.QIcon.Off
                 )
                 commentButton.setIcon(icon)
@@ -489,12 +472,8 @@ class AssetManagerWidget(QtGui.QWidget):
                 self.ui.AssertManagerTableWidget.setCellWidget(
                     i, 15, commentButton
                 )
-                QtCore.QObject.connect(
-                    commentButton,
-                    QtCore.SIGNAL('clicked()'),
-                    self.signalMapperComment,
-                    QtCore.SLOT('map()')
-                )
+
+                commentButton.clicked.connect(self.signalMapperComment.map)
 
                 self.signalMapperComment.setMapping(
                     commentButton, str(assetVersion.getId())
@@ -562,7 +541,8 @@ class AssetManagerWidget(QtGui.QWidget):
     def getSelectedRows(self):
         '''Return selected rows.'''
         rows = []
-        for idx in self.ui.AssertManagerTableWidget.selectionModel().selectedRows():
+        selectionModel = self.ui.AssertManagerTableWidget.selectionModel()
+        for idx in selectionModel.selectedRows():
             rows.append(idx.row())
         return rows
 
@@ -573,16 +553,20 @@ class AssetManagerWidget(QtGui.QWidget):
             currentComboIndex = self.ui.AssertManagerTableWidget.cellWidget(
                 row, 5
             ).currentIndex()
+
             indexCount = self.ui.AssertManagerTableWidget.cellWidget(
                 row, 5
             ).count()
+
             newIndex = min(currentComboIndex + 1, indexCount - 1)
             self.ui.AssertManagerTableWidget.cellWidget(
                 row, 5
             ).setCurrentIndex(newIndex)
+
             newVersion = self.ui.AssertManagerTableWidget.cellWidget(
                 row, 5
             ).currentText()
+
             self.changeVersion(row, newVersion)
 
     def versionUpSelected(self):
@@ -634,7 +618,9 @@ class AssetManagerWidget(QtGui.QWidget):
             foundItem = self.ui.AssertManagerTableWidget.findItems(
                 asset, QtCore.Qt.MatchExactly
             )
-            index = self.ui.AssertManagerTableWidget.indexFromItem(foundItem[0])
+            index = self.ui.AssertManagerTableWidget.indexFromItem(
+                foundItem[0]
+            )
             selModel = self.ui.AssertManagerTableWidget.selectionModel()
             selModel.select(
                 index, QtGui.QItemSelectionModel.Select |
