@@ -374,9 +374,9 @@ class EntityTreeModel(QtCore.QAbstractItemModel):
 
         elif role == QtCore.Qt.TextAlignmentRole:
             if column == 1:
-                return QtCore.Qt.AlignRight
+                return QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter
             else:
-                return QtCore.Qt.AlignLeft
+                return QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter
 
         return None
 
