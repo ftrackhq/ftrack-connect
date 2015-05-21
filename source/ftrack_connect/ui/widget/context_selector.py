@@ -10,12 +10,12 @@ from ftrack_connect.ui.theme import applyTheme
 
 
 class ContextSelector(QtGui.QWidget):
+    '''Context browser with entity path field.'''
+
     entityChanged = QtCore.Signal(object)
 
     def __init__(self, currentEntity, parent=None):
-        '''Initialise ContextSelector widget with the *currentEntity* and
-        *parent* widget.
-        '''
+        '''Initialise with the *currentEntity* and *parent* widget.'''
         super(ContextSelector, self).__init__(parent=parent)
         self._entity = currentEntity
         self.entityBrowser = entityBrowser.EntityBrowser()
@@ -40,7 +40,7 @@ class ContextSelector(QtGui.QWidget):
         )
 
     def reset(self, entity=None):
-        '''reset browser to the given *entity* or the default one'''
+        '''Reset browser to the given *entity* or the default one.'''
         currentEntity = entity or self._entity
         self.entityPath.setEntity(currentEntity)
         self.setEntity(currentEntity)

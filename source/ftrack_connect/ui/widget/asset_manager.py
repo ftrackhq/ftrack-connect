@@ -76,7 +76,7 @@ class Ui_AssetManager(object):
 
         self.retranslateUi(AssetManager)
 
-        # signals
+        # Connect signals.
         self.refreshButton.clicked.connect(
             AssetManager.refreshAssetManager
         )

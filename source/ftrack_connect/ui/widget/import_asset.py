@@ -204,16 +204,16 @@ class FtrackImportAssetDialog(QtGui.QDialog):
         )
         try:
             self.connector.importAsset(importObj)
-        except Exception, e:
+        except Exception, error:
             self.headerWidget.setMessage(
-                str(e.message), 'error'
+                str(error.message), 'error'
             )
             return
 
         self.headerWidget.setMessage(
-            'Imported %s.%s:v%s' % (
+            u'Imported {0}.{1}:v{2}'.format(
                 asset_name, component.getName(), assetVersion.getVersion()
-                )
+            )
         )
 
     def clickedAssetVSignal(self, assetVid):
@@ -224,4 +224,3 @@ class FtrackImportAssetDialog(QtGui.QDialog):
     def clickedIdSignal(self, ftrackId):
         '''Handle click signal.'''
         self.listAssetsTableWidget.initView(ftrackId)
-
