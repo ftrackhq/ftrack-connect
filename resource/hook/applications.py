@@ -148,6 +148,21 @@ class LaunchApplicationHook(object):
 
 def register(registry, **kw):
     '''Register hooks.'''
+
+    logger = logging.getLogger(
+        'ftrack_connect:applications.register'
+    )
+
+    # Validate that registry is an instance of ftrack.Registry. If not,
+    # assume that register is being called from a new or incompatible API and
+    # return without doing anything.
+    if not isinstance(registry, ftrack.Registry):
+        logger.debug(
+            'Not subscribing plugin as passed argument {0!r} is not an '
+            'ftrack.Registry instance.'.format(registry)
+        )
+        return
+
     applicationStore = ftrack_connect.application.ApplicationStore()
 
     ftrack.EVENT_HUB.subscribe(
