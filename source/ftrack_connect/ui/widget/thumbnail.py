@@ -92,6 +92,7 @@ class Base(QtGui.QLabel):
         return html
 
     def paintEvent(self, event):
+        '''Override paint event to make round thumbnails.'''
         painter = QtGui.QPainter(self)
         painter.setRenderHints(
             QtGui.QPainter.Antialiasing,
@@ -119,6 +120,9 @@ class Base(QtGui.QLabel):
 
 
 class User(Base):
+    '''Represent a user thumbnail.'''
+
     def _download(self, reference):
+        '''Return thumbnail from *reference*.'''
         url = ftrack.User(reference).getThumbnail()
         return super(User, self)._download(url)
