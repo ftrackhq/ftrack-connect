@@ -9,6 +9,7 @@ import ftrack_connect.ui.widget.label
 import ftrack_connect.ui.widget.user_list
 import ftrack_connect.ui.widget.user
 import ftrack_connect.ui.widget.chat
+import ftrack_connect.error
 
 
 CHAT_MESSAGES = dict()
@@ -193,7 +194,7 @@ class Crew(QtGui.QWidget):
         if user:
             try:
                 user.updateSession(data)
-            except ValueError:
+            except ftrack_connect.error.CrewSessionError:
                 self.onEnter(data)
 
     def onExit(self, data):

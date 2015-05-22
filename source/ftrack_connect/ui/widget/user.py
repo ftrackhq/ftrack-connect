@@ -5,6 +5,7 @@ import arrow
 from PySide import QtGui, QtCore
 import copy
 
+import ftrack_connect.error
 import ftrack_connect.ui.widget.label
 import ftrack_connect.ui.widget.thumbnail
 
@@ -199,7 +200,9 @@ class User(QtGui.QFrame):
         '''Update a session with *sessionId*.'''
 
         if not data['session_id'] in self._applications:
-            raise ValueError('"session_id" not present in user sessions.')
+            raise ftrack_connect.error.CrewSessionError(
+                '"session_id" not present in user sessions.'
+            )
 
         self.addSession(data)
 
