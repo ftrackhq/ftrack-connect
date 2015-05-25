@@ -44,6 +44,21 @@ def callback(event):
 
 def register(registry, **kw):
     '''Register hook.'''
+
+    logger = logging.getLogger(
+        'ftrack_connect:make_web_playable.register'
+    )
+
+    # Validate that registry is an instance of ftrack.Registry. If not,
+    # assume that register is being called from a new or incompatible API and
+    # return without doing anything.
+    if not isinstance(registry, ftrack.Registry):
+        logger.debug(
+            'Not subscribing plugin as passed argument {0!r} is not an '
+            'ftrack.Registry instance.'.format(registry)
+        )
+        return
+
     ftrack.EVENT_HUB.subscribe(
         'topic=ftrack.connect.publish.make-web-playable',
         callback
