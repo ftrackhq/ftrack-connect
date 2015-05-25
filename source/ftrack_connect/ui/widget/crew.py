@@ -9,6 +9,7 @@ import ftrack_connect.ui.widget.label
 import ftrack_connect.ui.widget.user_list
 import ftrack_connect.ui.widget.user
 import ftrack_connect.ui.widget.chat
+import ftrack_connect.error
 
 
 CHAT_MESSAGES = dict()
@@ -182,19 +183,19 @@ class Crew(QtGui.QWidget):
         group = self._classifier(user._userId)
         user.group = group
 
-        user.addSession(
-            data['session_id'], data['timestamp'], data['application']
-        )
+        user.addSession(data)
 
         self.userList.updatePosition(user)
 
     def onHeartbeat(self, data):
         '''Handle heartbeat events with *data*.'''
         user = self.userList.getUser(data['user']['id'])
+
         if user:
-            user.updateSession(
-                data['session_id'], data['timestamp'], data.get('activity')
-            )
+            try:
+                user.updateSession(data)
+            except ftrack_connect.error.CrewSessionError:
+                self.onEnter(data)
 
     def onExit(self, data):
         '''Handle exit events with *data*.'''

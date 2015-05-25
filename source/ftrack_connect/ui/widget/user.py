@@ -5,6 +5,7 @@ import arrow
 from PySide import QtGui, QtCore
 import copy
 
+import ftrack_connect.error
 import ftrack_connect.ui.widget.label
 import ftrack_connect.ui.widget.thumbnail
 
@@ -181,24 +182,29 @@ class User(QtGui.QFrame):
         '''Set id to *componentId*.'''
         self._id = componentId
 
-    def addSession(self, sessionId, timestamp, application):
+    def addSession(self, data):
         '''Add new session.'''
         value = self.value()
 
-        application = copy.deepcopy(application)
-        application['timestamp'] = timestamp
+        sessionId = data['session_id']
+        application = copy.deepcopy(data['application'])
+        application['timestamp'] = data['timestamp']
+
         value['applications'][sessionId] = application
+        value['applications'][sessionId]['timestamp'] = data['timestamp']
+        value['applications'][sessionId]['activity'] = data['activity']
 
         self.setValue(value)
 
-    def updateSession(self, sessionId, timestamp, activity):
+    def updateSession(self, data):
         '''Update a session with *sessionId*.'''
-        value = self.value()
 
-        value['applications'][sessionId]['timestamp'] = timestamp
-        value['applications'][sessionId]['activity'] = activity
+        if not data['session_id'] in self._applications:
+            raise ftrack_connect.error.CrewSessionError(
+                '"session_id" not present in user sessions.'
+            )
 
-        self.setValue(value)
+        self.addSession(data)
 
     def removeSession(self, sessionId):
         '''Remove session with *sessionId*.'''
