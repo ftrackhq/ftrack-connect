@@ -241,3 +241,5 @@ class DataDropZone(QtGui.QFrame):
 
         for path in remainders:
             self.dataSelected.emit(path)
+
+        event.accept()
