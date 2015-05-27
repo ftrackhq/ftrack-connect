@@ -7,6 +7,13 @@
 Release Notes
 *************
 
+.. release:: next
+
+    .. change:: fixed
+        :tags: Publisher
+
+        File browser not being refreshed if closed and reopened.
+
 .. release:: 0.1.10
     :date: 2015-05-06
 
