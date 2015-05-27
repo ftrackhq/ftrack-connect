@@ -152,6 +152,15 @@ class DataDropZone(QtGui.QFrame):
                     item = item.decode('utf-8')
                 self.dataSelected.emit(item)
 
+        # TODO: This is fragile and should probably be available as public
+        # reload method in the Riffle project.
+        currentLocation = self._dialog._locationWidget.itemData(
+            self._dialog._locationWidget.currentIndex()
+        )
+
+        self._dialog._filesystemWidget.model().sourceModel().reset()
+        self._dialog.setLocation(currentLocation)
+
     def _setDropZoneState(self, state='default'):
         '''Set drop zone state to *state*.
 
