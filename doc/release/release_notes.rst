@@ -8,13 +8,16 @@ Release Notes
 *************
 
 .. release:: next
+    
+    .. change:: changed
+        :tags: Publisher
+
+        File browser now defaults to home directory.
 
     .. change:: fixed
         :tags: Publisher
 
         File browser crashes if file is removed or renamed.
-
-.. release:: next
 
     .. change:: fixed
         :tags: Publisher

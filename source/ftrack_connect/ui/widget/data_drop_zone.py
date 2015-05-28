@@ -55,7 +55,7 @@ def __init__(self, head, tail, padding, indexes=None):
     if indexes is not None:
         self.indexes.update(indexes)
 
-clique.collection.Collection.__init__ = __init__ 
+clique.collection.Collection.__init__ = __init__
 
 
 def data(self, index, role):
@@ -136,7 +136,7 @@ class DataDropZone(QtGui.QFrame):
 
         homeFolder = os.path.expanduser('~')
         if os.path.isdir(homeFolder):
-            self._currentLocation = os.path.expanduser('~')
+            self._currentLocation = homeFolder
 
     def _setupConnections(self):
         '''Setup connections to signals.'''
