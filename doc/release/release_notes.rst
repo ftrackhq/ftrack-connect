@@ -12,6 +12,13 @@ Release Notes
     .. change:: fixed
         :tags: Publisher
 
+        File browser crashes if file is removed or renamed.
+
+.. release:: next
+
+    .. change:: fixed
+        :tags: Publisher
+
         File browser not being refreshed if closed and reopened.
 
 .. release:: 0.1.10

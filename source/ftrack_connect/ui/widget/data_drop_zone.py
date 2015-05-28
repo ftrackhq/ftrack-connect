@@ -132,10 +132,11 @@ class DataDropZone(QtGui.QFrame):
             self._browseButton, alignment=topCenterAlignment
         )
 
-        self._dialog = riffle.browser.FilesystemBrowser(parent=self)
-        self._dialog.setMinimumSize(900, 500)
-
         self._setupConnections()
+
+        homeFolder = os.path.expanduser('~')
+        if os.path.isdir(homeFolder):
+            self._currentLocation = os.path.expanduser('~')
 
     def _setupConnections(self):
         '''Setup connections to signals.'''
@@ -143,8 +144,16 @@ class DataDropZone(QtGui.QFrame):
 
     def _browse(self):
         '''Show browse dialog and emit dataSelected signal on file select.'''
-        if self._dialog.exec_():
-            selected = self._dialog.selected()
+        # Recreate browser on each browse to avoid issues where files are
+        # removed and also get rid of any caching issues.
+        dialog = riffle.browser.FilesystemBrowser(parent=self)
+        dialog.setMinimumSize(900, 500)
+
+        if self._currentLocation:
+            dialog.setLocation(self._currentLocation)
+
+        if dialog.exec_():
+            selected = dialog.selected()
             if selected:
                 item = selected[0]
                 # Convert to unicode.
@@ -154,12 +163,11 @@ class DataDropZone(QtGui.QFrame):
 
         # TODO: This is fragile and should probably be available as public
         # reload method in the Riffle project.
-        currentLocation = self._dialog._locationWidget.itemData(
-            self._dialog._locationWidget.currentIndex()
+        self._currentLocation = dialog._locationWidget.itemData(
+            dialog._locationWidget.currentIndex()
         )
 
-        self._dialog._filesystemWidget.model().sourceModel().reset()
-        self._dialog.setLocation(currentLocation)
+        dialog.destroy()
 
     def _setDropZoneState(self, state='default'):
         '''Set drop zone state to *state*.
