@@ -215,7 +215,8 @@ class DataDropZone(QtGui.QFrame):
 
     def clear(self):
         '''Clear the browser to it's initial state.'''
-        self._dialog.setLocation('')
+        # Since the dialog is re-created when opened, we don't need to clear it.
+        pass
 
     def dragEnterEvent(self, event):
         '''Override dragEnterEvent and accept all events.'''
