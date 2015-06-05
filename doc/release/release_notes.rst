@@ -7,7 +7,8 @@
 Release Notes
 *************
 
-.. release:: next
+.. release:: 0.1.11
+    :date: 2015-06-05
     
     .. change:: changed
         :tags: Publisher
