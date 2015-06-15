@@ -55,7 +55,7 @@ def __init__(self, head, tail, padding, indexes=None):
     if indexes is not None:
         self.indexes.update(indexes)
 
-clique.collection.Collection.__init__ = __init__ 
+clique.collection.Collection.__init__ = __init__
 
 
 def data(self, index, role):
@@ -132,10 +132,11 @@ class DataDropZone(QtGui.QFrame):
             self._browseButton, alignment=topCenterAlignment
         )
 
-        self._dialog = riffle.browser.FilesystemBrowser(parent=self)
-        self._dialog.setMinimumSize(900, 500)
-
         self._setupConnections()
+
+        homeFolder = os.path.expanduser('~')
+        if os.path.isdir(homeFolder):
+            self._currentLocation = homeFolder
 
     def _setupConnections(self):
         '''Setup connections to signals.'''
@@ -143,14 +144,30 @@ class DataDropZone(QtGui.QFrame):
 
     def _browse(self):
         '''Show browse dialog and emit dataSelected signal on file select.'''
-        if self._dialog.exec_():
-            selected = self._dialog.selected()
+        # Recreate browser on each browse to avoid issues where files are
+        # removed and also get rid of any caching issues.
+        dialog = riffle.browser.FilesystemBrowser(parent=self)
+        dialog.setMinimumSize(900, 500)
+
+        if self._currentLocation:
+            dialog.setLocation(self._currentLocation)
+
+        if dialog.exec_():
+            selected = dialog.selected()
             if selected:
                 item = selected[0]
                 # Convert to unicode.
                 if isinstance(item, str):
                     item = item.decode('utf-8')
                 self.dataSelected.emit(item)
+
+        # TODO: This is fragile and should probably be available as public
+        # reload method in the Riffle project.
+        self._currentLocation = dialog._locationWidget.itemData(
+            dialog._locationWidget.currentIndex()
+        )
+
+        dialog.destroy()
 
     def _setDropZoneState(self, state='default'):
         '''Set drop zone state to *state*.
@@ -198,7 +215,8 @@ class DataDropZone(QtGui.QFrame):
 
     def clear(self):
         '''Clear the browser to it's initial state.'''
-        self._dialog.setLocation('')
+        # Since the dialog is re-created when opened, we don't need to clear it.
+        pass
 
     def dragEnterEvent(self, event):
         '''Override dragEnterEvent and accept all events.'''
@@ -241,3 +259,5 @@ class DataDropZone(QtGui.QFrame):
 
         for path in remainders:
             self.dataSelected.emit(path)
+
+        event.accept()
