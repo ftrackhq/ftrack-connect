@@ -219,6 +219,7 @@ configuration = dict(
         'lowdown >= 0.1.0, < 1'
     ],
     install_requires=[
+        'ftrack-python-api >= 0.5.1, < 0.6',
         'PySide >= 1.2.2, < 2',
         'Riffle >= 0.1.0, < 2'
     ],
