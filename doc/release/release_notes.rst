@@ -7,6 +7,13 @@
 Release Notes
 *************
 
+.. release:: next
+
+    .. change:: new
+        :tags: Publisher
+
+        Support custom object types and icons in entity browser.
+
 .. release:: 0.1.11
     :date: 2015-06-05
     
