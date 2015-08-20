@@ -41,18 +41,11 @@
     <qresource prefix='ftrack/image/light'>
         <file alias='selectedTab'>image/light/selected_tab.png</file>
         <file alias='downArrow'>image/light/down_arrow.png</file>
-        <file alias='upArrow'>image/light/up_arrow.png</file>
-        <file alias='upArrowDark'>image/light/up_arrow_dark.png</file>
+        <file alias='upArrow'>image/light/up_arrow.svg</file>
         <file alias='trash'>image/light/trash.png</file>
         <file alias='play'>image/light/play2.svg</file>
-        <file alias='reload'>image/light/spinner2.svg</file>
-        <file alias='asset'>image/light/asset.png</file>
-        <file alias='episode'>image/light/episode.png</file>
-        <file alias='folder'>image/light/folder.png</file>
-        <file alias='folder_open'>image/light/folder_open.png</file>
-        <file alias='home'>image/light/home.png</file>
-        <file alias='shot'>image/light/shot.png</file>
-        <file alias='task'>image/light/task.png</file>
+        <file alias='project'>image/light/project.svg</file>
+        <file alias='reload'>image/light/refresh.svg</file>
         <file alias='ftrackLogoColor'>image/logo_colour.svg</file>
         <file alias='ftrackLogoGrey'>image/logo_grey_dark.svg</file>
         <file alias='radiobutton_unchecked'>image/light/radiobutton/radiobutton_unchecked.png</file>
@@ -62,21 +55,33 @@
         <file alias='radiobutton_checked_hover'>image/light/radiobutton/radiobutton_checked_hover.png</file>
         <file alias='radiobutton_checked_pressed'>image/light/radiobutton/radiobutton_checked_pressed.png</file>
     </qresource>
+    <qresource prefix='ftrack/image/light/object_type'>
+        <file alias='task'>image/light/object_type/task.svg</file>
+        <file alias='milestone'>image/light/object_type/milestone.svg</file>
+        <file alias='shot'>image/light/object_type/video.svg</file>
+        <file alias='episode'>image/light/object_type/tv.svg</file>
+        <file alias='asset_build'>image/light/object_type/asset.svg</file>
+        <file alias='folder'>image/light/object_type/folder.svg</file>
+        <file alias='default'>image/light/object_type/folder.svg</file>
+        <file alias='folder_shared'>image/light/object_type/folder-shared.svg</file>
+        <file alias='folder_special'>image/light/object_type/folder-special.svg</file>
+        <file alias='widgets'>image/light/object_type/widgets.svg</file>
+        <file alias='extension'>image/light/object_type/extension.svg</file>
+        <file alias='audio'>image/light/object_type/audio.svg</file>
+        <file alias='image'>image/light/object_type/image.svg</file>
+        <file alias='tv'>image/light/object_type/tv.svg</file>
+        <file alias='mic'>image/light/object_type/mic.svg</file>
+        <file alias='camera'>image/light/object_type/camera.svg</file>
+    </qresource>
+
     <qresource prefix='ftrack/image/dark'>
         <file alias='selectedTab'>image/dark/selected_tab.png</file>
         <file alias='downArrow'>image/dark/down_arrow.png</file>
-        <file alias='upArrow'>image/dark/up_arrow.png</file>
-        <file alias='upArrowDark'>image/dark/up_arrow_dark.png</file>
+        <file alias='upArrow'>image/dark/up_arrow.svg</file>
         <file alias='trash'>image/dark/trash.png</file>
         <file alias='play'>image/dark/play2.svg</file>
-        <file alias='reload'>image/dark/spinner2.svg</file>
-        <file alias='asset'>image/dark/asset.png</file>
-        <file alias='episode'>image/dark/episode.png</file>
-        <file alias='folder'>image/dark/folder.png</file>
-        <file alias='folder_open'>image/dark/folder_open.png</file>
-        <file alias='home'>image/dark/home.png</file>
-        <file alias='shot'>image/dark/shot.png</file>
-        <file alias='task'>image/dark/task.png</file>
+        <file alias='reload'>image/dark/refresh.svg</file>
+        <file alias='project'>image/dark/project.svg</file>
         <file alias='ftrackLogoColor'>image/logo_colour.svg</file>
         <file alias='ftrackLogoGrey'>image/logo_grey.svg</file>
         <file alias='ftrackLogoGrey'>image/logo_grey_dark.svg</file>
@@ -86,5 +91,23 @@
         <file alias='radiobutton_checked'>image/dark/radiobutton/radiobutton_checked.png</file>
         <file alias='radiobutton_checked_hover'>image/dark/radiobutton/radiobutton_checked_hover.png</file>
         <file alias='radiobutton_checked_pressed'>image/dark/radiobutton/radiobutton_checked_pressed.png</file>
+    </qresource>
+    <qresource prefix='ftrack/image/dark/object_type'>
+        <file alias='task'>image/dark/object_type/task.svg</file>
+        <file alias='milestone'>image/dark/object_type/milestone.svg</file>
+        <file alias='shot'>image/dark/object_type/video.svg</file>
+        <file alias='episode'>image/dark/object_type/tv.svg</file>
+        <file alias='asset_build'>image/dark/object_type/asset.svg</file>
+        <file alias='folder'>image/dark/object_type/folder.svg</file>
+        <file alias='default'>image/dark/object_type/folder.svg</file>
+        <file alias='folder_shared'>image/dark/object_type/folder-shared.svg</file>
+        <file alias='folder_special'>image/dark/object_type/folder-special.svg</file>
+        <file alias='widgets'>image/dark/object_type/widgets.svg</file>
+        <file alias='extension'>image/dark/object_type/extension.svg</file>
+        <file alias='audio'>image/dark/object_type/audio.svg</file>
+        <file alias='image'>image/dark/object_type/image.svg</file>
+        <file alias='tv'>image/dark/object_type/tv.svg</file>
+        <file alias='mic'>image/dark/object_type/mic.svg</file>
+        <file alias='camera'>image/dark/object_type/camera.svg</file>
     </qresource>
 </RCC>

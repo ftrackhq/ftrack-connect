@@ -154,7 +154,12 @@ class Publisher(QtGui.QWidget):
         if self.entityBrowser.exec_():
             selected = self.entityBrowser.selected()
             if selected:
-                self.setEntity(selected[0])
+                # Translate new api entity to instance of ftrack.Task
+                # TODO: this should not be necessary once connect has been
+                # updated to use the new api.
+                entity = ftrack.Task(selected[0]['id'])
+
+                self.setEntity(entity)
             else:
                 self.setEntity(None)
 
@@ -164,16 +169,8 @@ class Publisher(QtGui.QWidget):
         if len(selection) == 1:
             entity = selection[0]
 
-            # Prevent selecting Projects or Tasks directly under a Project to
-            # match web interface behaviour.
-            if isinstance(entity, ftrack.Task):
-                objectType = entity.getObjectType()
-                if (
-                    objectType == 'Task'
-                    and isinstance(entity.getParent(), ftrack.Project)
-                ):
-                    return
-
+            # Prevent selecting Projects 
+            if entity.entity_type != 'Project':
                 self.entityBrowser.acceptButton.setDisabled(False)
 
     def _pickLocation(self, manageData=False):
