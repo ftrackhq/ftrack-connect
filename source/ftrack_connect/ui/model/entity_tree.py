@@ -188,7 +188,7 @@ class Context(Item):
             (
                 'select name, object_type_id, object_type.name, '
                 'object_type.is_leaf, object_type.icon from AbstractTask '
-                'where parent_id is {}'
+                'where parent_id is {0}'
             ).format(self.entity['id'])
         )
         for entity in entities:
