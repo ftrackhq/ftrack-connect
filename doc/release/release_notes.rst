@@ -7,7 +7,7 @@
 Release Notes
 *************
 
-.. release:: next
+.. release:: 0.1.12
 
     .. change:: new
         :tags: Publisher
