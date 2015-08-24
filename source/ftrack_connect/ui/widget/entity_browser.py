@@ -3,7 +3,10 @@
 #             Copyright (c) 2014 Martin Pengelly-Phillips
 # :notice: Derived from Riffle (https://github.com/4degrees/riffle)
 
+import os
+
 from PySide import QtGui, QtCore
+import ftrack_api
 
 import ftrack_connect.ui.model.entity_tree
 import ftrack_connect.ui.widget.overlay
@@ -31,6 +34,17 @@ class EntityBrowser(QtGui.QDialog):
         self._selected = []
         self._updatingNavigationBar = False
 
+        # Create API session using credentials as stored by the application
+        # when logging in.
+        # TODO: Reconsider this approach once updated to use the new api 
+        # throughout.
+        self._session = ftrack_api.Session(
+            server_url=os.environ['FTRACK_SERVER'],
+            api_key=os.environ['FTRACK_APIKEY'],
+            api_user=os.environ['LOGNAME'],
+            auto_connect_event_hub=False
+        )
+
         self._construct()
         self._postConstruction()
 
@@ -47,7 +61,7 @@ class EntityBrowser(QtGui.QDialog):
 
         self.navigateUpButton = QtGui.QToolButton()
         self.navigateUpButton.setIcon(
-            QtGui.QIcon(':ftrack/image/light/upArrowDark')
+            QtGui.QIcon(':ftrack/image/light/upArrow')
         )
         self.navigateUpButton.setToolTip('Navigate up a level.')
         self.headerLayout.addWidget(self.navigateUpButton)
@@ -75,7 +89,7 @@ class EntityBrowser(QtGui.QDialog):
 
         proxy = ftrack_connect.ui.model.entity_tree.EntityTreeProxyModel(self)
         model = ftrack_connect.ui.model.entity_tree.EntityTreeModel(
-            root=self._root, parent=self
+            self._session, root=self._root, parent=self
         )
         proxy.setSourceModel(model)
         proxy.setDynamicSortFilter(True)
