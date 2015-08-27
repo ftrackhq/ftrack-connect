@@ -7,6 +7,13 @@
 Release Notes
 *************
 
+.. release:: Upcoming
+
+    .. change:: changed
+        :tags: Publisher
+
+        Update entity browser to support updated naming convention.
+
 .. release:: 0.1.12
 
     .. change:: new
