@@ -98,9 +98,6 @@ class WebView(QtGui.QFrame):
         self._webView = QtWebKit.QWebView()
         layout.addWidget(self._webView)
 
-        self.setWindowTitle(self._display_name)
-        self.setObjectName(self._identifier)
-
         self.set_url(url)
 
     def set_url(self, url):
