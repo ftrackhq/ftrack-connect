@@ -24,14 +24,13 @@ def ItemFactory(session, entity):
 class Item(object):
     '''Represent ftrack entity with consistent interface.'''
 
-    def __init__(self, session, entity):
+    def __init__(self, entity):
         '''Initialise item with *entity*.'''
         super(Item, self).__init__()
         self.entity = entity
 
         self.children = []
         self.parent = None
-        self._session = session
         self._fetched = False
 
     def __repr__(self):
@@ -144,7 +143,8 @@ class Root(Item):
 
     def __init__(self, session):
         '''Initialise item.'''
-        super(Root, self).__init__(session, None)
+        self._session = session
+        super(Root, self).__init__(None)
 
     @property
     def name(self):
@@ -167,6 +167,11 @@ class Root(Item):
 
 class Context(Item):
     '''Represent context entity.'''
+
+    def __init__(self, session, entity):
+        '''Initialise item.'''
+        self._session = session
+        super(Context, self).__init__(entity)
 
     @property
     def type(self):
@@ -233,7 +238,7 @@ class EntityTreeModel(QtCore.QAbstractItemModel):
     def __init__(self, session=None, root=None, parent=None):
         '''Initialise with *root* entity and optional *parent*.'''
         super(EntityTreeModel, self).__init__(parent=parent)
-        self.root = ItemFactory(session, root)
+        self.root = root
         self.columns = ['Name', 'Type']
 
     def rowCount(self, parent):

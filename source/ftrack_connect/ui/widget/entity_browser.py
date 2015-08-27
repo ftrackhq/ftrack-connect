@@ -89,7 +89,11 @@ class EntityBrowser(QtGui.QDialog):
 
         proxy = ftrack_connect.ui.model.entity_tree.EntityTreeProxyModel(self)
         model = ftrack_connect.ui.model.entity_tree.EntityTreeModel(
-            self._session, root=self._root, parent=self
+            self._session,
+            root=ftrack_connect.ui.model.entity_tree.ItemFactory(
+                session, self._root
+            ),
+            parent=self
         )
         proxy.setSourceModel(model)
         proxy.setDynamicSortFilter(True)
