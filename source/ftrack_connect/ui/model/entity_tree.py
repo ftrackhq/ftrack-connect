@@ -235,7 +235,7 @@ class EntityTreeModel(QtCore.QAbstractItemModel):
     #: Signal that a loading operation has ended.
     loadEnded = QtCore.Signal()
 
-    def __init__(self, session=None, root=None, parent=None):
+    def __init__(self, root=None, parent=None):
         '''Initialise with *root* entity and optional *parent*.'''
         super(EntityTreeModel, self).__init__(parent=parent)
         self.root = root
