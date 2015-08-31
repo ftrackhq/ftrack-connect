@@ -96,7 +96,6 @@ class Notification(QtGui.QWidget):
         )
 
         self.reloadButton = QtGui.QPushButton(reloadIcon, '')
-        self.reloadButton.setFlat(True)
         self.reloadButton.clicked.connect(self.reload)
 
         notesRadio = QtGui.QCheckBox('Show notes')

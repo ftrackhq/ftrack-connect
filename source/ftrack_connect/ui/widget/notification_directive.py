@@ -133,7 +133,7 @@ class StatusNotification(Notification):
 
         data = json.loads(self._event['data'])
 
-        status = session.query('TaskStatus where id is "{0}"'.format(
+        status = session.query('Status where id is "{0}"'.format(
             data['statusid']['new'])
         ).all()
 
