@@ -7,7 +7,16 @@
 Release Notes
 *************
 
+.. release:: 0.1.13
+    :date: 2015-08-31
+
+    .. change:: changed
+        :tags: Publisher
+
+        Update entity browser to support updated naming convention.
+
 .. release:: 0.1.12
+    :date: 2015-08-24
 
     .. change:: new
         :tags: Publisher
