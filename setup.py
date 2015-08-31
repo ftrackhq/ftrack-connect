@@ -40,12 +40,6 @@ README_PATH = os.path.join(os.path.dirname(__file__), 'README.rst')
 
 PACKAGES_PATH = os.path.join(os.path.dirname(__file__), 'source')
 
-ftrack_api_dependency_link = (
-    'file://{0}#egg=ftrack-python-api'
-    .format(os.environ['FTRACK_PYTHON_API'].replace('\\', '/'))
-)
-
-
 # Read version from source.
 with open(os.path.join(
     SOURCE_PATH, 'ftrack_connect', '_version.py'
@@ -241,8 +235,7 @@ configuration = dict(
         (
             'https://bitbucket.org/ftrack/lowdown/get/0.1.0.zip'
             '#egg=lowdown-0.1.0'
-        ),
-        ftrack_api_dependency_link
+        )
     ],
     options={},
     data_files=[
