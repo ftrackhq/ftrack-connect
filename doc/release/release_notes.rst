@@ -7,6 +7,40 @@
 Release Notes
 *************
 
+.. release:: 0.1.13
+    :date: 2015-08-31
+
+    .. change:: changed
+        :tags: Publisher
+
+        Update entity browser to support updated naming convention.
+
+.. release:: 0.1.12
+    :date: 2015-08-24
+
+    .. change:: new
+        :tags: Publisher
+
+        Support custom object types and icons in entity browser.
+
+.. release:: 0.1.11
+    :date: 2015-06-05
+    
+    .. change:: changed
+        :tags: Publisher
+
+        File browser now defaults to home directory.
+
+    .. change:: fixed
+        :tags: Publisher
+
+        File browser crashes if file is removed or renamed.
+
+    .. change:: fixed
+        :tags: Publisher
+
+        File browser not being refreshed if closed and reopened.
+
 .. release:: 0.1.10
     :date: 2015-05-06
 

@@ -4,6 +4,7 @@
 import os
 import getpass
 import platform
+import logging
 
 from PySide import QtGui
 from PySide import QtCore
@@ -50,6 +51,9 @@ class Application(QtGui.QMainWindow):
         '''Initialise the main application window.'''
         theme = kwargs.pop('theme', 'light')
         super(Application, self).__init__(*args, **kwargs)
+        self.logger = logging.getLogger(
+            __name__ + '.' + self.__class__.__name__
+        )
 
         # Register widget for error handling.
         self.uncaughtError = _uncaught_error.UncaughtError(
@@ -196,7 +200,11 @@ class Application(QtGui.QMainWindow):
             settings.setValue('login/username', username)
             settings.setValue('login/apikey', apiKey)
 
-            self.configureConnectAndDiscoverPlugins()
+            try:
+                self.configureConnectAndDiscoverPlugins()
+            except ftrack.EventHubConnectionError as error:
+                self.logger.exception(error)
+                self.loginError.emit(str(error))
 
     def configureConnectAndDiscoverPlugins(self):
         '''Configure connect and load plugins.'''
