@@ -92,17 +92,13 @@ class Notification(QtGui.QWidget):
         self.setLayout(layout)
 
         reloadIcon = QtGui.QIcon(
-            QtGui.QPixmap(':/ftrack/image/light/reload')
+            QtGui.QPixmap(':/ftrack/image/dark/reload')
         )
 
         self.reloadButton = QtGui.QPushButton(reloadIcon, '')
         self.reloadButton.clicked.connect(self.reload)
 
-        notesRadio = QtGui.QCheckBox('Show notes')
-        changesRadio = QtGui.QCheckBox('Show changes')
-
-        toolbar.addWidget(notesRadio, stretch=1)
-        toolbar.addWidget(changesRadio, stretch=1)
+        toolbar.addWidget(QtGui.QWidget(), stretch=1)
         toolbar.addWidget(self.reloadButton, stretch=0)
 
         layout.addLayout(toolbar)
