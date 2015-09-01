@@ -38,11 +38,6 @@ class Notification(QtGui.QWidget):
         self.dateLabel = QtGui.QLabel()
         verticalLayout.addWidget(self.dateLabel)
 
-        if hasattr(self, '_buttonText'):
-            self.actionButton = QtGui.QPushButton(self._buttonText)
-            self.actionButton.clicked.connect(self._onButtonClicked)
-            self.horizontalLayout.addWidget(self.actionButton)
-
         self.setDate(event['created_at'])
 
         self.setEvent(event)
@@ -94,8 +89,6 @@ class VersionNotification(Notification):
     '''Represent version notification.'''
 
     _type = 'version'
-
-    _buttonText = 'Load version'
 
     def _load(self):
         '''Internal load of data from event.'''
@@ -161,8 +154,6 @@ class PropertyNotification(Notification):
     '''Represent property notification.'''
 
     _type = 'property'
-
-    _buttonText = 'Update'
 
     def _load(self):
         '''Internal load of data from event.'''
