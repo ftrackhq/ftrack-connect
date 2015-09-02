@@ -38,6 +38,8 @@ class Message(QtGui.QFrame):
                     }
                 '''
             )
+            self.sender.setAlignment(QtCore.Qt.AlignRight)
+            self.text.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignRight)
         else:
             self.sender.setStyleSheet(
                 '''
@@ -46,8 +48,6 @@ class Message(QtGui.QFrame):
                     }
                 '''
             )
-            self.sender.setAlignment(QtCore.Qt.AlignRight)
-            self.text.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignRight)
 
 
 class Feed(ftrack_connect.ui.widget.item_list.ItemList):
@@ -70,7 +70,8 @@ class Feed(ftrack_connect.ui.widget.item_list.ItemList):
     def _createChatMessageWidget(self, message):
         '''Create a message widget from *message*.'''
         return Message(
-            message['text'], message['sender']['name'],
+            message['text'],
+            message['name'],
             message.get('me', False)
         )
 

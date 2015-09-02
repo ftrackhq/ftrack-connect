@@ -41,10 +41,11 @@ class WidgetHarness(Harness):
         widget = QtGui.QWidget()
         widget.setLayout(QtGui.QVBoxLayout())
         widget.setMinimumSize(QtCore.QSize(600, 600))
+        user = ftrack.getUser(getpass.getuser())
 
         self.crewHub = MyCrewHub()
         self.crew = ftrack_connect.ui.widget.crew.Crew(
-            self.groups, hub=self.crewHub
+            self.groups, user, hub=self.crewHub
         )
         widget.layout().addWidget(self.crew)
 
@@ -70,6 +71,10 @@ class WidgetHarness(Harness):
         }
 
         self.crewHub.enter(data)
+
+        widget.activateWindow()
+        widget.show()
+        widget.raise_()
 
         return widget
 

@@ -2,8 +2,11 @@
 # :copyright: Copyright (c) 2015 ftrack
 
 import logging
+import datetime
+import operator
 
 from PySide import QtGui
+import ftrack_api
 
 import ftrack_connect.ui.widget.label
 import ftrack_connect.ui.widget.user_list
@@ -12,20 +15,8 @@ import ftrack_connect.ui.widget.chat
 import ftrack_connect.error
 
 
-CHAT_MESSAGES = dict()
-
-
-def addMessageHistory(id, message):
-    '''Add *message* to history with *id*.'''
-    if id not in CHAT_MESSAGES:
-        CHAT_MESSAGES[id] = []
-
-    CHAT_MESSAGES[id].append(message)
-
-
-def getMessageHistory(id):
-    '''Return message history.'''
-    return CHAT_MESSAGES.get(id, [])
+logger = logging.getLogger(__name__)
+_session = ftrack_api.Session()
 
 
 def defaultClassifier(userId):
@@ -36,8 +27,10 @@ def defaultClassifier(userId):
 class Crew(QtGui.QWidget):
     '''User presence widget.'''
 
-    def __init__(self, groups, hub=None, classifier=None, parent=None):
-        '''Instantiate widget with *users* and *groups*.
+    def __init__(
+            self, groups, user, hub=None, classifier=None, parent=None
+    ):
+        '''Instantiate widget with and *groups* and *userId*.
 
         If *hub* is configured the Crew widget will connect listeners for::
 
@@ -51,7 +44,10 @@ class Crew(QtGui.QWidget):
         self.setObjectName('crew')
         self.setContentsMargins(0, 0, 0, 0)
 
-        self.currentUserId = None
+        self.user = user
+        self.conversationUserId = None
+        self.currentConversation = None
+
         self.hub = hub
 
         self.logger = logging.getLogger(
@@ -111,7 +107,7 @@ class Crew(QtGui.QWidget):
         self.userContainer.hide()
 
         self.userList.setMinimumWidth(180)
-        self.userList.itemClicked.connect(self._itemClickedHandler)
+        self.userList.itemClicked.connect(self.onConversationSelected)
 
         # Setup signal handlers if hub is configured.
         if hub:
@@ -208,26 +204,42 @@ class Crew(QtGui.QWidget):
     def onMessageReceived(self, message):
         '''Handle *message* received.'''
         sender = message['sender']['id']
-        addMessageHistory(sender, message)
-
-        if sender == self.currentUserId:
-            self.chat.addMessage(message)
+        if sender == self.conversationUserId:
+            self.chat.addMessage(
+                dict(
+                    text=message['text'],
+                    name=message['sender']['name']
+                )
+            )
 
     def onChatMessageSubmitClicked(self, messageText):
         '''Handle message submitted clicked.'''
-        message = self.hub.sendMessage(self.currentUserId, messageText)
-        message['me'] = True
-        addMessageHistory(message['receiver'], message)
-        self.chat.addMessage(message)
 
-    def _itemClickedHandler(self, value):
-        '''Handle item clicked event.'''
-        self.currentUserId = value['userId']
+        try:
+            self.persistMessage(messageText)
+        except Exception:
+            pass
+        else:
+            message = self.hub.sendMessage(
+                self.conversationUserId, messageText
+            )
+
+            self.chat.addMessage(
+                dict(
+                    text=message['text'],
+                    name=message['sender']['name'],
+                    me=True
+                )
+            )
+
+    def onConversationSelected(self, value):
+        '''Handle conversation selected events.'''
+        self.updateCurrentConversation(value['userId'])
 
         if self._extendedUser is None:
             self._extendedUser = ftrack_connect.ui.widget.user.UserExtended(
                 value.get('name'),
-                self.currentUserId,
+                self.conversationUserId,
                 value.get('applications')
             )
 
@@ -236,8 +248,82 @@ class Crew(QtGui.QWidget):
         else:
             self._extendedUser.updateInformation(
                 value.get('name'),
-                self.currentUserId,
+                self.conversationUserId,
                 value.get('applications')
             )
 
-        self.chat.load(getMessageHistory(self.currentUserId))
+        messages = _session.query(
+            'select text, created_by.first_name, created_by.last_name, '
+            'created_by_id, created_at from Message where '
+            'conversation_id is "{0}"'.format(
+            self.self.currentConversation['id']
+        )).all()
+
+        formattedMessages = sorted([
+            dict(
+                text=message['text'],
+                name='{0} {1}'.format(
+                    message['created_by']['first_name'],
+                    message['created_by']['last_name']
+                ),
+                me=message['created_by_id'] == self.user.getId(),
+                created_at=message['created_at']
+            )
+            for message in messages
+        ], key=operator.itemgetter('created_at'))
+
+        self.chat.load(formattedMessages)
+
+    def persistMessage(self, message):
+        '''Persist *message* to current conversation.'''
+        self.currentConversation.session.create('Message', {
+            'text': message,
+            'conversation_id': self.currentConversation['id']
+        })
+        self.currentConversation.session.commit()
+
+    def updateCurrentConversation(self, otherId):
+        '''Update currently active conversation with *otherId*.
+
+        Will get or create conversation for current user and user with
+        *otherId*.
+
+        The last_visit attribute will be updated to now.
+
+        '''
+        self.conversationUserId = otherId
+
+        self.logger.debug('Retrieving conversation for ("{0}", "{1}")'.format(
+            self.user.getId(), self.conversationUserId
+        ))
+        conversation = _session.query(
+            'select id, participants.resource_id from Conversation '
+            'where participants any (resource_id is "{user_id}") and '
+            'participants any (resource_id is "{other_id}")'.format(
+                user_id=self.user.getId(), other_id=self.conversationUserId
+            )
+        ).first()
+
+        if not conversation:
+            self.logger.debug('Conversation not found, creating new.')
+            conversation = _session.create('Conversation')
+            conversation['participants'].append(
+                _session.create('Participant', {
+                    'resource_id': self.conversationUserId,
+                    'last_visit': datetime.datetime.now()
+                })
+            )
+            conversation['participants'].append(
+                _session.create('Participant', {
+                    'resource_id': self.user.getId(),
+                    'last_visit': datetime.datetime.now()
+                })
+            )
+
+        for participant in conversation['participants']:
+            if participant['resource_id'] == self.user.getId():
+                participant['last_visit'] = datetime.datetime.now()
+
+        conversation.session.commit()
+
+        self.currentConversation = conversation
