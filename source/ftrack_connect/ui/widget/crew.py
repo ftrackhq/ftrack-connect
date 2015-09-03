@@ -67,6 +67,7 @@ class Crew(QtGui.QWidget):
             self.onConversationLoaded
         )
         self.hub.onConversationUpdated.connect(self.onConversationUpdated)
+        self.hub.onConversationSeen.connect(self.onConversationSeen)
 
         groups = [group.lower() for group in groups]
 
@@ -212,6 +213,11 @@ class Crew(QtGui.QWidget):
                         name=message['sender']['name']
                     )
                 )
+        else:
+            self.updateConversationCount(conversationId)
+
+
+
 
     def onChatMessageSubmitClicked(self, messageText):
         '''Handle message submitted clicked.'''
@@ -274,3 +280,20 @@ class Crew(QtGui.QWidget):
 
             self.chat.hideOverlay()
             self.chat.load(formattedMessages)
+
+            self.hub.markConversationAsSeen(conversationId, self.user.getId())
+
+    def onConversationSeen(self, event):
+        '''Handle conversation seen *event*.'''
+        self.updateConversationCount(event['conversation'])
+
+    def updateConversationCount(self, conversationId):
+        '''Update conversation count for *conversationId*.'''
+        messages = self.hub.getConversationUpdates(conversationId)
+        participants = self.hub.getParticipants(conversationId)
+
+        for participant in participants:
+            if participant['resource_id'] != self.user.getId():
+                user = self.userList.getUser(participant['resource_id'])
+                if user:
+                    user.setCount(len(messages))

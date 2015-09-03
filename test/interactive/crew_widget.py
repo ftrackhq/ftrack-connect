@@ -11,6 +11,7 @@ from harness import Harness
 import ftrack_connect.ui.widget.crew
 import ftrack_connect.crew_hub
 import ftrack_connect.event_hub_thread
+import ftrack_connect.ui.theme
 
 
 class MyCrewHub(ftrack_connect.crew_hub.SignalConversationHub):
@@ -76,6 +77,7 @@ class WidgetHarness(Harness):
         widget.show()
         widget.raise_()
 
+        ftrack_connect.ui.theme.applyTheme(widget, 'integration')
         return widget
 
 if __name__ == '__main__':

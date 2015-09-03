@@ -41,7 +41,8 @@ class CrewHub(object):
         )
 
         self._subscriptions = {}
-        self._data = dict(session_id=uuid.uuid1().hex)
+        self._session_id = uuid.uuid1().hex
+        self._data = dict(session_id=self._session_id)
         self._last_activity = None
 
     @property
@@ -257,8 +258,32 @@ class ConversationHub(CrewHub):
 
         self._conversations = collections.defaultdict(list)
         self._session = ftrack_api.Session()
-
         super(ConversationHub, self).__init__(*args, **kwargs)
+
+    def enter(self, *args, **kwargs):
+        '''Enter hub.'''
+        super(ConversationHub, self).enter(*args, **kwargs)
+
+        subscriptionExpression = (
+            'topic=ftrack.conversation.seen '
+            'and source.user.username = {0} '
+            'and data.session_id != {1}'.format(
+                getpass.getuser(), self._session_id
+            )
+        )
+
+        ftrack.EVENT_HUB.subscribe(
+            subscriptionExpression,
+            self._onConversationSeen
+        )
+
+    def _onConversationSeen(self, event):
+        '''Handle conversation seen events.
+
+            Override this method to implement custom logic for conversation
+            seen events.
+        '''
+        pass
 
     def _onConversationMessagesLoaded(self, conversationId, messages):
         '''Handle messages loaded for conversation.
@@ -316,6 +341,15 @@ class ConversationHub(CrewHub):
         ))
         return messages
 
+    def getParticipants(self, conversationId):
+        '''Return participants for conversation with *conversationId*.'''
+        return self._session.query(
+            'select resource_id from Participant where '
+            'conversation_id is "{0}"'.format(
+                conversationId
+            )
+        )
+
     def getConversation(self, userId, otherId):
         '''Return conversation for *userId* and *otherUserId*.
 
@@ -364,9 +398,40 @@ class ConversationHub(CrewHub):
         })
         self._session.commit()
 
-        return super(ConversationCrewHub, self).sendMessage(
+        return super(ConversationHub, self).sendMessage(
             receiverId, text, conversationId=conversationId
         )
+
+    @ftrack_connect.asynchronous.asynchronous
+    def markConversationAsSeen(self, conversationId, resourceId):
+        '''Asyncrounous mark conversations as seen.
+
+        *conversationId* should be the id of the conversation and *participantId*
+        the id of the participant in that conversation.
+
+        '''
+        participant = self._session.query(
+            'select last_visit from Participant where resource_id is '
+            '"{0}" and conversation_id is "{1}"'.format(
+                resourceId, conversationId
+            )
+        ).first()
+
+        self._conversations[conversationId] = []
+
+        if participant:
+            participant['last_visit'] = datetime.datetime.now()
+
+            event = ftrack.Event(
+                topic='ftrack.conversation.seen',
+                data=dict(
+                    conversation=conversationId,
+                    user_id=resourceId,
+                    session_id=self._session_id
+                )
+            )
+            ftrack.EVENT_HUB.publish(event)
+            self._onConversationSeen(event)
 
 
 class SignalConversationHub(ConversationHub, QtCore.QObject):
@@ -386,6 +451,9 @@ class SignalConversationHub(ConversationHub, QtCore.QObject):
 
     #: Signal to emit on conversations messagages loaded.
     onConversationUpdated = QtCore.Signal(object)
+
+    #: Signal to emit on conversation seen.
+    onConversationSeen = QtCore.Signal(object)
 
     def _onHeartbeat(self, event):
         '''Increase subscription time for *event*.'''
@@ -410,3 +478,7 @@ class SignalConversationHub(ConversationHub, QtCore.QObject):
             conversationId
         ))
         self.onConversationUpdated.emit(conversationId)
+
+    def _onConversationSeen(self, event):
+        '''Handle conversation seen event.'''
+        self.onConversationSeen.emit(event['data'])
