@@ -7,6 +7,13 @@
 Release Notes
 *************
 
+.. release:: Upcoming
+
+    .. change:: changed
+        :tags: Actions
+
+        Applications may now include *description* and *variant*.
+
 .. release:: 0.1.13
     :date: 2015-08-31
 
