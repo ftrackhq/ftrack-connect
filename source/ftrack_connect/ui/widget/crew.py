@@ -139,6 +139,8 @@ class Crew(QtGui.QWidget):
             'group': group
         })
 
+        self.hub.populateUnreadConversations(self.user.getId(), userId)
+
         return True
 
     def onEnter(self, data):
@@ -210,9 +212,13 @@ class Crew(QtGui.QWidget):
                 self.chat.addMessage(
                     dict(
                         text=message['text'],
-                        name=message['sender']['name']
+                        name=message['sender']['name'],
+                        me=message['sender']['id'] == self.user.getId()
                     )
                 )
+
+            self.hub.markConversationAsSeen(conversationId, self.user.getId())
+
         else:
             self.updateConversationCount(conversationId)
 
