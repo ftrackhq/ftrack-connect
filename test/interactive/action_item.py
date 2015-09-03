@@ -10,9 +10,11 @@ from harness import Harness
 
 ACTIONS = [
     [dict(
-        label='Mega Modeling 2014',
+        label='Mega Modeling',
+        variant='2014',
+        description='Launch mega modeling description.',
         actionIdentifier='my-action-callback-identifier',
-        icon='http://cdn.sstatic.net/stackoverflow/img/logo-10m.svg?v=fc0904eba1b1',
+        icon='https://www.ftrack.com/wp-content/uploads/logo-75px-3.png',
         actionData=dict(
             applicationIdentifier='mega_modeling_2014'
         )
@@ -47,27 +49,6 @@ ACTIONS = [
 class WidgetHarness(Harness):
     '''Test harness for widget.'''
 
-    def constructWidget2(self):
-        '''Return widget instance to test.'''
-        widget = QtGui.QListView()
-        widget.setViewMode(QtGui.QListView.IconMode)
-        widget.setWordWrap(True)
-        widget.setSpacing(10)
-        widget.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
-        widget.setSelectionMode(QtGui.QAbstractItemView.NoSelection)
-        widget.setModel(QtGui.QStandardItemModel(widget))
-
-        for item in ACTIONS:
-            widget.model().appendRow(ActionItem(item))
-
-        widget.setMouseTracking(True)
-        widget.entered.connect(self._onEntered)
-        widget.clicked.connect(self._onClicked)
-
-        self._view = widget
-        return widget
-
-
     def constructWidget(self):
         '''Return widget instance to test.'''
         widget = ScrollingFlowWidget()
@@ -75,27 +56,7 @@ class WidgetHarness(Harness):
         for item in 10*ACTIONS:
             widget.addWidget(ActionItem(item))
 
-        self._view = widget
         return widget
-
-
-    def _onEntered(self, currentIndex):
-        print 'entered', currentIndex
-        item = self._view.model().itemFromIndex(currentIndex)
-        item.entered()
-
-    def _onClicked(self, currentIndex):
-        print 'clicked', currentIndex
-        item = self._view.model().itemFromIndex(currentIndex)
-        item.clicked()
-
-    def constructController(self, widget):
-        '''Return controller for *widget*.'''
-        controlWidget = QtGui.QWidget()
-        controlLayout = QtGui.QVBoxLayout()
-        controlWidget.setLayout(controlLayout)
-        return controlWidget
-
 
 if __name__ == '__main__':
     raise SystemExit(
