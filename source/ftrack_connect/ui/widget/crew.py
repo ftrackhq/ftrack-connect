@@ -13,7 +13,7 @@ import ftrack_connect.ui.widget.user_list
 import ftrack_connect.ui.widget.user
 import ftrack_connect.ui.widget.chat
 import ftrack_connect.error
-
+import ftrack_connect.ui.widget.overlay
 
 logger = logging.getLogger(__name__)
 _session = ftrack_api.Session()
@@ -28,7 +28,7 @@ class Crew(QtGui.QWidget):
     '''User presence widget.'''
 
     def __init__(
-            self, groups, user, hub=None, classifier=None, parent=None
+            self, groups, user, hub, classifier=None, parent=None
     ):
         '''Instantiate widget with and *groups* and *userId*.
 
@@ -45,8 +45,8 @@ class Crew(QtGui.QWidget):
         self.setContentsMargins(0, 0, 0, 0)
 
         self.user = user
-        self.conversationUserId = None
-        self.currentConversation = None
+        self._currentConversationUserId = None
+        self._currentConversationId = None
 
         self.hub = hub
 
@@ -60,11 +60,13 @@ class Crew(QtGui.QWidget):
 
         self._classifier = classifier
 
-        # Setup signal handlers if hub is configured.
-        if hub:
-            hub.onEnter.connect(self.onEnter)
-            hub.onHeartbeat.connect(self.onHeartbeat)
-            hub.onExit.connect(self.onExit)
+        self.hub.onEnter.connect(self.onEnter)
+        self.hub.onHeartbeat.connect(self.onHeartbeat)
+        self.hub.onExit.connect(self.onExit)
+        self.hub.onConversationMessagesLoaded.connect(
+            self.onConversationLoaded
+        )
+        self.hub.onConversationUpdated.connect(self.onConversationUpdated)
 
         groups = [group.lower() for group in groups]
 
@@ -109,12 +111,6 @@ class Crew(QtGui.QWidget):
         self.userList.setMinimumWidth(180)
         self.userList.itemClicked.connect(self.onConversationSelected)
 
-        # Setup signal handlers if hub is configured.
-        if hub:
-            hub.onEnter.connect(self.onEnter)
-            hub.onHeartbeat.connect(self.onHeartbeat)
-            hub.onExit.connect(self.onExit)
-            hub.onMessageReceived.connect(self.onMessageReceived)
 
     def classifyOnlineUsers(self):
         '''Classify all online users and move them to correct group.'''
@@ -201,45 +197,50 @@ class Crew(QtGui.QWidget):
 
         self.userList.updatePosition(user)
 
-    def onMessageReceived(self, message):
+    def onConversationUpdated(self, conversationId):
         '''Handle *message* received.'''
-        sender = message['sender']['id']
-        if sender == self.conversationUserId:
-            self.chat.addMessage(
-                dict(
-                    text=message['text'],
-                    name=message['sender']['name']
-                )
+        if conversationId == self._currentConversationId:
+
+            messages = self.hub.getConversationUpdates(
+                conversationId, clear=True
             )
+
+            for message in messages:
+                self.chat.addMessage(
+                    dict(
+                        text=message['text'],
+                        name=message['sender']['name']
+                    )
+                )
 
     def onChatMessageSubmitClicked(self, messageText):
         '''Handle message submitted clicked.'''
+        message = self.hub.sendMessage(
+            self._currentConversationUserId,
+            messageText,
+            self._currentConversationId
+        )
 
-        try:
-            self.persistMessage(messageText)
-        except Exception:
-            pass
-        else:
-            message = self.hub.sendMessage(
-                self.conversationUserId, messageText
+        self.chat.addMessage(
+            dict(
+                text=message['text'],
+                name=message['sender']['name'],
+                me=True
             )
-
-            self.chat.addMessage(
-                dict(
-                    text=message['text'],
-                    name=message['sender']['name'],
-                    me=True
-                )
-            )
+        )
 
     def onConversationSelected(self, value):
         '''Handle conversation selected events.'''
-        self.updateCurrentConversation(value['userId'])
+        conversation = self.hub.getConversation(
+            self.user.getId(), value['userId']
+        )
+        self._currentConversationUserId = value['userId']
+        self._currentConversationId = conversation['id']
 
         if self._extendedUser is None:
             self._extendedUser = ftrack_connect.ui.widget.user.UserExtended(
                 value.get('name'),
-                self.conversationUserId,
+                self._currentConversationUserId,
                 value.get('applications')
             )
 
@@ -248,82 +249,28 @@ class Crew(QtGui.QWidget):
         else:
             self._extendedUser.updateInformation(
                 value.get('name'),
-                self.conversationUserId,
+                self._currentConversationUserId,
                 value.get('applications')
             )
 
-        messages = _session.query(
-            'select text, created_by.first_name, created_by.last_name, '
-            'created_by_id, created_at from Message where '
-            'conversation_id is "{0}"'.format(
-            self.self.currentConversation['id']
-        )).all()
+        self.chat.showOverlay()
+        self.hub.loadMessages(conversation['id'])
 
-        formattedMessages = sorted([
-            dict(
-                text=message['text'],
-                name='{0} {1}'.format(
-                    message['created_by']['first_name'],
-                    message['created_by']['last_name']
-                ),
-                me=message['created_by_id'] == self.user.getId(),
-                created_at=message['created_at']
-            )
-            for message in messages
-        ], key=operator.itemgetter('created_at'))
+    def onConversationLoaded(self, conversationId, messages):
+        '''Handle conversation loaded events.'''
+        if conversationId == self._currentConversationId:
+            formattedMessages = sorted([
+                dict(
+                    text=message['text'],
+                    name='{0} {1}'.format(
+                        message['created_by']['first_name'],
+                        message['created_by']['last_name']
+                    ),
+                    me=message['created_by_id'] == self.user.getId(),
+                    created_at=message['created_at']
+                )
+                for message in messages
+            ], key=operator.itemgetter('created_at'))
 
-        self.chat.load(formattedMessages)
-
-    def persistMessage(self, message):
-        '''Persist *message* to current conversation.'''
-        self.currentConversation.session.create('Message', {
-            'text': message,
-            'conversation_id': self.currentConversation['id']
-        })
-        self.currentConversation.session.commit()
-
-    def updateCurrentConversation(self, otherId):
-        '''Update currently active conversation with *otherId*.
-
-        Will get or create conversation for current user and user with
-        *otherId*.
-
-        The last_visit attribute will be updated to now.
-
-        '''
-        self.conversationUserId = otherId
-
-        self.logger.debug('Retrieving conversation for ("{0}", "{1}")'.format(
-            self.user.getId(), self.conversationUserId
-        ))
-        conversation = _session.query(
-            'select id, participants.resource_id from Conversation '
-            'where participants any (resource_id is "{user_id}") and '
-            'participants any (resource_id is "{other_id}")'.format(
-                user_id=self.user.getId(), other_id=self.conversationUserId
-            )
-        ).first()
-
-        if not conversation:
-            self.logger.debug('Conversation not found, creating new.')
-            conversation = _session.create('Conversation')
-            conversation['participants'].append(
-                _session.create('Participant', {
-                    'resource_id': self.conversationUserId,
-                    'last_visit': datetime.datetime.now()
-                })
-            )
-            conversation['participants'].append(
-                _session.create('Participant', {
-                    'resource_id': self.user.getId(),
-                    'last_visit': datetime.datetime.now()
-                })
-            )
-
-        for participant in conversation['participants']:
-            if participant['resource_id'] == self.user.getId():
-                participant['last_visit'] = datetime.datetime.now()
-
-        conversation.session.commit()
-
-        self.currentConversation = conversation
+            self.chat.hideOverlay()
+            self.chat.load(formattedMessages)

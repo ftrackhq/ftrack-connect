@@ -7,9 +7,13 @@ import uuid
 import logging
 import datetime
 import getpass
+import collections
+
+import ftrack_connect.asynchronous
 
 from PySide import QtCore
 import ftrack
+import ftrack_api
 
 
 class CrewHub(object):
@@ -203,12 +207,13 @@ class CrewHub(object):
         '''Handle message events.'''
         pass
 
-    def sendMessage(self, receiverId, text):
+    def sendMessage(self, receiverId, text, conversationId=None):
         '''Send *text* to subscribers.'''
         data = dict(
             sender=self.sender,
             text=text,
             receiver=receiverId,
+            conversation=conversationId,
             date=str(datetime.datetime.utcnow()),
             id=str(uuid.uuid1())
         )
@@ -244,7 +249,127 @@ class CrewHub(object):
         pass
 
 
-class SignalCrewHub(CrewHub, QtCore.QObject):
+class ConversationHub(CrewHub):
+    '''Crew hub holding conversation state.'''
+
+    def __init__(self, *args, **kwargs):
+        '''Initialise hub.'''
+
+        self._conversations = collections.defaultdict(list)
+        self._session = ftrack_api.Session()
+
+        super(ConversationHub, self).__init__(*args, **kwargs)
+
+    def _onConversationMessagesLoaded(self, conversationId, messages):
+        '''Handle messages loaded for conversation.
+
+            Override this method to implement custom logic for conversation
+            messages loaded events.
+        '''
+        pass
+
+    def _onConversationUpdated(self, conversationId):
+        '''Handle conversation with *conversationId* updated.'''
+        pass
+
+    def _onChatMessage(self, event):
+        '''Handle chat message event.'''
+        self._conversations[
+            event['data']['conversation']
+        ].append(event['data'])
+
+        self._onConversationUpdated(event['data']['conversation'])
+
+    @ftrack_connect.asynchronous.asynchronous
+    def loadMessages(self, conversationId):
+        '''Asyncrounous load messages for *conversationId*.
+
+        Will trigger `_onConversationMessagesLoaded` once loaded.
+
+        '''
+
+        messages = self._session.query(
+            'select text, created_by.first_name, created_by.last_name, '
+            'created_by_id, created_at from Message where '
+            'conversation_id is "{0}"'.format(
+                conversationId
+            )
+        ).all()
+
+        self._onConversationMessagesLoaded(conversationId, messages)
+
+
+    def getConversationUpdates(self, conversationId, clear=False):
+        '''Return new messages for *conversationId*.
+
+        Optional *clear* can be specified to remove messages once retrieved.
+
+        '''
+
+        messages = self._conversations[conversationId][:]
+
+        if clear:
+            self._conversations[conversationId] = []
+
+        self.logger.debug(u'Return conversation updates for {0}\nMessages: {1}'.format(
+            conversationId, messages
+        ))
+        return messages
+
+    def getConversation(self, userId, otherId):
+        '''Return conversation for *userId* and *otherUserId*.
+
+        Will get or create conversation for *userId* and user with
+        *otherId*.
+
+        '''
+        self.logger.debug('Retrieving conversation for ("{0}", "{1}")'.format(
+            userId, otherId
+        ))
+
+        conversation = self._session.query(
+            'select id, participants.resource_id from Conversation '
+            'where participants any (resource_id is "{user_id}") and '
+            'participants any (resource_id is "{other_id}")'.format(
+                user_id=userId, other_id=otherId
+            )
+        ).first()
+
+        if not conversation:
+            self.logger.debug('Conversation not found, creating new.')
+            conversation = self._session.create('Conversation')
+            conversation['participants'].append(
+                self._session.create('Participant', {
+                    'resource_id': userId,
+                    'last_visit': datetime.datetime.now()
+                })
+            )
+            conversation['participants'].append(
+                self._session.create('Participant', {
+                    'resource_id': otherId,
+                    'last_visit': datetime.datetime.now()
+                })
+            )
+
+        conversation.session.commit()
+
+        return conversation
+
+    def sendMessage(self, receiverId, text, conversationId):
+        '''Send and persist new message.'''
+
+        self._session.create('Message', {
+            'text': text,
+            'conversation_id': conversationId
+        })
+        self._session.commit()
+
+        return super(ConversationCrewHub, self).sendMessage(
+            receiverId, text, conversationId=conversationId
+        )
+
+
+class SignalConversationHub(ConversationHub, QtCore.QObject):
     '''Crew hub using Qt signals.'''
 
     #: Signal to emit on heartbeat.
@@ -256,12 +381,15 @@ class SignalCrewHub(CrewHub, QtCore.QObject):
     #: Signal to emit on presence exit event.
     onExit = QtCore.Signal(object)
 
-    #: Signal to emit on chat messaged received.
-    onMessageReceived = QtCore.Signal(object)
+    #: Signal to emit on conversations messagages loaded.
+    onConversationMessagesLoaded = QtCore.Signal(object, object)
+
+    #: Signal to emit on conversations messagages loaded.
+    onConversationUpdated = QtCore.Signal(object)
 
     def _onHeartbeat(self, event):
         '''Increase subscription time for *event*.'''
-        super(SignalCrewHub, self)._onHeartbeat(event)
+        super(SignalConversationHub, self)._onHeartbeat(event)
         self.onHeartbeat.emit(event['data'])
 
     def _onEnter(self, data):
@@ -272,6 +400,13 @@ class SignalCrewHub(CrewHub, QtCore.QObject):
         '''Handle exit events.'''
         self.onExit.emit(data)
 
-    def _onChatMessage(self, event):
-        '''Handle message *event* and emit signal.'''
-        self.onMessageReceived.emit(event['data'])
+    def _onConversationMessagesLoaded(self, conversationId, messages):
+        '''Handle messages loaded for conversation.'''
+        self.onConversationMessagesLoaded.emit(conversationId, messages)
+
+    def _onConversationUpdated(self, conversationId):
+        '''Handle conversation with *conversationId* updated.'''
+        self.logger.debug('onConversationUpdated emitted for {0}'.format(
+            conversationId
+        ))
+        self.onConversationUpdated.emit(conversationId)

@@ -151,6 +151,11 @@ class Chat(QtGui.QFrame):
 
         self._sendMessageButton.clicked.connect(self.onReturnPressed)
 
+        self.busyOverlay = ftrack_connect.ui.widget.overlay.BusyOverlay(
+            self, message='Loading'
+        )
+        self.hideOverlay()
+
     def load(self, history):
         '''Load chat *history*'''
         self._chatFeed.clearItems()
@@ -168,3 +173,11 @@ class Chat(QtGui.QFrame):
     def addMessage(self, message):
         '''Add *message* to feed.'''
         self._chatFeed.addMessage(message)
+
+    def showOverlay(self):
+        '''Show chat overlay.'''
+        self.busyOverlay.show()
+
+    def hideOverlay(self):
+        '''Show chat overlay.'''
+        self.busyOverlay.hide()

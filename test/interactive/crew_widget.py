@@ -13,7 +13,7 @@ import ftrack_connect.crew_hub
 import ftrack_connect.event_hub_thread
 
 
-class MyCrewHub(ftrack_connect.crew_hub.SignalCrewHub):
+class MyCrewHub(ftrack_connect.crew_hub.SignalConversationHub):
 
     def isInterested(self, data):
         return True
