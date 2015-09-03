@@ -159,7 +159,7 @@ class ActionIcon(Base):
             * A URL to load the image from starting with 'http'.
             * One of the predefined icons in AVAILABLE_ICONS
         '''
-        if icon[:4] == 'http':
+        if icon and icon[:4] == 'http':
             self.load(icon)
         elif self.AVAILABLE_ICONS.get(icon):
             url = os.environ['FTRACK_SERVER'] + self.AVAILABLE_ICONS[icon]
