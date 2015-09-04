@@ -68,7 +68,7 @@ class ActionItem(QtGui.QWidget):
         layout.addWidget(self._iconLabel)
 
         self._textLabel = QtGui.QLabel(self)
-        self._textLabel.setAlignment(QtCore.Qt.AlignCenter)
+        self._textLabel.setAlignment(QtCore.Qt.AlignHCenter | AlignTop)
         self._textLabel.setWordWrap(True)
         self._textLabel.setFixedSize(QtCore.QSize(80, 35))
         layout.addWidget(self._textLabel)
