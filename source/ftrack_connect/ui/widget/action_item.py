@@ -103,7 +103,9 @@ class ActionItem(QtGui.QWidget):
 
     def enterEvent(self, event):
         '''Show hover icon on mouse enter.'''
-        self._iconLabel.loadResource(':/ftrack/image/light/' + self._hoverIcon)
+        self._iconLabel.loadResource(
+            '{0}{1}'.format(':/ftrack/image/light/', self._hoverIcon)
+        )
 
     def leaveEvent(self, event):
         '''Reset action icon on mouse leave.'''
@@ -119,7 +121,7 @@ class ActionItem(QtGui.QWidget):
 
     def _launchAction(self, action):
         '''Launch *action* via event hub.'''
-        self.logger.info(u'Launching action: {}'.format(action))
+        self.logger.info(u'Launching action: {0}'.format(action))
         results = ftrack.EVENT_HUB.publish(
             ftrack.Event(
                 topic='ftrack.action.launch',
