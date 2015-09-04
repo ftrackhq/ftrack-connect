@@ -268,8 +268,8 @@ class ConversationHub(CrewHub):
 
         subscriptionExpression = (
             'topic=ftrack.conversation.seen '
-            'and source.user.username = {0} '
-            'and data.session_id != {1}'.format(
+            'and source.user.username={0} '
+            'and data.session_id!={1}'.format(
                 getpass.getuser(), self._session_id
             )
         )
@@ -432,6 +432,7 @@ class ConversationHub(CrewHub):
                     session_id=self._session_id
                 )
             )
+
             ftrack.EVENT_HUB.publish(event)
             self._onConversationSeen(event)
 
@@ -530,4 +531,9 @@ class SignalConversationHub(ConversationHub, QtCore.QObject):
 
     def _onConversationSeen(self, event):
         '''Handle conversation seen event.'''
+        self.logger.debug('Handle conversation seen event: {0}'.format(
+            event['data']
+        ))
+
+        self._conversations[event['data']['conversation']] = []
         self.onConversationSeen.emit(event['data'])
