@@ -470,7 +470,7 @@ class ConversationHub(CrewHub):
                 dict(
                     text=message['text'],
                     sender=dict(
-                        name='{0} {1}'.format(
+                        name=u'{0} {1}'.format(
                             message['created_by']['first_name'],
                             message['created_by']['last_name']
                         ),
