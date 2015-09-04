@@ -412,7 +412,8 @@ class ConversationHub(CrewHub):
         the id of the participant in that conversation.
 
         '''
-        participant = self._session.query(
+        session = ftrack_api.Session(auto_connect_event_hub=False)
+        participant = session.query(
             'select last_visit from Participant where resource_id is '
             '"{0}" and conversation_id is "{1}"'.format(
                 resourceId, conversationId
@@ -439,8 +440,8 @@ class ConversationHub(CrewHub):
     @ftrack_connect.asynchronous.asynchronous
     def populateUnreadConversations(self, userId, otherId):
         '''Populate unread count for all conversations based on last_visit.'''
-
-        participant = self._session.query(
+        session = ftrack_api.Session(auto_connect_event_hub=False)
+        participant = session.query(
             'select last_visit, conversation_id, resource_id from '
             'Participant where resource_id is "{0}" and '
             'conversation.participants any (resource_id is "{1}")'.format(
@@ -451,7 +452,7 @@ class ConversationHub(CrewHub):
         if not participant:
             return
 
-        messages = self._session.query(
+        messages = session.query(
             'select created_at, conversation_id, text, created_by.id, '
             'created_by.first_name, created_by.last_name from Message where '
             'conversation_id is "{0}" and created_at > "{1}" and '
