@@ -2,11 +2,9 @@
 # :copyright: Copyright (c) 2015 ftrack
 
 import logging
-import datetime
 import operator
 
 from PySide import QtGui
-import ftrack_api
 
 import ftrack_connect.ui.widget.label
 import ftrack_connect.ui.widget.user_list
@@ -16,7 +14,6 @@ import ftrack_connect.error
 import ftrack_connect.ui.widget.overlay
 
 logger = logging.getLogger(__name__)
-_session = ftrack_api.Session()
 
 
 def defaultClassifier(userId):
