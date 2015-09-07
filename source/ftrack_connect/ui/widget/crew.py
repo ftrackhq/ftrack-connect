@@ -139,8 +139,6 @@ class Crew(QtGui.QWidget):
             'group': group
         })
 
-        self.hub.populateUnreadConversations(self.user.getId(), userId)
-
         return True
 
     def onEnter(self, data):
@@ -221,9 +219,6 @@ class Crew(QtGui.QWidget):
 
         else:
             self.updateConversationCount(conversationId)
-
-
-
 
     def onChatMessageSubmitClicked(self, messageText):
         '''Handle message submitted clicked.'''

@@ -412,8 +412,7 @@ class ConversationHub(CrewHub):
         the id of the participant in that conversation.
 
         '''
-        session = ftrack_api.Session(auto_connect_event_hub=False)
-        participant = session.query(
+        participant = self._session.query(
             'select last_visit from Participant where resource_id is '
             '"{0}" and conversation_id is "{1}"'.format(
                 resourceId, conversationId
@@ -439,50 +438,53 @@ class ConversationHub(CrewHub):
             self._onConversationSeen(event)
 
     @ftrack_connect.asynchronous.asynchronous
-    def populateUnreadConversations(self, userId, otherId):
-        '''Populate unread count for all conversations based on last_visit.'''
-        session = ftrack_api.Session(auto_connect_event_hub=False)
-        participant = session.query(
-            'select last_visit, conversation_id, resource_id from '
-            'Participant where resource_id is "{0}" and '
-            'conversation.participants any (resource_id is "{1}")'.format(
-                userId, otherId
-            )
-        ).first()
+    def populateUnreadConversations(self, userId, otherIds=None):
+        '''Populate count for conversations between *userId* and *otherIds*.'''
+        if not otherIds:
+            otherIds = []
 
-        if not participant:
-            return
-
-        messages = session.query(
-            'select created_at, conversation_id, text, created_by.id, '
-            'created_by.first_name, created_by.last_name from Message where '
-            'conversation_id is "{0}" and created_at > "{1}" and '
-            'created_by_id != "{2}"'.format(
-                participant['conversation_id'],
-                arrow.get(participant['last_visit']).naive.replace(
-                    microsecond=0
-                ).isoformat(),
-                participant['resource_id']
-            )
-        ).all()
-
-        for message in messages:
-            self._conversations[message['conversation_id']].append(
-                dict(
-                    text=message['text'],
-                    sender=dict(
-                        name='{0} {1}'.format(
-                            message['created_by']['first_name'],
-                            message['created_by']['last_name']
-                        ),
-                        id=message['created_by']['id']
-                    ),
-                    created_at=message['created_at']
+        for _id in otherIds:
+            participant = self._session.query(
+                'select last_visit, conversation_id, resource_id from '
+                'Participant where resource_id is "{0}" and '
+                'conversation.participants any (resource_id is "{1}")'.format(
+                    userId, _id
                 )
-            )
+            ).first()
 
-        if messages:
-            self._onConversationUpdated(participant['conversation_id'])
+            if not participant:
+                continue
+
+            messages = self._session.query(
+                'select created_at, conversation_id, text, created_by.id, '
+                'created_by.first_name, created_by.last_name from Message where '
+                'conversation_id is "{0}" and created_at > "{1}" and '
+                'created_by_id != "{2}"'.format(
+                    participant['conversation_id'],
+                    arrow.get(participant['last_visit']).naive.replace(
+                        microsecond=0
+                    ).isoformat(),
+                    participant['resource_id']
+                )
+            ).all()
+
+            for message in messages:
+                self._conversations[message['conversation_id']].append(
+                    dict(
+                        text=message['text'],
+                        sender=dict(
+                            name='{0} {1}'.format(
+                                message['created_by']['first_name'],
+                                message['created_by']['last_name']
+                            ),
+                            id=message['created_by']['id']
+                        ),
+                        created_at=message['created_at']
+                    )
+                )
+
+            if messages:
+                self._onConversationUpdated(participant['conversation_id'])
 
 
 

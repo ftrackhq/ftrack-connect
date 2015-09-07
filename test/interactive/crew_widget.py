@@ -50,12 +50,16 @@ class WidgetHarness(Harness):
         )
         widget.layout().addWidget(self.crew)
 
+        userIds = []
         for user in self.users:
+            userIds.append(user.getId())
             self.crew.addUser(
                 user.getName(), user.getId()
             )
 
         user = ftrack.getUser(getpass.getuser())
+        self.crewHub.populateUnreadConversations(user.getId(), userIds)
+
         data = {
             'user': {
                 'name': user.getName(),
