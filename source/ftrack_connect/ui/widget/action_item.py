@@ -55,7 +55,9 @@ class ActionItem(QtGui.QWidget):
         ]
 
         if len(actions) == 1:
-            self._label = u'{0} {1}'.format(self._label, actions[0].get('variant'))
+            if actions[0].get('variant'):
+                self._label = u'{0} {1}'.format(self._label, actions[0].get('variant'))
+
             self._hoverIcon = 'play'
             self._multiple = False
         else:
