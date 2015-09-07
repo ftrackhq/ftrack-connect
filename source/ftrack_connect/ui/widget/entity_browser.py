@@ -10,7 +10,7 @@ import ftrack_api
 
 import ftrack_connect.ui.model.entity_tree
 import ftrack_connect.ui.widget.overlay
-
+import ftrack_connect.shared_session
 
 class EntityBrowser(QtGui.QDialog):
     '''Entity browser.'''
@@ -34,16 +34,7 @@ class EntityBrowser(QtGui.QDialog):
         self._selected = []
         self._updatingNavigationBar = False
 
-        # Create API session using credentials as stored by the application
-        # when logging in.
-        # TODO: Reconsider this approach once updated to use the new api 
-        # throughout.
-        self._session = ftrack_api.Session(
-            server_url=os.environ['FTRACK_SERVER'],
-            api_key=os.environ['FTRACK_APIKEY'],
-            api_user=os.environ['LOGNAME'],
-            auto_connect_event_hub=False
-        )
+        self._session = ftrack_connect.shared_session.get_shared_session()
 
         self._construct()
         self._postConstruction()
