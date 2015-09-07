@@ -10,6 +10,11 @@ Release Notes
 .. release:: Upcoming
 
     .. change:: changed
+        :tags: Actions
+
+        Applications may now include *description* and *variant*.
+
+    .. change:: changed
         :tags: Developer
 
         ``thumbnail.Base`` will no longer default to ellipsis shape. Use 

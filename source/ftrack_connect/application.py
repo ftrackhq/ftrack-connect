@@ -93,7 +93,9 @@ class ApplicationStore(object):
 
             dict(
                 'identifier': 'name_version',
-                'label': 'Name version',
+                'label': 'Name',
+                'variant': 'version',
+                'description': 'description',
                 'path': 'Absolute path to the file',
                 'version': 'Version of the application',
                 'icon': 'URL or name of predefined icon'
@@ -118,7 +120,8 @@ class ApplicationStore(object):
 
     def _searchFilesystem(self, expression, label, applicationIdentifier,
                           versionExpression=None, icon=None,
-                          launchArguments=None):
+                          launchArguments=None, variant='', 
+                          description=None):
         '''
         Return list of applications found in filesystem matching *expression*.
 
@@ -144,7 +147,7 @@ class ApplicationStore(object):
         used.
 
         *label* is the label the application will be given. *label* should be on
-        the format "Name of app {version}".
+        the format "Name of app".
 
         *applicationIdentifier* should be on the form
         "application_name_{version}" where version is the first match in the
@@ -152,6 +155,13 @@ class ApplicationStore(object):
 
         *launchArguments* may be specified as a list of arguments that should
         used when launching the application.
+
+        *variant* can be used to differentiate between different variants of
+        the same application, such as versions. Variant can include '{version}'
+        which will be replaced by the matched version.
+
+        *description* can be used to provide a helpful description for the
+        user.
         '''
         applications = []
 
@@ -198,6 +208,7 @@ class ApplicationStore(object):
                         versionMatch = versionExpression.search(path)
                         if versionMatch:
                             version = versionMatch.group('version')
+
                             applications.append({
                                 'identifier': applicationIdentifier.format(
                                     version=version
@@ -206,7 +217,9 @@ class ApplicationStore(object):
                                 'launchArguments': launchArguments,
                                 'version': version,
                                 'label': label.format(version=version),
-                                'icon': icon
+                                'icon': icon,
+                                'variant': variant.format(version=version),
+                                'description': description
                             })
                         else:
                             self.logger.debug(
