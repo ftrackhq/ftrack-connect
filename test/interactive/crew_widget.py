@@ -11,9 +11,10 @@ from harness import Harness
 import ftrack_connect.ui.widget.crew
 import ftrack_connect.crew_hub
 import ftrack_connect.event_hub_thread
+import ftrack_connect.ui.theme
 
 
-class MyCrewHub(ftrack_connect.crew_hub.SignalCrewHub):
+class MyCrewHub(ftrack_connect.crew_hub.SignalConversationHub):
 
     def isInterested(self, data):
         return True
@@ -41,19 +42,24 @@ class WidgetHarness(Harness):
         widget = QtGui.QWidget()
         widget.setLayout(QtGui.QVBoxLayout())
         widget.setMinimumSize(QtCore.QSize(600, 600))
+        user = ftrack.getUser(getpass.getuser())
 
         self.crewHub = MyCrewHub()
         self.crew = ftrack_connect.ui.widget.crew.Crew(
-            self.groups, hub=self.crewHub
+            self.groups, user, hub=self.crewHub
         )
         widget.layout().addWidget(self.crew)
 
+        userIds = []
         for user in self.users:
+            userIds.append(user.getId())
             self.crew.addUser(
                 user.getName(), user.getId()
             )
 
         user = ftrack.getUser(getpass.getuser())
+        self.crewHub.populateUnreadConversations(user.getId(), userIds)
+
         data = {
             'user': {
                 'name': user.getName(),
@@ -71,6 +77,11 @@ class WidgetHarness(Harness):
 
         self.crewHub.enter(data)
 
+        widget.activateWindow()
+        widget.show()
+        widget.raise_()
+
+        ftrack_connect.ui.theme.applyTheme(widget, 'integration')
         return widget
 
 if __name__ == '__main__':

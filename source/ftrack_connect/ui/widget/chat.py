@@ -38,6 +38,8 @@ class Message(QtGui.QFrame):
                     }
                 '''
             )
+            self.sender.setAlignment(QtCore.Qt.AlignRight)
+            self.text.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignRight)
         else:
             self.sender.setStyleSheet(
                 '''
@@ -46,8 +48,6 @@ class Message(QtGui.QFrame):
                     }
                 '''
             )
-            self.sender.setAlignment(QtCore.Qt.AlignRight)
-            self.text.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignRight)
 
 
 class Feed(ftrack_connect.ui.widget.item_list.ItemList):
@@ -70,7 +70,8 @@ class Feed(ftrack_connect.ui.widget.item_list.ItemList):
     def _createChatMessageWidget(self, message):
         '''Create a message widget from *message*.'''
         return Message(
-            message['text'], message['sender']['name'],
+            message['text'],
+            message['name'],
             message.get('me', False)
         )
 
@@ -150,6 +151,11 @@ class Chat(QtGui.QFrame):
 
         self._sendMessageButton.clicked.connect(self.onReturnPressed)
 
+        self.busyOverlay = ftrack_connect.ui.widget.overlay.BusyOverlay(
+            self, message='Loading'
+        )
+        self.hideOverlay()
+
     def load(self, history):
         '''Load chat *history*'''
         self._chatFeed.clearItems()
@@ -167,3 +173,11 @@ class Chat(QtGui.QFrame):
     def addMessage(self, message):
         '''Add *message* to feed.'''
         self._chatFeed.addMessage(message)
+
+    def showOverlay(self):
+        '''Show chat overlay.'''
+        self.busyOverlay.show()
+
+    def hideOverlay(self):
+        '''Show chat overlay.'''
+        self.busyOverlay.hide()

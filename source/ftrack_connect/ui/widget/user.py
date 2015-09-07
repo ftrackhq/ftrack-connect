@@ -91,6 +91,10 @@ class User(QtGui.QFrame):
         nameAndActivity.setLayout(QtGui.QVBoxLayout())
         nameAndActivity.layout().setContentsMargins(0, 0, 0, 0)
 
+        self.countLabel = QtGui.QLabel()
+        self.countLabel.setObjectName('user-conversation-count')
+        self.countLabel.hide()
+
         self.nameLabel = ftrack_connect.ui.widget.label.Label()
         self.nameLabel.setText(name)
         self.nameLabel.setObjectName('name')
@@ -98,6 +102,13 @@ class User(QtGui.QFrame):
 
         self.activityLabel = ftrack_connect.ui.widget.label.Label()
         self.activityLabel.setObjectName('user-activity')
+
+        self.nameAndCountLayout = QtGui.QHBoxLayout()
+        self.nameAndCountLayout.addWidget(self.nameLabel, stretch=1)
+        self.nameAndCountLayout.addWidget(self.countLabel, stretch=0)
+        self.nameAndCountLayout.addSpacing(5)
+
+        nameAndActivity.layout().addLayout(self.nameAndCountLayout)
         nameAndActivity.layout().addWidget(self.activityLabel)
 
         self.layout().addWidget(nameAndActivity)
@@ -213,3 +224,18 @@ class User(QtGui.QFrame):
             del value['applications'][sessionId]
 
             self.setValue(value)
+
+    def setCount(self, count=0):
+        '''Set *count*.
+
+        .. note::
+
+            If set to `0` the label will be hidden.
+
+        '''
+        self.countLabel.setText(str(count))
+
+        if count:
+            self.countLabel.show()
+        else:
+            self.countLabel.hide()

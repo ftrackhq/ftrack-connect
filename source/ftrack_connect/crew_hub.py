@@ -7,9 +7,15 @@ import uuid
 import logging
 import datetime
 import getpass
+import collections
+
+import arrow
+
+import ftrack_connect.asynchronous
 
 from PySide import QtCore
 import ftrack
+import ftrack_api
 
 
 class CrewHub(object):
@@ -37,7 +43,8 @@ class CrewHub(object):
         )
 
         self._subscriptions = {}
-        self._data = dict(session_id=uuid.uuid1().hex)
+        self._session_id = uuid.uuid1().hex
+        self._data = dict(session_id=self._session_id)
         self._last_activity = None
 
     @property
@@ -203,12 +210,13 @@ class CrewHub(object):
         '''Handle message events.'''
         pass
 
-    def sendMessage(self, receiverId, text):
+    def sendMessage(self, receiverId, text, conversationId=None):
         '''Send *text* to subscribers.'''
         data = dict(
             sender=self.sender,
             text=text,
             receiver=receiverId,
+            conversation=conversationId,
             date=str(datetime.datetime.utcnow()),
             id=str(uuid.uuid1())
         )
@@ -244,7 +252,245 @@ class CrewHub(object):
         pass
 
 
-class SignalCrewHub(CrewHub, QtCore.QObject):
+class ConversationHub(CrewHub):
+    '''Crew hub holding conversation state.'''
+
+    def __init__(self, *args, **kwargs):
+        '''Initialise hub.'''
+
+        self._conversations = collections.defaultdict(list)
+        self._session = ftrack_api.Session(
+            auto_connect_event_hub=False
+        )
+        super(ConversationHub, self).__init__(*args, **kwargs)
+
+    def enter(self, *args, **kwargs):
+        '''Enter hub.'''
+        super(ConversationHub, self).enter(*args, **kwargs)
+
+        subscriptionExpression = (
+            'topic=ftrack.conversation.seen '
+            'and source.user.username={0} '
+            'and data.session_id!={1}'.format(
+                getpass.getuser(), self._session_id
+            )
+        )
+
+        ftrack.EVENT_HUB.subscribe(
+            subscriptionExpression,
+            self._onConversationSeen
+        )
+
+    def _onConversationSeen(self, event):
+        '''Handle conversation seen events.
+
+            Override this method to implement custom logic for conversation
+            seen events.
+        '''
+        pass
+
+    def _onConversationMessagesLoaded(self, conversationId, messages):
+        '''Handle messages loaded for conversation.
+
+            Override this method to implement custom logic for conversation
+            messages loaded events.
+        '''
+        pass
+
+    def _onConversationUpdated(self, conversationId):
+        '''Handle conversation with *conversationId* updated.'''
+        pass
+
+    def _onChatMessage(self, event):
+        '''Handle chat message event.'''
+        self._conversations[
+            event['data']['conversation']
+        ].append(event['data'])
+
+        self._onConversationUpdated(event['data']['conversation'])
+
+    @ftrack_connect.asynchronous.asynchronous
+    def loadMessages(self, conversationId):
+        '''Asyncrounous load messages for *conversationId*.
+
+        Will trigger `_onConversationMessagesLoaded` once loaded.
+
+        '''
+
+        messages = self._session.query(
+            'select text, created_by.first_name, created_by.last_name, '
+            'created_by_id, created_at from Message where '
+            'conversation_id is "{0}"'.format(
+                conversationId
+            )
+        ).all()
+
+        self._onConversationMessagesLoaded(conversationId, messages)
+
+
+    def getConversationUpdates(self, conversationId, clear=False):
+        '''Return new messages for *conversationId*.
+
+        Optional *clear* can be specified to remove messages once retrieved.
+
+        '''
+
+        messages = self._conversations[conversationId][:]
+
+        if clear:
+            self._conversations[conversationId] = []
+
+        self.logger.debug(u'Return conversation updates for {0}\nMessages: {1}'.format(
+            conversationId, messages
+        ))
+        return messages
+
+    def getParticipants(self, conversationId):
+        '''Return participants for conversation with *conversationId*.'''
+        return self._session.query(
+            'select resource_id from Participant where '
+            'conversation_id is "{0}"'.format(
+                conversationId
+            )
+        )
+
+    def getConversation(self, userId, otherId):
+        '''Return conversation for *userId* and *otherUserId*.
+
+        Will get or create conversation for *userId* and user with
+        *otherId*.
+
+        '''
+        self.logger.debug('Retrieving conversation for ("{0}", "{1}")'.format(
+            userId, otherId
+        ))
+
+        conversation = self._session.query(
+            'select id, participants.resource_id from Conversation '
+            'where participants any (resource_id is "{user_id}") and '
+            'participants any (resource_id is "{other_id}")'.format(
+                user_id=userId, other_id=otherId
+            )
+        ).first()
+
+        if not conversation:
+            self.logger.debug('Conversation not found, creating new.')
+            conversation = self._session.create('Conversation')
+            conversation['participants'].append(
+                self._session.create('Participant', {
+                    'resource_id': userId,
+                    'last_visit': datetime.datetime.now()
+                })
+            )
+            conversation['participants'].append(
+                self._session.create('Participant', {
+                    'resource_id': otherId,
+                    'last_visit': datetime.datetime.now()
+                })
+            )
+
+        conversation.session.commit()
+
+        return conversation
+
+    def sendMessage(self, receiverId, text, conversationId):
+        '''Send and persist new message.'''
+
+        self._session.create('Message', {
+            'text': text,
+            'conversation_id': conversationId
+        })
+        self._session.commit()
+
+        return super(ConversationHub, self).sendMessage(
+            receiverId, text, conversationId=conversationId
+        )
+
+    @ftrack_connect.asynchronous.asynchronous
+    def markConversationAsSeen(self, conversationId, resourceId):
+        '''Asyncrounous mark conversations as seen.
+
+        *conversationId* should be the id of the conversation and *participantId*
+        the id of the participant in that conversation.
+
+        '''
+        participant = self._session.query(
+            'select last_visit from Participant where resource_id is '
+            '"{0}" and conversation_id is "{1}"'.format(
+                resourceId, conversationId
+            )
+        ).first()
+
+        self._conversations[conversationId] = []
+
+        if participant:
+            participant['last_visit'] = datetime.datetime.now()
+            participant.session.commit()
+
+            event = ftrack.Event(
+                topic='ftrack.conversation.seen',
+                data=dict(
+                    conversation=conversationId,
+                    user_id=resourceId,
+                    session_id=self._session_id
+                )
+            )
+
+            ftrack.EVENT_HUB.publish(event)
+            self._onConversationSeen(event)
+
+    @ftrack_connect.asynchronous.asynchronous
+    def populateUnreadConversations(self, userId, otherIds=None):
+        '''Populate count for conversations between *userId* and *otherIds*.'''
+        if not otherIds:
+            otherIds = []
+
+        for _id in otherIds:
+            participant = self._session.query(
+                'select last_visit, conversation_id, resource_id from '
+                'Participant where resource_id is "{0}" and '
+                'conversation.participants any (resource_id is "{1}")'.format(
+                    userId, _id
+                )
+            ).first()
+
+            if not participant:
+                continue
+
+            messages = self._session.query(
+                'select created_at, conversation_id, text, created_by.id, '
+                'created_by.first_name, created_by.last_name from Message where '
+                'conversation_id is "{0}" and created_at > "{1}" and '
+                'created_by_id != "{2}"'.format(
+                    participant['conversation_id'],
+                    arrow.get(participant['last_visit']).naive.replace(
+                        microsecond=0
+                    ).isoformat(),
+                    participant['resource_id']
+                )
+            ).all()
+
+            for message in messages:
+                self._conversations[message['conversation_id']].append(
+                    dict(
+                        text=message['text'],
+                        sender=dict(
+                            name=u'{0} {1}'.format(
+                                message['created_by']['first_name'],
+                                message['created_by']['last_name']
+                            ),
+                            id=message['created_by']['id']
+                        ),
+                        created_at=message['created_at']
+                    )
+                )
+
+            if messages:
+                self._onConversationUpdated(participant['conversation_id'])
+
+
+
+class SignalConversationHub(ConversationHub, QtCore.QObject):
     '''Crew hub using Qt signals.'''
 
     #: Signal to emit on heartbeat.
@@ -256,12 +502,18 @@ class SignalCrewHub(CrewHub, QtCore.QObject):
     #: Signal to emit on presence exit event.
     onExit = QtCore.Signal(object)
 
-    #: Signal to emit on chat messaged received.
-    onMessageReceived = QtCore.Signal(object)
+    #: Signal to emit on conversations messagages loaded.
+    onConversationMessagesLoaded = QtCore.Signal(object, object)
+
+    #: Signal to emit on conversations messagages loaded.
+    onConversationUpdated = QtCore.Signal(object)
+
+    #: Signal to emit on conversation seen.
+    onConversationSeen = QtCore.Signal(object)
 
     def _onHeartbeat(self, event):
         '''Increase subscription time for *event*.'''
-        super(SignalCrewHub, self)._onHeartbeat(event)
+        super(SignalConversationHub, self)._onHeartbeat(event)
         self.onHeartbeat.emit(event['data'])
 
     def _onEnter(self, data):
@@ -272,6 +524,22 @@ class SignalCrewHub(CrewHub, QtCore.QObject):
         '''Handle exit events.'''
         self.onExit.emit(data)
 
-    def _onChatMessage(self, event):
-        '''Handle message *event* and emit signal.'''
-        self.onMessageReceived.emit(event['data'])
+    def _onConversationMessagesLoaded(self, conversationId, messages):
+        '''Handle messages loaded for conversation.'''
+        self.onConversationMessagesLoaded.emit(conversationId, messages)
+
+    def _onConversationUpdated(self, conversationId):
+        '''Handle conversation with *conversationId* updated.'''
+        self.logger.debug('onConversationUpdated emitted for {0}'.format(
+            conversationId
+        ))
+        self.onConversationUpdated.emit(conversationId)
+
+    def _onConversationSeen(self, event):
+        '''Handle conversation seen event.'''
+        self.logger.debug('Handle conversation seen event: {0}'.format(
+            event['data']
+        ))
+
+        self._conversations[event['data']['conversation']] = []
+        self.onConversationSeen.emit(event['data'])

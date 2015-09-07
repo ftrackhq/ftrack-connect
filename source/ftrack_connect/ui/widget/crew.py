@@ -2,6 +2,7 @@
 # :copyright: Copyright (c) 2015 ftrack
 
 import logging
+import operator
 
 from PySide import QtGui
 
@@ -10,22 +11,9 @@ import ftrack_connect.ui.widget.user_list
 import ftrack_connect.ui.widget.user
 import ftrack_connect.ui.widget.chat
 import ftrack_connect.error
+import ftrack_connect.ui.widget.overlay
 
-
-CHAT_MESSAGES = dict()
-
-
-def addMessageHistory(id, message):
-    '''Add *message* to history with *id*.'''
-    if id not in CHAT_MESSAGES:
-        CHAT_MESSAGES[id] = []
-
-    CHAT_MESSAGES[id].append(message)
-
-
-def getMessageHistory(id):
-    '''Return message history.'''
-    return CHAT_MESSAGES.get(id, [])
+logger = logging.getLogger(__name__)
 
 
 def defaultClassifier(userId):
@@ -36,8 +24,10 @@ def defaultClassifier(userId):
 class Crew(QtGui.QWidget):
     '''User presence widget.'''
 
-    def __init__(self, groups, hub=None, classifier=None, parent=None):
-        '''Instantiate widget with *users* and *groups*.
+    def __init__(
+            self, groups, user, hub, classifier=None, parent=None
+    ):
+        '''Instantiate widget with and *groups* and *userId*.
 
         If *hub* is configured the Crew widget will connect listeners for::
 
@@ -51,7 +41,10 @@ class Crew(QtGui.QWidget):
         self.setObjectName('crew')
         self.setContentsMargins(0, 0, 0, 0)
 
-        self.currentUserId = None
+        self.user = user
+        self._currentConversationUserId = None
+        self._currentConversationId = None
+
         self.hub = hub
 
         self.logger = logging.getLogger(
@@ -64,11 +57,14 @@ class Crew(QtGui.QWidget):
 
         self._classifier = classifier
 
-        # Setup signal handlers if hub is configured.
-        if hub:
-            hub.onEnter.connect(self.onEnter)
-            hub.onHeartbeat.connect(self.onHeartbeat)
-            hub.onExit.connect(self.onExit)
+        self.hub.onEnter.connect(self.onEnter)
+        self.hub.onHeartbeat.connect(self.onHeartbeat)
+        self.hub.onExit.connect(self.onExit)
+        self.hub.onConversationMessagesLoaded.connect(
+            self.onConversationLoaded
+        )
+        self.hub.onConversationUpdated.connect(self.onConversationUpdated)
+        self.hub.onConversationSeen.connect(self.onConversationSeen)
 
         groups = [group.lower() for group in groups]
 
@@ -111,14 +107,8 @@ class Crew(QtGui.QWidget):
         self.userContainer.hide()
 
         self.userList.setMinimumWidth(180)
-        self.userList.itemClicked.connect(self._itemClickedHandler)
+        self.userList.itemClicked.connect(self.onConversationSelected)
 
-        # Setup signal handlers if hub is configured.
-        if hub:
-            hub.onEnter.connect(self.onEnter)
-            hub.onHeartbeat.connect(self.onHeartbeat)
-            hub.onExit.connect(self.onExit)
-            hub.onMessageReceived.connect(self.onMessageReceived)
 
     def classifyOnlineUsers(self):
         '''Classify all online users and move them to correct group.'''
@@ -205,29 +195,56 @@ class Crew(QtGui.QWidget):
 
         self.userList.updatePosition(user)
 
-    def onMessageReceived(self, message):
+    def onConversationUpdated(self, conversationId):
         '''Handle *message* received.'''
-        sender = message['sender']['id']
-        addMessageHistory(sender, message)
+        if conversationId == self._currentConversationId:
 
-        if sender == self.currentUserId:
-            self.chat.addMessage(message)
+            messages = self.hub.getConversationUpdates(
+                conversationId, clear=True
+            )
+
+            for message in messages:
+                self.chat.addMessage(
+                    dict(
+                        text=message['text'],
+                        name=message['sender']['name'],
+                        me=message['sender']['id'] == self.user.getId()
+                    )
+                )
+
+            self.hub.markConversationAsSeen(conversationId, self.user.getId())
+
+        else:
+            self.updateConversationCount(conversationId)
 
     def onChatMessageSubmitClicked(self, messageText):
         '''Handle message submitted clicked.'''
-        message = self.hub.sendMessage(self.currentUserId, messageText)
-        message['me'] = True
-        addMessageHistory(message['receiver'], message)
-        self.chat.addMessage(message)
+        message = self.hub.sendMessage(
+            self._currentConversationUserId,
+            messageText,
+            self._currentConversationId
+        )
 
-    def _itemClickedHandler(self, value):
-        '''Handle item clicked event.'''
-        self.currentUserId = value['userId']
+        self.chat.addMessage(
+            dict(
+                text=message['text'],
+                name=message['sender']['name'],
+                me=True
+            )
+        )
+
+    def onConversationSelected(self, value):
+        '''Handle conversation selected events.'''
+        conversation = self.hub.getConversation(
+            self.user.getId(), value['userId']
+        )
+        self._currentConversationUserId = value['userId']
+        self._currentConversationId = conversation['id']
 
         if self._extendedUser is None:
             self._extendedUser = ftrack_connect.ui.widget.user.UserExtended(
                 value.get('name'),
-                self.currentUserId,
+                self._currentConversationUserId,
                 value.get('applications')
             )
 
@@ -236,8 +253,45 @@ class Crew(QtGui.QWidget):
         else:
             self._extendedUser.updateInformation(
                 value.get('name'),
-                self.currentUserId,
+                self._currentConversationUserId,
                 value.get('applications')
             )
 
-        self.chat.load(getMessageHistory(self.currentUserId))
+        self.chat.showOverlay()
+        self.hub.loadMessages(conversation['id'])
+
+    def onConversationLoaded(self, conversationId, messages):
+        '''Handle conversation loaded events.'''
+        if conversationId == self._currentConversationId:
+            formattedMessages = sorted([
+                dict(
+                    text=message['text'],
+                    name=u'{0} {1}'.format(
+                        message['created_by']['first_name'],
+                        message['created_by']['last_name']
+                    ),
+                    me=message['created_by_id'] == self.user.getId(),
+                    created_at=message['created_at']
+                )
+                for message in messages
+            ], key=operator.itemgetter('created_at'))
+
+            self.chat.hideOverlay()
+            self.chat.load(formattedMessages)
+
+            self.hub.markConversationAsSeen(conversationId, self.user.getId())
+
+    def onConversationSeen(self, event):
+        '''Handle conversation seen *event*.'''
+        self.updateConversationCount(event['conversation'])
+
+    def updateConversationCount(self, conversationId):
+        '''Update conversation count for *conversationId*.'''
+        messages = self.hub.getConversationUpdates(conversationId)
+        participants = self.hub.getParticipants(conversationId)
+
+        for participant in participants:
+            if participant['resource_id'] != self.user.getId():
+                user = self.userList.getUser(participant['resource_id'])
+                if user:
+                    user.setCount(len(messages))
