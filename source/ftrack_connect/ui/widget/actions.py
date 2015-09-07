@@ -12,7 +12,7 @@ import ftrack_connect.asynchronous
 import ftrack_connect.error
 import ftrack_connect.shared_session
 
-from ftrack_connect.ui.widget import (action_item, flow_layout)
+from ftrack_connect.ui.widget import (action_item, flow_layout, entity_selector)
 
 
 class ActionSection(flow_layout.ScrollingFlowWidget):
@@ -58,16 +58,13 @@ class Actions(QtGui.QWidget):
         self._recentActions = []
         self._actions = []
 
-        # TODO: replace for actual combobox
-        self._contextSelector = QtGui.QComboBox(self)
-        self._contextSelector.addItem('Task 1', {'entityId': '0a2df934-ab42-11e2-9348-040101ad6201', 'entityType': 'task'})
-        self._contextSelector.addItem('Task 2', {'entityId': 'da9807c2-7cd5-11e2-808f-f23c91df25eb', 'entityType': 'task'})
-
-        self._contextSelector.currentIndexChanged.connect(
-            self._contextSelectorChanged
+        self._entitySelector = entity_selector.EntitySelector()
+        self._entitySelector.setFixedHeight(50)
+        self._entitySelector.entityChanged.connect(
+            self._onEntityChanged
         )
-        self._contextSelector.setFixedHeight(100)
-        layout.addWidget(self._contextSelector)
+        layout.addWidget(QtGui.QLabel('Context'))
+        layout.addWidget(self._entitySelector)
 
         self._recentSection = ActionSection(self)
         self._recentSection.setFixedHeight(100)
@@ -89,13 +86,21 @@ class Actions(QtGui.QWidget):
         self._moveToFront(self._recentActions, action['label'])
         self._updateRecentSection()
 
-    def _contextSelectorChanged(self, currentIndex):
+    def _onEntityChanged(self, entity):
         '''Load new actions when the context has changed'''
-        context = self._contextSelector.itemData(currentIndex)
-        self.logger.debug('Context changed: {0}'.format(context))
+        context = []
+        try:
+            context = [{
+                'entityId': entity.get('entityId'),
+                'entityType': entity.get('entityType'),
+            }]
+            self.logger.debug(u'Context changed: {0}'.format(context))
+        except Exception:
+            self.logger.debug(u'Invalid entity: {0}'.format(entity))
+
         self._recentSection.clear()
         self._allSection.clear()
-        self._loadActionsForContext([context])
+        self._loadActionsForContext(context)
 
     def _updateRecentSection(self):
         '''Clear and update actions in recent section.'''
@@ -189,7 +194,8 @@ class Actions(QtGui.QWidget):
         # Flatten structure
         discoveredActions = []
         for result in results:
-            discoveredActions.extend(result.get('items', []))
+             if result:
+                discoveredActions.extend(result.get('items', []))
 
         # Sort actions by label
         groupedActions = []
