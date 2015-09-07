@@ -19,6 +19,15 @@ import ftrack_connect.asynchronous
 import ftrack_connect.error
 
 
+class EntitySelector(entity_selector.EntitySelector):
+    '''Local representation of EntitySelector to support custom behaviour.'''
+
+    def isValidBrowseSelection(self, entity):
+        '''Overriden method to validate the selected *entity*.'''
+        # Prevent selecting projects.
+        return entity.entity_type != 'Project'
+
+
 class Publisher(QtGui.QWidget):
     '''Publish widget for ftrack connect Publisher.'''
     publishStarted = QtCore.Signal()
@@ -62,7 +71,7 @@ class Publisher(QtGui.QWidget):
         layout.addLayout(formLayout, stretch=0)
 
         # Add entity selector.
-        self.entitySelector = entity_selector.EntitySelector()
+        self.entitySelector = EntitySelector()
         formLayout.addRow('Linked to', self.entitySelector)
 
         # Add asset options.

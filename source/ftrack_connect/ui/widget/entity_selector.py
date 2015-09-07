@@ -114,8 +114,7 @@ class EntitySelector(QtGui.QStackedWidget):
         if len(selection) == 1:
             entity = selection[0]
 
-            # Prevent selecting Projects
-            if entity.entity_type != 'Project':
+            if self.isValidBrowseSelection(entity):
                 self.entityBrowser.acceptButton.setDisabled(False)
 
     def setEntity(self, entity):
@@ -126,3 +125,7 @@ class EntitySelector(QtGui.QStackedWidget):
     def getEntity(self):
         '''Return current entity.'''
         return self._entity
+
+    def isValidBrowseSelection(self, entity):
+        '''Return True if selected *entity* is valid.'''
+        return True
