@@ -14,6 +14,12 @@ Release Notes
 
         Applications may now include *description* and *variant*.
 
+    .. change:: changed
+        :tags: Developer
+
+        ``thumbnail.Base`` will no longer default to ellipsis shape. Use 
+        ``thumbnail.EllipsisBase`` for round thumbnails.
+
 .. release:: 0.1.13
     :date: 2015-08-31
 
