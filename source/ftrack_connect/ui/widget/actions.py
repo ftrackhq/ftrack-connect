@@ -80,6 +80,7 @@ class Actions(QtGui.QWidget):
         layout.addWidget(QtGui.QLabel('All'))
         layout.addWidget(self._allSection)
 
+        self._loadActionsForContext([])
         self._updateRecentActions()
 
     def _onActionLaunched(self, action):
