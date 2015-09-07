@@ -424,6 +424,7 @@ class ConversationHub(CrewHub):
 
         if participant:
             participant['last_visit'] = datetime.datetime.now()
+            participant.session.commit()
 
             event = ftrack.Event(
                 topic='ftrack.conversation.seen',
