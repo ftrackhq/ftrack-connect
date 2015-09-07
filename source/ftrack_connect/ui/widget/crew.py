@@ -269,7 +269,7 @@ class Crew(QtGui.QWidget):
             formattedMessages = sorted([
                 dict(
                     text=message['text'],
-                    name='{0} {1}'.format(
+                    name=u'{0} {1}'.format(
                         message['created_by']['first_name'],
                         message['created_by']['last_name']
                     ),
