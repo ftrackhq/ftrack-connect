@@ -120,7 +120,7 @@ class ApplicationStore(object):
 
     def _searchFilesystem(self, expression, label, applicationIdentifier,
                           versionExpression=None, icon=None,
-                          launchArguments=None, variant='{version}', 
+                          launchArguments=None, variant='', 
                           description=None):
         '''
         Return list of applications found in filesystem matching *expression*.
@@ -158,8 +158,7 @@ class ApplicationStore(object):
 
         *variant* can be used to differentiate between different variants of
         the same application, such as versions. Variant can include '{version}'
-        which will be replaced by the matched version. It defaults to just the
-        version number.
+        which will be replaced by the matched version.
 
         *description* can be used to provide a helpful description for the
         user.
@@ -210,10 +209,6 @@ class ApplicationStore(object):
                         if versionMatch:
                             version = versionMatch.group('version')
 
-                            # Applications previously defined {version} in the
-                            # label, but this has moved to variant.
-                            label = label.replace('{version}', '').strip()
-
                             applications.append({
                                 'identifier': applicationIdentifier.format(
                                     version=version
@@ -221,11 +216,9 @@ class ApplicationStore(object):
                                 'path': path,
                                 'launchArguments': launchArguments,
                                 'version': version,
-                                'label': label,
+                                'label': label.format(version=version),
                                 'icon': icon,
-                                'variant': variant.format(
-                                    version=version
-                                ),
+                                'variant': variant.format(version=version),
                                 'description': description
                             })
                         else:
