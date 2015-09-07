@@ -212,7 +212,7 @@ class ApplicationStore(object):
 
                             # Applications previously defined {version} in the
                             # label, but this has moved to variant.
-                            label = label.replace('{version}', '')
+                            label = label.replace('{version}', '').strip()
 
                             applications.append({
                                 'identifier': applicationIdentifier.format(
