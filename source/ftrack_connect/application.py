@@ -120,7 +120,7 @@ class ApplicationStore(object):
 
     def _searchFilesystem(self, expression, label, applicationIdentifier,
                           versionExpression=None, icon=None,
-                          launchArguments=None, variant=None, 
+                          launchArguments=None, variant='{version}', 
                           description=None):
         '''
         Return list of applications found in filesystem matching *expression*.
@@ -157,7 +157,9 @@ class ApplicationStore(object):
         used when launching the application.
 
         *variant* can be used to differentiate between different variants of
-        the same application, such as versions.
+        the same application, such as versions. Variant can include '{version}'
+        which will be replaced by the matched version. It defaults to just the
+        version number.
 
         *description* can be used to provide a helpful description for the
         user.
@@ -208,8 +210,9 @@ class ApplicationStore(object):
                         if versionMatch:
                             version = versionMatch.group('version')
 
+                            # Applications previously defined {version} in the
+                            # label, but this has moved to variant.
                             label = label.replace('{version}', '')
-                            variant = variant or version
 
                             applications.append({
                                 'identifier': applicationIdentifier.format(
@@ -220,7 +223,9 @@ class ApplicationStore(object):
                                 'version': version,
                                 'label': label,
                                 'icon': icon,
-                                'variant': variant,
+                                'variant': variant.format(
+                                    version=version
+                                ),
                                 'description': description
                             })
                         else:
