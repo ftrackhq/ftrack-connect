@@ -11,7 +11,9 @@ from ftrack_connect.ui.widget.thumbnail import ActionIcon
 class ActionItem(QtGui.QWidget):
     '''Widget representing an action item.'''
 
-    def __init__(self, actions):
+    launchedAction = QtCore.Signal(dict, name='launchedAction')
+
+    def __init__(self, actions, parent=None):
         '''Initialize action item with *actions*
 
         *actions* should be a list of action dictionaries with the same label.
@@ -30,7 +32,7 @@ class ActionItem(QtGui.QWidget):
         Label, icon and description will be retrieved from the first action if
         multiple actions are specified.
         '''
-        super(ActionItem, self).__init__()
+        super(ActionItem, self).__init__(parent=parent)
         self.logger = logging.getLogger(
             __name__ + '.' + self.__class__.__name__
         )
@@ -138,3 +140,4 @@ class ActionItem(QtGui.QWidget):
             synchronous=True
         )
         self.logger.debug('Launched action with result: {0}'.format(results))
+        self.launchedAction.emit(action)

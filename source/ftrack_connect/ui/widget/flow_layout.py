@@ -113,7 +113,7 @@ class ScrollingFlowWidget(QtGui.QWidget):
     def __init__(self,parent=None):
         super(ScrollingFlowWidget,self).__init__(parent)
         grid = QtGui.QGridLayout(self)
-        scroll = ResizeScrollArea()
+        scroll = ResizeScrollArea(parent)
         self._wrapper = QtGui.QWidget(scroll)
         self.flowLayout = FlowLayout(self._wrapper)
         self._wrapper.setLayout(self.flowLayout)

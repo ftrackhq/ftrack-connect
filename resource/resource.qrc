@@ -38,12 +38,6 @@
         <file alias='main'>font/open_sans_regular.ttf</file>
     </qresource>
 
-    <qresource prefix='ftrack/image/action'>
-        <file alias='default'>image/action/default.png</file>
-        <file alias='premiere'>image/action/premiere.png</file>
-        <file alias='photoshop'>image/action/photoshop.png</file>
-    </qresource>
-
     <qresource prefix='ftrack/image/light'>
         <file alias='selectedTab'>image/light/selected_tab.png</file>
         <file alias='downArrow'>image/light/down_arrow.png</file>
