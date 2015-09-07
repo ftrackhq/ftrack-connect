@@ -8,13 +8,12 @@ from PySide import QtCore
 import ftrack
 
 
-from ftrack_connect.ui.widget import entity_path as _entity_path
-from ftrack_connect.ui.widget import entity_browser as _entity_browser
 from ftrack_connect.ui.widget import data_drop_zone as _data_drop_zone
 from ftrack_connect.ui.widget import components_list as _components_list
 from ftrack_connect.ui.widget import item_selector as _item_selector
 from ftrack_connect.ui.widget import thumbnail_drop_zone as _thumbnail_drop_zone
 from ftrack_connect.ui.widget import asset_options as _asset_options
+from ftrack_connect.ui.widget import entity_selector
 
 import ftrack_connect.asynchronous
 import ftrack_connect.error
@@ -22,8 +21,6 @@ import ftrack_connect.error
 
 class Publisher(QtGui.QWidget):
     '''Publish widget for ftrack connect Publisher.'''
-    entityChanged = QtCore.Signal(object)
-
     publishStarted = QtCore.Signal()
     publishFinished = QtCore.Signal(bool)
 
@@ -64,32 +61,13 @@ class Publisher(QtGui.QWidget):
         formLayout = QtGui.QFormLayout()
         layout.addLayout(formLayout, stretch=0)
 
-        # Add linked to component and connect to entityChanged signal.
-        linkedEntity = QtGui.QFrame()
-        linkedEntity.setLayout(QtGui.QHBoxLayout())
-        linkedEntity.layout().setContentsMargins(0, 0, 0, 0)
-
-        self.entityBrowser = _entity_browser.EntityBrowser(parent=self)
-        self.entityBrowser.setMinimumSize(600, 400)
-        self.entityBrowser.selectionChanged.connect(
-            self._onEntityBrowserSelectionChanged
-        )
-
-        self.entityPath = _entity_path.EntityPath()
-        linkedEntity.layout().addWidget(self.entityPath)
-
-        self.entityBrowseButton = QtGui.QPushButton('Browse')
-        linkedEntity.layout().addWidget(self.entityBrowseButton)
-
-        formLayout.addRow('Linked to', linkedEntity)
-        self.entityChanged.connect(self.entityPath.setEntity)
-        self.entityBrowseButton.clicked.connect(
-            self._onEntityBrowseButtonClicked
-        )
+        # Add entity selector.
+        self.entitySelector = entity_selector.EntitySelector()
+        formLayout.addRow('Linked to', self.entitySelector)
 
         # Add asset options.
         self.assetOptions = _asset_options.AssetOptions()
-        self.entityChanged.connect(self.assetOptions.setEntity)
+        self.entitySelector.entityChanged.connect(self.assetOptions.setEntity)
         self.assetCreated.connect(self.assetOptions.setAsset)
         formLayout.addRow('Asset', self.assetOptions.radioButtonFrame)
         formLayout.addRow('Existing asset', self.assetOptions.existingAssetSelector)
@@ -120,6 +98,10 @@ class Publisher(QtGui.QWidget):
             publishButton, alignment=QtCore.Qt.AlignCenter, stretch=0
         )
 
+    def setEntity(self, entity):
+        '''Set current entity.'''
+        self.entitySelector.setEntity(entity)
+
     def _onComponentListItemsChanged(self):
         '''Callback for component changed signal.'''
         self.previewSelector.setItems(self.componentsList.items())
@@ -133,45 +115,6 @@ class Publisher(QtGui.QWidget):
         self.componentsList.addItem({
             'resourceIdentifier': filePath
         })
-
-    def _onEntityBrowseButtonClicked(self):
-        '''Handle entity browse button clicked.'''
-        # Ensure browser points to parent of currently selected entity.
-        if self._entity is not None:
-            location = []
-            try:
-                parents = self._entity.getParents()
-            except AttributeError:
-                pass
-            else:
-                for parent in parents:
-                    location.append(parent.getId())
-
-            location.reverse()
-            self.entityBrowser.setLocation(location)
-
-        # Launch browser.
-        if self.entityBrowser.exec_():
-            selected = self.entityBrowser.selected()
-            if selected:
-                # Translate new api entity to instance of ftrack.Task
-                # TODO: this should not be necessary once connect has been
-                # updated to use the new api.
-                entity = ftrack.Task(selected[0]['id'])
-
-                self.setEntity(entity)
-            else:
-                self.setEntity(None)
-
-    def _onEntityBrowserSelectionChanged(self, selection):
-        '''Handle selection of entity in browser.'''
-        self.entityBrowser.acceptButton.setDisabled(True)
-        if len(selection) == 1:
-            entity = selection[0]
-
-            # Prevent selecting Projects 
-            if entity.entity_type != 'Project':
-                self.entityBrowser.acceptButton.setDisabled(False)
 
     def _pickLocation(self, manageData=False):
         '''Return a location based on *manageData*.'''
@@ -198,16 +141,9 @@ class Publisher(QtGui.QWidget):
         self._manageData = False
         self.assetOptions.clear()
         self.versionDescription.clear()
-        self.entityPath.clear()
-        self.entityBrowser.setLocation([])
-        self.browser.clear()
         self.componentsList.clearItems()
         self.thumbnailDropZone.clear()
-
-    def setEntity(self, entity):
-        '''Set the *entity* for the view.'''
-        self._entity = entity
-        self.entityChanged.emit(entity)
+        self.entitySelector.setEntity(None)
 
     def setManageData(self, manageData):
         '''Set *manageData*.'''
@@ -216,7 +152,7 @@ class Publisher(QtGui.QWidget):
     def publish(self):
         '''Gather all data in publisher and publish version with components.'''
         # TODO: Proper validation.
-        entity = self._entity
+        entity = self.entitySelector.getEntity()
         if entity is None:
             raise ftrack_connect.error.ConnectError(
                 'No linked entity selected to publish against!'
