@@ -14,6 +14,6 @@ def get_shared_session():
 
 
 def get_session():
-    '''Return new ftrack_api session.'''
+    '''Return new ftrack_api session configure without plugins or events.'''
     # TODO: Once API is thread-safe, consider switching to a shared session.
-    return ftrack_api.Session()
+    return ftrack_api.Session(plugin_paths=[], auto_connect_event_hub=False)
