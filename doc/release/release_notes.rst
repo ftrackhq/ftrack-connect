@@ -10,9 +10,27 @@ Release Notes
 .. release:: Upcoming
 
     .. change:: new
+        :tags: Actions
+
+        Added support for launching actions from Connect.
+
+        .. seealso :: :ref:`using/actions`
+
+    .. change:: new
         :tags: Crew
 
         Added crew widgets for chat and notifications.
+
+    .. change:: changed
+        :tags: Actions
+
+        Applications may now include *description* and *variant*.
+
+    .. change:: changed
+        :tags: Developer
+
+        ``thumbnail.Base`` will no longer default to ellipsis shape. Use 
+        ``thumbnail.EllipsisBase`` for round thumbnails.
 
 .. release:: 0.1.13
     :date: 2015-08-31

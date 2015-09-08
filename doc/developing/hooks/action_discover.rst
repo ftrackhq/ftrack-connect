@@ -33,7 +33,8 @@ Expects reply data in the form::
     dict(
         items=[
             dict(
-                label='Mega Modeling 2014',
+                label='Mega Modeling',
+                variant='2014',
                 actionIdentifier='ftrack-connect-launch-applications-action',
                 icon='URL to custom icon or predefined name',
                 applicationIdentifier='mega_modeling_2014'
@@ -45,7 +46,8 @@ Expects reply data in the form::
                 applicationIdentifier='professional_painter'
             ),
             dict(
-                label='Cool Compositor v2',
+                label='Cool Compositor',
+                variant='v2',
                 actionIdentifier='ftrack-connect-launch-applications-action'
                 icon='URL to custom icon or predefined name',
                 applicationIdentifier='cc_v2',
@@ -65,8 +67,10 @@ To add an action, add an item in the following format.
 .. code-block:: python
 
     dict(
-        label='Crazy Compositor v2',
+        label='Crazy Compositor',
         actionIdentifier='ftrack-connect-launch-applications-action',
+        variant='v2',
+        description='Launch Crazy Compositor',
         icon='URL to custom icon or predefined name',
         cc_plugins=['foo', 'bar'],
         applicationIdentifier='cc_v2'
@@ -78,6 +82,10 @@ The different options are:
     Used to display the action in the ftrack interface. 
 ``actionIdentifier``
     Used to target a specific callback for an action.
+``variant``
+    A variant of the action, such as application version.
+``description``
+    A helpful description for the user.
 ``icon``
     Icon to display in the ftrack interface. Can be either an URL to a custom
     icon or the name of a predefined icon. Predefined icons are ``hiero``,
