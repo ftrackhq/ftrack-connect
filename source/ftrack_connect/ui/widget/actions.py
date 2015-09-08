@@ -56,6 +56,9 @@ class Actions(QtGui.QWidget):
     RECENT_ACTIONS_LENGTH = 20
     ACTION_LAUNCH_MESSAGE_TIMEOUT = 1
 
+    #: Emitted when recent actions has been modified
+    recentActionsChanged = QtCore.Signal(name='recentActionsChanged')
+
     def __init__(self, parent=None):
         '''Initiate a actions view.'''
         super(Actions, self).__init__(parent)
@@ -98,6 +101,8 @@ class Actions(QtGui.QWidget):
 
         self._overlay = overlay.BusyOverlay(self, message='Launching...')
         self._overlay.setVisible(False)
+
+        self.recentActionsChanged.connect(self._updateRecentSection)
 
         self._loadActionsForContext([])
         self._updateRecentActions()
@@ -199,7 +204,7 @@ class Actions(QtGui.QWidget):
     def _updateRecentActions(self):
         '''Retrieve and update recent actions.'''
         self._recentActions = self._getRecentActions()
-        self._updateRecentSection()
+        self.recentActionsChanged.emit()
 
     def _isRecentActionsEnabled(self):
         '''Return if recent actions is enabled.
