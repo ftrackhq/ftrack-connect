@@ -267,21 +267,9 @@ class ConversationHub(CrewHub):
         super(ConversationHub, self).__init__(*args, **kwargs)
 
     @property
-    def compatible_server_version(self):
-        '''Return True if server is compatible.'''
-        if self._compatible is None:
-            try:
-                self._session.query(
-                    'Participant where id is "non-existing-id"'
-                ).first()
-                self._compatible = True
-            except KeyError:
-                self.logger.warn(
-                    'Server version incompatible with Crew plugin.'
-                )
-                self._compatible = False
-
-        return self._compatible
+    def compatibleServerVersion(self):
+        '''Return True if server is compatible with conversations.'''
+        return 'Conversation' in self._session.types
 
     def enter(self, *args, **kwargs):
         '''Enter hub.'''
