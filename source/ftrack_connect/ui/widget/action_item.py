@@ -5,13 +5,20 @@ import logging
 from PySide import QtGui, QtCore
 import ftrack
 
+import ftrack_connect.asynchronous
 from ftrack_connect.ui.widget.thumbnail import ActionIcon
 
 
 class ActionItem(QtGui.QWidget):
     '''Widget representing an action item.'''
 
-    def __init__(self, actions):
+    #: Emitted before an action is launched with action
+    beforeActionLaunch = QtCore.Signal(dict, name='beforeActionLaunch')
+
+    #: Emitted after an action has been launched with action and results
+    actionLaunched = QtCore.Signal(dict, list)
+
+    def __init__(self, actions, parent=None):
         '''Initialize action item with *actions*
 
         *actions* should be a list of action dictionaries with the same label.
@@ -30,7 +37,7 @@ class ActionItem(QtGui.QWidget):
         Label, icon and description will be retrieved from the first action if
         multiple actions are specified.
         '''
-        super(ActionItem, self).__init__()
+        super(ActionItem, self).__init__(parent=parent)
         self.logger = logging.getLogger(
             __name__ + '.' + self.__class__.__name__
         )
@@ -51,11 +58,17 @@ class ActionItem(QtGui.QWidget):
         self._icon = actions[0].get('icon', None)
         self._description = actions[0].get('description', None)
         self._variants = [
-            action.get('variant', 'Unknown variant') for action in actions
+            u'{0} {1}'.format(
+                action.get('label', 'Untitled action'),
+                action.get('variant', '')
+            ).strip()
+            for action in actions
         ]
 
         if len(actions) == 1:
-            self._label = u'{0} {1}'.format(self._label, actions[0].get('variant'))
+            if actions[0].get('variant'):
+                self._label = u'{0} {1}'.format(self._label, actions[0].get('variant'))
+
             self._hoverIcon = 'play'
             self._multiple = False
         else:
@@ -85,7 +98,7 @@ class ActionItem(QtGui.QWidget):
         '''
         if self._multiple:
             self.logger.debug('Launching menu to select action variant')
-            menu = QtGui.QMenu()
+            menu = QtGui.QMenu(self)
             for index, variant in enumerate(self._variants):
                 action = QtGui.QAction(variant, self)
                 action.setData(index)
@@ -122,17 +135,31 @@ class ActionItem(QtGui.QWidget):
     def _launchAction(self, action):
         '''Launch *action* via event hub.'''
         self.logger.info(u'Launching action: {0}'.format(action))
-        results = ftrack.EVENT_HUB.publish(
-            ftrack.Event(
-                topic='ftrack.action.launch',
-                data=dict(
-                    actionIdentifier=action.get('actionIdentifier'),
-                    applicationIdentifier=action.get('applicationIdentifier'),
-                    variant=action.get('variant'),
-                    selection=action.get('selection', []),
-                    actionData=action
-                )
-            ),
-            synchronous=True
-        )
+        self.beforeActionLaunch.emit(action)
+        self._publishLaunchActionEvent(action)
+
+    @ftrack_connect.asynchronous.asynchronous
+    def _publishLaunchActionEvent(self, action):
+        '''Launch *action* asynchronously and emit *actionLaunched* when completed.'''
+        try:
+            results = ftrack.EVENT_HUB.publish(
+                ftrack.Event(
+                    topic='ftrack.action.launch',
+                    data=dict(
+                        actionIdentifier=action.get('actionIdentifier'),
+                        applicationIdentifier=action.get('applicationIdentifier'),
+                        variant=action.get('variant'),
+                        selection=action.get('selection', []),
+                        actionData=action
+                    )
+                ),
+                synchronous=True
+            )
+        except Exception as error:
+            results = [{'success': False, 'message': 'Failed to launch action'}]
+            self.logger.warning(
+                u'Action launch failed with exception: {0}'.format(error)
+            )
+
         self.logger.debug('Launched action with result: {0}'.format(results))
+        self.actionLaunched.emit(action, results)

@@ -102,7 +102,10 @@ class EntitySelector(QtGui.QStackedWidget):
                 # Translate new api entity to instance of ftrack.Task
                 # TODO: this should not be necessary once connect has been
                 # updated to use the new api.
-                entity = ftrack.Task(selected[0]['id'])
+                if selected[0].entity_type == 'Project':
+                    entity = ftrack.Project(selected[0]['id'])
+                else:
+                    entity = ftrack.Task(selected[0]['id'])
 
                 self.setEntity(entity)
             else:
