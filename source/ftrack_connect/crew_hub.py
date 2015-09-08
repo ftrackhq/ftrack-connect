@@ -16,6 +16,7 @@ import ftrack_connect.asynchronous
 from PySide import QtCore
 import ftrack
 import ftrack_api
+import ftrack_api.exception
 
 
 class CrewHub(object):
@@ -262,7 +263,25 @@ class ConversationHub(CrewHub):
         self._session = ftrack_api.Session(
             auto_connect_event_hub=False
         )
+        self._compatible = None
         super(ConversationHub, self).__init__(*args, **kwargs)
+
+    @property
+    def compatible_server_version(self):
+        '''Return True if server is compatible.'''
+        if self._compatible is None:
+            try:
+                self._session.query(
+                    'Participant where id is "non-existing-id"'
+                ).first()
+                self._compatible = True
+            except KeyError:
+                self.logger.warn(
+                    'Server version incompatible with Crew plugin.'
+                )
+                self._compatible = False
+
+        return self._compatible
 
     def enter(self, *args, **kwargs):
         '''Enter hub.'''
@@ -316,7 +335,6 @@ class ConversationHub(CrewHub):
         Will trigger `_onConversationMessagesLoaded` once loaded.
 
         '''
-
         messages = self._session.query(
             'select text, created_by.first_name, created_by.last_name, '
             'created_by_id, created_at from Message where '
