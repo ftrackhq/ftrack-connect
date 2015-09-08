@@ -264,6 +264,11 @@ class ConversationHub(CrewHub):
         )
         super(ConversationHub, self).__init__(*args, **kwargs)
 
+    @property
+    def compatibleServerVersion(self):
+        '''Return True if server is compatible with conversations.'''
+        return 'Conversation' in self._session.types
+
     def enter(self, *args, **kwargs):
         '''Enter hub.'''
         super(ConversationHub, self).enter(*args, **kwargs)
@@ -316,7 +321,6 @@ class ConversationHub(CrewHub):
         Will trigger `_onConversationMessagesLoaded` once loaded.
 
         '''
-
         messages = self._session.query(
             'select text, created_by.first_name, created_by.last_name, '
             'created_by_id, created_at from Message where '
