@@ -17,3 +17,7 @@ class InvalidStateError(ConnectError):
 
 class ParseError(ConnectError):
     '''Raise when a parsing action fails.'''
+
+
+class CrewSessionError(ConnectError):
+    '''Raise when error with session in crew occurs.'''

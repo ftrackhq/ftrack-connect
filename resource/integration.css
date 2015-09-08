@@ -51,4 +51,128 @@ QLabel#ftrack-header-message-warning {
   font-weight: bold;
 }
 
+/* CREW WIDGET*/
 
+/* USER LIST */
+
+GroupHeader {
+    color: #585858;
+    font-size: 11px;
+}
+
+UserList {
+    background-color: #323232;
+    border: none;
+    border-right: 1px solid #040404;
+    margin: 0;
+}
+
+UserList GroupHeader, UserList User#user {
+    margin-left: 10px;
+}
+
+UserList User#user{
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+User QLabel#user-activity {
+    color: #585858;
+    font-size: 11px;
+}
+
+User QLabel#user-conversation-count {
+    color: #343131;
+    font-size: 10px;
+    background-color: rgb(255, 154, 0);
+    border: 1px solid #292929;
+    border-radius: 2px;
+    color: #323232;
+    padding: 1px;
+    max-width: 30px;
+}
+
+QFrame#presence-list QTableWidget {
+    background-color: transparent;
+    border: 0;
+}
+
+QFrame#presence-list QTableWidget::item {
+    background-color: transparent;
+    border: 0;
+    padding: 0;
+}
+
+
+/* CHAT WIDGET */
+
+
+Crew QFrame#user-container{
+  background-color: #292929;
+  border-left: 1px solid #4f4f4f;
+}
+
+Chat {
+  border: none;
+}
+
+Chat QTextEdit {
+  border: none;
+  border-top: 1px solid #4f4f4f;
+  border-left: 1px solid #4f4f4f;
+  margin: 0;
+  background-color: #292929;
+}
+
+Feed {
+  border: none;
+  border-bottom: 1px solid #040404;
+  margin: 0;
+}
+
+QFrame#message-feed QTableWidget {
+    background-color: transparent;
+    border: 0;
+}
+
+QFrame#message-feed QTableWidget::item {
+    background-color: transparent;
+    border: 0;
+    padding: 0;
+}
+
+/* NOTIFICATIONS */
+
+QFrame#notification-list QLabel {
+    background-color: #323232;
+}
+
+QFrame#notification-list {
+    background-color: #2A2A2A;
+    border: 0;
+    margin: 20px 0 0 0;
+}
+
+QFrame#notification-list QTableWidget {
+    background-color: transparent;
+    border: 0;
+}
+
+QFrame#notification-list QTableWidget::item {
+    background-color: #323232;
+    border-bottom: 1px solid #282828;
+    padding: 0;
+}
+
+Message {
+    margin: 5px 0;
+}
+
+Message QLabel {
+    padding: 0;
+    margin: 0;
+}
+
+Message QLabel#message-text {
+    padding: 0;
+}

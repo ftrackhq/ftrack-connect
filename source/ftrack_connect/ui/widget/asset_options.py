@@ -4,9 +4,7 @@
 import logging
 
 from PySide import QtGui
-import ftrack
 
-import ftrack_connect.asynchronous
 from ftrack_connect.error import NotUniqueError
 from ftrack_connect.ui.widget import asset_name_edit as _asset_name_edit
 from ftrack_connect.ui.widget import asset_type_selector as _asset_type_selector

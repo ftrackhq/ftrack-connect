@@ -160,9 +160,14 @@ class Application(QtGui.QMainWindow):
         loginError will be emitted if this fails.
 
         '''
+        # Set environment variables supported by the old API.
         os.environ['FTRACK_SERVER'] = url
         os.environ['LOGNAME'] = username
         os.environ['FTRACK_APIKEY'] = apiKey
+
+        # Set environment variables supported by the new API.
+        os.environ['FTRACK_API_USER'] = username
+        os.environ['FTRACK_API_KEY'] = apiKey
 
         # Import ftrack module and catch any errors.
         try:

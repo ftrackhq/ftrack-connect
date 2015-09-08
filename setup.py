@@ -40,7 +40,6 @@ README_PATH = os.path.join(os.path.dirname(__file__), 'README.rst')
 
 PACKAGES_PATH = os.path.join(os.path.dirname(__file__), 'source')
 
-
 # Read version from source.
 with open(os.path.join(
     SOURCE_PATH, 'ftrack_connect', '_version.py'
@@ -221,7 +220,8 @@ configuration = dict(
     install_requires=[
         'ftrack-python-api >= 0.8.1, < 1',
         'PySide >= 1.2.2, < 2',
-        'Riffle >= 0.1.0, < 2'
+        'Riffle >= 0.1.0, < 2',
+        'arrow >= 0.4.6, < 1'
     ],
     tests_require=['pytest >= 2.3.5, < 3'],
     cmdclass={
@@ -232,8 +232,10 @@ configuration = dict(
         'test': PyTest
     },
     dependency_links=[
-        'https://bitbucket.org/ftrack/lowdown/get/0.1.0.zip'
-        '#egg=lowdown-0.1.0'
+        (
+            'https://bitbucket.org/ftrack/lowdown/get/0.1.0.zip'
+            '#egg=lowdown-0.1.0'
+        )
     ],
     options={},
     data_files=[

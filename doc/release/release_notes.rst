@@ -16,6 +16,11 @@ Release Notes
 
         .. seealso :: :ref:`using/actions`
 
+    .. change:: new
+        :tags: Crew
+
+        Added crew widgets for chat and notifications.
+
     .. change:: changed
         :tags: Actions
 

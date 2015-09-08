@@ -495,6 +495,7 @@ class FTAssetObject(object):
             asset = assetVersion.getAsset()
             self.assetName = asset.getName()
             self.assetType = asset.getType().getShort()
+            self.assetId = asset.getId()
 
         if self.componentId != '':
             metaDict = ftrack.Component(self.componentId).getMeta()
