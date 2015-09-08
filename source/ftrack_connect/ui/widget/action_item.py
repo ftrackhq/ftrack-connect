@@ -5,13 +5,18 @@ import logging
 from PySide import QtGui, QtCore
 import ftrack
 
+import ftrack_connect.asynchronous
 from ftrack_connect.ui.widget.thumbnail import ActionIcon
 
 
 class ActionItem(QtGui.QWidget):
     '''Widget representing an action item.'''
 
-    launchedAction = QtCore.Signal(dict, name='launchedAction')
+    #: Emitted before an action is launched with action
+    beforeActionLaunch = QtCore.Signal(dict, name='beforeActionLaunch')
+
+    #: Emitted after an action has been launched with action and results
+    actionLaunched = QtCore.Signal(dict, list)
 
     def __init__(self, actions, parent=None):
         '''Initialize action item with *actions*
@@ -130,18 +135,31 @@ class ActionItem(QtGui.QWidget):
     def _launchAction(self, action):
         '''Launch *action* via event hub.'''
         self.logger.info(u'Launching action: {0}'.format(action))
-        results = ftrack.EVENT_HUB.publish(
-            ftrack.Event(
-                topic='ftrack.action.launch',
-                data=dict(
-                    actionIdentifier=action.get('actionIdentifier'),
-                    applicationIdentifier=action.get('applicationIdentifier'),
-                    variant=action.get('variant'),
-                    selection=action.get('selection', []),
-                    actionData=action
-                )
-            ),
-            synchronous=True
-        )
+        self.beforeActionLaunch.emit(action)
+        self._publishLaunchActionEvent(action)
+
+    @ftrack_connect.asynchronous.asynchronous
+    def _publishLaunchActionEvent(self, action):
+        '''Launch *action* asynchronously and emit *actionLaunched* when completed.'''
+        try:
+            results = ftrack.EVENT_HUB.publish(
+                ftrack.Event(
+                    topic='ftrack.action.launch',
+                    data=dict(
+                        actionIdentifier=action.get('actionIdentifier'),
+                        applicationIdentifier=action.get('applicationIdentifier'),
+                        variant=action.get('variant'),
+                        selection=action.get('selection', []),
+                        actionData=action
+                    )
+                ),
+                synchronous=True
+            )
+        except Exception as error:
+            results = [{'success': False, 'message': 'Failed to launch action'}]
+            self.logger.warning(
+                u'Action launch failed with exception: {0}'.format(error)
+            )
+
         self.logger.debug('Launched action with result: {0}'.format(results))
-        self.launchedAction.emit(action)
+        self.actionLaunched.emit(action, results)

@@ -3,6 +3,7 @@
 
 import logging
 import json
+import time
 
 from PySide import QtGui
 from PySide import QtCore
@@ -12,13 +13,19 @@ import ftrack_connect.asynchronous
 import ftrack_connect.error
 import ftrack_connect.session
 
-from ftrack_connect.ui.widget import (action_item, flow_layout, entity_selector)
+from ftrack_connect.ui.widget import (
+    action_item, flow_layout, entity_selector, overlay
+)
 
 
 class ActionSection(flow_layout.ScrollingFlowWidget):
     '''Action list view.'''
 
-    launchedAction = QtCore.Signal(dict, name='launchedAction')
+    #: Emitted before an action is launched with action
+    beforeActionLaunch = QtCore.Signal(dict, name='beforeActionLaunch')
+
+    #: Emitted after an action has been launched with action and results
+    actionLaunched = QtCore.Signal(dict, list, name='actionLaunched')
 
     def clear(self):
         '''Remove all actions from section.'''
@@ -30,19 +37,24 @@ class ActionSection(flow_layout.ScrollingFlowWidget):
         '''Add *actions* to section'''
         for item in actions:
             actionItem = action_item.ActionItem(item, parent=self)
-            actionItem.launchedAction.connect(self._onActionLaunched)
+            actionItem.actionLaunched.connect(self._onActionLaunched)
+            actionItem.beforeActionLaunch.connect(self._onBeforeActionLaunched)
             self.addWidget(actionItem)
 
-    def _onActionLaunched(self, action):
-        '''Forward launchedAction signal.'''
-        self.launchedAction.emit(action)
+    def _onActionLaunched(self, action, results):
+        '''Forward actionLaunched signal.'''
+        self.actionLaunched.emit(action, results)
 
+    def _onBeforeActionLaunched(self, action):
+        '''Forward beforeActionLaunch signal.'''
+        self.beforeActionLaunch.emit(action)
 
 class Actions(QtGui.QWidget):
     '''Actions widget. Displays and runs actions with a selectable context.'''
 
     RECENT_METADATA_KEY = 'ftrack_recent_actions'
     RECENT_ACTIONS_LENGTH = 20
+    ACTION_LAUNCH_MESSAGE_TIMEOUT = 1
 
     def __init__(self, parent=None):
         '''Initiate a actions view.'''
@@ -72,25 +84,69 @@ class Actions(QtGui.QWidget):
         layout.addWidget(self._recentLabel)
         self._recentSection = ActionSection(self)
         self._recentSection.setFixedHeight(100)
-        self._recentSection.launchedAction.connect(self._onActionLaunched)
+        self._recentSection.beforeActionLaunch.connect(self._onBeforeActionLaunched)
+        self._recentSection.actionLaunched.connect(self._onActionLaunched)
         layout.addWidget(self._recentSection)
 
         self._allLabel = QtGui.QLabel('Discovering actions..')
         self._allLabel.setAlignment(QtCore.Qt.AlignCenter)
         layout.addWidget(self._allLabel)
         self._allSection = ActionSection(self)
-        self._allSection.launchedAction.connect(self._onActionLaunched)
+        self._allSection.beforeActionLaunch.connect(self._onBeforeActionLaunched)
+        self._allSection.actionLaunched.connect(self._onActionLaunched)
         layout.addWidget(self._allSection)
+
+        self._overlay = overlay.BusyOverlay(self, message='Launching...')
+        self._overlay.setVisible(False)
 
         self._loadActionsForContext([])
         self._updateRecentActions()
 
-    def _onActionLaunched(self, action):
+    def _onBeforeActionLaunched(self, action):
+        '''Before action is launched, show busy overlay with message..'''
+        self.logger.debug(
+            u'Before action launched: {0}'.format(action)
+        )
+        message = u'Launching action <em>{0} {1}</em>...'.format(
+            action.get('label', 'Untitled action'),
+            action.get('variant', '')
+        )
+        self._overlay.setMessage(message)
+        self._overlay.indicator.show()
+        self._overlay.setVisible(True)
+
+    def _onActionLaunched(self, action, results):
         '''On action launched, save action and add it to top of list.'''
+        self.logger.debug(
+            u'Action launched: {0}'.format(action)
+        )
         if self._isRecentActionsEnabled():
             self._addRecentAction(action['label'])
             self._moveToFront(self._recentActions, action['label'])
             self._updateRecentSection()
+
+        self._showResultMessage(results)
+
+    def _showResultMessage(self, results):
+        '''Show *results* message in overlay.'''
+        message = 'Launched action'
+        try:
+            for result in results:
+                message = result['message']
+                break
+        except Exception:
+            pass
+
+        self._overlay.indicator.stop()
+        self._overlay.indicator.hide()
+        self._overlay.setMessage(message)
+        self._hideOverlayAfterTimeout(self.ACTION_LAUNCH_MESSAGE_TIMEOUT)
+
+    @ftrack_connect.asynchronous.asynchronous
+    def _hideOverlayAfterTimeout(self, timeout):
+        '''Hide overlay after *timeout* seconds.'''
+        time.sleep(timeout)
+        self._overlay.setVisible(False)
 
     def _onEntityChanged(self, entity):
         '''Load new actions when the context has changed'''
