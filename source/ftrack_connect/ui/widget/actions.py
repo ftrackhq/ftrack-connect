@@ -87,9 +87,10 @@ class Actions(QtGui.QWidget):
 
     def _onActionLaunched(self, action):
         '''On action launched, save action and add it to top of list.'''
-        self._addRecentAction(action['label'])
-        self._moveToFront(self._recentActions, action['label'])
-        self._updateRecentSection()
+        if self._isRecentActionsEnabled():
+            self._addRecentAction(action['label'])
+            self._moveToFront(self._recentActions, action['label'])
+            self._updateRecentSection()
 
     def _onEntityChanged(self, entity):
         '''Load new actions when the context has changed'''
@@ -144,6 +145,19 @@ class Actions(QtGui.QWidget):
         self._recentActions = self._getRecentActions()
         self._updateRecentSection()
 
+    def _isRecentActionsEnabled(self):
+        '''Return if recent actions is enabled.
+
+        Recent actions depends on being able to save metadata on users,
+        which was added in a ftrack server version 3.2.x. Check for the 
+        metadata attribute on the dynamic class.
+        '''
+        userHasMetadata = any(
+            attribute.name == 'metadata'
+            for attribute in self._session.types['User'].attributes
+        )
+        return userHasMetadata
+
     def _getCurrentUserId(self):
         '''Return current user id.'''
         if not self._currentUserId:
@@ -157,6 +171,8 @@ class Actions(QtGui.QWidget):
 
     def _getRecentActions(self):
         '''Retrieve recent actions from the server.'''
+        if not self._isRecentActionsEnabled():
+            return []
 
         metadata = self._session.query(
             'Metadata where key is "{0}" and parent_type is "User" '
