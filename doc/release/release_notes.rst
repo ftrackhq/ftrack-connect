@@ -7,6 +7,13 @@
 Release Notes
 *************
 
+.. release:: Upcoming
+
+    .. change:: new
+        :tags: Crew
+
+        Added crew widgets for chat and notifications.
+
 .. release:: 0.1.13
     :date: 2015-08-31
 

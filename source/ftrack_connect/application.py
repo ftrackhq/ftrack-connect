@@ -422,7 +422,8 @@ class ApplicationLauncher(object):
 
         # Add FTRACK_EVENT_SERVER variable.
         environment = prependPath(
-            ftrack.EVENT_HUB.getServerUrl(), 'FTRACK_EVENT_SERVER', environment
+            ftrack.EVENT_HUB.getServerUrl(),
+            'FTRACK_EVENT_SERVER', environment
         )
 
         # Prepend discovered ftrack API to PYTHONPATH.

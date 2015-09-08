@@ -57,6 +57,24 @@ class List(QtGui.QTableWidget):
         self.removeCellWidget(row, self._widgetColumn)
         self.removeRow(row)
 
+    def moveWidget(self, widget, newRow):
+        '''Move a widget from it's old row to *newRow*.'''
+        oldRow = self.indexOfWidget(widget)
+
+        if oldRow:
+
+            self.insertRow(newRow)
+
+            # Collect the oldRow after insert to make sure we move the correct
+            # widget.
+            oldRow = self.indexOfWidget(widget)
+
+            self.setCellWidget(newRow, self._widgetColumn, widget)
+            self.resizeRowToContents(oldRow)
+
+            # Remove the old row
+            self.removeRow(oldRow)
+
     def clearWidgets(self):
         '''Remove all widgets.'''
         self.clear()

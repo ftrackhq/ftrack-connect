@@ -111,8 +111,8 @@ class Publisher(ftrack_connect.ui.application.ApplicationPlugin):
 
         event['data'] may optionally contain:
 
-            components 
-                a list of dictionaries with name and path, used to 
+            components
+                a list of dictionaries with name and path, used to
                 automatically populate the list of components.
 
             thumbnail

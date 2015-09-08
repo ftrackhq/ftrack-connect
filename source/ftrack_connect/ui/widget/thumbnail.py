@@ -60,7 +60,6 @@ class Base(QtGui.QLabel):
         '''Update thumbnail with *data*.'''
         pixmap = QtGui.QPixmap()
         pixmap.loadFromData(data)
-
         scaledPixmap = pixmap.scaledToWidth(
             self.width(),
             mode=QtCore.Qt.SmoothTransformation
@@ -115,6 +114,7 @@ class Base(QtGui.QLabel):
                 self.width(), self.height()
             )
         )
+
 
 class User(Base):
 
