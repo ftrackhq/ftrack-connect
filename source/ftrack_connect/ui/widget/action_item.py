@@ -53,7 +53,11 @@ class ActionItem(QtGui.QWidget):
         self._icon = actions[0].get('icon', None)
         self._description = actions[0].get('description', None)
         self._variants = [
-            action.get('variant', 'Unknown variant') for action in actions
+            u'{0} {1}'.format(
+                action.get('label', 'Untitled action'),
+                action.get('variant', '')
+            ).strip()
+            for action in actions
         ]
 
         if len(actions) == 1:
@@ -89,7 +93,7 @@ class ActionItem(QtGui.QWidget):
         '''
         if self._multiple:
             self.logger.debug('Launching menu to select action variant')
-            menu = QtGui.QMenu()
+            menu = QtGui.QMenu(self)
             for index, variant in enumerate(self._variants):
                 action = QtGui.QAction(variant, self)
                 action.setData(index)
