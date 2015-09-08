@@ -7,13 +7,13 @@
 Using actions
 *************
 
-Connect provides a interface in the standalone application to run your actions.
+Connect provides an interface in the standalone application to run your actions.
 Actions in ftrack provide a standardised way to integrate other tools, either
 off-the-shelf or custom built, directly into your ftrack workflow.
 
 Using actions you can, for example, launch applications for a task you are
-working on, generate a custom report or generate all your filesystem structure
-for a project with one click.
+working on, generate a custom report or generate your entire filesystem
+structure for a project with one click.
 
 .. seealso:: :ref:`ftrack:using/actions`
 
