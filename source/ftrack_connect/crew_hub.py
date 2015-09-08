@@ -16,7 +16,6 @@ import ftrack_connect.asynchronous
 from PySide import QtCore
 import ftrack
 import ftrack_api
-import ftrack_api.exception
 
 
 class CrewHub(object):
