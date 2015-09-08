@@ -9,6 +9,13 @@ Release Notes
 
 .. release:: Upcoming
 
+    .. change:: new
+        :tags: Actions
+
+        You can now launch actions from Connect.
+
+        .. seealso :: :ref:`using/actions`
+
     .. change:: changed
         :tags: Actions
 
