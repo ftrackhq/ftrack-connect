@@ -10,7 +10,7 @@ import ftrack_api
 
 import ftrack_connect.ui.model.entity_tree
 import ftrack_connect.ui.widget.overlay
-import ftrack_connect.shared_session
+import ftrack_connect.session
 
 class EntityBrowser(QtGui.QDialog):
     '''Entity browser.'''
@@ -34,7 +34,7 @@ class EntityBrowser(QtGui.QDialog):
         self._selected = []
         self._updatingNavigationBar = False
 
-        self._session = ftrack_connect.shared_session.get_shared_session()
+        self._session = ftrack_connect.session.get_session()
 
         self._construct()
         self._postConstruction()

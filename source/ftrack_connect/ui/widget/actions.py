@@ -10,7 +10,7 @@ import ftrack
 
 import ftrack_connect.asynchronous
 import ftrack_connect.error
-import ftrack_connect.shared_session
+import ftrack_connect.session
 
 from ftrack_connect.ui.widget import (action_item, flow_layout, entity_selector)
 
@@ -50,6 +50,7 @@ class Actions(QtGui.QWidget):
         self.logger = logging.getLogger(
             __name__ + '.' + self.__class__.__name__
         )
+        self._session = ftrack_connect.session.get_session()
 
         layout = QtGui.QVBoxLayout()
         self.setLayout(layout)
@@ -127,9 +128,9 @@ class Actions(QtGui.QWidget):
     def _getCurrentUserId(self):
         '''Return current user id.'''
         if not self._currentUserId:
-            session = ftrack_connect.shared_session.get_shared_session()
-            user = session.query(
-                'User where username="{0}"'.format(session.api_user)
+
+            user = self._session.query(
+                'User where username="{0}"'.format(self._session.api_user)
             ).one()
             self._currentUserId = user['id']
 
@@ -137,9 +138,8 @@ class Actions(QtGui.QWidget):
 
     def _getRecentActions(self):
         '''Retrieve recent actions from the server.'''
-        session = ftrack_connect.shared_session.get_shared_session()
 
-        metadata = session.query(
+        metadata = self._session.query(
             'Metadata where key is "{0}" and parent_type is "User" '
             'and parent_id is "{1}"'.format(
                 self.RECENT_METADATA_KEY, self._getCurrentUserId()
@@ -167,12 +167,11 @@ class Actions(QtGui.QWidget):
     @ftrack_connect.asynchronous.asynchronous
     def _addRecentAction(self, actionLabel):
         '''Add *actionLabel* to recent actions, persisting the change.'''
-        session = ftrack_connect.shared_session.get_shared_session()
-
         recentActions = self._getRecentActions()
         self._moveToFront(recentActions, actionLabel)
         encodedRecentActions = json.dumps(recentActions)
-        session.ensure('Metadata', {
+
+        self._session.ensure('Metadata', {
             'parent_type': 'User',
             'parent_id': self._getCurrentUserId(),
             'key': self.RECENT_METADATA_KEY,

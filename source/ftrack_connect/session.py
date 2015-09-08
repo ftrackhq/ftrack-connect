@@ -11,3 +11,9 @@ def get_shared_session():
         _shared_session = ftrack_api.Session()
 
     return _shared_session
+
+
+def get_session():
+    '''Return new ftrack_api session.'''
+    # TODO: Once API is thread-safe, consider switching to a shared session.
+    return ftrack_api.Session()
