@@ -263,7 +263,6 @@ class ConversationHub(CrewHub):
         self._session = ftrack_api.Session(
             auto_connect_event_hub=False
         )
-        self._compatible = None
         super(ConversationHub, self).__init__(*args, **kwargs)
 
     @property
