@@ -136,9 +136,13 @@ class Actions(QtGui.QWidget):
         '''Show *results* message in overlay.'''
         message = 'Launched action'
         try:
-            for result in results:
+            result = results[0]
+            if 'items' in result.keys():
+                message = (
+                    'Custom UI for actions is not yet supported in Connect.'
+                )
+            else:
                 message = result['message']
-                break
         except Exception:
             pass
 
