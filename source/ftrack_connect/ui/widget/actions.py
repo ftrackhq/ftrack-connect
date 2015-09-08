@@ -42,6 +42,7 @@ class Actions(QtGui.QWidget):
     '''Actions widget. Displays and runs actions with a selectable context.'''
 
     RECENT_METADATA_KEY = 'ftrack_recent_actions'
+    RECENT_ACTIONS_LENGTH = 20
 
     def __init__(self, parent=None):
         '''Initiate a actions view.'''
@@ -187,6 +188,7 @@ class Actions(QtGui.QWidget):
         '''Add *actionLabel* to recent actions, persisting the change.'''
         recentActions = self._getRecentActions()
         self._moveToFront(recentActions, actionLabel)
+        recentActions = recentActions[:self.RECENT_ACTIONS_LENGTH]
         encodedRecentActions = json.dumps(recentActions)
 
         self._session.ensure('Metadata', {
