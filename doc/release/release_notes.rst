@@ -7,6 +7,13 @@
 Release Notes
 *************
 
+.. release:: Upcoming
+
+    .. change:: fixed
+        :tags: Crew
+
+        Humanized notification dates are not always correct.
+
 .. release:: 0.1.14
     :date: 2015-09-08
 
