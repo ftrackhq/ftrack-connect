@@ -43,8 +43,11 @@
         <file alias='downArrow'>image/light/down_arrow.png</file>
         <file alias='upArrow'>image/light/up_arrow.svg</file>
         <file alias='trash'>image/light/trash.png</file>
-        <file alias='play'>image/light/play2.svg</file>
+        <file alias='action'>image/light/actions.svg</file>
+        <file alias='play'>image/light/play.svg</file>
+        <file alias='menu'>image/light/menu.svg</file>
         <file alias='project'>image/light/project.svg</file>
+        <file alias='remove'>image/light/remove.svg</file>
         <file alias='reload'>image/light/refresh.svg</file>
         <file alias='ftrackLogoColor'>image/logo_colour.svg</file>
         <file alias='ftrackLogoGrey'>image/logo_grey_dark.svg</file>
@@ -79,7 +82,10 @@
         <file alias='downArrow'>image/dark/down_arrow.png</file>
         <file alias='upArrow'>image/dark/up_arrow.svg</file>
         <file alias='trash'>image/dark/trash.png</file>
-        <file alias='play'>image/dark/play2.svg</file>
+        <file alias='action'>image/dark/actions.svg</file>
+        <file alias='play'>image/dark/play.svg</file>
+        <file alias='menu'>image/dark/menu.svg</file>
+        <file alias='remove'>image/light/remove.svg</file>
         <file alias='reload'>image/dark/refresh.svg</file>
         <file alias='project'>image/dark/project.svg</file>
         <file alias='ftrackLogoColor'>image/logo_colour.svg</file>
