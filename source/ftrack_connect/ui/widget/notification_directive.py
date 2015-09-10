@@ -69,7 +69,10 @@ class Notification(QtGui.QWidget):
 
     def setDate(self, date):
         '''Set *date*.'''
-        self._date = arrow.get(date)
+        self._date = arrow.get(
+            date.datetime, 'local'
+        )
+
         self.dateLabel.setText(
             self._date.humanize()
         )
