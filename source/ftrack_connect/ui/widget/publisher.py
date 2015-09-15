@@ -290,6 +290,10 @@ class Publisher(QtGui.QWidget):
             self.publishFinished.emit(False)
 
             if version:
-                version.delete()
-
+                try:
+                    version.delete()
+                except Exception:
+                    self.logger.exception(
+                        'Failed to clean up verions after failed publish'
+                    )
             raise

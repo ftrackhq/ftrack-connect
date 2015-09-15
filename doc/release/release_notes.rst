@@ -14,6 +14,12 @@ Release Notes
 
         Humanized notification dates are not always correct.
 
+    .. change:: fixed
+        :tags: Publisher
+
+        Clean-up after a failed publish fails if not permitted to delete
+        version.
+
 .. release:: 0.1.14
     :date: 2015-09-08
 
