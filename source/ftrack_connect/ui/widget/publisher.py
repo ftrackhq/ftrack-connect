@@ -1,6 +1,6 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
-
+import sys
 import logging
 
 from PySide import QtGui
@@ -286,6 +286,10 @@ class Publisher(QtGui.QWidget):
 
         # Catch any errors, emit *publishFinished*, clean up and re-raise.
         except Exception as error:
+            # Store exception info to be able to re-raise after another
+            # exception has occurred.
+            exceptionInfo = sys.exc_info()
+
             self.logger.exception('Failed to publish')
             self.publishFinished.emit(False)
 
@@ -296,4 +300,5 @@ class Publisher(QtGui.QWidget):
                     self.logger.exception(
                         'Failed to clean up version after failed publish'
                     )
-            raise
+
+            raise exceptionInfo[0], exceptionInfo[1], exceptionInfo[3]
