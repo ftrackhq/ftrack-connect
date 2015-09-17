@@ -213,7 +213,9 @@ class Publisher(QtGui.QWidget):
     def _cleanupFailedPublish(self, version=None):
         '''Clean up after a failed publish.'''
         try:
-            version.delete()
+            if version:
+                version.delete()
+
         except ftrack.FTrackError:
             self.logger.exception(
                 'Failed to delete version, probably due to a permission error.'
