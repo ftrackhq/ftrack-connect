@@ -210,6 +210,19 @@ class Publisher(QtGui.QWidget):
             thumbnailFilePath=thumbnailFilePath
         )
 
+    def _cleanupFailedPublish(self, version=None):
+        '''Clean up after a failed publish.'''
+        try:
+            version.delete()
+        except ftrack.FTrackError:
+            self.logger.exception(
+                'Failed to delete version, probably due to a permission error.'
+            )
+        except Exception:
+            self.logger.exception(
+                'Failed to clean up version after failed publish'
+            )
+
     @ftrack_connect.asynchronous.asynchronous
     def _publish(
         self, entity=None, assetName=None, assetType=None,
@@ -286,19 +299,8 @@ class Publisher(QtGui.QWidget):
 
         # Catch any errors, emit *publishFinished*, clean up and re-raise.
         except Exception as error:
-            # Store exception info to be able to re-raise after another
-            # exception has occurred.
-            exceptionInfo = sys.exc_info()
-
             self.logger.exception('Failed to publish')
             self.publishFinished.emit(False)
+            self._cleanupFailedPublish(version=version)
 
-            if version:
-                try:
-                    version.delete()
-                except Exception:
-                    self.logger.exception(
-                        'Failed to clean up version after failed publish'
-                    )
-
-            raise exceptionInfo[0], exceptionInfo[1], exceptionInfo[3]
+            raise
