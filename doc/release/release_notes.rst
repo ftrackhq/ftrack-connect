@@ -17,7 +17,7 @@ Release Notes
     .. change:: fixed
         :tags: Publisher
 
-        Clean-up after a failed publish fails if not permitted to delete
+        Clean up after a failed publish fails if not permitted to delete
         version.
 
 .. release:: 0.1.14
