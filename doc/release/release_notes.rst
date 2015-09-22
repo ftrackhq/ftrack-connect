@@ -8,6 +8,7 @@ Release Notes
 *************
 
 .. release:: 0.1.15
+    :date: 2015-09-22
 
     .. change:: fixed
         :tags: Crew
