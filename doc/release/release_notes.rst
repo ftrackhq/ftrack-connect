@@ -7,7 +7,7 @@
 Release Notes
 *************
 
-.. release:: Upcoming
+.. release:: 0.1.15
 
     .. change:: fixed
         :tags: Crew
