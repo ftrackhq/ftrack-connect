@@ -160,9 +160,14 @@ class Application(QtGui.QMainWindow):
         loginError will be emitted if this fails.
 
         '''
+        # Set environment variables supported by the old API.
         os.environ['FTRACK_SERVER'] = url
         os.environ['LOGNAME'] = username
         os.environ['FTRACK_APIKEY'] = apiKey
+
+        # Set environment variables supported by the new API.
+        os.environ['FTRACK_API_USER'] = username
+        os.environ['FTRACK_API_KEY'] = apiKey
 
         # Import ftrack module and catch any errors.
         try:
@@ -288,9 +293,9 @@ class Application(QtGui.QMainWindow):
         '''Find and load tab plugins in search paths.'''
         #: TODO: Add discover functionality and search paths.
 
-        # Add publisher as a plugin.
-        from .publisher import register
-        register(self)
+        from . import (publisher, actions)
+        actions.register(self)
+        publisher.register(self)
 
     def _routeEvent(self, event):
         '''Route websocket *event* to publisher plugin.

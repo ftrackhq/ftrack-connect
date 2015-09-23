@@ -22,21 +22,24 @@ class DiscoverApplicationsHook(object):
             items=[
                 dict(
                     actionIdentifier='ftrack-connect-launch-applications-action',
-                    label='Maya 2014',
+                    label='Maya',
+                    variant='2014',
                     actionData=dict(
                         applicationIdentifier='maya_2014'
                     )
                 ),
                 dict(
                     actionIdentifier='ftrack-connect-launch-applications-action',
-                    label='Premiere Pro CC 2014',
+                    label='Premiere Pro CC',
+                    variant='2014',
                     actionData=dict(
                         applicationIdentifier='pp_cc_2014'
                     )
                 ),
                 dict(
                     actionIdentifier='ftrack-connect-launch-applications-action',
-                    label='Premiere Pro CC 2014 with latest publish',
+                    label='Premiere Pro CC',
+                    variant='2014 with latest publish',
                     actionData=dict(
                         latest=True,
                         applicationIdentifier='pp_cc_2014'
@@ -92,16 +95,20 @@ class DiscoverApplicationsHook(object):
                 'actionIdentifier': self.identifier,
                 'label': label,
                 'icon': application.get('icon', 'default'),
+                'variant': application.get('variant', None),
+                'description': application.get('description', None),
                 'applicationIdentifier': applicationIdentifier
             })
 
             if applicationIdentifier.startswith('premiere_pro_cc'):
                 items.append({
                     'actionIdentifier': self.identifier,
-                    'label': '{label} with latest version'.format(
-                        label=label
-                    ),
+                    'label': label,
                     'icon': application.get('icon', 'default'),
+                    'variant': '{variant} with latest version'.format(
+                        variant=application.get('variant', None)
+                    ),
+                    'description': application.get('description', None),
                     'launchWithLatest': True,
                     'applicationIdentifier': applicationIdentifier
                 })

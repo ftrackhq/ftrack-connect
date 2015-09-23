@@ -7,6 +7,67 @@
 Release Notes
 *************
 
+.. release:: 0.1.15
+    :date: 2015-09-22
+
+    .. change:: changed
+        :tags: Entity Browser
+
+        Added support for new workflow object icons in entity browser.
+
+    .. change:: fixed
+        :tags: Crew
+
+        Humanized notification dates are not always correct.
+
+    .. change:: fixed
+        :tags: Publisher
+
+        Clean up after a failed publish fails if not permitted to delete
+        version.
+
+.. release:: 0.1.14
+    :date: 2015-09-08
+
+    .. change:: new
+        :tags: Actions
+
+        Added support for launching actions from Connect.
+
+        .. seealso :: :ref:`using/actions`
+
+    .. change:: new
+        :tags: Crew
+
+        Added crew widgets for chat and notifications.
+
+    .. change:: changed
+        :tags: Actions
+
+        Applications may now include *description* and *variant*.
+
+    .. change:: changed
+        :tags: Developer
+
+        ``thumbnail.Base`` will no longer default to ellipsis shape. Use 
+        ``thumbnail.EllipsisBase`` for round thumbnails.
+
+.. release:: 0.1.13
+    :date: 2015-08-31
+
+    .. change:: changed
+        :tags: Publisher
+
+        Update entity browser to support updated naming convention.
+
+.. release:: 0.1.12
+    :date: 2015-08-24
+
+    .. change:: new
+        :tags: Publisher
+
+        Support custom object types and icons in entity browser.
+
 .. release:: 0.1.11
     :date: 2015-06-05
     
