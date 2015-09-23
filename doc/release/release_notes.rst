@@ -10,6 +10,11 @@ Release Notes
 .. release:: 0.1.15
     :date: 2015-09-22
 
+    .. change:: changed
+        :tags: Entity Browser
+
+        Added support for new workflow object icons in entity browser.
+
     .. change:: fixed
         :tags: Crew
 
