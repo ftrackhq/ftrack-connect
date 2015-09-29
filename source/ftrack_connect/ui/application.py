@@ -406,25 +406,41 @@ class Application(QtGui.QMainWindow):
 
         aboutDialog = _about.AboutDialog(self)
 
-        # Import ftrack module and and try to get API version.
-        try:
-            import ftrack
-            apiVersion = ftrack.api.version_data.ftrackVersion
-        except Exception:
-            apiVersion = 'Unknown'
-
         environmentData = os.environ.copy()
         environmentData.update({
-            'FTRACK_API_VERSION': apiVersion,
             'PLATFORM': platform.platform(),
             'PYTHON_VERSION': platform.python_version()
         })
 
+        versionData = [{
+            'name': 'ftrack connect',
+            'version': ftrack_connect.__version__,
+            'core': True,
+            'debug_information': environmentData
+        }]
+
+        # Import ftrack module and and try to get API version and
+        # to load information from other plugins using hook.
+        try:
+            import ftrack
+            apiVersion = ftrack.api.version_data.ftrackVersion
+            environmentData['FTRACK_API_VERSION'] = apiVersion,
+
+            response = ftrack.EVENT_HUB.publish(
+                ftrack.Event(
+                    'ftrack.connect.plugin.debug-information'
+                ),
+                synchronous=True
+            )
+
+            versionData = versionData + response
+        except Exception:
+            apiVersion = 'Unknown'
+
         aboutDialog.setInformation(
-            version=ftrack_connect.__version__,
+            versionData=versionData,
             server=os.environ.get('FTRACK_SERVER', 'Not set'),
             user=getpass.getuser(),
-            debugData=environmentData
         )
 
         aboutDialog.exec_()

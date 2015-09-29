@@ -1,6 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
 
+import json
 
 from PySide import QtGui, QtCore
 
@@ -29,7 +30,7 @@ class AboutDialog(QtGui.QDialog):
 
         self.messageLabel = QtGui.QLabel()
         self.messageLabel.setWordWrap(True)
-        self.messageLabel.setAlignment(QtCore.Qt.AlignCenter)
+        self.messageLabel.setAlignment(QtCore.Qt.AlignLeft)
         layout.addWidget(self.messageLabel)
 
         layout.addSpacing(25)
@@ -51,32 +52,47 @@ class AboutDialog(QtGui.QDialog):
         self.debugTextEdit.show()
         self.adjustSize()
 
-    def setInformation(self, version, user, server, debugData=None):
-        '''Set displayed *version*, *user*, *server* and any *debugData*.
+    def setInformation(self, versionData, user, server):
+        '''Set displayed *versionData*, *user*, *server*.'''
+        core = [plugin for plugin in versionData if plugin.get('core')]
+        plugins = [
+            plugin for plugin in versionData if plugin.get('core') is not True
+        ]
 
-        *debugData* is optional and should be a dictionary containing key/value
-        pairs.
-
+        coreTemplate = '''
+        <h4>Version:</h4>
+        <p>{core_versions}</p>
+        <h4>Server and user:</h4>
+        <p>{server}<br>
+        {user}<br></p>
         '''
 
-        self.messageLabel.setText(
-            '<h3>ftrack connect</h3>'
-            '<p>Version {0}</p>'
-            '<p><b>Server:</b> {1} <br>'
-            '<b>User:</b> {2}</p>'.format(version, server, user)
-        )
+        itemTemplate = '{name}: {version}<br>'
 
-        if not debugData:
-            debugData = dict()
-
-        debugData['VERSION'] = version
-        debugData['USER'] = user
-        debugData['SERVER'] = server
-
-        debugInformation = ''
-        for key in sorted(debugData.keys(), reverse=True):
-            debugInformation = '{1}: {2}\n{0}'.format(
-                debugInformation, key, debugData[key]
+        coreVersions = ''
+        for _core in core:
+            coreVersions += itemTemplate.format(
+                name=_core['name'],
+                version=_core['version']
             )
 
-        self.debugTextEdit.insertPlainText(debugInformation)
+        content = coreTemplate.format(
+            core_versions=coreVersions,
+            server=server,
+            user=user
+        )
+
+        if plugins:
+            pluginVersions = ''
+            for _plugin in plugins:
+                pluginVersions += itemTemplate.format(
+                    name=_plugin['name'],
+                    version=_plugin['version']
+                )
+
+            content += '<h4>Plugins:</h4>{0}'.format(pluginVersions)
+
+        self.messageLabel.setText(content)
+        self.debugTextEdit.insertPlainText(
+            json.dumps(versionData, indent=4, sort_keys=True)
+        )
