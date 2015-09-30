@@ -426,14 +426,19 @@ class Application(QtGui.QMainWindow):
             apiVersion = ftrack.api.version_data.ftrackVersion
             environmentData['FTRACK_API_VERSION'] = apiVersion,
 
-            response = ftrack.EVENT_HUB.publish(
+            responses = ftrack.EVENT_HUB.publish(
                 ftrack.Event(
                     'ftrack.connect.plugin.debug-information'
                 ),
                 synchronous=True
             )
 
-            versionData = versionData + response
+            for response in responses:
+                if isinstance(response, dict):
+                    versionData.append(response)
+                elif isinstance(response, list):
+                    versionData = versionData + response
+
         except Exception:
             apiVersion = 'Unknown'
 
