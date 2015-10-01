@@ -7,6 +7,16 @@
 Release Notes
 *************
 
+.. release:: Upcoming
+    
+    .. change:: new
+
+        Display more detailed information about ftrack connect in About window.
+
+        .. seealso::
+
+            :ref:`Add custom information to About window <developing/hooks/plugin_information>`
+
 .. release:: 0.1.15
     :date: 2015-09-22
 
