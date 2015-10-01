@@ -424,7 +424,7 @@ class Application(QtGui.QMainWindow):
         try:
             import ftrack
             apiVersion = ftrack.api.version_data.ftrackVersion
-            environmentData['FTRACK_API_VERSION'] = apiVersion,
+            environmentData['FTRACK_API_VERSION'] = apiVersion
 
             responses = ftrack.EVENT_HUB.publish(
                 ftrack.Event(
@@ -440,7 +440,7 @@ class Application(QtGui.QMainWindow):
                     versionData = versionData + response
 
         except Exception:
-            apiVersion = 'Unknown'
+            pass
 
         aboutDialog.setInformation(
             versionData=versionData,
