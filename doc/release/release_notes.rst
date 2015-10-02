@@ -7,8 +7,9 @@
 Release Notes
 *************
 
-.. release:: Upcoming
-    
+.. release:: 0.1.16
+    :date: 2015-10-02
+
     .. change:: new
 
         Display more detailed information about ftrack connect in About window.
