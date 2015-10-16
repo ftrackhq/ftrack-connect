@@ -7,7 +7,8 @@
 Release Notes
 *************
 
-.. release:: Upcoming
+.. release:: 0.1.17
+    :date: 2015-10-16
 
     .. change:: fixed
         :tags: Actions
