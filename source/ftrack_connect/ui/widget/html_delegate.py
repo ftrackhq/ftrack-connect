@@ -28,7 +28,7 @@ class HtmlDelegate(QtGui.QStyledItemDelegate):
         data = index.data(role=QtCore.Qt.UserRole)
         doc.setHtml(self.format(data))
 
-        doc.adjustSize()
+        doc.setTextWidth(option.rect.width())
 
         options.text = ''
         style.drawControl(QtGui.QStyle.CE_ItemViewItem, options, painter)
@@ -68,6 +68,6 @@ class HtmlDelegate(QtGui.QStyledItemDelegate):
         data = index.data(role=QtCore.Qt.UserRole)
         doc.setHtml(self.format(data))
 
-        doc.adjustSize()
+        doc.setTextWidth(option.rect.width())
 
         return QtCore.QSize(doc.idealWidth(), doc.size().height())
