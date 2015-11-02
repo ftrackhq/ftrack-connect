@@ -12,8 +12,11 @@ class WidgetHarness(Harness):
     def format(self, data):
         '''Return data formatted as string.'''
         return (
-            '<b>{}</b><br/>{}'
-            .format(data.get('title'), data.get('description'))
+            '<b>{}</b><br/><div style="color: green">{}</div>'
+            .format(
+                data.get('title'),
+                data.get('description')
+            )
         )
 
     def constructWidget(self):
@@ -23,11 +26,12 @@ class WidgetHarness(Harness):
         )
 
         for index in range(10):
+            title = 'Item {0}'.format(index)
             widget.addItem(
-                'Item {0}'.format(index),
+                title,
                 userData={
-                    'title': 'My template',
-                    'description': 'Lorum ipsum be nadi'
+                    'title': title,
+                    'description': 'Lorem ipsum dolor sit amet.'
                 }
             )
 
