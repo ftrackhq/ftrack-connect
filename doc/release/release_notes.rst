@@ -7,6 +7,14 @@
 Release Notes
 *************
 
+.. release:: upcoming
+
+    .. change:: new
+
+        Added new 
+        :py:class:`ftrack_connect.ui.widget.html_combobox.HtmlComboBox` widget
+        and :py:class:`ftrack_connect.ui.widget.html_delegate.HtmlDelegate`.
+
 .. release:: 0.1.17
     :date: 2015-10-16
 
