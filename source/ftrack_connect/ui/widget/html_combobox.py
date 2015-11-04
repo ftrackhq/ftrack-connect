@@ -29,21 +29,25 @@ class HtmlComboBox(QtGui.QComboBox):
             self.initStyleOption(option)
             painter.drawComplexControl(QtGui.QStyle.CC_ComboBox, option)
 
-            # Draw custom item.
-            doc = QtGui.QTextDocument()
-            doc.setHtml(self.format(itemData))
+            # Get QTextDocument from delegate to use for painting HTML text.
+            delegate = self.itemDelegate()
+            document = delegate.getTextDocument(
+                option, self.itemData(self.currentIndex())
+            )
 
             style = painter.style()  # QtGui.QApplication.style()
-            ctx = QtGui.QAbstractTextDocumentLayout.PaintContext()
+            paint_context = QtGui.QAbstractTextDocumentLayout.PaintContext()
 
-            rect = style.subElementRect(
+            text_rectangle = style.subElementRect(
                 QtGui.QStyle.SE_ComboBoxFocusRect, option, self
             )
-            doc.setTextWidth(option.rect.width())
+
             painter.save()
-            painter.translate(rect.topLeft())
-            painter.setClipRect(rect.translated(-rect.topLeft()))
-            doc.documentLayout().draw(painter, ctx)
+            painter.translate(text_rectangle.topLeft())
+            painter.setClipRect(text_rectangle.translated(
+                -text_rectangle.topLeft())
+            )
+            document.documentLayout().draw(painter, paint_context)
             painter.restore()
 
         else:
@@ -54,13 +58,15 @@ class HtmlComboBox(QtGui.QComboBox):
         option = QtGui.QStyleOptionComboBox()
         self.initStyleOption(option)
 
-        doc = QtGui.QTextDocument()
+        data = self.itemData(self.currentIndex())
 
-        itemData = self.itemData(self.currentIndex())
-        doc.setHtml(self.format(itemData))
-        doc.setTextWidth(option.rect.width())
+        # Get QTextDocument from delegate to use for calculating size hint.
+        delegate = self.itemDelegate()
+        document = delegate.getTextDocument(option, data)
+
+        # Adjust the size to fix issue occurring on windows.
         size = QtCore.QSize(
-            doc.idealWidth(), doc.size().height() + 5
+            document.idealWidth(), document.size().height() + 5
         )
 
         return size

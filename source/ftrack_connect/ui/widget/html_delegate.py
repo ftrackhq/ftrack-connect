@@ -13,6 +13,14 @@ class HtmlDelegate(QtGui.QStyledItemDelegate):
 
         super(HtmlDelegate, self).__init__(*args, **kwargs)
 
+    def getTextDocument(self, option, item_data):
+        '''Return QTextDocument based on *option* and *item_data*.'''
+        document = QtGui.QTextDocument()
+        document.setHtml(self.format(item_data))
+        document.setTextWidth(option.rect.width())
+
+        return document
+
     def paint(self, painter, option, index):
         '''Override paint method.'''
         options = QtGui.QStyleOptionViewItemV4(option)
@@ -23,31 +31,33 @@ class HtmlDelegate(QtGui.QStyledItemDelegate):
         else:
             style = options.widget.style()
 
-        doc = QtGui.QTextDocument()
-
+        # Get QTextDocument to use for painting HTML text.
         data = index.data(role=QtCore.Qt.UserRole)
-        doc.setHtml(self.format(data))
-
-        doc.setTextWidth(option.rect.width())
+        document = self.getTextDocument(option, data)
 
         options.text = ''
+
+        # Draw the element with the provided painter with the style
+        # options specified by option
         style.drawControl(QtGui.QStyle.CE_ItemViewItem, options, painter)
 
-        ctx = QtGui.QAbstractTextDocumentLayout.PaintContext()
+        paint_context = QtGui.QAbstractTextDocumentLayout.PaintContext()
 
+        # If item state is selected by mouse over change the highlight color.
         if options.state & QtGui.QStyle.State_Selected:
-            ctx.palette.setColor(
+            paint_context.palette.setColor(
                 QtGui.QPalette.Text,
                 options.palette.color(
                     QtGui.QPalette.Active, QtGui.QPalette.HighlightedText
                 )
             )
 
+        # Get paint rectangle in screen coordinates
         text_rectangle = style.subElementRect(
             QtGui.QStyle.SE_ItemViewItemText, options
         )
 
-        # Fix offset issue occurring on windows.
+        # Adjust the rectangle to fix issue occurring on windows.
         text_rectangle.adjust(+5, 0, -5, 0)
 
         painter.save()
@@ -55,7 +65,7 @@ class HtmlDelegate(QtGui.QStyledItemDelegate):
         painter.setClipRect(
             text_rectangle.translated(-text_rectangle.topLeft())
         )
-        doc.documentLayout().draw(painter, ctx)
+        document.documentLayout().draw(painter, paint_context)
         painter.restore()
 
     def sizeHint(self, option, index):
@@ -63,11 +73,7 @@ class HtmlDelegate(QtGui.QStyledItemDelegate):
         options = QtGui.QStyleOptionViewItemV4(option)
         self.initStyleOption(options, index)
 
-        doc = QtGui.QTextDocument()
-
         data = index.data(role=QtCore.Qt.UserRole)
-        doc.setHtml(self.format(data))
+        document = self.getTextDocument(option, data)
 
-        doc.setTextWidth(option.rect.width())
-
-        return QtCore.QSize(doc.idealWidth(), doc.size().height())
+        return QtCore.QSize(document.idealWidth(), document.size().height())
