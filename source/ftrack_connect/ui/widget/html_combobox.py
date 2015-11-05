@@ -10,6 +10,16 @@ class HtmlComboBox(QtGui.QComboBox):
     '''Combo box that draws items with html.'''
 
     def __init__(self, formatter, *args, **kwargs):
+        '''Initialise combo box.
+
+        *formatter* should be a callable that accepts item data and returns a
+        string of HTML to render entry with.
+
+        .. seealso::
+
+            :class:`ftrack_connect.ui.widget.html_delegate.HtmlDelegate`
+
+        '''
         self.format = formatter
         super(HtmlComboBox, self).__init__(*args, **kwargs)
         self.setItemDelegate(
@@ -54,7 +64,7 @@ class HtmlComboBox(QtGui.QComboBox):
             super(HtmlComboBox, self).paint(event)
 
     def sizeHint(self):
-        '''Returns the size needed to display the item.'''
+        '''Return preferred size hint.'''
         option = QtGui.QStyleOptionComboBox()
         self.initStyleOption(option)
 

@@ -5,10 +5,15 @@ from PySide import QtGui, QtCore
 
 
 class HtmlDelegate(QtGui.QStyledItemDelegate):
-    '''Delegate to render Html.'''
+    '''Delegate to render HTML.'''
 
     def __init__(self, formatter, *args, **kwargs):
-        '''Initialise delegate with html *formatter*.'''
+        '''Initialise delegate with HTML *formatter*.
+
+        *formatter* should be a callable that accepts item data and returns a
+        string of HTML to render entry with.
+
+        '''
         self.format = formatter
 
         super(HtmlDelegate, self).__init__(*args, **kwargs)
@@ -22,7 +27,7 @@ class HtmlDelegate(QtGui.QStyledItemDelegate):
         return document
 
     def paint(self, painter, option, index):
-        '''Override paint method.'''
+        '''Paint delegate using *painter*.'''
         options = QtGui.QStyleOptionViewItemV4(option)
         self.initStyleOption(options, index)
 
@@ -69,7 +74,7 @@ class HtmlDelegate(QtGui.QStyledItemDelegate):
         painter.restore()
 
     def sizeHint(self, option, index):
-        '''Returns the size needed to display the item.'''
+        '''Return preferred size hint.'''
         options = QtGui.QStyleOptionViewItemV4(option)
         self.initStyleOption(options, index)
 
