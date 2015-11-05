@@ -1,7 +1,6 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
 
-
 import ftrack_connect.ui.widget.html_combobox
 from harness import Harness
 
