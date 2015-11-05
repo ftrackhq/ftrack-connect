@@ -40,6 +40,7 @@ class HtmlDelegate(QtGui.QStyledItemDelegate):
         data = index.data(role=QtCore.Qt.UserRole)
         document = self.getTextDocument(option, data)
 
+        # Ensure no text label rendered.
         options.text = ''
 
         # Draw the element with the provided painter with the style
