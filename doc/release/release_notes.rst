@@ -7,6 +7,29 @@
 Release Notes
 *************
 
+.. release:: Upcoming
+
+    .. change:: new
+
+        Added new 
+        :py:class:`ftrack_connect.ui.widget.html_combobox.HtmlComboBox` widget
+        and :py:class:`ftrack_connect.ui.widget.html_delegate.HtmlDelegate`.
+
+.. release:: 0.1.17
+    :date: 2015-10-16
+
+    .. change:: fixed
+        :tags: Actions
+
+        The option *launch with latest* is not respected when launching *Adobe*
+        applications.
+
+    .. change:: fixed
+        :tags: Developer, Actions
+
+        When launching actions via connect, not all action data are passed when
+        firing the launch event.
+
 .. release:: 0.1.16
     :date: 2015-10-02
 

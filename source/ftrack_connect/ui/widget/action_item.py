@@ -145,13 +145,7 @@ class ActionItem(QtGui.QWidget):
             results = ftrack.EVENT_HUB.publish(
                 ftrack.Event(
                     topic='ftrack.action.launch',
-                    data=dict(
-                        actionIdentifier=action.get('actionIdentifier'),
-                        applicationIdentifier=action.get('applicationIdentifier'),
-                        variant=action.get('variant'),
-                        selection=action.get('selection', []),
-                        actionData=action
-                    )
+                    data=action
                 ),
                 synchronous=True
             )

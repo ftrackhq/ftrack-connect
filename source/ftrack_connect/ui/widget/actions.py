@@ -294,7 +294,7 @@ class Actions(QtGui.QWidget):
         # Flatten structure
         discoveredActions = []
         for result in results:
-             if result:
+            if result:
                 discoveredActions.extend(result.get('items', []))
 
         # Sort actions by label
