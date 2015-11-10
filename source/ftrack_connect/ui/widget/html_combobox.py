@@ -21,10 +21,12 @@ class HtmlComboBox(QtGui.QComboBox):
 
         '''
         self.format = formatter
+        self._resize_occurred = False
         super(HtmlComboBox, self).__init__(*args, **kwargs)
         self.setItemDelegate(
             ftrack_connect.ui.widget.html_delegate.HtmlDelegate(formatter)
         )
+        self.setSizeAdjustPolicy(QtGui.QComboBox.AdjustToContents)
 
     def paintEvent(self, event):
         '''Handle paint *event*.'''
@@ -61,7 +63,31 @@ class HtmlComboBox(QtGui.QComboBox):
             painter.restore()
 
         else:
-            super(HtmlComboBox, self).paint(event)
+            super(HtmlComboBox, self).paintEvent(event)
+
+    def resizeEvent(self, *args, **kwargs):
+        '''Handle resize event.'''
+        # Record a resize has occurred in order to fix issue in popup. See
+        # showPopup for details.
+        self._resize_occurred = True
+
+        # Force update geometry to avoid cutting off html text.
+        self.updateGeometry()
+
+        super(HtmlComboBox, self).resizeEvent(*args, **kwargs)
+
+    def showPopup(self, *args, **kwargs):
+        '''Show popup.'''
+        super(HtmlComboBox, self).showPopup(*args, **kwargs)
+
+        # Fix bug where popup is not correctly updated after a resize (the
+        # duplicate call to showPopup is necessary for clip to be updated).
+        # Note: This is an imperfect solution and should be replaced if a better
+        # solution can be found.
+        if self._resize_occurred:
+            self._resize_occurred = False
+            self.view().reset()
+            super(HtmlComboBox, self).showPopup(*args, **kwargs)
 
     def sizeHint(self):
         '''Return preferred size hint.'''
