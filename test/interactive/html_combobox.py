@@ -42,7 +42,6 @@ class WidgetHarness(Harness):
                 }
             )
 
-        widget.setMinimumWidth(700)
         return widget
 
 
