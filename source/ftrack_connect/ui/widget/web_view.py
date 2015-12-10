@@ -2,7 +2,12 @@
 # :copyright: Copyright (c) 2015 ftrack
 
 from PySide import QtGui, QtWebKit, QtCore
-import hiero.core
+
+# TODO: Investigate why this import exists and remove it.
+try:
+    import hiero.core
+except ImportError:
+    pass
 
 import ftrack
 
