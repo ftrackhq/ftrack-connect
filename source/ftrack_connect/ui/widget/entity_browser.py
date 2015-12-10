@@ -3,11 +3,14 @@
 #             Copyright (c) 2014 Martin Pengelly-Phillips
 # :notice: Derived from Riffle (https://github.com/4degrees/riffle)
 
+import os
+
 from PySide import QtGui, QtCore
+import ftrack_api
 
 import ftrack_connect.ui.model.entity_tree
 import ftrack_connect.ui.widget.overlay
-
+import ftrack_connect.session
 
 class EntityBrowser(QtGui.QDialog):
     '''Entity browser.'''
@@ -31,6 +34,8 @@ class EntityBrowser(QtGui.QDialog):
         self._selected = []
         self._updatingNavigationBar = False
 
+        self._session = ftrack_connect.session.get_session()
+
         self._construct()
         self._postConstruction()
 
@@ -48,7 +53,7 @@ class EntityBrowser(QtGui.QDialog):
         self.navigateUpButton = QtGui.QToolButton()
         self.navigateUpButton.setObjectName('entity-browser-up-button')
         self.navigateUpButton.setIcon(
-            QtGui.QIcon(':ftrack/image/light/upArrowDark')
+            QtGui.QIcon(':ftrack/image/light/upArrow')
         )
         self.navigateUpButton.setToolTip('Navigate up a level.')
         self.headerLayout.addWidget(self.navigateUpButton)
@@ -78,7 +83,10 @@ class EntityBrowser(QtGui.QDialog):
 
         proxy = ftrack_connect.ui.model.entity_tree.EntityTreeProxyModel(self)
         model = ftrack_connect.ui.model.entity_tree.EntityTreeModel(
-            root=self._root, parent=self
+            root=ftrack_connect.ui.model.entity_tree.ItemFactory(
+                self._session, self._root
+            ),
+            parent=self
         )
         proxy.setSourceModel(model)
         proxy.setDynamicSortFilter(True)

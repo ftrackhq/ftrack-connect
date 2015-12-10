@@ -3,8 +3,6 @@
 
 import logging
 
-from PySide import QtGui
-import ftrack
 
 import ftrack_connect.asynchronous
 from ftrack_connect.ui.widget import item_selector as _item_selector
@@ -26,7 +24,6 @@ class AssetSelector(_item_selector.ItemSelector):
         self.logger = logging.getLogger(
             __name__ + '.' + self.__class__.__name__
         )
-
 
     @ftrack_connect.asynchronous.asynchronous
     def loadAssets(self, entity, selectAsset=None):

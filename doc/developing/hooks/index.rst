@@ -32,3 +32,4 @@ priority or by removing the default hook using
     make_web_playable
     action_launch
     action_discover
+    plugin_information

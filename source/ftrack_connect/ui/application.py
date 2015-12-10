@@ -4,6 +4,7 @@
 import os
 import getpass
 import platform
+import logging
 
 from PySide import QtGui
 from PySide import QtCore
@@ -50,6 +51,9 @@ class Application(QtGui.QMainWindow):
         '''Initialise the main application window.'''
         theme = kwargs.pop('theme', 'light')
         super(Application, self).__init__(*args, **kwargs)
+        self.logger = logging.getLogger(
+            __name__ + '.' + self.__class__.__name__
+        )
 
         # Register widget for error handling.
         self.uncaughtError = _uncaught_error.UncaughtError(
@@ -156,9 +160,14 @@ class Application(QtGui.QMainWindow):
         loginError will be emitted if this fails.
 
         '''
+        # Set environment variables supported by the old API.
         os.environ['FTRACK_SERVER'] = url
         os.environ['LOGNAME'] = username
         os.environ['FTRACK_APIKEY'] = apiKey
+
+        # Set environment variables supported by the new API.
+        os.environ['FTRACK_API_USER'] = username
+        os.environ['FTRACK_API_KEY'] = apiKey
 
         # Import ftrack module and catch any errors.
         try:
@@ -191,7 +200,11 @@ class Application(QtGui.QMainWindow):
             settings.setValue('login/username', username)
             settings.setValue('login/apikey', apiKey)
 
-            self.configureConnectAndDiscoverPlugins()
+            try:
+                self.configureConnectAndDiscoverPlugins()
+            except ftrack.EventHubConnectionError as error:
+                self.logger.exception(error)
+                self.loginError.emit(str(error))
 
     def configureConnectAndDiscoverPlugins(self):
         '''Configure connect and load plugins.'''
@@ -280,9 +293,9 @@ class Application(QtGui.QMainWindow):
         '''Find and load tab plugins in search paths.'''
         #: TODO: Add discover functionality and search paths.
 
-        # Add publisher as a plugin.
-        from .publisher import register
-        register(self)
+        from . import (publisher, actions)
+        actions.register(self)
+        publisher.register(self)
 
     def _routeEvent(self, event):
         '''Route websocket *event* to publisher plugin.
@@ -393,25 +406,46 @@ class Application(QtGui.QMainWindow):
 
         aboutDialog = _about.AboutDialog(self)
 
-        # Import ftrack module and and try to get API version.
-        try:
-            import ftrack
-            apiVersion = ftrack.api.version_data.ftrackVersion
-        except Exception:
-            apiVersion = 'Unknown'
-
         environmentData = os.environ.copy()
         environmentData.update({
-            'FTRACK_API_VERSION': apiVersion,
             'PLATFORM': platform.platform(),
             'PYTHON_VERSION': platform.python_version()
         })
 
+        versionData = [{
+            'name': 'ftrack connect',
+            'version': ftrack_connect.__version__,
+            'core': True,
+            'debug_information': environmentData
+        }]
+
+        # Import ftrack module and and try to get API version and
+        # to load information from other plugins using hook.
+        try:
+            import ftrack
+            apiVersion = ftrack.api.version_data.ftrackVersion
+            environmentData['FTRACK_API_VERSION'] = apiVersion
+
+            responses = ftrack.EVENT_HUB.publish(
+                ftrack.Event(
+                    'ftrack.connect.plugin.debug-information'
+                ),
+                synchronous=True
+            )
+
+            for response in responses:
+                if isinstance(response, dict):
+                    versionData.append(response)
+                elif isinstance(response, list):
+                    versionData = versionData + response
+
+        except Exception:
+            pass
+
         aboutDialog.setInformation(
-            version=ftrack_connect.__version__,
+            versionData=versionData,
             server=os.environ.get('FTRACK_SERVER', 'Not set'),
             user=getpass.getuser(),
-            debugData=environmentData
         )
 
         aboutDialog.exec_()

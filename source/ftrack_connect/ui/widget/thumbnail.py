@@ -61,7 +61,10 @@ class Base(QtGui.QLabel):
         '''Update thumbnail with *data*.'''
         pixmap = QtGui.QPixmap()
         pixmap.loadFromData(data)
+        self._scaleAndSetPixmap(pixmap)
 
+    def _scaleAndSetPixmap(self, pixmap):
+        '''Scale and set *pixmap*.'''
         scaledPixmap = pixmap.scaledToWidth(
             self.width(),
             mode=QtCore.Qt.SmoothTransformation
@@ -91,6 +94,9 @@ class Base(QtGui.QLabel):
 
         return html
 
+class EllipseBase(Base):
+    '''Thumbnail which is drawn as an ellipse.'''
+
     def paintEvent(self, event):
         '''Override paint event to make round thumbnails.'''
         painter = QtGui.QPainter(self)
@@ -119,10 +125,65 @@ class Base(QtGui.QLabel):
         )
 
 
-class User(Base):
-    '''Represent a user thumbnail.'''
+class User(EllipseBase):
 
     def _download(self, reference):
         '''Return thumbnail from *reference*.'''
         url = ftrack.User(reference).getThumbnail()
         return super(User, self)._download(url)
+
+
+class ActionIcon(Base):
+    '''Widget to load action icons over HTTP.'''
+
+    #: Available icons on ftrack server.
+    AVAILABLE_ICONS = {
+        'hiero': '/application_icons/hiero.png',
+        'hieroplayer': '/application_icons/hieroplayer.png',
+        'nukex': '/application_icons/nukex.png',
+        'nuke': '/application_icons/nuke.png',
+        'nuke_studio': '/application_icons/nuke_studio.png',
+        'premiere': '/application_icons/premiere.png',
+        'maya': '/application_icons/maya.png',
+        'cinesync': '/application_icons/cinesync.png',
+        'photoshop': '/application_icons/photoshop.png',
+        'prelude': '/application_icons/prelude.png',
+        'after_effects': '/application_icons/after_effects.png'
+    }
+
+    def __init__(self, parent=None):
+        '''Initialize action icon.'''
+        super(ActionIcon, self).__init__(parent)
+        self.setFrameStyle(QtGui.QFrame.NoFrame)
+
+    def setIcon(self, icon):
+        '''Set *icon* to a supported icon or show the standard icon.
+
+        *icon* may be one of the following.
+
+            * A URL to load the image from starting with 'http'.
+            * One of the predefined icons in AVAILABLE_ICONS
+        '''
+        if icon and icon[:4] == 'http':
+            self.load(icon)
+        elif self.AVAILABLE_ICONS.get(icon):
+            url = os.environ['FTRACK_SERVER'] + self.AVAILABLE_ICONS[icon]
+            self.load(url)
+        else:
+            self.loadResource(':/ftrack/image/light/action')
+
+    def loadResource(self, resource):
+        '''Update current pixmap using *resource*.'''
+        pixmap = QtGui.QPixmap(
+            QtCore.QSize(self.width(), self.height())
+        )
+        pixmap.load(resource)
+        self._scaleAndSetPixmap(pixmap)
+
+    def _scaleAndSetPixmap(self, pixmap):
+        '''Scale *pixmap* to fit within current bounds'''
+        scaledPixmap = pixmap.scaled(
+            self.width(), self.height(), QtCore.Qt.KeepAspectRatio, 
+            QtCore.Qt.SmoothTransformation
+        )
+        self.setPixmap(scaledPixmap)

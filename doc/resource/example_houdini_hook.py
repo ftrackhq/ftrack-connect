@@ -58,6 +58,7 @@ class HoudiniAction(object):
 
             actionIdentifier - Unique identifier for the action
             label - Nice name to display in ftrack
+            variant - Variant or version of the application.
             icon(optional) - predefined icon or URL to an image
             applicationIdentifier - Unique identifier to identify application
                                     in store.
@@ -75,6 +76,8 @@ class HoudiniAction(object):
             items.append({
                 'actionIdentifier': self.identifier,
                 'label': label,
+                'variant': application.get('variant', None),
+                'description': application.get('description', None),
                 'icon': application.get('icon', 'default'),
                 'applicationIdentifier': applicationIdentifier
             })
@@ -111,7 +114,8 @@ class ApplicationStore(ftrack_connect.application.ApplicationStore):
                 expression=prefix + [
                     'Houdini*', 'Houdini.app'
                 ],
-                label='Houdini {version}',
+                label='Houdini',
+                variant='{version}',
                 applicationIdentifier='houdini_{version}'
             ))
 
@@ -123,7 +127,8 @@ class ApplicationStore(ftrack_connect.application.ApplicationStore):
                     prefix +
                     ['Side Effects Software', 'Houdini*', 'bin', 'houdini.exe']
                 ),
-                label='Houdini {version}',
+                label='Houdini',
+                variant='{version}',
                 applicationIdentifier='houdini_{version}'
             ))
 

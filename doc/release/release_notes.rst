@@ -7,6 +7,120 @@
 Release Notes
 *************
 
+.. release:: 0.1.18
+    :date: 2015-11-10
+
+    .. change:: new
+
+        Added new 
+        :py:class:`ftrack_connect.ui.widget.html_combobox.HtmlComboBox` widget
+        and :py:class:`ftrack_connect.ui.widget.html_delegate.HtmlDelegate`.
+
+.. release:: 0.1.17
+    :date: 2015-10-16
+
+    .. change:: fixed
+        :tags: Actions
+
+        The option *launch with latest* is not respected when launching *Adobe*
+        applications.
+
+    .. change:: fixed
+        :tags: Developer, Actions
+
+        When launching actions via connect, not all action data are passed when
+        firing the launch event.
+
+.. release:: 0.1.16
+    :date: 2015-10-02
+
+    .. change:: new
+
+        Display more detailed information about ftrack connect in About window.
+
+        .. seealso::
+
+            :ref:`Add custom information to About window <developing/hooks/plugin_information>`
+
+.. release:: 0.1.15
+    :date: 2015-09-22
+
+    .. change:: changed
+        :tags: Entity Browser
+
+        Added support for new workflow object icons in entity browser.
+
+    .. change:: fixed
+        :tags: Crew
+
+        Humanized notification dates are not always correct.
+
+    .. change:: fixed
+        :tags: Publisher
+
+        Clean up after a failed publish fails if not permitted to delete
+        version.
+
+.. release:: 0.1.14
+    :date: 2015-09-08
+
+    .. change:: new
+        :tags: Actions
+
+        Added support for launching actions from Connect.
+
+        .. seealso :: :ref:`using/actions`
+
+    .. change:: new
+        :tags: Crew
+
+        Added crew widgets for chat and notifications.
+
+    .. change:: changed
+        :tags: Actions
+
+        Applications may now include *description* and *variant*.
+
+    .. change:: changed
+        :tags: Developer
+
+        ``thumbnail.Base`` will no longer default to ellipsis shape. Use 
+        ``thumbnail.EllipsisBase`` for round thumbnails.
+
+.. release:: 0.1.13
+    :date: 2015-08-31
+
+    .. change:: changed
+        :tags: Publisher
+
+        Update entity browser to support updated naming convention.
+
+.. release:: 0.1.12
+    :date: 2015-08-24
+
+    .. change:: new
+        :tags: Publisher
+
+        Support custom object types and icons in entity browser.
+
+.. release:: 0.1.11
+    :date: 2015-06-05
+    
+    .. change:: changed
+        :tags: Publisher
+
+        File browser now defaults to home directory.
+
+    .. change:: fixed
+        :tags: Publisher
+
+        File browser crashes if file is removed or renamed.
+
+    .. change:: fixed
+        :tags: Publisher
+
+        File browser not being refreshed if closed and reopened.
+
 .. release:: 0.1.10
     :date: 2015-05-06
 

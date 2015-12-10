@@ -5,35 +5,21 @@
 
 from PySide import QtGui, QtCore
 
-import ftrack
+import ftrack_api
 
 import ftrack_connect.worker
 
 
-def ItemFactory(entity):
+def ItemFactory(session, entity):
     '''Return appropriate :py:class:`Item` to represent *entity*.
 
     If *entity* is null then return :class:`Root` item.
 
     '''
     if not entity:
-        return Root()
+        return Root(session)
 
-    elif isinstance(entity, ftrack.Project):
-        return Project(entity)
-
-    elif isinstance(entity, ftrack.Task):
-        if entity.getObjectType() == 'Task':
-            return Task(entity)
-        else:
-            return Context(entity)
-
-    else:
-        raise ValueError(
-            'Could not determine correct item for entity: {0}'
-            .format(entity)
-        )
-
+    return Context(session, entity)
 
 class Item(object):
     '''Represent ftrack entity with consistent interface.'''
@@ -54,12 +40,12 @@ class Item(object):
     @property
     def id(self):
         '''Return id of item.'''
-        return self.entity.getId()
+        return self.entity.get('id')
 
     @property
     def name(self):
         '''Return name of item.'''
-        return self.entity.getName()
+        return self.entity.get('name')
 
     @property
     def type(self):
@@ -155,8 +141,9 @@ class Item(object):
 class Root(Item):
     '''Represent root.'''
 
-    def __init__(self):
+    def __init__(self, session):
         '''Initialise item.'''
+        self._session = session
         super(Root, self).__init__(None)
 
     @property
@@ -172,13 +159,54 @@ class Root(Item):
     def _fetchChildren(self):
         '''Fetch and return new child items.'''
         children = []
-        for entity in ftrack.getProjects():
-            children.append(Project(entity))
+        for entity in self._session.query('Project where status is active'):
+            children.append(Project(self._session, entity))
 
         return children
 
 
-class Project(Item):
+class Context(Item):
+    '''Represent context entity.'''
+
+    def __init__(self, session, entity):
+        '''Initialise item.'''
+        self._session = session
+        super(Context, self).__init__(entity)
+
+    @property
+    def type(self):
+        '''Return type of item as string.'''
+        return self.entity.get('object_type', {}).get('name')
+
+    @property
+    def icon(self):
+        '''Return icon.'''
+        icon = self.entity.get('object_type', {}).get('icon', 'default')
+        return QtGui.QIcon(
+            ':/ftrack/image/light/object_type/{0}'.format(icon)
+        )
+
+    def _fetchChildren(self):
+        '''Fetch and return new child items.'''
+        children = []
+        entities = self._session.query(
+            (
+                'select name, object_type_id, object_type.name, '
+                'object_type.is_leaf, object_type.icon from TypedContext '
+                'where parent_id is {0}'
+            ).format(self.entity['id'])
+        )
+        for entity in entities:
+            children.append(ItemFactory(self._session, entity))
+
+        return children
+
+    def mayHaveChildren(self):
+        '''Return whether item may have children.'''
+        return self.entity.get('object_type', {}).get('is_leaf') != True
+
+
+class Project(Context):
     '''Represent project entity.'''
 
     @property
@@ -189,71 +217,7 @@ class Project(Item):
     @property
     def icon(self):
         '''Return icon.'''
-        return QtGui.QIcon(':/ftrack/image/light/home')
-
-    def _fetchChildren(self):
-        '''Fetch and return new child items.'''
-        children = []
-        entities = self.entity.getChildren()
-        for entity in entities:
-            children.append(
-                ItemFactory(entity)
-            )
-
-        return children
-
-
-class Context(Item):
-    '''Represent context entity.'''
-
-    @property
-    def type(self):
-        '''Return type of item as string.'''
-        return self.entity.getObjectType()
-
-    @property
-    def icon(self):
-        '''Return icon.'''
-        icon = self.type
-        if icon is None:
-            icon = 'asset'
-        else:
-            icon = icon.lower()
-            if icon not in ('episode', 'shot', 'task'):
-                icon = 'folder'
-
-        return QtGui.QIcon(':/ftrack/image/light/{0}'.format(icon))
-
-    def _fetchChildren(self):
-        '''Fetch and return new child items.'''
-        children = []
-        entities = list(self.entity.getChildren())
-        entities.extend(list(self.entity.getTasks()))
-
-        for entity in entities:
-            children.append(
-                ItemFactory(entity)
-            )
-
-        return children
-
-
-class Task(Item):
-    '''Represent task entity.'''
-
-    @property
-    def type(self):
-        '''Return type of item as string.'''
-        return self.entity.getObjectType()
-
-    @property
-    def icon(self):
-        '''Return icon.'''
-        return QtGui.QIcon(':/ftrack/image/light/task')
-
-    def mayHaveChildren(self):
-        '''Return whether item may have children.'''
-        return False
+        return QtGui.QIcon(':/ftrack/image/light/project')
 
 
 class EntityTreeModel(QtCore.QAbstractItemModel):
@@ -274,7 +238,7 @@ class EntityTreeModel(QtCore.QAbstractItemModel):
     def __init__(self, root=None, parent=None):
         '''Initialise with *root* entity and optional *parent*.'''
         super(EntityTreeModel, self).__init__(parent=parent)
-        self.root = ItemFactory(root)
+        self.root = root
         self.columns = ['Name', 'Type']
 
     def rowCount(self, parent):
