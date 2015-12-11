@@ -181,6 +181,10 @@ Message QLabel#message-text {
 EntityBrowser
 */
 
+EntityBrowser QTabBar {
+  border: 1px solid #5a5a5a;
+}
+
 EntityBrowser QTabBar::tab {
   background: #5a5a5a;
   min-width: 0px;
