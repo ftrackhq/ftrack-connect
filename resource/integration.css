@@ -195,10 +195,6 @@ EntityBrowser QTabBar::tab {
   margin-right: 0px;
 }
 
-QTableView::item {
-    padding: 5px;
-}
-
 EntityBrowser QTabBar::tab:selected {
   color: white;
 }
