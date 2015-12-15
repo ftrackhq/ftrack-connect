@@ -70,24 +70,18 @@ class ContextSelector(QtGui.QWidget):
         if self.entityBrowser.exec_():
             selected = self.entityBrowser.selected()
             if selected:
-                self.setEntity(selected[0])
+                self.setEntity(ftrack.Task(selected[0]['id']))
             else:
                 self.setEntity(None)
 
     def _onEntityBrowserSelectionChanged(self, selection):
         '''Handle selection of entity in browser.'''
         self.entityBrowser.acceptButton.setDisabled(True)
+
+        # Only allow single select.
         if len(selection) == 1:
-            entity = selection[0]
+            # Do not allow selection of projects.
+            if selection[0].entity_type == 'Project':
+                return
 
-            # Prevent selecting Projects or Tasks directly under a Project to
-            # match web interface behaviour.
-            if isinstance(entity, ftrack.Task):
-                objectType = entity.getObjectType()
-                if (
-                    objectType == 'Task'
-                    and isinstance(entity.getParent(), ftrack.Project)
-                ):
-                    return
-
-                self.entityBrowser.acceptButton.setDisabled(False)
+            self.entityBrowser.acceptButton.setDisabled(False)
