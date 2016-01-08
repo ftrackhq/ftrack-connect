@@ -34,7 +34,9 @@ class LineEditIconButton(QtGui.QToolButton):
             QtGui.QIcon.Off
         )
 
-        iconRegion = QtCore.QRect(0, 0, iconPixmap.width(), iconPixmap.height())
+        iconRegion = QtCore.QRect(
+            0, 0, iconPixmap.width(), iconPixmap.height()
+        )
         iconRegion.moveCenter(self.rect().center())
 
         painter.drawPixmap(iconRegion, iconPixmap)

@@ -22,8 +22,9 @@ class Base(QtGui.QLabel):
         self.setFrameStyle(QtGui.QFrame.StyledPanel)
         self.setAlignment(QtCore.Qt.AlignCenter)
 
-        self.placholderThumbnail = (os.environ['FTRACK_SERVER']
-                                    + '/img/thumbnail2.png')
+        self.placholderThumbnail = (
+            os.environ['FTRACK_SERVER'] + '/img/thumbnail2.png'
+        )
 
         self._worker = None
         self.__loadingReference = None
@@ -97,6 +98,7 @@ class EllipseBase(Base):
     '''Thumbnail which is drawn as an ellipse.'''
 
     def paintEvent(self, event):
+        '''Override paint event to make round thumbnails.'''
         painter = QtGui.QPainter(self)
         painter.setRenderHints(
             QtGui.QPainter.Antialiasing,
@@ -122,11 +124,14 @@ class EllipseBase(Base):
             )
         )
 
+
 class User(EllipseBase):
 
     def _download(self, reference):
+        '''Return thumbnail from *reference*.'''
         url = ftrack.User(reference).getThumbnail()
         return super(User, self)._download(url)
+
 
 class ActionIcon(Base):
     '''Widget to load action icons over HTTP.'''

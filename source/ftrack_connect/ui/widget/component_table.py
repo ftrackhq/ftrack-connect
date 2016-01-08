@@ -2,8 +2,6 @@
 # :copyright: Copyright (c) 2015 ftrack
 
 import traceback
-import operator
-import os
 
 from PySide import QtCore, QtGui
 import ftrack
@@ -349,14 +347,14 @@ class ComponentTableWidget(QtGui.QTableWidget):
                     stop: 0 {gradientStartColor}, stop: 1 {gradientStopColor}
                 );
             }}
-            
+
             QPushButton:pressed {{
                 background-color: qlineargradient(
                     x1: 0, y1: 0, x2: 0, y2: 1,
                     stop: 0 {gradientStopColor}, stop: 1 {gradientStartColor}
                 );
             }}
-            
+
             QPushButton:disabled {{
                 background-color: {gradientStartColor};
             }}

@@ -171,12 +171,14 @@ class ListAssetsTableWidget(QtGui.QWidget):
 
                     assetType = assets[i].getType()
                     itemType = QtGui.QTableWidgetItem(assetType.getShort())
-                    self.assetTable.setItem(j, column('Asset Type Code'),
-                                            itemType)
+                    self.assetTable.setItem(
+                        j, column('Asset Type Code'), itemType
+                    )
 
                     itemTypeLong = QtGui.QTableWidgetItem(assetType.getName())
-                    self.assetTable.setItem(j, column('Asset Type'),
-                                            itemTypeLong)
+                    self.assetTable.setItem(
+                        j, column('Asset Type'), itemTypeLong
+                    )
 
                     assetVersions = assets[i].getVersions()
                     versionComboBox = QtGui.QComboBox()

@@ -336,12 +336,6 @@ class EntityTreeModel(QtCore.QAbstractItemModel):
             if column == 0:
                 return item.icon
 
-        elif role == QtCore.Qt.TextAlignmentRole:
-            if column == 1:
-                return QtCore.Qt.AlignRight
-            else:
-                return QtCore.Qt.AlignLeft
-
         return None
 
     def headerData(self, section, orientation, role):
