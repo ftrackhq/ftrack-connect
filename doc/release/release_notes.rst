@@ -7,7 +7,8 @@
 Release Notes
 *************
 
-.. release:: Upcoming
+.. release:: 0.1.19
+    :date: 2016-01-08
 
     .. change:: new
         :tags: Context Selector
