@@ -7,13 +7,21 @@
 Release Notes
 *************
 
+.. release:: upcoming
+
+    .. change:: fixed
+        :tags: Ui
+
+        Restore :py:class:`ftrack_connect.panelcom.PanelComInstance` communication with contextSelector,
+        so changes to the environments get reflected into the widgets.
+
 .. release:: 0.1.19
     :date: 2016-01-08
 
     .. change:: new
         :tags: Context Selector
 
-        Added new 
+        Added new
         :py:class:`ftrack_connect.ui.widget.context_selector.ContextSelector`
         widget that can be used to present and browse for a context.
 
@@ -27,7 +35,7 @@ Release Notes
 
     .. change:: new
 
-        Added new 
+        Added new
         :py:class:`ftrack_connect.ui.widget.html_combobox.HtmlComboBox` widget
         and :py:class:`ftrack_connect.ui.widget.html_delegate.HtmlDelegate`.
 
@@ -99,7 +107,7 @@ Release Notes
     .. change:: changed
         :tags: Developer
 
-        ``thumbnail.Base`` will no longer default to ellipsis shape. Use 
+        ``thumbnail.Base`` will no longer default to ellipsis shape. Use
         ``thumbnail.EllipsisBase`` for round thumbnails.
 
 .. release:: 0.1.13
@@ -120,7 +128,7 @@ Release Notes
 
 .. release:: 0.1.11
     :date: 2015-06-05
-    
+
     .. change:: changed
         :tags: Publisher
 
@@ -158,7 +166,7 @@ Release Notes
     .. change:: fixed
         :tags: Publisher
 
-        Publisher browser breaks when objects and files have non-ascii 
+        Publisher browser breaks when objects and files have non-ascii
         characters.
 
     .. change:: new
