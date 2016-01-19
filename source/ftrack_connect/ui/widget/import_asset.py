@@ -134,11 +134,6 @@ class FtrackImportAssetDialog(QtGui.QDialog):
         self.setObjectName('ftrackImportAsset')
         self.setWindowTitle("ftrackImportAsset")
 
-        # panelComInstance = PanelComInstance.instance()
-        # panelComInstance.addSwitchedShotListener(
-        #     self.browseTasksWidget.reset
-        # )
-
         panelComInstance = PanelComInstance.instance()
         panelComInstance.addSwitchedShotListener(
             self.reset_context_browser
@@ -164,15 +159,10 @@ class FtrackImportAssetDialog(QtGui.QDialog):
 
         self.browseTasksWidget.reset()
 
-    # our extended cod...
     def reset_context_browser(self):
-        print "RESETING CONTEXT BROWSER!!!"
         entity_id = os.getenv('FTRACK_TASKID', os.getenv('FTRACK_SHOTID'))
         entity = ftrack.Task(entity_id)
-        print entity
-        print entity.getName()
         self.browseTasksWidget.reset(entity)
-    # our extended code ENDS
 
     def importSelectedComponents(self):
         '''Import selected components.'''
