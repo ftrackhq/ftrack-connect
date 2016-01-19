@@ -6,6 +6,7 @@ import getpass
 import platform
 import logging
 
+import appdirs
 from PySide import QtGui
 from PySide import QtCore
 
@@ -208,15 +209,39 @@ class Application(QtGui.QMainWindow):
 
     def configureConnectAndDiscoverPlugins(self):
         '''Configure connect and load plugins.'''
+        pluginHookPaths = set()
+        pluginHookPaths.update(
+            self._gatherPluginHooks(
+                appdirs.user_data_dir('ftrack-connect-plugins', 'ftrack')
+            )
+        )
+        if 'FTRACK_CONNECT_PLUGIN_PATH' in os.environ:
+            for connectPluginPath in (
+                os.environ['FTRACK_CONNECT_PLUGIN_PATH'].split(os.pathsep)
+            ):
+                pluginHookPaths.update(
+                    self._gatherPluginHooks(
+                        connectPluginPath
+                    )
+                )
+
+        self.logger.info(
+            u'Connect plugin hooks directories: {0}'.format(
+                ', '.join(pluginHookPaths)
+            )
+        )
 
         # Local import to avoid connection errors.
         import ftrack
+        ftrack.EVENT_HANDLERS.paths.extend(pluginHookPaths)
+        ftrack.LOCATION_PLUGINS.paths.extend(pluginHookPaths)
+
         ftrack.setup()
         self.tabPanel = _tab_widget.TabWidget()
         self.tabPanel.tabBar().setObjectName('application-tab-bar')
         self.setCentralWidget(self.tabPanel)
 
-        self._discoverPlugins()
+        self._discoverTabPlugins()
 
         ftrack.EVENT_HUB.subscribe(
             'topic=ftrack.connect and source.user.username={0}'.format(
@@ -231,6 +256,18 @@ class Application(QtGui.QMainWindow):
         self.eventHubThread.start()
 
         self.focus()
+
+    def _gatherPluginHooks(self, path):
+        '''Return plugin hooks from *path*.'''
+        paths = []
+        for candidate in os.listdir(path):
+            candidatePath = os.path.join(path, candidate)
+            if os.path.isdir(candidatePath):
+                paths.append(
+                    os.path.join(candidatePath, 'hook')
+                )
+
+        return paths
 
     def _relayEventHubEvent(self, event):
         '''Relay all ftrack.connect events.'''
@@ -289,7 +326,7 @@ class Application(QtGui.QMainWindow):
 
         return menu
 
-    def _discoverPlugins(self):
+    def _discoverTabPlugins(self):
         '''Find and load tab plugins in search paths.'''
         #: TODO: Add discover functionality and search paths.
 
