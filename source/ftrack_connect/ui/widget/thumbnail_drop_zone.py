@@ -80,7 +80,7 @@ class ThumbnailDropZone(QtGui.QFrame):
         # Validate file extension
         fileName, fileExtension = os.path.splitext(filePath)
         fileExtension = fileExtension[1:].lower()
-        if not fileExtension in THUMBNAIL_UPLOAD_VALID_FILE_TYPES:
+        if fileExtension not in THUMBNAIL_UPLOAD_VALID_FILE_TYPES:
             raise ConnectThumbnailValidationError('Invalid file type.')
 
         # Validate file size

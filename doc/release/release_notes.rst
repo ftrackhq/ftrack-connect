@@ -7,6 +7,21 @@
 Release Notes
 *************
 
+.. release:: 0.1.19
+    :date: 2016-01-08
+
+    .. change:: new
+        :tags: Context Selector
+
+        Added new 
+        :py:class:`ftrack_connect.ui.widget.context_selector.ContextSelector`
+        widget that can be used to present and browse for a context.
+
+    .. change:: changed
+
+        Removed BrowseTasksSmallWidget in favor of
+        :py:class:`ftrack_connect.ui.widget.context_selector.ContextSelector`.
+
 .. release:: 0.1.18
     :date: 2015-11-10
 
