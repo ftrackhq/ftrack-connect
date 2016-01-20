@@ -160,6 +160,7 @@ class FtrackImportAssetDialog(QtGui.QDialog):
         self.browseTasksWidget.reset()
 
     def reset_context_browser(self):
+        '''Reset task browser to the value stored in the environments'''
         entity_id = os.getenv('FTRACK_TASKID', os.getenv('FTRACK_SHOTID'))
         entity = ftrack.Task(entity_id)
         self.browseTasksWidget.reset(entity)
