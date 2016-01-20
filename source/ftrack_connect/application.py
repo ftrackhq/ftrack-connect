@@ -324,7 +324,7 @@ class ApplicationLauncher(object):
             )
             ftrack.EVENT_HUB.publish(
                 ftrack.Event(
-                    topic='ftrack.action.before-launch',
+                    topic='ftrack.connect.application.launch',
                     data=launchData
                 ),
                 synchronous=True
