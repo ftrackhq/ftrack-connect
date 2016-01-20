@@ -316,6 +316,19 @@ class ApplicationLauncher(object):
             else:
                 options['preexec_fn'] = os.setsid
 
+            ftrack.EVENT_HUB.publish(
+                ftrack.Event(
+                    topic='ftrack.action.before-launch',
+                    data=dict(
+                        command=command,
+                        options=options,
+                        application=application,
+                        context=context
+                    )
+                ),
+                synchronous=True
+            )
+
             self.logger.debug(
                 'Launching {0} with options {1}'.format(command, options)
             )
