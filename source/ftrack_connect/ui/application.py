@@ -260,12 +260,17 @@ class Application(QtGui.QMainWindow):
     def _gatherPluginHooks(self, path):
         '''Return plugin hooks from *path*.'''
         paths = []
+        self.logger.debug(u'Searching {0!r} for plugin hooks.'.format(path))
         for candidate in os.listdir(path):
             candidatePath = os.path.join(path, candidate)
             if os.path.isdir(candidatePath):
                 paths.append(
                     os.path.join(candidatePath, 'hook')
                 )
+
+        self.logger.debug(
+            u'Found {0!r} plugin hooks in {1!r}.'.format(paths, path)
+        )
 
         return paths
 
