@@ -63,7 +63,10 @@ def main(arguments=None):
 
     logging.basicConfig(level=loggingLevels[namespace.verbosity])
 
+    #  http://stackoverflow.com/questions/31952711/threading-pyqt-crashes-with-unknown-request-in-queue-while-dequeuing
+
     # Construct global application.
+    QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_X11InitThreads)
     application = QtGui.QApplication('ftrack-connect')
     application.setOrganizationName('ftrack')
     application.setOrganizationDomain('ftrack.com')
