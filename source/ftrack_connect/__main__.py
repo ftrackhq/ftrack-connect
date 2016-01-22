@@ -8,7 +8,7 @@ import signal
 import os
 import pkg_resources
 
-from PySide import QtGui
+from PySide import QtGui, QtCore
 
 
 # Hooks use the ftrack event system. Set the FTRACK_EVENT_PLUGIN_PATH
