@@ -5,9 +5,11 @@ import os
 import getpass
 import platform
 import logging
+import webbrowser
 
 from PySide import QtGui
 from PySide import QtCore
+import ftrack_api
 
 import ftrack_connect
 import ftrack_connect.event_hub_thread
@@ -18,6 +20,69 @@ from ftrack_connect.ui.widget import tab_widget as _tab_widget
 from ftrack_connect.ui.widget import login as _login
 from ftrack_connect.ui.widget import about as _about
 from ftrack_connect.error import NotUniqueError as _NotUniqueError
+import ftrack_connect.ui.widget.overlay
+
+
+class LocationScenarioConfigurationOverlay(
+    ftrack_connect.ui.widget.overlay.BlockingOverlay
+):
+    '''Custom blocking overlay for location scenario.'''
+
+    def __init__(self, parent, session):
+        super(
+            LocationScenarioConfigurationOverlay, self
+        ).__init__(
+            parent,
+            message=(
+                'Hi there, a location scenario needs to be configured so '
+                'that ftrack can store and track your files for you.'
+            )
+        )
+        self.session = session
+        self._parent = parent
+
+        # Configure UI components.
+        self.dismiss_button = QtGui.QPushButton('Dismiss')
+        self.contentLayout.insertWidget(
+            3, self.dismiss_button, alignment=QtCore.Qt.AlignCenter, stretch=0
+        )
+
+        self.configure_button = QtGui.QPushButton('Configure now!')
+        self.contentLayout.insertWidget(
+            4, self.configure_button, alignment=QtCore.Qt.AlignCenter, stretch=0
+        )
+
+        # Listen to events so we know when to stop.
+        self._hub_thread = ftrack_connect.event_hub_thread.NewApiEventHubThread(
+        )
+        self._hub_thread.start(session)
+
+        # Handle button clicks.
+        self.dismiss_button.clicked.connect(self._dismiss_overlay)
+        self.configure_button.clicked.connect(self.configure_location_scenario)
+
+        self.content.setMinimumWidth(400)
+        self.content.setMinimumHeight(500)
+
+        session.event_hub.subscribe(
+            'topic=ftrack.configured-location-scenario',
+            self._dismiss_overlay
+        )
+
+    def configure_location_scenario(self):
+        '''Open browser window and go to the configuration page.'''
+        webbrowser.open_new_tab(
+            '{0}/#view=storage&itemId=newconfigure'.format(
+                self.session.server_url
+            )
+        )
+
+    def _dismiss_overlay(self, event=None):
+        '''Continue starting connect.'''
+        self._hub_thread.quit()
+        self.hide()
+
+        self._parent.configure_connect.emit()
 
 
 class ApplicationPlugin(QtGui.QWidget):
@@ -46,6 +111,9 @@ class Application(QtGui.QMainWindow):
 
     #: Signal when event received via ftrack's event hub.
     eventHubSignal = QtCore.Signal(object)
+
+    # Signal to configure connect after login.
+    configure_connect = QtCore.Signal()
 
     def __init__(self, *args, **kwargs):
         '''Initialise the main application window.'''
@@ -169,42 +237,47 @@ class Application(QtGui.QMainWindow):
         os.environ['FTRACK_API_USER'] = username
         os.environ['FTRACK_API_KEY'] = apiKey
 
-        # Import ftrack module and catch any errors.
+        # Login using the new ftrack API.
         try:
-            import ftrack
-
-            # Force update the url of the server in case it was already set.
-            ftrack.xmlServer.__init__('{url}/client/'.format(url=url), False)
-
-            # Force update event hub since it will set the url on initialise.
-            ftrack.EVENT_HUB.__init__()
-
+            session = ftrack_api.Session(
+                api_user=username,
+                api_key=apiKey,
+                auto_connect_event_hub=True
+            )
         except Exception as error:
-
-            # Catch connection error since ftrack module will connect on load.
-            if str(error).find('Unable to connect on') >= 0:
-                self.loginError.emit(str(error))
-
-            # Reraise the error.
-            raise
-
-        # Access ftrack to validate login details.
-        try:
-            ftrack.getUUID()
-        except ftrack.FTrackError as error:
             self.loginError.emit(str(error))
-        else:
-            # Store login details in settings.
-            settings = QtCore.QSettings()
-            settings.setValue('login/server', url)
-            settings.setValue('login/username', username)
-            settings.setValue('login/apikey', apiKey)
+            return
 
-            try:
-                self.configureConnectAndDiscoverPlugins()
-            except ftrack.EventHubConnectionError as error:
-                self.logger.exception(error)
-                self.loginError.emit(str(error))
+        # Store login details in settings.
+        settings = QtCore.QSettings()
+        settings.setValue('login/server', url)
+        settings.setValue('login/username', username)
+        settings.setValue('login/apikey', apiKey)
+
+        self.configure_connect.connect(self.location_configuration_finished)
+
+        # Verify location scenario before starting.
+        location_scenario = session.server_information.get('location_scenario')
+        if not (
+            location_scenario and
+            location_scenario.get('scenario')
+        ):
+            self.logger.debug('Location scenario is not configured.')
+            self.blockingOverlay = LocationScenarioConfigurationOverlay(
+                self, session
+            )
+            self.focus()
+            return
+
+        self.configure_connect.emit()
+
+    def location_configuration_finished(self):
+        ''''''
+        try:
+            self.configureConnectAndDiscoverPlugins()
+        except Exception as error:
+            self.logger.exception(error)
+            self.loginError.emit(str(error))
 
     def configureConnectAndDiscoverPlugins(self):
         '''Configure connect and load plugins.'''
