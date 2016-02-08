@@ -98,9 +98,8 @@ class ConfigureScenario(QtGui.QWidget):
         label = QtGui.QLabel()
         label.setObjectName('green-link')
         label.setText(
-            '<a href="http://ftrack.rtd.ftrack.com/en/latest/using/'
-            'understanding_spreadsheets.html"> Learn more about location '
-            'scenarios.'
+            '<a href="{0}/doc/glossary.html"> Learn more about location '
+            'scenarios.'.format(session.server_url)
         )
         label.setAlignment(QtCore.Qt.AlignCenter)
         label.setOpenExternalLinks(True)
@@ -113,7 +112,7 @@ class ConfigureScenario(QtGui.QWidget):
         )
         self._session = session
 
-    def _complete_configuration(self):
+    def _complete_configuration(self, event=None):
         '''Finish configuration.'''
         self._session.event_hub.unsubscribe(self._subscriber_identifier)
         self.configuration_completed.emit()
@@ -122,6 +121,6 @@ class ConfigureScenario(QtGui.QWidget):
         '''Open browser window and go to the configuration page.'''
         webbrowser.open_new_tab(
             '{0}/#view=configure_location_scenario&itemId=newconfigure'.format(
-                self.session.server_url
+                self._session.server_url
             )
         )

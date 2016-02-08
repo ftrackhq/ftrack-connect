@@ -198,19 +198,19 @@ class Application(QtGui.QMainWindow):
         ftrack_api._centralized_storage_scenario.register_configuration(session)
 
         # Verify location scenario before starting.
-        location_scenario = session.server_information.get('location_scenario')
-        if not (
-            location_scenario and
-            location_scenario.get('scenario')
-        ):
-            self.logger.debug('Location scenario is not configured.')
-            scenario_widget = _scenario_widget.ConfigureScenario(session)
-            scenario_widget.configuration_completed.connect(
-                self.location_configuration_finished
+        if 'location_scenario' in session.server_information:
+            location_scenario = session.server_information.get(
+                'location_scenario'
             )
-            self.setCentralWidget(scenario_widget)
-            self.focus()
-            return
+            if location_scenario is None:
+                self.logger.debug('Location scenario is not configured.')
+                scenario_widget = _scenario_widget.ConfigureScenario(session)
+                scenario_widget.configuration_completed.connect(
+                    self.location_configuration_finished
+                )
+                self.setCentralWidget(scenario_widget)
+                self.focus()
+                return
 
         self.location_configuration_finished()
 
