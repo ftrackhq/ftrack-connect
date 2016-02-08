@@ -10,9 +10,10 @@ import webbrowser
 from PySide import QtGui
 from PySide import QtCore
 import ftrack_api
+import ftrack_api._centralized_storage_scenario
 
 import ftrack_connect
-import ftrack_connect.event_hub_thread
+import ftrack_connect.event_hub_thread as _event_hub_thread
 import ftrack_connect.error
 import ftrack_connect.ui.theme
 from ftrack_connect.ui.widget import uncaught_error as _uncaught_error
@@ -20,69 +21,7 @@ from ftrack_connect.ui.widget import tab_widget as _tab_widget
 from ftrack_connect.ui.widget import login as _login
 from ftrack_connect.ui.widget import about as _about
 from ftrack_connect.error import NotUniqueError as _NotUniqueError
-import ftrack_connect.ui.widget.overlay
-
-
-class LocationScenarioConfigurationOverlay(
-    ftrack_connect.ui.widget.overlay.BlockingOverlay
-):
-    '''Custom blocking overlay for location scenario.'''
-
-    def __init__(self, parent, session):
-        super(
-            LocationScenarioConfigurationOverlay, self
-        ).__init__(
-            parent,
-            message=(
-                'Hi there, a location scenario needs to be configured so '
-                'that ftrack can store and track your files for you.'
-            )
-        )
-        self.session = session
-        self._parent = parent
-
-        # Configure UI components.
-        self.dismiss_button = QtGui.QPushButton('Dismiss')
-        self.contentLayout.insertWidget(
-            3, self.dismiss_button, alignment=QtCore.Qt.AlignCenter, stretch=0
-        )
-
-        self.configure_button = QtGui.QPushButton('Configure now!')
-        self.contentLayout.insertWidget(
-            4, self.configure_button, alignment=QtCore.Qt.AlignCenter, stretch=0
-        )
-
-        # Listen to events so we know when to stop.
-        self._hub_thread = ftrack_connect.event_hub_thread.NewApiEventHubThread(
-        )
-        self._hub_thread.start(session)
-
-        # Handle button clicks.
-        self.dismiss_button.clicked.connect(self._dismiss_overlay)
-        self.configure_button.clicked.connect(self.configure_location_scenario)
-
-        self.content.setMinimumWidth(400)
-        self.content.setMinimumHeight(500)
-
-        session.event_hub.subscribe(
-            'topic=ftrack.configured-location-scenario',
-            self._dismiss_overlay
-        )
-
-    def configure_location_scenario(self):
-        '''Open browser window and go to the configuration page.'''
-        webbrowser.open_new_tab(
-            '{0}/#view=storage&itemId=newconfigure'.format(
-                self.session.server_url
-            )
-        )
-
-    def _dismiss_overlay(self, event=None):
-        '''Continue starting connect.'''
-        self._hub_thread.quit()
-        self.hide()
-
-        self._parent.configure_connect.emit()
+from ftrack_connect.ui.widget import configure_scenario as _scenario_widget
 
 
 class ApplicationPlugin(QtGui.QWidget):
@@ -111,9 +50,6 @@ class Application(QtGui.QMainWindow):
 
     #: Signal when event received via ftrack's event hub.
     eventHubSignal = QtCore.Signal(object)
-
-    # Signal to configure connect after login.
-    configure_connect = QtCore.Signal()
 
     def __init__(self, *args, **kwargs):
         '''Initialise the main application window.'''
@@ -254,7 +190,12 @@ class Application(QtGui.QMainWindow):
         settings.setValue('login/username', username)
         settings.setValue('login/apikey', apiKey)
 
-        self.configure_connect.connect(self.location_configuration_finished)
+        # Listen to events using the new API event hub. This is required to
+        # allow reconfiguring the location scenario.
+        self._hub_thread = _event_hub_thread.NewApiEventHubThread()
+        self._hub_thread.start(session)
+
+        ftrack_api._centralized_storage_scenario.register_configuration(session)
 
         # Verify location scenario before starting.
         location_scenario = session.server_information.get('location_scenario')
@@ -263,13 +204,15 @@ class Application(QtGui.QMainWindow):
             location_scenario.get('scenario')
         ):
             self.logger.debug('Location scenario is not configured.')
-            self.blockingOverlay = LocationScenarioConfigurationOverlay(
-                self, session
+            scenario_widget = _scenario_widget.ConfigureScenario(session)
+            scenario_widget.configuration_completed.connect(
+                self.location_configuration_finished
             )
+            self.setCentralWidget(scenario_widget)
             self.focus()
             return
 
-        self.configure_connect.emit()
+        self.location_configuration_finished()
 
     def location_configuration_finished(self):
         ''''''
@@ -299,8 +242,7 @@ class Application(QtGui.QMainWindow):
         )
         self.eventHubSignal.connect(self._onConnectTopicEvent)
 
-        import ftrack_connect.event_hub_thread
-        self.eventHubThread = ftrack_connect.event_hub_thread.EventHubThread()
+        self.eventHubThread = _event_hub_thread.EventHubThread()
         self.eventHubThread.start()
 
         self.focus()
