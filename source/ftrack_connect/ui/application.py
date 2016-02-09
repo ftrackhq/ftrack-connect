@@ -178,7 +178,8 @@ class Application(QtGui.QMainWindow):
             session = ftrack_api.Session(
                 api_user=username,
                 api_key=apiKey,
-                auto_connect_event_hub=True
+                auto_connect_event_hub=True,
+                plugin_paths=[]
             )
         except Exception as error:
             self.loginError.emit(str(error))
