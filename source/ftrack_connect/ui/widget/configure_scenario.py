@@ -9,6 +9,7 @@ from PySide import QtGui, QtCore, QtSvg
 class ConfigureScenario(QtGui.QWidget):
     '''Configure scenario widget.'''
 
+    #: Signal to emit when configuration is completed.
     configuration_completed = QtCore.Signal()
 
     def __init__(self, session):

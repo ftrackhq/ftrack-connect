@@ -216,7 +216,7 @@ class Application(QtGui.QMainWindow):
         self.location_configuration_finished()
 
     def location_configuration_finished(self):
-        ''''''
+        '''Continue connect setup after location configuration is done.'''
         try:
             self.configureConnectAndDiscoverPlugins()
         except Exception as error:
