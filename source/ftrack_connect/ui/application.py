@@ -5,12 +5,15 @@ import os
 import getpass
 import platform
 import logging
+import webbrowser
 
 from PySide import QtGui
 from PySide import QtCore
+import ftrack_api
+import ftrack_api._centralized_storage_scenario
 
 import ftrack_connect
-import ftrack_connect.event_hub_thread
+import ftrack_connect.event_hub_thread as _event_hub_thread
 import ftrack_connect.error
 import ftrack_connect.ui.theme
 from ftrack_connect.ui.widget import uncaught_error as _uncaught_error
@@ -18,6 +21,7 @@ from ftrack_connect.ui.widget import tab_widget as _tab_widget
 from ftrack_connect.ui.widget import login as _login
 from ftrack_connect.ui.widget import about as _about
 from ftrack_connect.error import NotUniqueError as _NotUniqueError
+from ftrack_connect.ui.widget import configure_scenario as _scenario_widget
 
 
 class ApplicationPlugin(QtGui.QWidget):
@@ -169,42 +173,55 @@ class Application(QtGui.QMainWindow):
         os.environ['FTRACK_API_USER'] = username
         os.environ['FTRACK_API_KEY'] = apiKey
 
-        # Import ftrack module and catch any errors.
+        # Login using the new ftrack API.
         try:
-            import ftrack
-
-            # Force update the url of the server in case it was already set.
-            ftrack.xmlServer.__init__('{url}/client/'.format(url=url), False)
-
-            # Force update event hub since it will set the url on initialise.
-            ftrack.EVENT_HUB.__init__()
-
+            session = ftrack_api.Session(
+                api_user=username,
+                api_key=apiKey,
+                auto_connect_event_hub=True,
+                plugin_paths=[]
+            )
         except Exception as error:
-
-            # Catch connection error since ftrack module will connect on load.
-            if str(error).find('Unable to connect on') >= 0:
-                self.loginError.emit(str(error))
-
-            # Reraise the error.
-            raise
-
-        # Access ftrack to validate login details.
-        try:
-            ftrack.getUUID()
-        except ftrack.FTrackError as error:
             self.loginError.emit(str(error))
-        else:
-            # Store login details in settings.
-            settings = QtCore.QSettings()
-            settings.setValue('login/server', url)
-            settings.setValue('login/username', username)
-            settings.setValue('login/apikey', apiKey)
+            return
 
-            try:
-                self.configureConnectAndDiscoverPlugins()
-            except ftrack.EventHubConnectionError as error:
-                self.logger.exception(error)
-                self.loginError.emit(str(error))
+        # Store login details in settings.
+        settings = QtCore.QSettings()
+        settings.setValue('login/server', url)
+        settings.setValue('login/username', username)
+        settings.setValue('login/apikey', apiKey)
+
+        # Listen to events using the new API event hub. This is required to
+        # allow reconfiguring the location scenario.
+        self._hub_thread = _event_hub_thread.NewApiEventHubThread()
+        self._hub_thread.start(session)
+
+        ftrack_api._centralized_storage_scenario.register_configuration(session)
+
+        # Verify location scenario before starting.
+        if 'location_scenario' in session.server_information:
+            location_scenario = session.server_information.get(
+                'location_scenario'
+            )
+            if location_scenario is None:
+                self.logger.debug('Location scenario is not configured.')
+                scenario_widget = _scenario_widget.ConfigureScenario(session)
+                scenario_widget.configuration_completed.connect(
+                    self.location_configuration_finished
+                )
+                self.setCentralWidget(scenario_widget)
+                self.focus()
+                return
+
+        self.location_configuration_finished()
+
+    def location_configuration_finished(self):
+        '''Continue connect setup after location configuration is done.'''
+        try:
+            self.configureConnectAndDiscoverPlugins()
+        except Exception as error:
+            self.logger.exception(error)
+            self.loginError.emit(str(error))
 
     def configureConnectAndDiscoverPlugins(self):
         '''Configure connect and load plugins.'''
@@ -226,8 +243,7 @@ class Application(QtGui.QMainWindow):
         )
         self.eventHubSignal.connect(self._onConnectTopicEvent)
 
-        import ftrack_connect.event_hub_thread
-        self.eventHubThread = ftrack_connect.event_hub_thread.EventHubThread()
+        self.eventHubThread = _event_hub_thread.EventHubThread()
         self.eventHubThread.start()
 
         self.focus()
