@@ -6,18 +6,12 @@ import ftrack_api
 
 _shared_session = None
 
-def get_shared_session(recreate=False, plugin_paths=None):
-    '''Return shared ftrack_api session.
 
-    *recreate* can be used to force creation of a new session.
-
-    '''
+def destroy_shared_session():
+    '''Destroy the shared session.'''
     global _shared_session
 
-    if not plugin_paths:
-        plugin_paths = []
-
-    if recreate and _shared_session:
+    if _shared_session:
         # Disconnect from event hub but do not unsubscribe as that will be
         # blocking and slow. Also there is no need to unsubscribe since the
         # session will not be used any more.
@@ -26,6 +20,11 @@ def get_shared_session(recreate=False, plugin_paths=None):
         del _shared_session
         _shared_session = None
 
+
+def get_shared_session():
+    '''Return shared ftrack_api session.'''
+    global _shared_session
+
     if not _shared_session:
         # Create API session using credentials as stored by the application
         # when logging in.
@@ -33,7 +32,7 @@ def get_shared_session(recreate=False, plugin_paths=None):
             server_url=os.environ['FTRACK_SERVER'],
             api_key=os.environ['FTRACK_APIKEY'],
             api_user=os.environ['LOGNAME'],
-            plugin_paths=plugin_paths
+            plugin_paths=[]
         )
 
     return _shared_session

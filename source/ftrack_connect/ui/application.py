@@ -165,7 +165,7 @@ class Application(QtGui.QMainWindow):
         if hasattr(self, '_hub_thread'):
             self._hub_thread.quit()
 
-        session = ftrack_connect.session.get_shared_session(recreate=True)
+        session = ftrack_connect.session.get_shared_session()
 
         # Listen to events using the new API event hub. This is required to
         # allow reconfiguring the location scenario.
@@ -230,6 +230,7 @@ class Application(QtGui.QMainWindow):
     def location_configuration_finished(self, reconfigure_session=True):
         '''Continue connect setup after location configuration is done.'''
         if reconfigure_session:
+            ftrack_connect.session.destroy_shared_session()
             self._session = self._setup_session()
 
         try:
