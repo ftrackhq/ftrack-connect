@@ -24,4 +24,9 @@ Expects return data in the form::
     'Message about something that may not work as expected'
 
 The response should either be None or a string where a string will be assumed to
-be a message that should be shown to the user.
+be a message that should be shown to the user as a warning.
+
+.. note::
+
+    This event is only published through the event hub of the
+    :ref:`new ftrack python API <ftrack-python-api:introduction>`.

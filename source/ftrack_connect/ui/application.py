@@ -197,8 +197,7 @@ class Application(QtGui.QMainWindow):
         try:
             self._session = self._setup_session()
         except Exception as error:
-            self.logger.error('Error during login.')
-            raise
+            self.logger.execption('Error during login.')
             self.loginError.emit(str(error))
             return
 
