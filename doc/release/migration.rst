@@ -17,7 +17,7 @@ Migrate from 0.1.19 to upcoming
 Developer notes
 ---------------
 
-The :ref:`ftrack-python-api <ftrack-python-api:introduction>` will from now on discover plugins that
+The :ref:`ftrack-python-api <ftrack-python-api:introduction>` will from now discover plugins that
 are added to the `FTRACK_EVENT_PLUGIN_PATH`.
 
 This means that register functions will be called several times, both for
