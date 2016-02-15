@@ -12,9 +12,9 @@ Release Notes
     .. change:: new
         :tags: Location
 
-        Added hook to resolve paths for custom locations that are implemented
-        in the new Python API, 
-        :ref:`ftrack-python-api <ftrack-python-api:introduction>`.
+        Paths for custom locations that are implemented in the new Python
+        API, :ref:`ftrack-python-api <ftrack-python-api:introduction>`,
+        are now resolved in Connect.
 
     .. change:: changed
         :tags: Event plugins
