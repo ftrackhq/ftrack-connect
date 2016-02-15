@@ -5,6 +5,8 @@ import os
 import getpass
 import platform
 import logging
+import sys
+import subprocess
 
 import appdirs
 from PySide import QtGui
@@ -54,6 +56,10 @@ class Application(QtGui.QMainWindow):
         super(Application, self).__init__(*args, **kwargs)
         self.logger = logging.getLogger(
             __name__ + '.' + self.__class__.__name__
+        )
+
+        self.defaultPluginDirectory = appdirs.user_data_dir(
+            'ftrack-connect-plugins', 'ftrack'
         )
 
         # Register widget for error handling.
@@ -212,7 +218,7 @@ class Application(QtGui.QMainWindow):
         pluginHookPaths = set()
         pluginHookPaths.update(
             self._gatherPluginHooks(
-                appdirs.user_data_dir('ftrack-connect-plugins', 'ftrack')
+                self.defaultPluginDirectory
             )
         )
         if 'FTRACK_CONNECT_PLUGIN_PATH' in os.environ:
@@ -261,12 +267,14 @@ class Application(QtGui.QMainWindow):
         '''Return plugin hooks from *path*.'''
         paths = []
         self.logger.debug(u'Searching {0!r} for plugin hooks.'.format(path))
-        for candidate in os.listdir(path):
-            candidatePath = os.path.join(path, candidate)
-            if os.path.isdir(candidatePath):
-                paths.append(
-                    os.path.join(candidatePath, 'hook')
-                )
+
+        if os.path.isdir(path):
+            for candidate in os.listdir(path):
+                candidatePath = os.path.join(path, candidate)
+                if os.path.isdir(candidatePath):
+                    paths.append(
+                        os.path.join(candidatePath, 'hook')
+                    )
 
         self.logger.debug(
             u'Found {0!r} plugin hooks in {1!r}.'.format(paths, path)
@@ -315,6 +323,11 @@ class Application(QtGui.QMainWindow):
             triggered=self.toggleTheme
         )
 
+        openPluginDirectoryAction = QtGui.QAction(
+            'Open plugin directory', self,
+            triggered=self.openDefaultPluginDirectory
+        )
+
         aboutAction = QtGui.QAction(
             'About', self,
             triggered=self.showAbout
@@ -324,6 +337,7 @@ class Application(QtGui.QMainWindow):
         menu.addAction(focusAction)
         menu.addSeparator()
         menu.addAction(styleAction)
+        menu.addAction(openPluginDirectoryAction)
         menu.addSeparator()
         menu.addAction(logoutAction)
         menu.addSeparator()
@@ -491,3 +505,30 @@ class Application(QtGui.QMainWindow):
         )
 
         aboutDialog.exec_()
+
+    def openDefaultPluginDirectory(self):
+        '''Open default plugin directory in platform default file browser.'''
+        directory = self.defaultPluginDirectory
+
+        if not os.path.exists(directory):
+            # Create directory if not existing.
+            try:
+                os.makedirs(directory)
+            except OSError:
+                messageBox = QtGui.QMessageBox(parent=self)
+                messageBox.setIcon(QtGui.QMessageBox.Warning)
+                messageBox.setText(
+                    u'Could not open or create default plugin '
+                    u'directory: {0}.'.format(directory)
+                )
+                messageBox.exec_()
+                return
+
+        if sys.platform=='win32':
+            subprocess.Popen(['start', directory], shell= True)
+
+        elif sys.platform=='darwin':
+            subprocess.Popen(['open', directory])
+
+        else:
+            subprocess.Popen(['xdg-open', directory])
