@@ -9,6 +9,22 @@ Release Notes
 
 .. release:: upcoming
 
+    .. change:: new
+        :tags: Location Scenario
+
+        Added a new hook that can be used to detect problems and present
+        information to the user.
+
+        .. seealso::
+
+            :ref:`Verify startup hook <developing/hooks/verify_startup>`
+
+    .. change:: new
+        :tags: Location Scenario
+
+        Added a configure location scenario widget that will be shown on startup
+        if a location scenario has not been configured on the server.
+
     .. change:: fixed
         :tags: Ui
 
