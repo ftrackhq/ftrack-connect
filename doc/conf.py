@@ -93,7 +93,10 @@ intersphinx_mapping = {
     'ftrack-connect-cinesync': (
         'http://ftrack-connect-cinesync.rtd.ftrack.com/en/latest/', None
     ),
-    'ftrack': ('http://ftrack.rtd.ftrack.com/en/latest/', None)
+    'ftrack': ('http://ftrack.rtd.ftrack.com/en/latest/', None),
+    'ftrack-python-api': (
+        'http://rtd.ftrack.com/docs/ftrack-python-api/en/latest/', None
+    )
 }
 
 

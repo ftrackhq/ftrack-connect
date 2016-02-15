@@ -11,8 +11,10 @@ from PySide import QtGui
 from PySide import QtCore
 import ftrack_api
 import ftrack_api._centralized_storage_scenario
+import ftrack_api.event.base
 
 import ftrack_connect
+import ftrack_connect.session
 import ftrack_connect.event_hub_thread as _event_hub_thread
 import ftrack_connect.error
 import ftrack_connect.ui.theme
@@ -158,6 +160,24 @@ class Application(QtGui.QMainWindow):
             # widgets.
             self.loginWidget.setFocus()
 
+    def _setup_session(self):
+        '''Setup a new python API session.'''
+        if hasattr(self, '_hub_thread'):
+            self._hub_thread.quit()
+
+        session = ftrack_connect.session.get_shared_session()
+
+        # Listen to events using the new API event hub. This is required to
+        # allow reconfiguring the location scenario.
+        self._hub_thread = _event_hub_thread.NewApiEventHubThread()
+        self._hub_thread.start(session)
+
+        ftrack_api._centralized_storage_scenario.register_configuration(
+            session
+        )
+
+        return session
+
     def loginWithCredentials(self, url, username, apiKey):
         '''Connect to *url* with *username* and *apiKey*.
 
@@ -175,13 +195,9 @@ class Application(QtGui.QMainWindow):
 
         # Login using the new ftrack API.
         try:
-            session = ftrack_api.Session(
-                api_user=username,
-                api_key=apiKey,
-                auto_connect_event_hub=True,
-                plugin_paths=[]
-            )
+            self._session = self._setup_session()
         except Exception as error:
+            self.logger.execption('Error during login.')
             self.loginError.emit(str(error))
             return
 
@@ -191,21 +207,16 @@ class Application(QtGui.QMainWindow):
         settings.setValue('login/username', username)
         settings.setValue('login/apikey', apiKey)
 
-        # Listen to events using the new API event hub. This is required to
-        # allow reconfiguring the location scenario.
-        self._hub_thread = _event_hub_thread.NewApiEventHubThread()
-        self._hub_thread.start(session)
-
-        ftrack_api._centralized_storage_scenario.register_configuration(session)
-
         # Verify location scenario before starting.
-        if 'location_scenario' in session.server_information:
-            location_scenario = session.server_information.get(
+        if 'location_scenario' in self._session.server_information:
+            location_scenario = self._session.server_information.get(
                 'location_scenario'
             )
             if location_scenario is None:
                 self.logger.debug('Location scenario is not configured.')
-                scenario_widget = _scenario_widget.ConfigureScenario(session)
+                scenario_widget = _scenario_widget.ConfigureScenario(
+                    self._session
+                )
                 scenario_widget.configuration_completed.connect(
                     self.location_configuration_finished
                 )
@@ -213,15 +224,41 @@ class Application(QtGui.QMainWindow):
                 self.focus()
                 return
 
-        self.location_configuration_finished()
+        self.location_configuration_finished(reconfigure_session=True)
 
-    def location_configuration_finished(self):
+    def location_configuration_finished(self, reconfigure_session=True):
         '''Continue connect setup after location configuration is done.'''
+        if reconfigure_session:
+            ftrack_connect.session.destroy_shared_session()
+            self._session = self._setup_session()
+
         try:
             self.configureConnectAndDiscoverPlugins()
         except Exception as error:
             self.logger.exception(error)
             self.loginError.emit(str(error))
+        else:
+            self.focus()
+
+        # Send verify startup event to verify that location scenario is
+        # working correctly.
+        event = ftrack_api.event.base.Event(
+            topic='ftrack.connect.verify-startup',
+            data={
+                'location_scenario': self._session.server_information.get(
+                    'location_scenario'
+                )
+            }
+        )
+        results = self._session.event_hub.publish(event, synchronous=True)
+        problems = [
+            problem for problem in results if isinstance(problem, basestring)
+        ]
+        if problems:
+            msgBox = QtGui.QMessageBox(parent=self)
+            msgBox.setIcon(QtGui.QMessageBox.Warning)
+            msgBox.setText('\n\n'.join(problems))
+            msgBox.exec_()
 
     def configureConnectAndDiscoverPlugins(self):
         '''Configure connect and load plugins.'''
@@ -245,8 +282,6 @@ class Application(QtGui.QMainWindow):
 
         self.eventHubThread = _event_hub_thread.EventHubThread()
         self.eventHubThread.start()
-
-        self.focus()
 
     def _relayEventHubEvent(self, event):
         '''Relay all ftrack.connect events.'''
