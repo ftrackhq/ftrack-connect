@@ -232,7 +232,8 @@ class Application(QtGui.QMainWindow):
 
         self.focus()
 
-        # Listen to discover connect event and respond.
+        # Listen to discover connect event and respond to let the sender know
+        # that connect is running.
         ftrack.EVENT_HUB.subscribe(
             'topic=ftrack.connect.discover and source.user.username={0}'.format(
                 getpass.getuser()
