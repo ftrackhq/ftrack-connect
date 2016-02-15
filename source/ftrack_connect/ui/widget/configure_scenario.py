@@ -16,6 +16,18 @@ class ConfigureScenario(QtGui.QWidget):
         '''Instantiate the configure scenario widget.'''
         super(ConfigureScenario, self).__init__()
 
+        # Check if user has permissions to configure scenario.
+        # TODO: Update this with an actual permission check once available in
+        # the API.
+        try:
+            session.query(
+                'Setting where name is "location_scenario" and '
+                'group is "LOCATION"'
+            ).one()
+            can_configure_scenario = True
+        except Exception:
+            can_configure_scenario = False
+
         layout = QtGui.QVBoxLayout()
         layout.addSpacing(0)
         layout.setContentsMargins(50, 0, 50, 0)
@@ -41,10 +53,19 @@ class ConfigureScenario(QtGui.QWidget):
 
         label = QtGui.QLabel()
         label.setObjectName('regular-label')
-        label.setText(
+        text = (
             'Hi there, Connect needs to be configured so that ftrack can '
             'store and track your files for you.'
         )
+
+        if can_configure_scenario is False:
+            text += (
+                '<br><br> You do not have the required permission, please ask '
+                'someone with access to system settings in ftrack to '
+                'configure it before you proceed.'
+            )
+
+        label.setText(text)
         label.setContentsMargins(0, 0, 0, 0)
         label.setAlignment(QtCore.Qt.AlignCenter)
         label.setWordWrap(True)
@@ -71,8 +92,9 @@ class ConfigureScenario(QtGui.QWidget):
 
         hbox = QtGui.QHBoxLayout()
         hbox.addWidget(dismiss_button)
-        hbox.addSpacing(10)
-        hbox.addWidget(configure_button)
+        if can_configure_scenario:
+            hbox.addSpacing(10)
+            hbox.addWidget(configure_button)
         layout.addLayout(hbox)
 
         layout.addSpacing(20)
