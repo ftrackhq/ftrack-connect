@@ -4,6 +4,7 @@
 import webbrowser
 
 from PySide import QtGui, QtCore, QtSvg
+import ftrack_api.exception
 
 
 class ConfigureScenario(QtGui.QWidget):
@@ -25,7 +26,7 @@ class ConfigureScenario(QtGui.QWidget):
                 'group is "LOCATION"'
             ).one()
             can_configure_scenario = True
-        except Exception:
+        except ftrack_api.exception.NoResultFoundError:
             can_configure_scenario = False
 
         layout = QtGui.QVBoxLayout()
