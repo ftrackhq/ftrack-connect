@@ -5,6 +5,10 @@ import os
 import getpass
 import platform
 import logging
+import BaseHTTPServer
+import urlparse
+import webbrowser
+import functools
 
 from PySide import QtGui
 from PySide import QtCore
@@ -18,6 +22,67 @@ from ftrack_connect.ui.widget import tab_widget as _tab_widget
 from ftrack_connect.ui.widget import login as _login
 from ftrack_connect.ui.widget import about as _about
 from ftrack_connect.error import NotUniqueError as _NotUniqueError
+
+
+class LoginServerHandler(BaseHTTPServer.BaseHTTPRequestHandler):
+    '''Login server handler.'''
+
+    def __init__(self, url, loginSignal, *args, **kw):
+        '''Initialise handler.'''
+        self.url = url
+        self.loginSignal = loginSignal
+        BaseHTTPServer.BaseHTTPRequestHandler.__init__(self, *args, **kw)
+
+    def do_GET(self):
+        parsed_path = urlparse.urlparse(self.path)
+        query = parsed_path.query
+
+        login_credentials = None
+        if 'api_user' and 'api_key' in query:
+            login_credentials = urlparse.parse_qs(query)
+            message = """
+                <script type="text/javascript">
+                    window.close();
+                </script>
+                """
+        else:
+            message = 'Empty page.'
+
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(message)
+
+        if login_credentials:
+            self.loginSignal.emit(
+                self.url,
+                login_credentials['api_user'][0],
+                login_credentials['api_key'][0]
+            )
+
+
+class LoginServerThread(QtCore.QThread):
+    '''Login server thread.'''
+
+    def start(self, url, loginSignal):
+        '''Start thread.'''
+        self.url = url
+        self.loginSignal = loginSignal
+        super(LoginServerThread, self).start()
+
+    def run(self):
+        '''Listen for events.'''
+        self._server = BaseHTTPServer.HTTPServer(
+            ('localhost', 0),
+            functools.partial(
+                LoginServerHandler, self.url, self.loginSignal
+            )
+        )
+        webbrowser.open_new_tab(
+            '{0}/user/api_credentials?redirect_url=http://localhost:{1}'.format(
+                self.url, self._server.server_port
+            )
+        )
+        self._server.serve_forever()
 
 
 class ApplicationPlugin(QtGui.QWidget):
@@ -47,6 +112,9 @@ class Application(QtGui.QMainWindow):
     #: Signal when event received via ftrack's event hub.
     eventHubSignal = QtCore.Signal(object)
 
+    # Login signal.
+    loginSignal = QtCore.Signal(object, object, object)
+
     def __init__(self, *args, **kwargs):
         '''Initialise the main application window.'''
         theme = kwargs.pop('theme', 'light')
@@ -69,6 +137,8 @@ class Application(QtGui.QMainWindow):
             QtGui.QPixmap(':/ftrack/image/default/ftrackLogoColor')
         )
 
+        self._login_server_thread = None
+
         self._theme = None
         self.setTheme(theme)
 
@@ -84,6 +154,7 @@ class Application(QtGui.QMainWindow):
         self.setWindowIcon(self.logoIcon)
 
         self.loginWidget = None
+        self.loginSignal.connect(self.loginWithCredentials)
         self.login()
 
     def theme(self):
@@ -160,6 +231,19 @@ class Application(QtGui.QMainWindow):
         loginError will be emitted if this fails.
 
         '''
+        if self._login_server_thread:
+            # Terminating the thread ensures the running http server is also
+            # stopped instantly.
+            self._login_server_thread.terminate()
+            self._login_server_thread = None
+
+        # If credentials are not properly set, try to get them using a http
+        # server.
+        if not username or not apiKey:
+            self._login_server_thread = LoginServerThread()
+            self._login_server_thread.start(url, self.loginSignal)
+            return
+
         # Set environment variables supported by the old API.
         os.environ['FTRACK_SERVER'] = url
         os.environ['LOGNAME'] = username
