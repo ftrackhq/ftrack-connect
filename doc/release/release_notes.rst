@@ -7,6 +7,13 @@
 Release Notes
 *************
 
+.. release:: Upcoming
+
+    .. change:: new
+        :tags: Plugins
+
+        Added a menu option to open the default plugin directory.
+
 .. release:: 0.1.19
     :date: 2016-01-08
 
