@@ -525,7 +525,7 @@ class Application(QtGui.QMainWindow):
                 return
 
         if sys.platform=='win32':
-            subprocess.Popen(['start', directory], shell= True)
+            subprocess.Popen(['start', directory], shell=True)
 
         elif sys.platform=='darwin':
             subprocess.Popen(['open', directory])
