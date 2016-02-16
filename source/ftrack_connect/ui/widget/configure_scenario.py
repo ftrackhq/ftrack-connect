@@ -73,7 +73,7 @@ class ConfigureScenario(QtGui.QWidget):
 
         # Min height is required due to issue when word wrap is True and window
         # being resized which cases text to dissapear.
-        label.setMinimumHeight(100)
+        label.setMinimumHeight(120)
 
         label.setMinimumWidth(300)
         layout.addWidget(label, alignment=QtCore.Qt.AlignCenter)
