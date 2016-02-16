@@ -32,12 +32,32 @@ class Resolver(object):
 
     def __call__(self, event):
         '''Resolve path for *event*.'''
-        location_name = event['data']['locationName']
-        component_id = event['data']['componentId']
-
         self.logger.debug(
             u'Resolving file system path for event: {0!r}.'.format(event)
         )
+
+        location_name = event['data']['locationName']
+        component_id = event['data']['componentId']
+
+        location = None
+
+        if location_name is None:
+            # No location name provided, use pick location.
+            component = self.session.get('Component', component_id)
+            location = self.session.pick_location(component)
+
+            self.logger.debug(
+                u'No location name given, picked location {0!r} for '
+                u'{1!r}.'.format(
+                    location, component
+                )
+            )
+
+            if location is None:
+                # Could not pick location for component.
+                return
+
+            location_name = location['name']
 
         if not self.filter_locations(location_name):
             self.logger.debug(
@@ -45,9 +65,11 @@ class Resolver(object):
             )
             return
 
-        location = self.session.query(
-            'Location where name is "{0}"'.format(location_name)
-        ).one()
+        # No need to get the location again if already fetched by pick location.
+        if location is None:
+            location = self.session.query(
+                'Location where name is "{0}"'.format(location_name)
+            ).one()
 
         if not location.accessor:
             self.logger.debug(
@@ -56,8 +78,8 @@ class Resolver(object):
             )
             return
 
+        # Get component from cache.
         component = self.session.get('Component', component_id)
-
         resource_identifier = location.get_resource_identifier(component)
 
         path = None
