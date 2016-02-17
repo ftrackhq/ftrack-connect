@@ -10,15 +10,23 @@ Release Notes
 .. release:: upcoming
 
     .. change:: changed
+        :tags: Login
 
         Improved error handling for invalid server URLs.
 
     .. change:: new
-        :tags: Context Selector
+        :tags: Login
 
         Added ability to login using regular users credentials via web interface
         instead of API key. Username and API key fields are therefore hidden by
         default in the ftrack connect login screen.
+
+    .. change:: new
+        :tags: Events
+
+        ftrack connect will now respond to the ftrack.connect.discover event
+        which can be used to identify if ftrack connect is running for the
+        current user.
 
     .. change:: fixed
         :tags: Ui
