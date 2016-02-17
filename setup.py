@@ -221,7 +221,8 @@ configuration = dict(
         'ftrack-python-api >= 0.8.1, < 1',
         'PySide >= 1.2.2, < 2',
         'Riffle >= 0.1.0, < 2',
-        'arrow >= 0.4.6, < 1'
+        'arrow >= 0.4.6, < 1',
+        'requests >= 2, <3'
     ],
     tests_require=['pytest >= 2.3.5, < 3'],
     cmdclass={

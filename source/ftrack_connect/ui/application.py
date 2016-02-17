@@ -9,6 +9,7 @@ import BaseHTTPServer
 import urlparse
 import webbrowser
 import functools
+import requests
 
 from PySide import QtGui
 from PySide import QtCore
@@ -17,6 +18,7 @@ import ftrack_connect
 import ftrack_connect.event_hub_thread
 import ftrack_connect.error
 import ftrack_connect.ui.theme
+import ftrack_connect.ui.widget.overlay
 from ftrack_connect.ui.widget import uncaught_error as _uncaught_error
 from ftrack_connect.ui.widget import tab_widget as _tab_widget
 from ftrack_connect.ui.widget import login as _login
@@ -41,10 +43,13 @@ class LoginServerHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         if 'api_user' and 'api_key' in query:
             login_credentials = urlparse.parse_qs(query)
             message = """
-                <script type="text/javascript">
-                    window.close();
-                </script>
-                """
+                <html>
+                <body>
+                    <h2>Sign in to ftrack connect was successful.</h2>
+                    <h3>You can now close this window.</h3>
+                </body>
+                </html>
+            """
         else:
             message = 'Empty page.'
 
@@ -82,8 +87,7 @@ class LoginServerThread(QtCore.QThread):
                 self.url, self._server.server_port
             )
         )
-        while self.isRunning():
-            self._server.handle_request()
+        self._server.handle_request()
 
 
 class ApplicationPlugin(QtGui.QWidget):
@@ -154,6 +158,7 @@ class Application(QtGui.QMainWindow):
 
         self.setWindowIcon(self.logoIcon)
 
+        self._login_overlay = None
         self.loginWidget = None
         self.loginSignal.connect(self.loginWithCredentials)
         self.login()
@@ -217,14 +222,25 @@ class Application(QtGui.QMainWindow):
         '''Show the login widget.'''
         if self.loginWidget is None:
             self.loginWidget = _login.Login()
+            self._login_overlay = ftrack_connect.ui.widget.overlay.BlockingOverlay(
+                self.loginWidget,
+                message='Signing in'
+            )
+            self._login_overlay.hide()
             self.setCentralWidget(self.loginWidget)
             self.loginWidget.login.connect(self.loginWithCredentials)
             self.loginError.connect(self.loginWidget.loginError.emit)
+            self.loginError.connect(self._hide_login_overlay)
             self.focus()
 
             # Set focus on the login widget to remove any focus from its child
             # widgets.
             self.loginWidget.setFocus()
+
+    def _hide_login_overlay(self):
+        '''Hide the login overlay.'''
+        if self._login_overlay and self._login_overlay.isVisible():
+            self._login_overlay.hide()
 
     def loginWithCredentials(self, url, username, apiKey):
         '''Connect to *url* with *username* and *apiKey*.
@@ -232,6 +248,40 @@ class Application(QtGui.QMainWindow):
         loginError will be emitted if this fails.
 
         '''
+        if self._login_overlay:
+            self._login_overlay.show()
+
+        if not url:
+            self.loginError.emit(
+                'You need to specify a valid server URL, '
+                'for example https://server-name.ftrackapp.com'
+            )
+            return
+
+        if not 'http' in url:
+            url = 'https://{0}.ftrackapp.com'.format(url)
+
+        try:
+            result = requests.get(
+                url,
+                allow_redirects=False  # Old python API will not work with redirect.
+            )
+        except requests.ConnectionError:
+            self.logger.exception('Error reaching server url.')
+            self.loginError.emit(
+                'The server URL you provided could not be reached.'
+            )
+            return
+
+        if (
+            result.status_code != 200 or 'FTRACK_VERSION' not in result.headers
+        ):
+            self.loginError.emit(
+                'The server URL you provided is not a valid ftrack server.'
+            )
+            return
+
+        # If there is an existing server thread running we need to stop it.
         if self._login_server_thread:
             self._login_server_thread.quit()
             self._login_server_thread = None
@@ -298,6 +348,7 @@ class Application(QtGui.QMainWindow):
         self.tabPanel = _tab_widget.TabWidget()
         self.tabPanel.tabBar().setObjectName('application-tab-bar')
         self.setCentralWidget(self.tabPanel)
+        self._hide_login_overlay()
 
         self._discoverPlugins()
 
