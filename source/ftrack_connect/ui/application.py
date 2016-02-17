@@ -232,6 +232,15 @@ class Application(QtGui.QMainWindow):
 
         self.focus()
 
+        # Listen to discover connect event and respond to let the sender know
+        # that connect is running.
+        ftrack.EVENT_HUB.subscribe(
+            'topic=ftrack.connect.discover and source.user.username={0}'.format(
+                getpass.getuser()
+            ),
+            lambda event : True
+        )
+
     def _relayEventHubEvent(self, event):
         '''Relay all ftrack.connect events.'''
         self.eventHubSignal.emit(event)

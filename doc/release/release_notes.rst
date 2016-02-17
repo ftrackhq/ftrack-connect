@@ -9,6 +9,13 @@ Release Notes
 
 .. release:: upcoming
 
+    .. change:: new
+        :tags: Events
+
+        ftrack connect will now respond to the ftrack.connect.discover event
+        which can be used to identify if ftrack connect is running for the
+        current user.
+
     .. change:: fixed
         :tags: Ui
 
