@@ -82,7 +82,8 @@ class LoginServerThread(QtCore.QThread):
                 self.url, self._server.server_port
             )
         )
-        self._server.serve_forever()
+        while self.isRunning():
+            self._server.handle_request()
 
 
 class ApplicationPlugin(QtGui.QWidget):
@@ -232,9 +233,7 @@ class Application(QtGui.QMainWindow):
 
         '''
         if self._login_server_thread:
-            # Terminating the thread ensures the running http server is also
-            # stopped instantly.
-            self._login_server_thread.terminate()
+            self._login_server_thread.quit()
             self._login_server_thread = None
 
         # If credentials are not properly set, try to get them using a http
