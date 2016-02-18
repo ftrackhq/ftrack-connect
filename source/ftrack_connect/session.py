@@ -31,8 +31,7 @@ def get_shared_session():
         _shared_session = ftrack_api.Session(
             server_url=os.environ['FTRACK_SERVER'],
             api_key=os.environ['FTRACK_APIKEY'],
-            api_user=os.environ['LOGNAME'],
-            plugin_paths=[]
+            api_user=os.environ['LOGNAME']
         )
 
     return _shared_session

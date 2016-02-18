@@ -10,6 +10,20 @@ Release Notes
 .. release:: upcoming
 
     .. change:: new
+        :tags: Location
+
+        Paths for custom locations that are implemented in the new Python
+        API, :ref:`ftrack-python-api <ftrack-python-api:introduction>`,
+        are now resolved in Connect.
+
+    .. change:: changed
+        :tags: Event plugins
+
+        Event plugins are now loaded for the new Python API, 
+        :ref:`ftrack-python-api <ftrack-python-api:introduction>`.
+        :ref:`Read more <release/migration/upcoming/developer_notes>`
+
+    .. change:: new
         :tags: Location Scenario
 
         Added a new hook that can be used to detect problems and present
