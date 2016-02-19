@@ -22,8 +22,8 @@ class ConfigureScenario(QtGui.QWidget):
         # the API.
         try:
             session.query(
-                'Setting where name is "location_scenario" and '
-                'group is "LOCATION"'
+                'Setting where name is "storage_scenario" and '
+                'group is "STORAGE"'
             ).one()
             can_configure_scenario = True
         except ftrack_api.exception.NoResultFoundError:
@@ -82,7 +82,7 @@ class ConfigureScenario(QtGui.QWidget):
 
         configure_button = QtGui.QPushButton(text='Configure now')
         configure_button.setObjectName('primary')
-        configure_button.clicked.connect(self._configure_location_scenario)
+        configure_button.clicked.connect(self._configure_storage_scenario)
         configure_button.setMinimumHeight(40)
         configure_button.setMaximumWidth(125)
 
@@ -131,7 +131,7 @@ class ConfigureScenario(QtGui.QWidget):
         layout.addSpacing(20)
 
         self._subscriber_identifier = session.event_hub.subscribe(
-            'topic=ftrack.location-scenario.configure-done',
+            'topic=ftrack.storage-scenario.configure-done',
             self._complete_configuration
         )
         self._session = session
@@ -141,10 +141,10 @@ class ConfigureScenario(QtGui.QWidget):
         self._session.event_hub.unsubscribe(self._subscriber_identifier)
         self.configuration_completed.emit()
 
-    def _configure_location_scenario(self):
+    def _configure_storage_scenario(self):
         '''Open browser window and go to the configuration page.'''
         webbrowser.open_new_tab(
-            '{0}/#view=configure_location_scenario&itemId=newconfigure'.format(
+            '{0}/#view=configure_storage_scenario&itemId=newconfigure'.format(
                 self._session.server_url
             )
         )
