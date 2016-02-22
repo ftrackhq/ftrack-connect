@@ -122,7 +122,7 @@ class ConfigureScenario(QtGui.QWidget):
         label = QtGui.QLabel()
         label.setObjectName('green-link')
         label.setText(
-            '<a href="{0}/doc/glossary.html"> Learn more about location '
+            '<a href="{0}/doc/glossary.html"> Learn more about storage '
             'scenarios.'.format(session.server_url)
         )
         label.setAlignment(QtCore.Qt.AlignCenter)

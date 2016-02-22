@@ -36,8 +36,8 @@ Release Notes
     .. change:: new
         :tags: Location Scenario
 
-        Added a configure location scenario widget that will be shown on startup
-        if a location scenario has not been configured on the server.
+        Added a configure storage scenario widget that will be shown on startup
+        if a storage scenario has not been configured on the server.
 
     .. change:: fixed
         :tags: Ui
