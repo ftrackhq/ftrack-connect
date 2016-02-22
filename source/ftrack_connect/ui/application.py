@@ -168,7 +168,7 @@ class Application(QtGui.QMainWindow):
         session = ftrack_connect.session.get_shared_session()
 
         # Listen to events using the new API event hub. This is required to
-        # allow reconfiguring the location scenario.
+        # allow reconfiguring the storage scenario.
         self._hub_thread = _event_hub_thread.NewApiEventHubThread()
         self._hub_thread.start(session)
 
@@ -207,13 +207,13 @@ class Application(QtGui.QMainWindow):
         settings.setValue('login/username', username)
         settings.setValue('login/apikey', apiKey)
 
-        # Verify location scenario before starting.
-        if 'location_scenario' in self._session.server_information:
-            location_scenario = self._session.server_information.get(
-                'location_scenario'
+        # Verify storage scenario before starting.
+        if 'storage_scenario' in self._session.server_information:
+            storage_scenario = self._session.server_information.get(
+                'storage_scenario'
             )
-            if location_scenario is None:
-                self.logger.debug('Location scenario is not configured.')
+            if storage_scenario is None:
+                self.logger.debug('Storage scenario is not configured.')
                 scenario_widget = _scenario_widget.ConfigureScenario(
                     self._session
                 )
@@ -240,13 +240,13 @@ class Application(QtGui.QMainWindow):
         else:
             self.focus()
 
-        # Send verify startup event to verify that location scenario is
+        # Send verify startup event to verify that storage scenario is
         # working correctly.
         event = ftrack_api.event.base.Event(
             topic='ftrack.connect.verify-startup',
             data={
-                'location_scenario': self._session.server_information.get(
-                    'location_scenario'
+                'storage_scenario': self._session.server_information.get(
+                    'storage_scenario'
                 )
             }
         )
