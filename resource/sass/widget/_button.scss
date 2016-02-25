@@ -25,19 +25,20 @@ QPushButton:disabled {
 }
 
 QPushButton#primary {
-    border-color: darken($brand-primary, 5%);
-    background-color: $brand-primary;
-    color: lighten($brand-primary, 50%);
+    border-color: $brand-primary;
+    color: $brand-primary;
 }
 
 QPushButton#primary:hover {
-    background-color: darken($brand-primary, 5%);
-        border-color: darken($brand-primary, 10%);
+    background-color: $brand-primary;
+    border-color: $brand-primary;
+    color: lighten($brand-primary, 10%);
 }
 
 QPushButton#primary:pressed {
-    background-color: darken($brand-primary, 10%);
-        border-color: darken($brand-primary, 15%);
+    background-color: $brand-primary;
+    border-color: $brand-primary;
+    color: lighten($brand-primary, 20%);
 }
 
 /** Flat button */

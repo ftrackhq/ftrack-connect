@@ -45,8 +45,12 @@ class LoginServerHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             message = """
                 <html>
                 <body>
-                    <h2>Sign in to ftrack connect was successful.</h2>
-                    <h3>You can now close this window.</h3>
+                  <center>
+                  <div style="margin:auto; margin-top:30px; max-width:350px">
+                <p>Sign in to ftrack connect was successful.</p>
+                    <p style="color:#aaaaaa">You can now close this window.</p>
+                </div>
+                  </center>
                 </body>
                 </html>
             """

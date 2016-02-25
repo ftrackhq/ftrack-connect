@@ -34,11 +34,11 @@ class Login(QtGui.QWidget):
         layout.addWidget(label, alignment=QtCore.Qt.AlignCenter)
 
         self.server = QtGui.QLineEdit()
-        self.server.setPlaceholderText('Server name/url')
+        self.server.setPlaceholderText('Site name or custom domain URL')
         layout.addWidget(self.server)
 
         self.username = QtGui.QLineEdit()
-        self.username.setPlaceholderText('Username')
+        self.username.setPlaceholderText('User name')
         self.username.hide()
         layout.addWidget(self.username)
 
@@ -47,10 +47,28 @@ class Login(QtGui.QWidget):
         self.apiKey.hide()
         layout.addWidget(self.apiKey)
 
-        loginButton = QtGui.QPushButton(text='Sign in')
+        loginButton = QtGui.QPushButton(text='SIGN IN')
         loginButton.setObjectName('primary')
         loginButton.clicked.connect(self.handleLogin)
+        loginButton.setMinimumHeight(35)
         layout.addWidget(loginButton)
+
+        label = QtGui.QLabel()
+        label.setObjectName('lead-label')
+        label.setContentsMargins(0, 0, 0, 0)
+        label.setText(
+            'Your site name is your ftrackapp.com web address '
+            '(e.g https://sitename.ftrackapp.com OR your custom domain URL).'
+        )
+        label.setAlignment(QtCore.Qt.AlignCenter)
+        label.setWordWrap(True)
+
+        # Min height is required due to issue when word wrap is True and window
+        # being resized which cases text to dissapear.
+        label.setMinimumHeight(50)
+
+        label.setMinimumWidth(300)
+        layout.addWidget(label, alignment=QtCore.Qt.AlignCenter)
 
         self.errorLabel = QtGui.QLabel()
         self.errorLabel.setWordWrap(True)
@@ -60,12 +78,14 @@ class Login(QtGui.QWidget):
         layout.addStretch(1)
 
         self.toggle_api_label = label = ClickableLabel()
+        self.toggle_api_label.setObjectName('lead-label')
         self.toggle_api_label.setText(
-            '<a href="#">Click here to sign in with username and API key</a>'
+            'Trouble signing in? '
+            '<a href="#" style="color: #1CBC90;">Sign in with username and API key</a>'
         )
         self.toggle_api_label.clicked.connect(self._toggle_credentials)
         layout.addWidget(self.toggle_api_label, alignment=QtCore.Qt.AlignCenter)
-        layout.addSpacing(10)
+        layout.addSpacing(20)
 
     def handleLogin(self):
         '''Fetch login data from form fields and emit login event.'''
