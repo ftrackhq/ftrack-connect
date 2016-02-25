@@ -29,10 +29,9 @@ from ftrack_connect.error import NotUniqueError as _NotUniqueError
 class LoginServerHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     '''Login server handler.'''
 
-    def __init__(self, url, loginSignal, *args, **kw):
+    def __init__(self, login_callback, *args, **kw):
         '''Initialise handler.'''
-        self.url = url
-        self.loginSignal = loginSignal
+        self.login_callback = login_callback
         BaseHTTPServer.BaseHTTPRequestHandler.__init__(self, *args, **kw)
 
     def do_GET(self):
@@ -63,8 +62,7 @@ class LoginServerHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         self.wfile.write(message)
 
         if login_credentials:
-            self.loginSignal.emit(
-                self.url,
+            self.login_callback(
                 login_credentials['api_user'][0],
                 login_credentials['api_key'][0]
             )
@@ -73,18 +71,24 @@ class LoginServerHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 class LoginServerThread(QtCore.QThread):
     '''Login server thread.'''
 
-    def start(self, url, loginSignal):
+    # Login signal.
+    loginSignal = QtCore.Signal(object, object, object)
+
+    def start(self, url):
         '''Start thread.'''
         self.url = url
-        self.loginSignal = loginSignal
         super(LoginServerThread, self).start()
+
+    def _handle_login(self, api_user, api_key):
+        '''Login to server with *api_user* and *api_key*.'''
+        self.loginSignal.emit(self.url, api_user, api_key)
 
     def run(self):
         '''Listen for events.'''
         self._server = BaseHTTPServer.HTTPServer(
             ('localhost', 0),
             functools.partial(
-                LoginServerHandler, self.url, self.loginSignal
+                LoginServerHandler, self._handle_login
             )
         )
         webbrowser.open_new_tab(
@@ -295,7 +299,8 @@ class Application(QtGui.QMainWindow):
         # server.
         if not username or not apiKey:
             self._login_server_thread = LoginServerThread()
-            self._login_server_thread.start(url, self.loginSignal)
+            self._login_server_thread.loginSignal.connect(self.loginSignal)
+            self._login_server_thread.start(url)
             return
 
         # Set environment variables supported by the old API.
