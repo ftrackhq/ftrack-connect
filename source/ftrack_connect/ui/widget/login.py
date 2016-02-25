@@ -5,9 +5,12 @@ from PySide import QtGui, QtCore
 
 
 class ClickableLabel(QtGui.QLabel):
+    '''Clickable label class.'''
+
     clicked = QtCore.Signal()
 
     def mousePressEvent(self, event):
+        '''Override mouse press to emit signal.'''
         self.clicked.emit()
 
 
