@@ -3,6 +3,7 @@
 import os
 
 import ftrack_api
+import ftrack_api.exception
 
 _shared_session = None
 
@@ -15,7 +16,10 @@ def destroy_shared_session():
         # Disconnect from event hub but do not unsubscribe as that will be
         # blocking and slow. Also there is no need to unsubscribe since the
         # session will not be used any more.
-        _shared_session.event_hub.disconnect(False)
+        try:
+            _shared_session.event_hub.disconnect(False)
+        except ftrack_api.exception.EventHubConnectionError:
+            pass
 
         del _shared_session
         _shared_session = None
