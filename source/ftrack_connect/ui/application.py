@@ -198,7 +198,7 @@ class Application(QtGui.QMainWindow):
             self._session = self._setup_session()
         except Exception as error:
             self.logger.exception('Error during login.')
-            self.loginError.emit(str(error))
+            self.loginError.emit(error.message)
             return
 
         # Store login details in settings.
@@ -236,7 +236,7 @@ class Application(QtGui.QMainWindow):
             self.configureConnectAndDiscoverPlugins()
         except Exception as error:
             self.logger.exception(error)
-            self.loginError.emit(str(error))
+            self.loginError.emit(error.message)
         else:
             self.focus()
 
