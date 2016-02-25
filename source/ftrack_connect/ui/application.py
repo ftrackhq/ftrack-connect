@@ -36,6 +36,7 @@ class LoginServerHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         BaseHTTPServer.BaseHTTPRequestHandler.__init__(self, *args, **kw)
 
     def do_GET(self):
+        '''Override to handle requests ourselves.'''
         parsed_path = urlparse.urlparse(self.path)
         query = parsed_path.query
 
