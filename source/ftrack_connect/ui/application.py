@@ -6,6 +6,7 @@ import getpass
 import platform
 import logging
 import requests
+import requests.exceptions
 
 from PySide import QtGui
 from PySide import QtCore
@@ -218,7 +219,7 @@ class Application(QtGui.QMainWindow):
                 url,
                 allow_redirects=False  # Old python API will not work with redirect.
             )
-        except requests.ConnectionError:
+        except requests.exceptions.InvalidURL, requests.ConnectionError:
             self.logger.exception('Error reaching server url.')
             self.loginError.emit(
                 'The server URL you provided could not be reached.'
