@@ -14,13 +14,68 @@ Release Notes
 
         Added a menu option to open the default plugin directory.
 
+    .. change:: changed
+        :tags: Login
+
+        Improved error handling for invalid server URLs.
+
+    .. change:: new
+        :tags: Login
+
+        Added ability to login using regular users credentials via web interface
+        instead of API key. Username and API key fields are therefore hidden by
+        default in the ftrack connect login screen.
+
+    .. change:: new
+        :tags: Events
+
+        ftrack connect will now respond to the ftrack.connect.discover event
+        which can be used to identify if ftrack connect is running for the
+        current user.
+
+    .. change:: new
+        :tags: Location
+
+        Paths for custom locations that are implemented in the new Python
+        API, :ref:`ftrack-python-api <ftrack-python-api:introduction>`,
+        are now resolved in Connect.
+
+    .. change:: changed
+        :tags: Event plugins
+
+        Event plugins are now loaded for the new Python API, 
+        :ref:`ftrack-python-api <ftrack-python-api:introduction>`.
+        :ref:`Read more <release/migration/upcoming/developer_notes>`
+
+    .. change:: new
+        :tags: Location Scenario
+
+        Added a new hook that can be used to detect problems and present
+        information to the user.
+
+        .. seealso::
+
+            :ref:`Verify startup hook <developing/hooks/verify_startup>`
+
+    .. change:: new
+        :tags: Location Scenario
+
+        Added a configure storage scenario widget that will be shown on startup
+        if a storage scenario has not been configured on the server.
+
+    .. change:: fixed
+        :tags: Ui
+
+        Restore :py:class:`ftrack_connect.panelcom.PanelComInstance` communication with contextSelector,
+        so changes to the environments get reflected into the widgets.
+
 .. release:: 0.1.19
     :date: 2016-01-08
 
     .. change:: new
         :tags: Context Selector
 
-        Added new 
+        Added new
         :py:class:`ftrack_connect.ui.widget.context_selector.ContextSelector`
         widget that can be used to present and browse for a context.
 
@@ -34,7 +89,7 @@ Release Notes
 
     .. change:: new
 
-        Added new 
+        Added new
         :py:class:`ftrack_connect.ui.widget.html_combobox.HtmlComboBox` widget
         and :py:class:`ftrack_connect.ui.widget.html_delegate.HtmlDelegate`.
 
@@ -106,7 +161,7 @@ Release Notes
     .. change:: changed
         :tags: Developer
 
-        ``thumbnail.Base`` will no longer default to ellipsis shape. Use 
+        ``thumbnail.Base`` will no longer default to ellipsis shape. Use
         ``thumbnail.EllipsisBase`` for round thumbnails.
 
 .. release:: 0.1.13
@@ -127,7 +182,7 @@ Release Notes
 
 .. release:: 0.1.11
     :date: 2015-06-05
-    
+
     .. change:: changed
         :tags: Publisher
 
@@ -165,7 +220,7 @@ Release Notes
     .. change:: fixed
         :tags: Publisher
 
-        Publisher browser breaks when objects and files have non-ascii 
+        Publisher browser breaks when objects and files have non-ascii
         characters.
 
     .. change:: new
