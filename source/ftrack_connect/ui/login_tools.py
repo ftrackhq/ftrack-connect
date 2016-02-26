@@ -30,19 +30,36 @@ class LoginServerHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             api_key = login_credentials['api_key'][0]
             message = """
                 <html>
+                    <style type="text/css">
+                        body {{
+                            max-width: 400px;
+                            margin: 30px auto;
+                            font-family: 'Open Sans', 'Droid Sans', Arial, Helvetica, sans-serif;
+                            text-align: center;
+                        }}
+
+                        h1 {{
+                            font-size: 20px;
+                            font-weight: normal;
+                            margin: 20px 0;
+                        }}
+
+                        p {{
+                            color: #999;
+                            margin: 30px 10px;
+                        }}
+                    </style>
                 <body>
-                  <center>
-                  <div style="margin:auto; margin-top:30px; max-width:350px">
-                    <p>Sign in to ftrack connect was successful.</p>
-                    <p style="color:#aaaaaa">You signed in with 
-                    username {0} and can now close this window.</p>
-                </div>
-                  </center>
+                    <h1>Sign in to ftrack connect was successful</h1>
+                    <p>
+                        You signed in with username <em>{0}</em> and can now
+                        close this window.
+                    </p>
                 </body>
                 </html>
             """.format(api_user)
         else:
-            message = 'Empty page.'
+            message = '<h1>Failed to sign in</h1>'
 
         self.send_response(200)
         self.end_headers()
