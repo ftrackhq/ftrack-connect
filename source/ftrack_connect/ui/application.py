@@ -184,6 +184,9 @@ class Application(QtGui.QMainWindow):
         if self._login_overlay:
             self._login_overlay.show()
 
+        # Strip all leading and preceeding occurances of slash and space.
+        url = url.strip('/ ')
+
         if not url:
             self.loginError.emit(
                 'You need to specify a valid server URL, '
@@ -192,7 +195,10 @@ class Application(QtGui.QMainWindow):
             return
 
         if not 'http' in url:
-            url = 'https://{0}.ftrackapp.com'.format(url)
+            if url.endswith('ftrackapp.com'):
+                url = 'https://' + url
+            else:
+                url = 'https://{0}.ftrackapp.com'.format(url)
 
         try:
             result = requests.get(
