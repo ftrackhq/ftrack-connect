@@ -111,12 +111,6 @@ class Application(QtGui.QMainWindow):
         ftrack_connect.ui.theme.applyFont()
         ftrack_connect.ui.theme.applyTheme(self, self._theme, 'cleanlooks')
 
-    def toggleTheme(self):
-        '''Toggle active application theme.'''
-        if self.theme() == 'dark':
-            self.setTheme('light')
-        else:
-            self.setTheme('dark')
 
     def _onConnectTopicEvent(self, event):
         '''Generic callback for all ftrack.connect events.
@@ -399,11 +393,6 @@ class Application(QtGui.QMainWindow):
             triggered=self.focus
         )
 
-        styleAction = QtGui.QAction(
-            'Change Theme', self,
-            triggered=self.toggleTheme
-        )
-
         aboutAction = QtGui.QAction(
             'About', self,
             triggered=self.showAbout
@@ -411,8 +400,6 @@ class Application(QtGui.QMainWindow):
 
         menu.addAction(aboutAction)
         menu.addAction(focusAction)
-        menu.addSeparator()
-        menu.addAction(styleAction)
         menu.addSeparator()
         menu.addAction(logoutAction)
         menu.addSeparator()
