@@ -22,7 +22,10 @@ are added to the `FTRACK_EVENT_PLUGIN_PATH`.
 
 This means that register functions will be called several times, both for
 the ftrack-python-api and the legacy api. To avoid registering a hook multiple
-times, developers should validate the register functions arguments::
+times, developers should validate the register functions arguments.
+
+
+For event listeners like actions or event processing scripts we do::
 
     import ftrack
 
@@ -31,10 +34,30 @@ times, developers should validate the register functions arguments::
     def register(registry, **kw):
         '''Register plugin.'''
 
-        # Validate that registry is an instance of ftrack.Registry. If not,
-        # assume that register is being called from a new or incompatible API
-        # and return without doing anything.
-        if not isinstance(registry, ftrack.Registry):
+        # Validate that registry is the correct ftrack.Registry. If not,
+        # assume that register is being called with another purpose or from a
+        # new or incompatible API and return without doing anything.
+        if registry is not ftrack.EVENT_HANDLERS:
+            # Exit to avoid registering this plugin again.
+            return
+
+        # Register plugin event listener.
+        ...
+
+And for location plugins we verify that the registry is a
+`ftrack.LOCATION_PLUGINS`::
+
+    import ftrack
+
+    ...
+
+    def register(registry, **kw):
+        '''Register plugin.'''
+
+        # Validate that registry is the correct ftrack.Registry. If not,
+        # assume that register is being called with another purpose or from a
+        # new or incompatible API and return without doing anything.
+        if registry is not ftrack.LOCATION_PLUGINS:
             # Exit to avoid registering this plugin again.
             return
 
