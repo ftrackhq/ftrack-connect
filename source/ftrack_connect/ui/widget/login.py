@@ -29,6 +29,7 @@ class Login(QtGui.QWidget):
         layout = QtGui.QVBoxLayout()
         layout.addSpacing(100)
         layout.setContentsMargins(50, 0, 50, 0)
+        layout.setSpacing(15)
         self.setLayout(layout)
 
         label = QtGui.QLabel()
