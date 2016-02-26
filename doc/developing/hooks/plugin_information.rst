@@ -49,13 +49,16 @@ example response above would be displayed in the About window like this:
 
 Each dictionary should contain the keys:
 
-``name``
+name
     Name of the plugin which will be displayed in the About window.
-``version``
+
+version
     Version of the plugin which will be displayed in the About window.
-``core``
+
+core
     Optional key will place the plugin under the core features instead of in
     plugins list.
-``debug_information``
+
+debug_information
     Optional dictionary containing key/value attributes which will be
     displayed in the debug information section.

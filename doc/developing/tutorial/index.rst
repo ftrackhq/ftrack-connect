@@ -14,3 +14,4 @@ more customisation options.
     :maxdepth: 1
 
     custom_applications
+    adding_a_location

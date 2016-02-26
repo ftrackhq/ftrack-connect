@@ -30,7 +30,13 @@ ftrack connect menu and click:
     :align: center
 
 This will create the directory if not already existing and open it in the
-file browser.
+file browser. Downloaded Connect plugins can be unzipped and placed in this
+directory.
+
+.. seealso::
+
+    For development of plugins please refer to this
+    :ref:`article <developing/plugins>`.
 
 Environment variable
 ====================
@@ -43,8 +49,3 @@ By setting the `FTRACK_CONNECT_PLUGIN_PATH` you can add additional places
 where plugin hooks are discovered. E.g::
 
     export FTRACK_CONNECT_PLUGIN_PATH=/Users/mattiaslagergren/Desktop/my-plugins
-
-.. seealso::
-
-    For development of plugins please refer to this
-    :ref:`article <developing/plugins>`.

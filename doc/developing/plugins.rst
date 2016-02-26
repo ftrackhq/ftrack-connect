@@ -99,7 +99,7 @@ between them. Another type of plugin that we may want to use is a
 into our hook directory. A location plugin you will typically want to have
 accessible inside an :term:`integration` as well. This can be done by adding
 the directory where the location plugin is located to the environment when an
-application is launched, see `ftrack.connect.application.launch`.
+application is launched, see :ref:`developing/hooks/application_launch`.
 
 But if we just add it to the hook directory and add the hook directory to the
 environment other Actions may be registered from inside the integration. This
