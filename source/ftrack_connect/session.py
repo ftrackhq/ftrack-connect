@@ -25,7 +25,7 @@ def destroy_shared_session():
         _shared_session = None
 
 
-def get_shared_session():
+def get_shared_session(plugin_paths=None):
     '''Return shared ftrack_api session.'''
     global _shared_session
 
@@ -35,7 +35,8 @@ def get_shared_session():
         _shared_session = ftrack_api.Session(
             server_url=os.environ['FTRACK_SERVER'],
             api_key=os.environ['FTRACK_APIKEY'],
-            api_user=os.environ['LOGNAME']
+            api_user=os.environ['LOGNAME'],
+            plugin_paths=plugin_paths
         )
 
     return _shared_session

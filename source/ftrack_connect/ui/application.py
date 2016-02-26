@@ -70,8 +70,30 @@ class Application(QtGui.QMainWindow):
             __name__ + '.' + self.__class__.__name__
         )
 
-        self.defaultPluginDirectory = appdirs.user_data_dir(
+        defaultPluginDirectory = appdirs.user_data_dir(
             'ftrack-connect-plugins', 'ftrack'
+        )
+
+        self.pluginHookPaths = set()
+        self.pluginHookPaths.update(
+            self._gatherPluginHooks(
+                defaultPluginDirectory
+            )
+        )
+        if 'FTRACK_CONNECT_PLUGIN_PATH' in os.environ:
+            for connectPluginPath in (
+                os.environ['FTRACK_CONNECT_PLUGIN_PATH'].split(os.pathsep)
+            ):
+                self.pluginHookPaths.update(
+                    self._gatherPluginHooks(
+                        connectPluginPath
+                    )
+                )
+
+        self.logger.info(
+            u'Connect plugin hooks directories: {0}'.format(
+                ', '.join(self.pluginHookPaths)
+            )
         )
 
         # Register widget for error handling.
@@ -186,7 +208,15 @@ class Application(QtGui.QMainWindow):
         if hasattr(self, '_hub_thread'):
             self._hub_thread.quit()
 
-        session = ftrack_connect.session.get_shared_session()
+        plugin_paths = os.environ.get(
+            'FTRACK_EVENT_PLUGIN_PATH', ''
+        ).split(os.pathsep)
+
+        plugin_paths.extend(self.pluginHookPaths)
+
+        session = ftrack_connect.session.get_shared_session(
+            plugin_paths=plugin_paths
+        )
 
         # Listen to events using the new API event hub. This is required to
         # allow reconfiguring the storage scenario.
@@ -333,32 +363,11 @@ class Application(QtGui.QMainWindow):
 
     def configureConnectAndDiscoverPlugins(self):
         '''Configure connect and load plugins.'''
-        pluginHookPaths = set()
-        pluginHookPaths.update(
-            self._gatherPluginHooks(
-                self.defaultPluginDirectory
-            )
-        )
-        if 'FTRACK_CONNECT_PLUGIN_PATH' in os.environ:
-            for connectPluginPath in (
-                os.environ['FTRACK_CONNECT_PLUGIN_PATH'].split(os.pathsep)
-            ):
-                pluginHookPaths.update(
-                    self._gatherPluginHooks(
-                        connectPluginPath
-                    )
-                )
-
-        self.logger.info(
-            u'Connect plugin hooks directories: {0}'.format(
-                ', '.join(pluginHookPaths)
-            )
-        )
 
         # Local import to avoid connection errors.
         import ftrack
-        ftrack.EVENT_HANDLERS.paths.extend(pluginHookPaths)
-        ftrack.LOCATION_PLUGINS.paths.extend(pluginHookPaths)
+        ftrack.EVENT_HANDLERS.paths.extend(self.pluginHookPaths)
+        ftrack.LOCATION_PLUGINS.paths.extend(self.pluginHookPaths)
 
         ftrack.setup()
         self.tabPanel = _tab_widget.TabWidget()
