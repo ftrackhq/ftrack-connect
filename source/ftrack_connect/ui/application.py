@@ -70,14 +70,14 @@ class Application(QtGui.QMainWindow):
             __name__ + '.' + self.__class__.__name__
         )
 
-        defaultPluginDirectory = appdirs.user_data_dir(
+        self.defaultPluginDirectory = appdirs.user_data_dir(
             'ftrack-connect-plugins', 'ftrack'
         )
 
         self.pluginHookPaths = set()
         self.pluginHookPaths.update(
             self._gatherPluginHooks(
-                defaultPluginDirectory
+                self.defaultPluginDirectory
             )
         )
         if 'FTRACK_CONNECT_PLUGIN_PATH' in os.environ:
