@@ -4,7 +4,7 @@ QMainWindow#ftrack-connect-window {
 }
 
 QLabel#login-label {
-    font-size: 20px;
+    font-size: 22px;
 }
 
 QLabel#regular-label {
@@ -20,4 +20,10 @@ QLabel#lead-label {
 
 * {
     font-family: $font-family-base;
+}
+
+QLabel#lead-label {
+    font-size: 13px;
+    color: $gray-light;
+    font-weight: light;
 }

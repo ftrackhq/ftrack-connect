@@ -5,7 +5,8 @@ import os
 import getpass
 import platform
 import logging
-import webbrowser
+import requests
+import requests.exceptions
 
 from PySide import QtGui
 from PySide import QtCore
@@ -18,11 +19,13 @@ import ftrack_connect.session
 import ftrack_connect.event_hub_thread as _event_hub_thread
 import ftrack_connect.error
 import ftrack_connect.ui.theme
+import ftrack_connect.ui.widget.overlay
 from ftrack_connect.ui.widget import uncaught_error as _uncaught_error
 from ftrack_connect.ui.widget import tab_widget as _tab_widget
 from ftrack_connect.ui.widget import login as _login
 from ftrack_connect.ui.widget import about as _about
 from ftrack_connect.error import NotUniqueError as _NotUniqueError
+from ftrack_connect.ui import login_tools as _login_tools
 from ftrack_connect.ui.widget import configure_scenario as _scenario_widget
 
 
@@ -53,6 +56,9 @@ class Application(QtGui.QMainWindow):
     #: Signal when event received via ftrack's event hub.
     eventHubSignal = QtCore.Signal(object)
 
+    # Login signal.
+    loginSignal = QtCore.Signal(object, object, object)
+
     def __init__(self, *args, **kwargs):
         '''Initialise the main application window.'''
         theme = kwargs.pop('theme', 'light')
@@ -75,6 +81,8 @@ class Application(QtGui.QMainWindow):
             QtGui.QPixmap(':/ftrack/image/default/ftrackLogoColor')
         )
 
+        self._login_server_thread = None
+
         self._theme = None
         self.setTheme(theme)
 
@@ -89,7 +97,9 @@ class Application(QtGui.QMainWindow):
 
         self.setWindowIcon(self.logoIcon)
 
+        self._login_overlay = None
         self.loginWidget = None
+        self.loginSignal.connect(self.loginWithCredentials)
         self.login()
 
     def theme(self):
@@ -102,12 +112,6 @@ class Application(QtGui.QMainWindow):
         ftrack_connect.ui.theme.applyFont()
         ftrack_connect.ui.theme.applyTheme(self, self._theme, 'cleanlooks')
 
-    def toggleTheme(self):
-        '''Toggle active application theme.'''
-        if self.theme() == 'dark':
-            self.setTheme('light')
-        else:
-            self.setTheme('dark')
 
     def _onConnectTopicEvent(self, event):
         '''Generic callback for all ftrack.connect events.
@@ -151,14 +155,24 @@ class Application(QtGui.QMainWindow):
         '''Show the login widget.'''
         if self.loginWidget is None:
             self.loginWidget = _login.Login()
+
+            self._login_overlay = ftrack_connect.ui.widget.overlay.CancelOverlay(
+                self.loginWidget,
+                message='Signing in'
+            )
+
+            self._login_overlay.hide()
             self.setCentralWidget(self.loginWidget)
+            self.loginWidget.login.connect(self._login_overlay.show)
             self.loginWidget.login.connect(self.loginWithCredentials)
             self.loginError.connect(self.loginWidget.loginError.emit)
+            self.loginError.connect(self._login_overlay.hide)
             self.focus()
 
             # Set focus on the login widget to remove any focus from its child
             # widgets.
             self.loginWidget.setFocus()
+            self._login_overlay.hide()
 
     def _setup_session(self):
         '''Setup a new python API session.'''
@@ -184,6 +198,55 @@ class Application(QtGui.QMainWindow):
         loginError will be emitted if this fails.
 
         '''
+        # Strip all leading and preceeding occurances of slash and space.
+        url = url.strip('/ ')
+
+        if not url:
+            self.loginError.emit(
+                'You need to specify a valid server URL, '
+                'for example https://server-name.ftrackapp.com'
+            )
+            return
+
+        if not 'http' in url:
+            if url.endswith('ftrackapp.com'):
+                url = 'https://' + url
+            else:
+                url = 'https://{0}.ftrackapp.com'.format(url)
+
+        try:
+            result = requests.get(
+                url,
+                allow_redirects=False  # Old python API will not work with redirect.
+            )
+        except requests.exceptions.InvalidURL, requests.ConnectionError:
+            self.logger.exception('Error reaching server url.')
+            self.loginError.emit(
+                'The server URL you provided could not be reached.'
+            )
+            return
+
+        if (
+            result.status_code != 200 or 'FTRACK_VERSION' not in result.headers
+        ):
+            self.loginError.emit(
+                'The server URL you provided is not a valid ftrack server.'
+            )
+            return
+
+        # If there is an existing server thread running we need to stop it.
+        if self._login_server_thread:
+            self._login_server_thread.quit()
+            self._login_server_thread = None
+
+        # If credentials are not properly set, try to get them using a http
+        # server.
+        if not username or not apiKey:
+            self._login_server_thread = _login_tools.LoginServerThread()
+            self._login_server_thread.loginSignal.connect(self.loginSignal)
+            self._login_server_thread.start(url)
+            return
+
         # Set environment variables supported by the old API.
         os.environ['FTRACK_SERVER'] = url
         os.environ['LOGNAME'] = username
@@ -213,6 +276,7 @@ class Application(QtGui.QMainWindow):
                 'storage_scenario'
             )
             if storage_scenario is None:
+                # Hide login overlay at this time since it will be deleted
                 self.logger.debug('Storage scenario is not configured.')
                 scenario_widget = _scenario_widget.ConfigureScenario(
                     self._session
@@ -283,6 +347,17 @@ class Application(QtGui.QMainWindow):
         self.eventHubThread = _event_hub_thread.EventHubThread()
         self.eventHubThread.start()
 
+        self.focus()
+
+        # Listen to discover connect event and respond to let the sender know
+        # that connect is running.
+        ftrack.EVENT_HUB.subscribe(
+            'topic=ftrack.connect.discover and source.user.username={0}'.format(
+                getpass.getuser()
+            ),
+            lambda event : True
+        )
+
     def _relayEventHubEvent(self, event):
         '''Relay all ftrack.connect events.'''
         self.eventHubSignal.emit(event)
@@ -319,11 +394,6 @@ class Application(QtGui.QMainWindow):
             triggered=self.focus
         )
 
-        styleAction = QtGui.QAction(
-            'Change Theme', self,
-            triggered=self.toggleTheme
-        )
-
         aboutAction = QtGui.QAction(
             'About', self,
             triggered=self.showAbout
@@ -331,8 +401,6 @@ class Application(QtGui.QMainWindow):
 
         menu.addAction(aboutAction)
         menu.addAction(focusAction)
-        menu.addSeparator()
-        menu.addAction(styleAction)
         menu.addSeparator()
         menu.addAction(logoutAction)
         menu.addSeparator()
