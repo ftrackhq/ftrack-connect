@@ -220,3 +220,20 @@ class BusyOverlay(BlockingOverlay):
             self.indicator.stop()
 
         super(BusyOverlay, self).setVisible(visible)
+
+
+class CancelOverlay(BusyOverlay):
+    '''Display a standard busy overlay with cancel button.'''
+
+    def __init__(self, parent, message='Processing'):
+        '''Initialise with *parent* and busy *message*.'''
+        super(CancelOverlay, self).__init__(parent, message=message)
+
+        self.contentLayout.addSpacing(10)
+
+        loginButton = QtGui.QPushButton(text='Cancel')
+        loginButton.clicked.connect(self.hide)
+
+        self.contentLayout.addWidget(
+            loginButton, alignment=QtCore.Qt.AlignCenter
+        )

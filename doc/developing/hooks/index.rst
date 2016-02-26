@@ -34,3 +34,4 @@ priority or by removing the default hook using
     action_discover
     plugin_information
     application_launch
+    verify_startup

@@ -3,19 +3,40 @@
 import os
 
 import ftrack_api
+import ftrack_api.exception
 
 _shared_session = None
 
-def get_shared_session():
+
+def destroy_shared_session():
+    '''Destroy the shared session.'''
+    global _shared_session
+
+    if _shared_session:
+        # Disconnect from event hub but do not unsubscribe as that will be
+        # blocking and slow. Also there is no need to unsubscribe since the
+        # session will not be used any more.
+        try:
+            _shared_session.event_hub.disconnect(False)
+        except ftrack_api.exception.EventHubConnectionError:
+            pass
+
+        del _shared_session
+        _shared_session = None
+
+
+def get_shared_session(plugin_paths=None):
     '''Return shared ftrack_api session.'''
     global _shared_session
+
     if not _shared_session:
         # Create API session using credentials as stored by the application
         # when logging in.
         _shared_session = ftrack_api.Session(
             server_url=os.environ['FTRACK_SERVER'],
             api_key=os.environ['FTRACK_APIKEY'],
-            api_user=os.environ['LOGNAME']
+            api_user=os.environ['LOGNAME'],
+            plugin_paths=plugin_paths
         )
 
     return _shared_session
