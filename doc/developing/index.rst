@@ -16,3 +16,4 @@ more customisation options.
     hooks/index
     tutorial/index
     api_reference/index
+    plugins
