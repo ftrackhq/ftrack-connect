@@ -71,6 +71,7 @@ plugin is on the `FTRACK_LOCATION_PLUGIN_PATH`::
     import os
 
     import ftrack
+    import ftrack_connect.application
 
     LOCATION_DIRECTORY = os.path.abspath(
         os.path.join(os.path.dirname(__file__), 'location')
@@ -79,16 +80,13 @@ plugin is on the `FTRACK_LOCATION_PLUGIN_PATH`::
 
     def modify_application_launch(event):
         '''Modify the application environment to include  our location plugin.'''
-        options = event['data']['options']
+        environment = event['data']['options']['env']
         
-        location_plugin_path = options['env'].get('FTRACK_LOCATION_PLUGIN_PATH')
-        if location_plugin_path:
-            location_plugin_path += os.pathsep + LOCATION_DIRECTORY
-        else:
-            location_plugin_path = LOCATION_DIRECTORY
-
-        # Modify the environment variable.
-        options['env']['FTRACK_LOCATION_PLUGIN_PATH'] = location_plugin_path
+        ftrack_connect.application.appendPath(
+            LOCATION_DIRECTORY,
+            'FTRACK_LOCATION_PLUGIN_PATH',   
+            environment
+        )
 
 
     def register(registry, **kw):
