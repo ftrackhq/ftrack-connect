@@ -99,26 +99,28 @@ in :term:`ftrack` and launch is run when selecting the :ref:`Action <ftrack:deve
 
     def register(registry, **kw):
         '''Register action in Connect.'''
+
+        # Validate that registry is the correct ftrack.Registry. If not,
+        # assume that register is being called with another purpose or from a
+        # new or incompatible API and return without doing anything.
+        if registry is not ftrack.EVENT_HANDLERS:
+            # Exit to avoid registering this plugin again.
+            return
+
         action = HoudiniAction()
         action.register()
 
 
 
 This piece of code can now be used as a :ref:`hook <developing/hooks>` in
-:term:`ftrack connect`. To make it run you'll need to copy the file to a folder
-where :term:`ftrack connect` looks for :ref:`hooks <developing/hooks>`.
+:term:`ftrack connect`. To make it run you'll need to copy the file to the
+:term:`plugin directory` where :term:`ftrack connect` looks for plugin
+:ref:`hooks <developing/hooks>`::
 
-On windows the default directory is:
-    
-    .. code-block:: bash
-
-        C:\Program Files\ftrack-connect-package\resource\hook
-
-And on OSX the default directory is:
-
-    .. code-block:: bash
-
-        /Applications/ftrack-connect.app/Contents/MacOS/resource/hook/
+    <ftrack-connect-plugin-directory>/
+        houdini_hook/
+            hook/
+                example_houdini_hook.py
 
 Once copied start your :term:`ftrack connect` application and open the
 :ref:`Actions <ftrack:using/actions>` window on a task in :term:`ftrack`. The
@@ -248,6 +250,13 @@ store.
 
         def register(registry, **kw):
             '''Register action in Connect.'''
+
+            # Validate that registry is the correct ftrack.Registry. If not,
+            # assume that register is being called with another purpose or from a
+            # new or incompatible API and return without doing anything.
+            if registry is not ftrack.EVENT_HANDLERS:
+                # Exit to avoid registering this plugin again.
+                return
             
             # Create store containing applications.
             applicationStore = ApplicationStore()
@@ -296,6 +305,13 @@ ftrack API loaded and any selected task specified in the environment modify the
 
         def register(registry, **kw):
             '''Register action in Connect.'''
+            
+            # Validate that registry is the correct ftrack.Registry. If not,
+            # assume that register is being called with another purpose or from a
+            # new or incompatible API and return without doing anything.
+            if registry is not ftrack.EVENT_HANDLERS:
+                # Exit to avoid registering this plugin again.
+                return
             
             # Create store containing applications.
             applicationStore = ApplicationStore()
@@ -349,10 +365,18 @@ Modify environment before application start
     or that you've downloaded the complete hook
     :download:`example_houdini_hook.py </resource/example_houdini_hook.py>`.
 
-Sometimes you want to modify the environment before starting an application
-for example adding paths to plugins or setting current user.
+.. note::
 
-To do this you'll need to modify the existing :py:class:`ftrack_connect.application.ApplicationLauncher` and override the
+    In most situations the application launch hook described in
+    :ref:`developing/hooks/application_launch` should provide enough flexibility
+    and can be used to modify the application environment and launch arguments.
+    
+    If you're satisfied with the `ftrack.connect.application.launch` hook you do
+    not have to read further.
+
+To get complete control over the entire applcation launch process you can modify
+the existing :py:class:`ftrack_connect.application.ApplicationLauncher` and
+override the
 :meth:`ftrack_connect.application.ApplicationLauncher._getApplicationEnvironment`.
 
 Start by adding the following class to your hook and modify the :meth:`register`
@@ -362,6 +386,13 @@ to use the new launcher class.
 
         def register(registry, **kw):
             '''Register hooks.'''
+
+            # Validate that registry is the correct ftrack.Registry. If not,
+            # assume that register is being called with another purpose or from a
+            # new or incompatible API and return without doing anything.
+            if registry is not ftrack.EVENT_HANDLERS:
+                # Exit to avoid registering this plugin again.
+                return
 
             # Create store containing applications.
             applicationStore = ApplicationStore()

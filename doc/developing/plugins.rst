@@ -7,9 +7,9 @@
 Plugins
 *******
 
-By placing hook plugins in a discoverable :term:`plugin directory` Connect will
-automatically register event hooks for custom event processing, actions and
-locations.
+By placing plugin hooks in a discoverable :term:`plugin directory` Connect will
+automatically register them. A plugin hook can be used for custom event
+processing, actions and location plugins.
 
 In this article we will learn about the structure of a plugin and some best
 practices that will help you on your way to become an ftrack Connect ninja.
@@ -17,16 +17,16 @@ practices that will help you on your way to become an ftrack Connect ninja.
 Structure
 =========
 
-A plugins structure is easy to grasp and relies on a simple directory structure.
-The plugin itself should be contained in a directory and inside the directory
-there must be a `hook` directory::
+A plugin's structure is easy to grasp and relies on a simple directory
+structure. The plugin itself is made up of a directory, `my_custom_plugin`, and
+inside that a `hook` directory::
 
     <ftrack-connect-plugin-directory>/
         my_custom_plugin/
             hook/
                 my_action.py
 
-Easy right? When Connect starts it will go over the hook directories in the
+When Connect starts it will go over the hook directories in the
 :term:`plugin directory` and call register on each of the python scripts in the
 hook directory. The `my_action.py` may look something like this::
 
@@ -47,7 +47,7 @@ hook directory. The `my_action.py` may look something like this::
         # Register plugin event listener.
         ...
 
-The example is using the ftrack-python-api but the concept is valid for the
+This example is using the ftrack-python-api but the concept is valid for the
 legacy api as well.
 
 Separating resources
@@ -72,7 +72,7 @@ and therefore place them in a resource directory, `resource`::
                 my_module/
                     __init__.py
 
-To access the module in the resource/ folder we need to do some manual work
+To access the module in the `resource/ folder we need to do some manual work
 to allow us to import it. In my_action.py we will add it to the `sys.path`::
 
     import os
@@ -96,16 +96,19 @@ Separating locations and actions
 We've now learned how to add our own actions in Connect and how to share code
 between them. Another type of plugin that we may want to use is a
 :term:`location plugin`. Registering it is easy since we only have to put it
-into our hook directory. A location plugin you will typically want to have
-accessible inside an :term:`integration` as well. This can be done by adding
-the directory where the location plugin is located to the environment when an
-application is launched, see :ref:`developing/hooks/application_launch`.
+into our hook directory.
+
+A location plugin you will typically want to have accessible inside an
+:term:`integration` as well. This can be done by adding the path to the
+environment when an application is launched,
+see :ref:`developing/hooks/application_launch`.
 
 But if we just add it to the hook directory and add the hook directory to the
-environment other Actions may be registered from inside the integration. This
-could possibly lead to situations where the `My action` action is registered
-twice, one from Connect and one from the integration you've started. To solve
-this we recommend separating actions and locations into separate
+environment, other Actions may be registered from inside the integration. This
+could lead to situations where the `My action` action is registered
+twice, one from Connect and one from the integration you've started.
+
+To solve this we recommend separating actions and locations into separate
 sub-directories::
 
     <ftrack-connect-plugin-directory>/
@@ -120,10 +123,10 @@ sub-directories::
                 my_module/
                     __init__.py
 
-When Connect it will walk down the directory structure in the `hook` directory
-and register each plugin. But the separation will allow us to only add the
-`<ftrack-connect-plugin-directory>/my_custom_plugin/hook/location/` directory
-when launching our integrations.
+When Connect starts it will traverse the directory structure in the `hook`
+directory and register each plugin. This separation will allow us to **only**
+add the `<ftrack-connect-plugin-directory>/my_custom_plugin/hook/location/`
+directory when launching our integrations.
 
 .. seealso::
 

@@ -7,27 +7,26 @@
 Adding a location plugin
 ************************
 
-This tutorial assumes basic knowledge of the :term:`Location plugins` system in
-ftrack and will focus on how to make Location plugins availble for Connect and
-integrated applications.
+This tutorial assumes basic knowledge of the
+:term:`Location plugins <location plugin>` system in ftrack and will focus on
+how to make Location plugins available for Connect and integrated applications.
 
 Making Connect aware of your location plugin
 ============================================
 
-Making use of the :term:`plugin directory` we can register a location plugin to
+Using the :term:`plugin directory` we can register a location plugin to
 be available in Connect. Since Connect and other integrations are still using
 the legacy api for publishing we will use it as a basis of this example. Let us
 now implement a basic Location plugin::
-
 
     import ftrack
 
     def register(registry, **kw):
         '''Register plugin.'''
 
-        # Validate that registry is an instance of ftrack.Registry. If not,
-        # assume that register is being called from a new or incompatible API
-        # and return without doing anything.
+        # Validate that registry is the correct ftrack.Registry. If not,
+        # assume that register is being called with another purpose or from a
+        # new or incompatible API and return without doing anything.
         if registry is not ftrack.LOCATION_PLUGINS:
             # Exit to avoid registering this plugin again.
             return
@@ -45,8 +44,8 @@ now implement a basic Location plugin::
         )
         registry.add(location)
 
-If we now add our new location plugin, ``custom_location_plugin.py``, to the
-plugin directory it will be automatically discovered and available in Connect::
+If we add our new location plugin, ``custom_location_plugin.py``, to the
+plugin directory it will be automatically registered and available in Connect::
 
     <ftrack-connect-plugin-directory>/
         my_location_plugin/
@@ -95,9 +94,9 @@ plugin is on the `FTRACK_LOCATION_PLUGIN_PATH`::
     def register(registry, **kw):
         '''Register location plugin.'''
 
-        # Validate that registry is an instance of ftrack.Registry. If not,
-        # assume that register is being called from a new or incompatible API
-        # and return without doing anything.
+        # Validate that registry is the correct ftrack.Registry. If not,
+        # assume that register is being called with another purpose or from a
+        # new or incompatible API and return without doing anything.
         if registry is not ftrack.EVENT_HANDLERS:
             # Exit to avoid registering this plugin again.
             return

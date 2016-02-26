@@ -24,11 +24,11 @@ Example event passed to hook::
 The passed data variable, launch_data is a dictionary containing:
 
 command
-    This is the first arugment :py:class:`list` command that is passed to
-    subprocess.Popen.
+    The first arugment passed to subprocess.Popen, containing a :py:class:`list`
+    of the command should run.
 
 options
-    A dictionary with keyword arguments passed as arguments to subprocess.Popen.
+    A dictionary with keyword arguments passed to subprocess.Popen.
 
 application
     A dictionary containing information about the application that is being
@@ -37,12 +37,13 @@ application
 context
     The ftrack entity context that the application is being launched for.
 
-By modifying the passed launch_data dictionary, either by replacing the content
+Modifications to the launch_data dictionary, either by replacing the content
 or modifying it directly, will be picked up and used by the application
 launcher.
 
 .. seealso::
 
+    See
     :ref:`developing/tutorial/adding_a_location/modifying_application_launch`
     for a tutorial example on how this hook can be used to add make a 
     location plugin available in applications.
