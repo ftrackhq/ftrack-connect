@@ -155,7 +155,7 @@ class Application(QtGui.QMainWindow):
         '''Show the login widget.'''
         if self.loginWidget is None:
             self.loginWidget = _login.Login()
-            self._login_overlay = ftrack_connect.ui.widget.overlay.BlockingOverlay(
+            self._login_overlay = ftrack_connect.ui.widget.overlay.CancelOverlay(
                 self.loginWidget,
                 message='Signing in'
             )
