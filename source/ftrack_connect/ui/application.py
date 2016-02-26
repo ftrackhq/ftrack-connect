@@ -5,12 +5,17 @@ import os
 import getpass
 import platform
 import logging
+import webbrowser
 
 from PySide import QtGui
 from PySide import QtCore
+import ftrack_api
+import ftrack_api._centralized_storage_scenario
+import ftrack_api.event.base
 
 import ftrack_connect
-import ftrack_connect.event_hub_thread
+import ftrack_connect.session
+import ftrack_connect.event_hub_thread as _event_hub_thread
 import ftrack_connect.error
 import ftrack_connect.ui.theme
 from ftrack_connect.ui.widget import uncaught_error as _uncaught_error
@@ -18,6 +23,7 @@ from ftrack_connect.ui.widget import tab_widget as _tab_widget
 from ftrack_connect.ui.widget import login as _login
 from ftrack_connect.ui.widget import about as _about
 from ftrack_connect.error import NotUniqueError as _NotUniqueError
+from ftrack_connect.ui.widget import configure_scenario as _scenario_widget
 
 
 class ApplicationPlugin(QtGui.QWidget):
@@ -154,6 +160,24 @@ class Application(QtGui.QMainWindow):
             # widgets.
             self.loginWidget.setFocus()
 
+    def _setup_session(self):
+        '''Setup a new python API session.'''
+        if hasattr(self, '_hub_thread'):
+            self._hub_thread.quit()
+
+        session = ftrack_connect.session.get_shared_session()
+
+        # Listen to events using the new API event hub. This is required to
+        # allow reconfiguring the storage scenario.
+        self._hub_thread = _event_hub_thread.NewApiEventHubThread()
+        self._hub_thread.start(session)
+
+        ftrack_api._centralized_storage_scenario.register_configuration(
+            session
+        )
+
+        return session
+
     def loginWithCredentials(self, url, username, apiKey):
         '''Connect to *url* with *username* and *apiKey*.
 
@@ -169,42 +193,72 @@ class Application(QtGui.QMainWindow):
         os.environ['FTRACK_API_USER'] = username
         os.environ['FTRACK_API_KEY'] = apiKey
 
-        # Import ftrack module and catch any errors.
+        # Login using the new ftrack API.
         try:
-            import ftrack
-
-            # Force update the url of the server in case it was already set.
-            ftrack.xmlServer.__init__('{url}/client/'.format(url=url), False)
-
-            # Force update event hub since it will set the url on initialise.
-            ftrack.EVENT_HUB.__init__()
-
+            self._session = self._setup_session()
         except Exception as error:
+            self.logger.exception('Error during login.')
+            self.loginError.emit(error.message)
+            return
 
-            # Catch connection error since ftrack module will connect on load.
-            if str(error).find('Unable to connect on') >= 0:
-                self.loginError.emit(str(error))
+        # Store login details in settings.
+        settings = QtCore.QSettings()
+        settings.setValue('login/server', url)
+        settings.setValue('login/username', username)
+        settings.setValue('login/apikey', apiKey)
 
-            # Reraise the error.
-            raise
+        # Verify storage scenario before starting.
+        if 'storage_scenario' in self._session.server_information:
+            storage_scenario = self._session.server_information.get(
+                'storage_scenario'
+            )
+            if storage_scenario is None:
+                self.logger.debug('Storage scenario is not configured.')
+                scenario_widget = _scenario_widget.ConfigureScenario(
+                    self._session
+                )
+                scenario_widget.configuration_completed.connect(
+                    self.location_configuration_finished
+                )
+                self.setCentralWidget(scenario_widget)
+                self.focus()
+                return
 
-        # Access ftrack to validate login details.
+        self.location_configuration_finished(reconfigure_session=True)
+
+    def location_configuration_finished(self, reconfigure_session=True):
+        '''Continue connect setup after location configuration is done.'''
+        if reconfigure_session:
+            ftrack_connect.session.destroy_shared_session()
+            self._session = self._setup_session()
+
         try:
-            ftrack.getUUID()
-        except ftrack.FTrackError as error:
-            self.loginError.emit(str(error))
+            self.configureConnectAndDiscoverPlugins()
+        except Exception as error:
+            self.logger.exception(error)
+            self.loginError.emit(error.message)
         else:
-            # Store login details in settings.
-            settings = QtCore.QSettings()
-            settings.setValue('login/server', url)
-            settings.setValue('login/username', username)
-            settings.setValue('login/apikey', apiKey)
+            self.focus()
 
-            try:
-                self.configureConnectAndDiscoverPlugins()
-            except ftrack.EventHubConnectionError as error:
-                self.logger.exception(error)
-                self.loginError.emit(str(error))
+        # Send verify startup event to verify that storage scenario is
+        # working correctly.
+        event = ftrack_api.event.base.Event(
+            topic='ftrack.connect.verify-startup',
+            data={
+                'storage_scenario': self._session.server_information.get(
+                    'storage_scenario'
+                )
+            }
+        )
+        results = self._session.event_hub.publish(event, synchronous=True)
+        problems = [
+            problem for problem in results if isinstance(problem, basestring)
+        ]
+        if problems:
+            msgBox = QtGui.QMessageBox(parent=self)
+            msgBox.setIcon(QtGui.QMessageBox.Warning)
+            msgBox.setText('\n\n'.join(problems))
+            msgBox.exec_()
 
     def configureConnectAndDiscoverPlugins(self):
         '''Configure connect and load plugins.'''
@@ -226,11 +280,8 @@ class Application(QtGui.QMainWindow):
         )
         self.eventHubSignal.connect(self._onConnectTopicEvent)
 
-        import ftrack_connect.event_hub_thread
-        self.eventHubThread = ftrack_connect.event_hub_thread.EventHubThread()
+        self.eventHubThread = _event_hub_thread.EventHubThread()
         self.eventHubThread.start()
-
-        self.focus()
 
     def _relayEventHubEvent(self, event):
         '''Relay all ftrack.connect events.'''
