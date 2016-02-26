@@ -61,7 +61,7 @@ And for location plugins we verify that the registry is a
             # Exit to avoid registering this plugin again.
             return
 
-        # Register plugin event listener.
+        # Register location plugin.
         ...
 
 Plugins for the new Python API must validate that they are called with an
