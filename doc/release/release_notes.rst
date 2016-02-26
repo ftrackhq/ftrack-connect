@@ -9,6 +9,36 @@ Release Notes
 
 .. release:: upcoming
 
+    .. change:: new
+        :tags: Location
+
+        Paths for custom locations that are implemented in the new Python
+        API, :ref:`ftrack-python-api <ftrack-python-api:introduction>`,
+        are now resolved in Connect.
+
+    .. change:: changed
+        :tags: Event plugins
+
+        Event plugins are now loaded for the new Python API, 
+        :ref:`ftrack-python-api <ftrack-python-api:introduction>`.
+        :ref:`Read more <release/migration/upcoming/developer_notes>`
+
+    .. change:: new
+        :tags: Location Scenario
+
+        Added a new hook that can be used to detect problems and present
+        information to the user.
+
+        .. seealso::
+
+            :ref:`Verify startup hook <developing/hooks/verify_startup>`
+
+    .. change:: new
+        :tags: Location Scenario
+
+        Added a configure storage scenario widget that will be shown on startup
+        if a storage scenario has not been configured on the server.
+
     .. change:: fixed
         :tags: Ui
 
