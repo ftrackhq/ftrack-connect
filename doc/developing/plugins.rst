@@ -130,4 +130,5 @@ directory when launching our integrations.
 
 .. seealso::
 
-    `Location plugin example and how to use it with application launch hook.`
+    :ref:`Location plugin example <developing/tutorial/adding_a_location>` to
+    learn how to use it with application launch hook.
