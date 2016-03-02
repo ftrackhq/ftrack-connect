@@ -63,7 +63,7 @@ Connect. However, this does not automatically mean that it will be picked up
 by integrated applications.
 
 We will now use the :ref:`developing/hooks/application_launch` hook to make our
-applications aware of our new location::
+applications aware of our new location.
 
 Let us create a new file, my_application_launch_hook.py, and make sure our
 plugin is on the `FTRACK_LOCATION_PLUGIN_PATH`::

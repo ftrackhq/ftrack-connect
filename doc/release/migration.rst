@@ -65,7 +65,7 @@ And for location plugins we verify that the registry is a
         ...
 
 Plugins for the new Python API must validate that they are called with an
-:ref:`ftrack_api.session.Session` as a first argument::
+`ftrack_api.session.Session` as a first argument::
 
     import ftrack_api
 

@@ -24,7 +24,7 @@ The path for the :term:`default plugin directory` differs between platforms:
 
 
 An easy way of finding your :term:`default plugin directory` is to open the
-ftrack connect menu and click:
+ftrack connect menu and click `Open plugin directory`:
 
 .. image:: /image/open_default_plugin_directory.png
     :align: center
