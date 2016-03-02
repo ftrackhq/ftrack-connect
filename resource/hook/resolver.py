@@ -36,7 +36,7 @@ class Resolver(object):
             u'Resolving file system path for event: {0!r}.'.format(event)
         )
 
-        location_name = event['data']['locationName']
+        location_name = event['data'].get('locationName')
         component_id = event['data']['componentId']
 
         location = None
