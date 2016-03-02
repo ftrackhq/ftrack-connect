@@ -4,9 +4,11 @@ import logging
 
 from PySide import QtGui, QtCore
 import ftrack
+import ftrack_api.event.base
 
 import ftrack_connect.asynchronous
 from ftrack_connect.ui.widget.thumbnail import ActionIcon
+import ftrack_connect.session
 
 
 class ActionItem(QtGui.QWidget):
@@ -142,13 +144,24 @@ class ActionItem(QtGui.QWidget):
     def _publishLaunchActionEvent(self, action):
         '''Launch *action* asynchronously and emit *actionLaunched* when completed.'''
         try:
-            results = ftrack.EVENT_HUB.publish(
-                ftrack.Event(
-                    topic='ftrack.action.launch',
-                    data=action
-                ),
-                synchronous=True
-            )
+            if action.is_new_api:
+                session = ftrack_connect.session.get_shared_session()
+                results = session.event_hub.publish(
+                    ftrack_api.event.base.Event(
+                        topic='ftrack.action.launch',
+                        data=action
+                    ),
+                    synchronous=True
+                )
+            else:
+                results = ftrack.EVENT_HUB.publish(
+                    ftrack.Event(
+                        topic='ftrack.action.launch',
+                        data=action
+                    ),
+                    synchronous=True
+                )
+
         except Exception as error:
             results = [{'success': False, 'message': 'Failed to launch action'}]
             self.logger.warning(
