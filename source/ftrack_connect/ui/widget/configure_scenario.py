@@ -105,7 +105,7 @@ class ConfigureScenario(QtGui.QWidget):
         label.setText(
             'If you decide to do this later, some of the functionality in '
             'ftrack connect and applications started from connect may not '
-            'work as expected.'
+            'work as expected until configured.'
         )
         label.setAlignment(QtCore.Qt.AlignCenter)
         label.setWordWrap(True)
@@ -122,7 +122,8 @@ class ConfigureScenario(QtGui.QWidget):
         label = QtGui.QLabel()
         label.setObjectName('green-link')
         label.setText(
-            '<a href="{0}/doc/using/managing_versions/storage_scenario.html"> '
+            '<a style="color: #1CBC90;"'
+            'href="{0}/doc/using/managing_versions/storage_scenario.html"> '
             'Learn more about storage scenarios.'.format(session.server_url)
         )
         label.setAlignment(QtCore.Qt.AlignCenter)
