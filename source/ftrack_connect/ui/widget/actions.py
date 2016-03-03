@@ -8,6 +8,7 @@ import time
 from PySide import QtGui
 from PySide import QtCore
 import ftrack
+import ftrack_api.event.base
 
 import ftrack_connect.asynchronous
 import ftrack_connect.error
@@ -16,6 +17,20 @@ import ftrack_connect.session
 from ftrack_connect.ui.widget import (
     action_item, flow_layout, entity_selector, overlay
 )
+
+
+class ActionBase(dict):
+    '''Wrapper for an action dict.'''
+
+    def __init__(self, *args, **kwargs):
+        '''Initialise the action.
+
+        *is_new_api* can be used to specify if the new or old event hub was used
+        to discover this event.
+
+        '''
+        self.is_new_api = kwargs.pop('is_new_api', False)
+        super(ActionBase, self).__init__(*args, **kwargs)
 
 
 class ActionSection(flow_layout.ScrollingFlowWidget):
@@ -281,6 +296,8 @@ class Actions(QtGui.QWidget):
 
     def _loadActionsForContext(self, context):
         '''Obtain new actions synchronously for *context*.'''
+        discoveredActions = []
+
         results = ftrack.EVENT_HUB.publish(
             ftrack.Event(
                 topic='ftrack.action.discover',
@@ -291,11 +308,30 @@ class Actions(QtGui.QWidget):
             synchronous=True
         )
 
-        # Flatten structure
-        discoveredActions = []
         for result in results:
             if result:
-                discoveredActions.extend(result.get('items', []))
+                for action in result.get('items', []):
+                    discoveredActions.append(
+                        ActionBase(action, is_new_api=False)
+                    )
+
+        session = ftrack_connect.session.get_shared_session()
+        results = session.event_hub.publish(
+            ftrack_api.event.base.Event(
+                topic='ftrack.action.discover',
+                data=dict(
+                    selection=context
+                )
+            ),
+            synchronous=True
+        )
+
+        for result in results:
+            if result:
+                for action in result.get('items', []):
+                    discoveredActions.append(
+                        ActionBase(action, is_new_api=True)
+                    )
 
         # Sort actions by label
         groupedActions = []

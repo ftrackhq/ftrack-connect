@@ -5,9 +5,12 @@ import os
 import getpass
 import platform
 import logging
+import sys
+import subprocess
 import requests
 import requests.exceptions
 
+import appdirs
 from PySide import QtGui
 from PySide import QtCore
 import ftrack_api
@@ -65,6 +68,32 @@ class Application(QtGui.QMainWindow):
         super(Application, self).__init__(*args, **kwargs)
         self.logger = logging.getLogger(
             __name__ + '.' + self.__class__.__name__
+        )
+
+        self.defaultPluginDirectory = appdirs.user_data_dir(
+            'ftrack-connect-plugins', 'ftrack'
+        )
+
+        self.pluginHookPaths = set()
+        self.pluginHookPaths.update(
+            self._gatherPluginHooks(
+                self.defaultPluginDirectory
+            )
+        )
+        if 'FTRACK_CONNECT_PLUGIN_PATH' in os.environ:
+            for connectPluginPath in (
+                os.environ['FTRACK_CONNECT_PLUGIN_PATH'].split(os.pathsep)
+            ):
+                self.pluginHookPaths.update(
+                    self._gatherPluginHooks(
+                        connectPluginPath
+                    )
+                )
+
+        self.logger.info(
+            u'Connect plugin hooks directories: {0}'.format(
+                ', '.join(self.pluginHookPaths)
+            )
         )
 
         # Register widget for error handling.
@@ -179,7 +208,15 @@ class Application(QtGui.QMainWindow):
         if hasattr(self, '_hub_thread'):
             self._hub_thread.quit()
 
-        session = ftrack_connect.session.get_shared_session()
+        plugin_paths = os.environ.get(
+            'FTRACK_EVENT_PLUGIN_PATH', ''
+        ).split(os.pathsep)
+
+        plugin_paths.extend(self.pluginHookPaths)
+
+        session = ftrack_connect.session.get_shared_session(
+            plugin_paths=plugin_paths
+        )
 
         # Listen to events using the new API event hub. This is required to
         # allow reconfiguring the storage scenario.
@@ -329,12 +366,15 @@ class Application(QtGui.QMainWindow):
 
         # Local import to avoid connection errors.
         import ftrack
+        ftrack.EVENT_HANDLERS.paths.extend(self.pluginHookPaths)
+        ftrack.LOCATION_PLUGINS.paths.extend(self.pluginHookPaths)
+
         ftrack.setup()
         self.tabPanel = _tab_widget.TabWidget()
         self.tabPanel.tabBar().setObjectName('application-tab-bar')
         self.setCentralWidget(self.tabPanel)
 
-        self._discoverPlugins()
+        self._discoverTabPlugins()
 
         ftrack.EVENT_HUB.subscribe(
             'topic=ftrack.connect and source.user.username={0}'.format(
@@ -357,6 +397,25 @@ class Application(QtGui.QMainWindow):
             ),
             lambda event : True
         )
+
+    def _gatherPluginHooks(self, path):
+        '''Return plugin hooks from *path*.'''
+        paths = []
+        self.logger.debug(u'Searching {0!r} for plugin hooks.'.format(path))
+
+        if os.path.isdir(path):
+            for candidate in os.listdir(path):
+                candidatePath = os.path.join(path, candidate)
+                if os.path.isdir(candidatePath):
+                    paths.append(
+                        os.path.join(candidatePath, 'hook')
+                    )
+
+        self.logger.debug(
+            u'Found {0!r} plugin hooks in {1!r}.'.format(paths, path)
+        )
+
+        return paths
 
     def _relayEventHubEvent(self, event):
         '''Relay all ftrack.connect events.'''
@@ -394,6 +453,11 @@ class Application(QtGui.QMainWindow):
             triggered=self.focus
         )
 
+        openPluginDirectoryAction = QtGui.QAction(
+            'Open plugin directory', self,
+            triggered=self.openDefaultPluginDirectory
+        )
+
         aboutAction = QtGui.QAction(
             'About', self,
             triggered=self.showAbout
@@ -402,13 +466,17 @@ class Application(QtGui.QMainWindow):
         menu.addAction(aboutAction)
         menu.addAction(focusAction)
         menu.addSeparator()
+
+        menu.addAction(openPluginDirectoryAction)
+        menu.addSeparator()
+
         menu.addAction(logoutAction)
         menu.addSeparator()
         menu.addAction(quitAction)
 
         return menu
 
-    def _discoverPlugins(self):
+    def _discoverTabPlugins(self):
         '''Find and load tab plugins in search paths.'''
         #: TODO: Add discover functionality and search paths.
 
@@ -568,3 +636,30 @@ class Application(QtGui.QMainWindow):
         )
 
         aboutDialog.exec_()
+
+    def openDefaultPluginDirectory(self):
+        '''Open default plugin directory in platform default file browser.'''
+        directory = self.defaultPluginDirectory
+
+        if not os.path.exists(directory):
+            # Create directory if not existing.
+            try:
+                os.makedirs(directory)
+            except OSError:
+                messageBox = QtGui.QMessageBox(parent=self)
+                messageBox.setIcon(QtGui.QMessageBox.Warning)
+                messageBox.setText(
+                    u'Could not open or create default plugin '
+                    u'directory: {0}.'.format(directory)
+                )
+                messageBox.exec_()
+                return
+
+        if sys.platform=='win32':
+            subprocess.Popen(['start', directory], shell=True)
+
+        elif sys.platform=='darwin':
+            subprocess.Popen(['open', directory])
+
+        else:
+            subprocess.Popen(['xdg-open', directory])

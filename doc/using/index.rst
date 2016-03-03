@@ -16,3 +16,4 @@ Find out all the information you need to use ftrack connect day to day.
     signing_in_and_out
     publishing
     using_actions
+    plugin_directory

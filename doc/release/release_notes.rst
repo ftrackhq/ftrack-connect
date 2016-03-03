@@ -7,7 +7,12 @@
 Release Notes
 *************
 
-.. release:: upcoming
+.. release:: Upcoming
+
+    .. change:: new
+        :tags: Plugins
+
+        Added a menu option to open the default plugin directory.
 
     .. change:: changed
         :tags: Login

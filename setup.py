@@ -222,6 +222,7 @@ configuration = dict(
         'PySide >= 1.2.2, < 2',
         'Riffle >= 0.1.0, < 2',
         'arrow >= 0.4.6, < 1',
+        'appdirs == 1.4.0',
         'requests >= 2, <3'
     ],
     tests_require=['pytest >= 2.3.5, < 3'],
