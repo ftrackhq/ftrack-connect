@@ -36,7 +36,7 @@ class Resolver(object):
             u'Resolving file system path for event: {0!r}.'.format(event)
         )
 
-        location_name = event['data']['locationName']
+        location_name = event['data'].get('locationName')
         component_id = event['data']['componentId']
 
         location = None
@@ -109,9 +109,9 @@ def register(session, **kw):
         'ftrack_connect:resolver.register'
     )
 
-    # Validate that session is an instance of ftrack.Registry. If not,
-    # assume that register is being called from a new or incompatible API and
-    # return without doing anything.
+    # Validate that session is an instance of ftrack_api.session.Session. If
+    # not, assume that register is being called from an old or incompatible API
+    # and return without doing anything.
     if not isinstance(session, ftrack_api.Session):
         logger.debug(
             'Not subscribing plugin as passed argument {0!r} is not an '
