@@ -9,10 +9,10 @@ Migration notes
 
 .. _release/migration/upcoming:
 
-Migrate from 0.1.19 to upcoming
+Migrate from 0.1.19 to 0.1.20
 ===============================
 
-.. _release/migration/upcoming/developer_notes:
+.. _release/migration/0.1.20/developer_notes:
 
 Developer notes
 ---------------

@@ -7,7 +7,8 @@
 Release Notes
 *************
 
-.. release:: Upcoming
+.. release:: 0.1.20
+    :date: 2016-03-14
 
     .. change:: new
         :tags: Plugins
@@ -40,13 +41,6 @@ Release Notes
         API, :ref:`ftrack-python-api <ftrack-python-api:introduction>`,
         are now resolved in Connect.
 
-    .. change:: changed
-        :tags: Event plugins
-
-        Event plugins are now loaded for the new Python API, 
-        :ref:`ftrack-python-api <ftrack-python-api:introduction>`.
-        :ref:`Read more <release/migration/upcoming/developer_notes>`
-
     .. change:: new
         :tags: Location Scenario
 
@@ -62,6 +56,13 @@ Release Notes
 
         Added a configure storage scenario widget that will be shown on startup
         if a storage scenario has not been configured on the server.
+
+    .. change:: changed
+        :tags: Event plugins
+
+        Event plugins are now loaded for the new Python API, 
+        :ref:`ftrack-python-api <ftrack-python-api:introduction>`.
+        :ref:`Read more <release/migration/0.1.20/developer_notes>`
 
     .. change:: fixed
         :tags: Ui
