@@ -9,6 +9,13 @@ Release Notes
 
 .. release:: Upcoming
 
+    .. change:: new
+        :tags: Events, API
+
+        Added new `ftrack.connect.publish-components` event listener which
+        can be used to publish components from applications not supporting
+        the :term:`locations <ftrack:location>` framework.
+
     .. change:: fixed
         :tags: Events, API
 
