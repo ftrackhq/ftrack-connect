@@ -1,6 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
 import os
+import logging
 
 import ftrack_api
 import ftrack_api.exception
@@ -10,6 +11,7 @@ _shared_session = None
 
 def destroy_shared_session():
     '''Destroy the shared session.'''
+    logger = logging.getLogger('ftrack_connect:session.destroy_shared_session')
     global _shared_session
 
     if _shared_session:
@@ -18,7 +20,9 @@ def destroy_shared_session():
         # session will not be used any more.
         try:
             _shared_session.event_hub.disconnect(False)
-        except ftrack_api.exception.EventHubConnectionError:
+        except ftrack_api.exception.EventHubConnectionError as error:
+            # TODO: Handle if event hub is not yet connected.
+            logger.exception('Failed to disconnect from event hub')
             pass
 
         del _shared_session

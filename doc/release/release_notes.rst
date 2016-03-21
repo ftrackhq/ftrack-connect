@@ -7,6 +7,13 @@
 Release Notes
 *************
 
+.. release:: Upcoming
+
+    .. change:: fixed
+        :tags: Events, API
+
+        Event listeners using new API may be registered twice.
+
 .. release:: 0.1.20
     :date: 2016-03-14
 

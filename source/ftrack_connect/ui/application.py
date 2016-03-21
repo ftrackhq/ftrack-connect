@@ -325,7 +325,7 @@ class Application(QtGui.QMainWindow):
                 self.focus()
                 return
 
-        self.location_configuration_finished(reconfigure_session=True)
+        self.location_configuration_finished(reconfigure_session=False)
 
     def location_configuration_finished(self, reconfigure_session=True):
         '''Continue connect setup after location configuration is done.'''
