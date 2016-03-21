@@ -131,6 +131,7 @@ def register(session, **kw):
         )
     )
 
+    logger.info('Subscribing to topic ftrack.location.request-resolve')
     session.event_hub.subscribe(
         u'topic=ftrack.location.request-resolve '
         u'and source.user.username="{0}"'.format(
