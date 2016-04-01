@@ -30,6 +30,7 @@ from ftrack_connect.ui.widget import about as _about
 from ftrack_connect.error import NotUniqueError as _NotUniqueError
 from ftrack_connect.ui import login_tools as _login_tools
 from ftrack_connect.ui.widget import configure_scenario as _scenario_widget
+import ftrack_connect.ui.config
 
 
 class ApplicationPlugin(QtGui.QWidget):
@@ -156,29 +157,95 @@ class Application(QtGui.QMainWindow):
 
     def logout(self):
         '''Clear stored credentials and quit Connect.'''
-        settings = QtCore.QSettings()
-        settings.remove('login')
+        self._clear_qsettings()
+        config = ftrack_connect.ui.config.read_json_config()
+
+        config['account']['credentials'] = []
+        ftrack_connect.ui.config.write_json_config(config)
 
         QtGui.qApp.quit()
 
+    def _clear_qsettings(self):
+        '''Remove credentials from QSettings.'''
+        settings = QtCore.QSettings()
+        settings.remove('login')
+
+    def _get_credentials(self):
+        '''Return a dict with API credentials from storage.'''
+        credentials = None
+
+        # Read from json config file.
+        json_config = ftrack_connect.ui.config.read_json_config()
+        if json_config:
+            try:
+                data = json_config['account']['credentials'][0]
+                credentials = {
+                    'server_url': data['server_url'],
+                    'api_user': data['api_user'],
+                    'api_key': data['api_key']
+                }
+            except Exception:
+                self.logger.debug(
+                    u'No credentials were found in config: {0}.'.format(
+                        json_config
+                    )
+                )
+
+        # Fallback on old QSettings.
+        if not json_config and not credentials:
+            settings = QtCore.QSettings()
+            server_url = settings.value('login/server', None)
+            api_user = settings.value('login/username', None)
+            api_key = settings.value('login/apikey', None)
+
+            if not None in (server_url, api_user, api_key):
+                credentials = {
+                    'server_url': server_url,
+                    'api_user': api_user,
+                    'api_key': api_key
+                }
+
+        return credentials
+
+    def _save_credentials(self, server_url, api_user, api_key):
+        '''Save API credentials to storage.'''
+        # Clear QSettings since they should not be used any more.
+        self._clear_qsettings()
+
+        # Save the credentials.
+        json_config = ftrack_connect.ui.config.read_json_config()
+
+        if not json_config:
+            json_config = {}
+
+        if not 'account' in json_config:
+            json_config['account'] = {}
+
+        json_config['account']['credentials'] = [{
+            'server_url': server_url,
+            'api_user': api_user,
+            'api_key': api_key
+        }]
+
+        ftrack_connect.ui.config.write_json_config(json_config)
+
     def login(self):
         '''Login using stored credentials or ask user for them.'''
-
-        # Get settings from store.
-        settings = QtCore.QSettings()
-        server = settings.value('login/server', None)
-        username = settings.value('login/username', None)
-        apiKey = settings.value('login/apikey', None)
+        credentials = self._get_credentials()
 
         # If missing any of the settings bring up login dialog.
-        if None in (server, username, apiKey):
+        if not credentials:
             self.showLoginWidget()
         else:
             # Show login screen on login error.
             self.loginError.connect(self.showLoginWidget)
 
             # Try to login.
-            self.loginWithCredentials(server, username, apiKey)
+            self.loginWithCredentials(
+                credentials['server_url'],
+                credentials['api_user'],
+                credentials['api_key']
+            )
 
     def showLoginWidget(self):
         '''Show the login widget.'''
@@ -301,11 +368,8 @@ class Application(QtGui.QMainWindow):
             self.loginError.emit(error.message)
             return
 
-        # Store login details in settings.
-        settings = QtCore.QSettings()
-        settings.setValue('login/server', url)
-        settings.setValue('login/username', username)
-        settings.setValue('login/apikey', apiKey)
+        # Store credentials since login was successful.
+        self._save_credentials(url, username, apiKey)
 
         # Verify storage scenario before starting.
         if 'storage_scenario' in self._session.server_information:
