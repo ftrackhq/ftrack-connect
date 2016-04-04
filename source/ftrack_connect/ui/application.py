@@ -161,7 +161,7 @@ class Application(QtGui.QMainWindow):
         self._clear_qsettings()
         config = ftrack_connect.ui.config.read_json_config()
 
-        config['account']['credentials'] = []
+        config['accounts'] = []
         ftrack_connect.ui.config.write_json_config(config)
 
         QtGui.qApp.quit()
