@@ -9,6 +9,7 @@ import sys
 import subprocess
 import requests
 import requests.exceptions
+import uuid
 
 import appdirs
 from PySide import QtGui
@@ -178,7 +179,7 @@ class Application(QtGui.QMainWindow):
         json_config = ftrack_connect.ui.config.read_json_config()
         if json_config:
             try:
-                data = json_config['account']['credentials'][0]
+                data = json_config['accounts'][0]
                 credentials = {
                     'server_url': data['server_url'],
                     'api_user': data['api_user'],
@@ -218,10 +219,12 @@ class Application(QtGui.QMainWindow):
         if not json_config:
             json_config = {}
 
-        if not 'account' in json_config:
-            json_config['account'] = {}
+        # Add a unique id to the config that can be used to identify this
+        # machine.
+        if not 'id' in json_config:
+            json_config['id'] = str(uuid.uuid4())
 
-        json_config['account']['credentials'] = [{
+        json_config['accounts'] = [{
             'server_url': server_url,
             'api_user': api_user,
             'api_key': api_key
