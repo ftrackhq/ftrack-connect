@@ -3,6 +3,8 @@
 
 import logging
 import functools
+import json
+import appdirs
 
 import ftrack_api.session
 logger = logging.getLogger('ftrack_connect:publish-components')
@@ -10,7 +12,21 @@ logger = logging.getLogger('ftrack_connect:publish-components')
 
 def publish_components(event, session=None):
     '''Handle *event* and publish components.'''
-    components = event['data'].get('components', [])
+    components_config = event['data'].get('components_config')
+
+    prefix = appdirs.user_data_dir(
+        'ftrack-connect/data', 'ftrack'
+    )
+
+    if not components_config.startswith(prefix):
+        return {
+            'success': False,
+            'message': 'Components config should be in connect data folder.'
+        }
+
+    with open(components_config) as data:
+        components = json.load(data)
+
     logger.info('Publishing components: {0!r}'.format(components))
 
     for component in components:
