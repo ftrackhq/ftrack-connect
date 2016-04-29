@@ -12,40 +12,52 @@ logger = logging.getLogger('ftrack_connect:publish-components')
 
 def publish_components(event, session=None):
     '''Handle *event* and publish components.'''
-    components_config = event['data'].get('components_config')
+    try:
+        components_config = event['data'].get('components_config')
 
-    prefix = appdirs.user_data_dir(
-        'ftrack-connect/data', 'ftrack'
-    )
+        prefix = appdirs.user_data_dir(
+            'ftrack-connect/data', 'ftrack'
+        )
 
-    if not components_config.startswith(prefix):
-        return {
-            'success': False,
-            'message': 'Components config should be in connect data folder.'
-        }
+        if not components_config.startswith(prefix):
+            return {
+                'success': False,
+                'message': 'Components config should be in connect data folder.'
+            }
 
-    with open(components_config) as data:
-        components = json.load(data)
+        with open(components_config) as data:
+            components = json.load(data)
 
-    logger.info('Publishing components: {0!r}'.format(components))
+        logger.info('Publishing components: {0!r}'.format(components))
 
-    for component in components:
-        component_data = component.copy()
+        for component in components:
+            component_data = component.copy()
 
-        # Query version and set the relation to ensure standard structure knows
-        # how to find it.
-        # TODO: Remove this when Standard structure has been updated.
-        if 'version_id' in component_data:
-            component_data['version'] = session.get(
-                'AssetVersion', component_data['version_id']
+            # Query version and set the relation to ensure standard structure
+            # knows how to find it.
+            # TODO: Remove this when Standard structure has been updated.
+            if 'version_id' in component_data:
+                component_data['version'] = session.get(
+                    'AssetVersion', component_data['version_id']
+                )
+
+            path = component_data.pop('path')
+            location = component_data.pop('location', 'auto')
+            session.create_component(
+                path, data=component_data, location=location
             )
 
-        path = component_data.pop('path')
-        location = component_data.pop('location', 'auto')
-        session.create_component(path, data=component_data, location=location)
+        session.commit()
 
-    session.commit()
-    return { 'success': True }
+    except Exception as error:
+        error_result = {
+            'exception': type(error).__name__,
+            'content': str(error)
+        }
+    else:
+        error_result = None
+
+    return {'success': error_result is None, 'error_result': error_result}
 
 
 def subscribe(session):
