@@ -44,15 +44,6 @@ def publish_components(event, session=None):
 
         for component in components:
             component_data = component.copy()
-
-            # Query version and set the relation to ensure standard structure
-            # knows how to find it.
-            # TODO: Remove this when Standard structure has been updated.
-            if 'version_id' in component_data:
-                component_data['version'] = session.get(
-                    'AssetVersion', component_data['version_id']
-                )
-
             path = component_data.pop('path')
             location = component_data.pop('location', 'auto')
             session.create_component(
