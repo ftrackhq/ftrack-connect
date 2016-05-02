@@ -56,6 +56,7 @@ def publish_components(event, session=None):
         session.commit()
 
     except Exception as error:
+        logger.exception('Failed to create components.')
         error_result = {
             'exception': type(error).__name__,
             'content': str(error)
