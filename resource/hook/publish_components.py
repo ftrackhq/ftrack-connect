@@ -14,7 +14,13 @@ logger = logging.getLogger('ftrack_connect:publish-components')
 
 
 def publish_components(event, session=None):
-    '''Handle *event* and publish components.'''
+    '''Handle *event* and publish components.
+
+    The event data should contain components_config which is a file path to a
+    JSON config file located in the ftrack-connect/data folder. The config file
+    should contain a list of components with their data ready to be published.
+
+    '''
     try:
         components_config = event['data'].get('components_config')
         components_config = os.path.realpath(components_config)
