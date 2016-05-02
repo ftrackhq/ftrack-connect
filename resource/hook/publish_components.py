@@ -5,6 +5,7 @@ import logging
 import functools
 import json
 import appdirs
+import os.path
 
 import ftrack_api.session
 logger = logging.getLogger('ftrack_connect:publish-components')
@@ -14,6 +15,7 @@ def publish_components(event, session=None):
     '''Handle *event* and publish components.'''
     try:
         components_config = event['data'].get('components_config')
+        components_config = os.path.realpath(components_config)
 
         prefix = appdirs.user_data_dir(
             'ftrack-connect/data', 'ftrack'
