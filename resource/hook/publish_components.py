@@ -19,6 +19,8 @@ def publish_components(event, session=None):
             'ftrack-connect/data', 'ftrack'
         )
 
+        # Ensure that config file is in the data folder to avoid situations
+        # where it could have been written by someone else.
         if not components_config.startswith(prefix):
             return {
                 'success': False,
