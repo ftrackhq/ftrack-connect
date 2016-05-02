@@ -16,6 +16,20 @@ Release Notes
         can be used to publish components from applications not supporting
         the :term:`locations <ftrack:location>` framework.
 
+    .. change:: changed
+        :tags: Login
+
+        Login details and credentials are now stored in a json file in the
+        platform specific user data folder instead of using QSettings.
+
+    .. change:: fixed
+        :tags: Login
+
+        Unable to logout on some platforms.
+
+.. release:: 0.1.21
+    :date: 2016-03-30
+
     .. change:: fixed
         :tags: Events, API
 
