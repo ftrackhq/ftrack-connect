@@ -26,16 +26,17 @@ def publish_components(event, session=None):
         components_config = os.path.realpath(components_config)
 
         prefix = appdirs.user_data_dir(
-            'ftrack-connect/data', 'ftrack'
+            os.path.join('ftrack-connect','data'), 'ftrack'
         )
 
         # Ensure that config file is in the data folder to avoid situations
         # where it could have been written by someone else.
         if not components_config.startswith(prefix):
-            return {
-                'success': False,
-                'message': 'Components config should be in connect data folder.'
-            }
+            raise ValueError(
+                u'Components config {0!r} should be in connect data folder {1!r}.'.format(
+                    components_config, prefix
+                )
+            )
 
         with open(components_config) as data:
             components = json.load(data)

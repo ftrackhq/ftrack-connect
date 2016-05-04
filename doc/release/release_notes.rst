@@ -7,6 +7,14 @@
 Release Notes
 *************
 
+.. release:: Upcoming
+
+    .. change:: fixed
+        :tags: Events, API
+
+        The `ftrack.connect.publish-components` event listener does not work
+        correctly when using Windows.
+
 .. release:: 0.1.22
     :date: 2016-05-02
 
