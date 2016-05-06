@@ -7,7 +7,8 @@
 Release Notes
 *************
 
-.. release:: Upcoming
+.. release:: 0.1.23
+    :date: 2016-05-06
 
     .. change:: fixed
         :tags: Events, API
