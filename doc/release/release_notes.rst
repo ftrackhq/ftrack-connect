@@ -7,6 +7,13 @@
 Release Notes
 *************
 
+.. release:: Upcoming
+
+    .. change:: changed
+        :tags: Internal
+
+        Improve support for debugging tools.
+
 .. release:: 0.1.23
     :date: 2016-05-06
 
