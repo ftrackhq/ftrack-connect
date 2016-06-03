@@ -326,7 +326,7 @@ class Application(QtGui.QMainWindow):
                 url,
                 allow_redirects=False  # Old python API will not work with redirect.
             )
-        except requests.exceptions.InvalidURL, requests.ConnectionError:
+        except requests.exceptions.RequestException:
             self.logger.exception('Error reaching server url.')
             self.loginError.emit(
                 'The server URL you provided could not be reached.'
