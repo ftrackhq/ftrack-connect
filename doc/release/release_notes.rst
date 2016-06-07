@@ -7,6 +7,13 @@
 Release Notes
 *************
 
+.. release:: Upcoming
+
+    .. change:: fixed
+        :tags: Login
+
+        Error when starting connect with invalid ftrack server URL.
+
 .. release:: 0.1.23
     :date: 2016-05-06
 
