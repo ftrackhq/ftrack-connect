@@ -148,7 +148,11 @@ class ActionIcon(Base):
         'cinesync': '/application_icons/cinesync.png',
         'photoshop': '/application_icons/photoshop.png',
         'prelude': '/application_icons/prelude.png',
-        'after_effects': '/application_icons/after_effects.png'
+        'after_effects': '/application_icons/after_effects.png',
+        '3ds_max': '/application_icons/3ds_max.png',
+        'cinema_4d': '/application_icons/cinema_4d.png',
+        'indesign': '/application_icons/indesign.png',
+        'illustrator': '/application_icons/illustrator.png'
     }
 
     def __init__(self, parent=None):
