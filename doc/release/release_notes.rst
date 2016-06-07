@@ -7,6 +7,14 @@
 Release Notes
 *************
 
+.. release:: Upcoming
+
+    .. change:: fixed
+        :tags: Connect
+
+        Asset versioning change breaks if versions has been deleted.
+
+
 .. release:: 0.1.24
     :date: 2016-06-07
 
