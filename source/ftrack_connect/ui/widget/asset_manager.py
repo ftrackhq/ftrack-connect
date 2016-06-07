@@ -662,7 +662,20 @@ class AssetManagerWidget(QtGui.QWidget):
 
         ftrackAsset = ftrack.Asset(assetId)
         assetVersions = ftrackAsset.getVersions()
-        newftrackAssetVersion = assetVersions[int(newVersion) - 1]
+
+        newftrackAssetVersion = None
+
+        # Check the next suitable chosen version.
+        for version in assetVersions:
+
+            # If there's a matching version , use that one.
+            if str(version.getVersion()) == str(newVersion):
+                newftrackAssetVersion = version
+                break
+            else:
+                # Otherwise, fall back on the latest available.
+                newftrackAssetVersion = assetVersions[-1]
+
         try:
             newComponent = newftrackAssetVersion.getComponent(componentName)
         except:
