@@ -7,7 +7,8 @@
 Release Notes
 *************
 
-.. release:: Upcoming
+.. release:: 0.1.24
+    :date: 2016-06-07
 
     .. change:: fixed
         :tags: Login
