@@ -14,6 +14,22 @@ Release Notes
 
         Improve support for debugging tools.
 
+.. release:: 0.1.25
+    :date: 2016-06-07
+
+    .. change:: fixed
+        :tags: Asset manager
+
+        Asset versioning change breaks if versions has been deleted.
+
+.. release:: 0.1.24
+    :date: 2016-06-07
+
+    .. change:: fixed
+        :tags: Login
+
+        Error when starting connect with invalid ftrack server URL.
+
 .. release:: 0.1.23
     :date: 2016-05-06
 
