@@ -7,6 +7,7 @@ import ftrack
 import ftrack_connect.ui.application
 import ftrack_connect.ui.widget.overlay
 import ftrack_connect.ui.widget.publisher
+import ftrack_connect.usage
 
 
 def register(connect):
@@ -80,6 +81,9 @@ class Publisher(ftrack_connect.ui.application.ApplicationPlugin):
             )
             self.blockingOverlay.confirmButton.show()
             self.blockingOverlay.show()
+
+            ftrack_connect.usage.send_event('PUBLISHED-FROM-CONNECT')
+
 
     def _onEntityChanged(self):
         '''Callback for entityChanged signal.'''

@@ -13,6 +13,7 @@ import ftrack_api.event.base
 import ftrack_connect.asynchronous
 import ftrack_connect.error
 import ftrack_connect.session
+import ftrack_connect.usage
 
 from ftrack_connect.ui.widget import (
     action_item, flow_layout, entity_selector, overlay
@@ -146,6 +147,19 @@ class Actions(QtGui.QWidget):
             self._updateRecentSection()
 
         self._showResultMessage(results)
+
+        validMetadata = [
+            'actionIdentifier',
+            'label',
+            'variant',
+            'applicationIdentifier'
+        ]
+        metadata = {}
+        for key, value in action.items():
+            if key in validMetadata and value is not None:
+                metadata[key] = value
+
+        ftrack_connect.usage.send_event('LAUNCHED-ACTION', metadata)
 
     def _showResultMessage(self, results):
         '''Show *results* message in overlay.'''
