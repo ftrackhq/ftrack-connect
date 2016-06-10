@@ -167,8 +167,17 @@ class ActionIcon(Base):
 
             * A URL to load the image from starting with 'http'.
             * One of the predefined icons in AVAILABLE_ICONS
-        '''
+
+       If the icon url is not accessible (either does not exist or times
+       out), the default icon is used.
+       '''
         if icon and icon[:4] == 'http':
+            try:
+                urllib2.urlopen(icon, timeout=0.1)
+            except urllib2.URLError:
+                self.loadResource(':/ftrack/image/light/action')
+                return
+
             self.load(icon)
         elif self.AVAILABLE_ICONS.get(icon):
             url = os.environ['FTRACK_SERVER'] + self.AVAILABLE_ICONS[icon]
@@ -187,7 +196,7 @@ class ActionIcon(Base):
     def _scaleAndSetPixmap(self, pixmap):
         '''Scale *pixmap* to fit within current bounds'''
         scaledPixmap = pixmap.scaled(
-            self.width(), self.height(), QtCore.Qt.KeepAspectRatio, 
+            self.width(), self.height(), QtCore.Qt.KeepAspectRatio,
             QtCore.Qt.SmoothTransformation
         )
         self.setPixmap(scaledPixmap)
