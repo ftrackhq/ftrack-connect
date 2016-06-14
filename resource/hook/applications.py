@@ -2,10 +2,11 @@
 # :copyright: Copyright (c) 2014 ftrack
 
 import getpass
-import logging
 
 import ftrack
 import ftrack_connect.application
+from ftrack_connect import _logging as logging
+
 
 ACTION_IDENTIFIER = 'ftrack-connect-launch-applications-action'
 

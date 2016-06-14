@@ -1,13 +1,14 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2016 ftrack
 
-import logging
 import functools
 import json
 import os.path
 
 import appdirs
 import ftrack_api.session
+
+from ftrack_connect import _logging as logging
 
 
 logger = logging.getLogger('ftrack_connect:publish-components')
