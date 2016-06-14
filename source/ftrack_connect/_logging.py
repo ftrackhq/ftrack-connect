@@ -15,6 +15,7 @@ if not os.path.exists(log_directory):
 
 logfile = os.path.join(log_directory, 'ftrack.log')
 
+DEFAULT_HANDLERS = ['console', 'file']
 
 DEFAULT_LOG_SETTINGS = {
     'version': 1,
@@ -45,18 +46,13 @@ DEFAULT_LOG_SETTINGS = {
     'loggers': {
         '': {
             'level': 'DEBUG',
-            'handlers': ['console', 'file'],
-            'propagate': True
+            'handlers': DEFAULT_HANDLERS,
         },
         'ftrack_api': {
             'level': 'INFO',
-            'handlers': ['console', 'file'],
-            'propagate': True
         },
         'FTrackCore': {
-            'level': 'INFO',
-            'handlers': ['console', 'file'],
-            'propagate': True
+            'level': 'DEBUG',
         }
     }
 }
