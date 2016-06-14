@@ -2,7 +2,7 @@
 # :copyright: Copyright (c) 2014 ftrack
 
 import argparse
-import logging
+import _logging as logging
 import sys
 import signal
 import os

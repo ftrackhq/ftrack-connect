@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
 import os
-import logging
+import _logging as logging
 
 import ftrack_api
 import ftrack_api.exception

@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2016 ftrack
 
-import logging
+import _logging as logging
 
 import ftrack_connect.asynchronous
 import ftrack_connect.session

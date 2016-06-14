@@ -4,7 +4,7 @@
 import threading
 import time
 import uuid
-import logging
+import _logging as logging
 import datetime
 import getpass
 import collections
