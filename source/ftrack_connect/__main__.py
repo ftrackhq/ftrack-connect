@@ -61,7 +61,8 @@ def main(arguments=None):
 
     namespace = parser.parse_args(arguments)
 
-    logging.basicConfig(level=loggingLevels[namespace.verbosity])
+    logger = logging.getLogger()
+    logger.setLevel(level=loggingLevels[namespace.verbosity])
 
     # Construct global application.
     application = QtGui.QApplication('ftrack-connect')
