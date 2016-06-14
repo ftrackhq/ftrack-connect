@@ -49,7 +49,12 @@ DEFAULT_LOG_SETTINGS = {
             'propagate': True
         },
         'ftrack_api': {
-            'level': 'WARNING',
+            'level': 'INFO',
+            'handlers': ['console', 'file'],
+            'propagate': True
+        },
+        'FTrackCore': {
+            'level': 'INFO',
             'handlers': ['console', 'file'],
             'propagate': True
         }
