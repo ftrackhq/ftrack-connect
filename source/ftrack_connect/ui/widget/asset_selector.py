@@ -1,11 +1,10 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-import logging
-
 
 import ftrack_connect.asynchronous
 from ftrack_connect.ui.widget import item_selector as _item_selector
+from ftrack_connect import _logging as logging
 
 
 class AssetSelector(_item_selector.ItemSelector):

@@ -4,7 +4,6 @@
 import threading
 import time
 import uuid
-import _logging as logging
 import datetime
 import getpass
 import collections
@@ -12,6 +11,8 @@ import collections
 import arrow
 
 import ftrack_connect.asynchronous
+from ftrack_connect import _logging as logging
+
 
 from PySide import QtCore
 import ftrack

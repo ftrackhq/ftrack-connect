@@ -2,13 +2,14 @@
 # :copyright: Copyright (c) 2014 ftrack
 
 import argparse
-import _logging as logging
 import sys
 import signal
 import os
 import pkg_resources
 
 from PySide import QtGui
+
+from ftrack_connect import _logging as logging
 
 
 # Hooks use the ftrack event system. Set the FTRACK_EVENT_PLUGIN_PATH

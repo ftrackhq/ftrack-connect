@@ -1,7 +1,6 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-import _logging as logging
 import sys
 import pprint
 import re
@@ -12,6 +11,8 @@ import base64
 import json
 
 import ftrack
+
+from ftrack_connect import _logging as logging
 
 #: Default expression to match version component of executable path.
 #: Will match last set of numbers in string where numbers may contain a digit

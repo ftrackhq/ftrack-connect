@@ -1,12 +1,13 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-import logging
 import os
 import re
 
 from PySide import QtGui, QtCore
 from PySide.QtCore import Qt
+
+from ftrack_connect import _logging as logging
 
 import riffle.browser
 import riffle.model

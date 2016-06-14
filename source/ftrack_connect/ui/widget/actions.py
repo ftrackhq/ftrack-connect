@@ -1,7 +1,6 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-import logging
 import json
 import time
 
@@ -14,6 +13,7 @@ import ftrack_connect.asynchronous
 import ftrack_connect.error
 import ftrack_connect.session
 import ftrack_connect.usage
+from ftrack_connect import _logging as logging
 
 from ftrack_connect.ui.widget import (
     action_item, flow_layout, entity_selector, overlay

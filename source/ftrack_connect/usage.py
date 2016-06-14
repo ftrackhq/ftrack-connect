@@ -1,10 +1,10 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2016 ftrack
 
-import _logging as logging
 
 import ftrack_connect.asynchronous
 import ftrack_connect.session
+from ftrack_connect import _logging as logging
 
 
 logger = logging.getLogger('ftrack_connect:usage')

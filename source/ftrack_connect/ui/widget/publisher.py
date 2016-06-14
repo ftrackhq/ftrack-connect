@@ -1,7 +1,6 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-import logging
 
 from PySide import QtGui
 from PySide import QtCore
@@ -14,6 +13,7 @@ from ftrack_connect.ui.widget import item_selector as _item_selector
 from ftrack_connect.ui.widget import thumbnail_drop_zone as _thumbnail_drop_zone
 from ftrack_connect.ui.widget import asset_options as _asset_options
 from ftrack_connect.ui.widget import entity_selector
+from ftrack_connect import _logging as logging
 
 import ftrack_connect.asynchronous
 import ftrack_connect.error

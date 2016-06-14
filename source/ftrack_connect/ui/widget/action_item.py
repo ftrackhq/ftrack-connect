@@ -1,6 +1,5 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
-import logging
 
 from PySide import QtGui, QtCore
 import ftrack
@@ -9,6 +8,8 @@ import ftrack_api.event.base
 import ftrack_connect.asynchronous
 from ftrack_connect.ui.widget.thumbnail import ActionIcon
 import ftrack_connect.session
+from ftrack_connect import _logging as logging
+
 
 
 class ActionItem(QtGui.QWidget):

@@ -1,10 +1,12 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
 import os
-import _logging as logging
 
 import ftrack_api
 import ftrack_api.exception
+
+from ftrack_connect import _logging as logging
+
 
 _shared_session = None
 
