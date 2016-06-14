@@ -3,7 +3,7 @@
 import os
 from logging import NOTSET, DEBUG, INFO, WARNING, ERROR, CRITICAL
 from logging import getLogger as _getLogger
-from logging import getLevelName, basicConfig
+from logging import getLevelName, basicConfig, captureWarnings
 from logging import config as _config
 import logging as _logging
 import appdirs
@@ -59,9 +59,8 @@ DEFAULT_LOG_SETTINGS = {
 }
 
 _config.dictConfig(DEFAULT_LOG_SETTINGS)
+captureWarnings(True)
 
 
 def getLogger(name=None):
     return _getLogger(name)
-
-
