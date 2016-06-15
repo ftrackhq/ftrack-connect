@@ -3,6 +3,7 @@
 
 import json
 import time
+import logging
 
 from PySide import QtGui
 from PySide import QtCore
@@ -13,7 +14,6 @@ import ftrack_connect.asynchronous
 import ftrack_connect.error
 import ftrack_connect.session
 import ftrack_connect.usage
-from ftrack_connect import _logging as logging
 
 from ftrack_connect.ui.widget import (
     action_item, flow_layout, entity_selector, overlay

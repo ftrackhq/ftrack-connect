@@ -1,6 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
+import logging
 
 from PySide import QtGui
 
@@ -8,10 +9,10 @@ from ftrack_connect.error import NotUniqueError
 from ftrack_connect.ui.widget import asset_name_edit as _asset_name_edit
 from ftrack_connect.ui.widget import asset_type_selector as _asset_type_selector
 from ftrack_connect.ui.widget import asset_selector as _asset_selector
-from ftrack_connect import _logging as logging
 
 NEW_ASSET = 'NEW_ASSET'
 EXISTING_ASSET = 'EXISTING_ASSET'
+
 
 class AssetOptions(object):
     '''Asset options: holds asset related widgets and logic.

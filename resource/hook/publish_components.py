@@ -4,11 +4,10 @@
 import functools
 import json
 import os.path
+import logging
 
 import appdirs
 import ftrack_api.session
-
-from ftrack_connect import _logging as logging
 
 
 logger = logging.getLogger('ftrack_connect:publish-components')

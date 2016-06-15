@@ -5,8 +5,7 @@ import os
 import os.path
 import appdirs
 import json
-
-from ftrack_connect import _logging as logging
+import logging
 
 
 logger = logging.getLogger('ftrack_connect.ui.config')

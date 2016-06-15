@@ -4,10 +4,9 @@
 import sys
 import traceback
 import cStringIO
+import logging
 
 from PySide import QtGui, QtCore
-
-from ftrack_connect import _logging as logging
 
 
 class UncaughtError(QtGui.QMessageBox):

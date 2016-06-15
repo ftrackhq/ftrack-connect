@@ -3,11 +3,10 @@
 
 import os
 import re
+import logging
 
 from PySide import QtGui, QtCore
 from PySide.QtCore import Qt
-
-from ftrack_connect import _logging as logging
 
 import riffle.browser
 import riffle.model

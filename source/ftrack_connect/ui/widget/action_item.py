@@ -2,13 +2,14 @@
 # :copyright: Copyright (c) 2015 ftrack
 
 from PySide import QtGui, QtCore
+import logging
+
 import ftrack
 import ftrack_api.event.base
 
 import ftrack_connect.asynchronous
 from ftrack_connect.ui.widget.thumbnail import ActionIcon
 import ftrack_connect.session
-from ftrack_connect import _logging as logging
 
 
 

@@ -9,10 +9,10 @@ import subprocess
 import collections
 import base64
 import json
+import logging
 
 import ftrack
 
-from ftrack_connect import _logging as logging
 
 #: Default expression to match version component of executable path.
 #: Will match last set of numbers in string where numbers may contain a digit

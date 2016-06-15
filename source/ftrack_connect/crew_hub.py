@@ -7,11 +7,12 @@ import uuid
 import datetime
 import getpass
 import collections
+import logging
+
 
 import arrow
 
 import ftrack_connect.asynchronous
-from ftrack_connect import _logging as logging
 
 
 from PySide import QtCore

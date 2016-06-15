@@ -2,10 +2,10 @@
 # :copyright: Copyright (c) 2014 ftrack
 
 import os
+import logging
 
 import ftrack
 
-from ftrack_connect import _logging as logging
 
 log = logging.getLogger(__name__)
 

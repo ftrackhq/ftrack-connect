@@ -1,10 +1,9 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2016 ftrack
 
+import logging
 
 import ftrack_api
-
-from ftrack_connect import _logging as logging
 
 
 class Resolver(object):

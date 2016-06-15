@@ -2,6 +2,7 @@
 # :copyright: Copyright (c) 2014 ftrack
 
 import argparse
+import logging
 import sys
 import signal
 import os
@@ -9,7 +10,7 @@ import pkg_resources
 
 from PySide import QtGui
 
-from ftrack_connect import _logging as logging
+from ftrack_connect.config import configure_logging
 
 
 # Hooks use the ftrack event system. Set the FTRACK_EVENT_PLUGIN_PATH
@@ -62,8 +63,7 @@ def main(arguments=None):
 
     namespace = parser.parse_args(arguments)
 
-    logger = logging.getLogger()
-    logger.setLevel(level=loggingLevels[namespace.verbosity])
+    configure_logging('connect', level=loggingLevels[namespace.verbosity])
 
     # Construct global application.
     application = QtGui.QApplication('ftrack-connect')

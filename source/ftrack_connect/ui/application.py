@@ -9,6 +9,7 @@ import subprocess
 import requests
 import requests.exceptions
 import uuid
+import logging
 
 import appdirs
 from PySide import QtGui
@@ -31,8 +32,6 @@ from ftrack_connect.error import NotUniqueError as _NotUniqueError
 from ftrack_connect.ui import login_tools as _login_tools
 from ftrack_connect.ui.widget import configure_scenario as _scenario_widget
 import ftrack_connect.ui.config
-from ftrack_connect import _logging as logging
-
 
 
 class ApplicationPlugin(QtGui.QWidget):
