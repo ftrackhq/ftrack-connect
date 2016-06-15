@@ -9,11 +9,9 @@ import getpass
 import collections
 import logging
 
-
 import arrow
 
 import ftrack_connect.asynchronous
-
 
 from PySide import QtCore
 import ftrack
