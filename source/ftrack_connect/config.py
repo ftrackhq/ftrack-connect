@@ -42,7 +42,7 @@ def configure_logging(loggerName, level=None, format=None):
     level = level or 'WARNING'
 
     log_directory = get_log_directory()
-    logfile = os.path.join(log_directory, 'ftrack-%s.log' % loggerName)
+    logfile = os.path.join(log_directory, '%s.log' % loggerName)
 
     LOGGING_SETTINGS = {
         'version': 1,
