@@ -1,24 +1,24 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
 import os
-from logging import NOTSET, DEBUG, INFO, WARNING, ERROR, CRITICAL
-from logging import getLogger as _getLogger
-from logging import getLevelName, basicConfig, captureWarnings
-from logging import config as _config
-import logging as _logging
+from logging import *
+from logging import config
 import appdirs
 
-user_data_dir = appdirs.user_data_dir('ftrack-connect', 'ftrack')
-log_directory = os.path.join(user_data_dir, 'log')
-if not os.path.exists(log_directory):
-    os.makedirs(log_directory)
+
+def getLogFilePath():
+    user_data_dir = appdirs.user_data_dir('ftrack-connect', 'ftrack')
+    log_directory = os.path.join(user_data_dir, 'log')
+
+    if not os.path.exists(log_directory):
+        os.makedirs(log_directory)
+
+    logfile = os.path.join(log_directory, 'ftrack.log')
+
+    return logfile
 
 
-logfile = os.path.join(log_directory, 'ftrack.log')
-
-DEFAULT_HANDLERS = ['console', 'file']
-
-DEFAULT_LOG_SETTINGS = {
+LOGGING_SETTINGS = {
     'version': 1,
     'disable_existing_loggers': False,
     'handlers': {
@@ -32,7 +32,7 @@ DEFAULT_LOG_SETTINGS = {
             'class': 'logging.handlers.RotatingFileHandler',
             'level': 'DEBUG',
             'formatter': 'file',
-            'filename': logfile,
+            'filename': getLogFilePath(),
             'mode': 'a',
             'maxBytes': 10485760,
             'backupCount': 5,
@@ -47,7 +47,7 @@ DEFAULT_LOG_SETTINGS = {
     'loggers': {
         '': {
             'level': 'DEBUG',
-            'handlers': DEFAULT_HANDLERS,
+            'handlers': ['console', 'file']
         },
         'ftrack_api': {
             'level': 'INFO',
@@ -58,9 +58,8 @@ DEFAULT_LOG_SETTINGS = {
     }
 }
 
-_config.dictConfig(DEFAULT_LOG_SETTINGS)
+# Set default logging settings.
+config.dictConfig(LOGGING_SETTINGS)
+
+# Redirect warnings to log so can be debugged.
 captureWarnings(True)
-
-
-def getLogger(name=None):
-    return _getLogger(name)
