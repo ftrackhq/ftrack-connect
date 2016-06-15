@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
 import os
-from logging import config, captureWarnings, WARNING
+from logging import config, captureWarnings, WARNING, _levelNames
 import appdirs
 import errno
 
@@ -50,7 +50,7 @@ def configure_logging(loggerName, level=None, format=None):
         'handlers': {
             'console': {
                 'class': 'logging.StreamHandler',
-                'level': level,
+                'level': _levelNames[level],
                 'formatter': 'file',
                 'stream': 'ext://sys.stdout',
             },
