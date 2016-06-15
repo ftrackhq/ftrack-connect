@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
 import os
-from logging import config, captureWarnings
+from logging import config, captureWarnings, WARNING
 import appdirs
 import errno
 
@@ -39,7 +39,7 @@ def configure_logging(loggerName, level=None, format=None):
 
     # provide default values for level and format
     format = format or '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-    level = level or 'WARNING'
+    level = level or WARNING
 
     log_directory = get_log_directory()
     logfile = os.path.join(log_directory, '%s.log' % loggerName)
