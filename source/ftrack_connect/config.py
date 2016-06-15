@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
 import os
-from logging import config, captureWarnings, WARNING, _levelNames
+from logging import config, captureWarnings, WARNING, _levelNames, info
 import appdirs
 import errno
 
@@ -89,3 +89,5 @@ def configure_logging(loggerName, level=None, format=None):
 
     # Redirect warnings to log so can be debugged.
     captureWarnings(True)
+
+    info('Saving log file to: %s' % logfile)
