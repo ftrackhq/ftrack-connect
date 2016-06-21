@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
 import os
-from logging import config, captureWarnings, WARNING, _levelNames, info
+import logging
 import appdirs
 import errno
 
@@ -28,7 +28,7 @@ def get_log_directory():
     return log_directory
 
 
-def configure_logging(loggerName, level=None, format=None):
+def configure_logging(logger_name, level=None, format=None):
     '''Configure `loggerName` loggers with console and file handler.
 
     Optionally specify log *level* (default WARNING)
@@ -39,7 +39,7 @@ def configure_logging(loggerName, level=None, format=None):
 
     # provide default values for level and format
     format = format or '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-    level = level or WARNING
+    level = level or logging.WARNING
 
     log_directory = get_log_directory()
     logfile = os.path.join(log_directory, '{0}.log'.format(logger_name))
@@ -50,7 +50,7 @@ def configure_logging(loggerName, level=None, format=None):
         'handlers': {
             'console': {
                 'class': 'logging.StreamHandler',
-                'level': _levelNames[level],
+                'level': logging._levelNames[level],
                 'formatter': 'file',
                 'stream': 'ext://sys.stdout',
             },
@@ -85,10 +85,10 @@ def configure_logging(loggerName, level=None, format=None):
     }
 
     # Set default logging settings.
-    config.dictConfig(LOGGING_SETTINGS)
+    logging.config.dictConfig(LOGGING_SETTINGS)
 
     # Redirect warnings to log so can be debugged.
-    captureWarnings(True)
+    logging.captureWarnings(True)
 
     # Log out the file output.
     logging.info('Saving log file to: {0}'.format(logfile))
