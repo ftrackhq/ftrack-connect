@@ -42,7 +42,7 @@ def configure_logging(loggerName, level=None, format=None):
     level = level or WARNING
 
     log_directory = get_log_directory()
-    logfile = os.path.join(log_directory, '%s.log' % loggerName)
+    logfile = os.path.join(log_directory, '{0}.log'.format(logger_name))
 
     LOGGING_SETTINGS = {
         'version': 1,
@@ -90,4 +90,5 @@ def configure_logging(loggerName, level=None, format=None):
     # Redirect warnings to log so can be debugged.
     captureWarnings(True)
 
-    info('Saving log file to: %s' % logfile)
+    # Log out the file output.
+    logging.info('Saving log file to: {0}'.format(logfile))
