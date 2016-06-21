@@ -91,4 +91,4 @@ def configure_logging(logger_name, level=None, format=None):
     logging.captureWarnings(True)
 
     # Log out the file output.
-    logging.info('Saving log file to: {0}'.format(logfile))
+    logging.warning('Saving log file to: {0}'.format(logfile))
