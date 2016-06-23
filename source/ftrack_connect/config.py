@@ -2,6 +2,7 @@
 # :copyright: Copyright (c) 2015 ftrack
 import os
 import logging
+import logging.config
 import appdirs
 import errno
 
