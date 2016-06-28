@@ -534,7 +534,6 @@ class Application(QtGui.QMainWindow):
         menu.addSeparator()
 
         menu.addAction(openPluginDirectoryAction)
-        menu.addAction(openLoggingDirectoryAction)
         menu.addSeparator()
 
         menu.addAction(logoutAction)
