@@ -45,7 +45,7 @@ def configure_logging(logger_name, level=None, format=None):
     log_directory = get_log_directory()
     logfile = os.path.join(log_directory, '{0}.log'.format(logger_name))
 
-    LOGGING_SETTINGS = {
+    logging_settings = {
         'version': 1,
         'disable_existing_loggers': False,
         'handlers': {
@@ -86,7 +86,7 @@ def configure_logging(logger_name, level=None, format=None):
     }
 
     # Set default logging settings.
-    logging.config.dictConfig(LOGGING_SETTINGS)
+    logging.config.dictConfig(logging_settings)
 
     # Redirect warnings to log so can be debugged.
     logging.captureWarnings(True)
