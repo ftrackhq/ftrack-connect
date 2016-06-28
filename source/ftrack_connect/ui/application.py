@@ -31,6 +31,7 @@ from ftrack_connect.ui.widget import about as _about
 from ftrack_connect.error import NotUniqueError as _NotUniqueError
 from ftrack_connect.ui import login_tools as _login_tools
 from ftrack_connect.ui.widget import configure_scenario as _scenario_widget
+from ftrack_connect.config import get_log_directory
 import ftrack_connect.ui.config
 
 
@@ -75,6 +76,8 @@ class Application(QtGui.QMainWindow):
         self.defaultPluginDirectory = appdirs.user_data_dir(
             'ftrack-connect-plugins', 'ftrack'
         )
+
+        self.defaultLoggingDirectory = get_log_directory()
 
         self.pluginHookPaths = set()
         self.pluginHookPaths.update(
@@ -525,6 +528,11 @@ class Application(QtGui.QMainWindow):
             triggered=self.openDefaultPluginDirectory
         )
 
+        openLoggingDirectoryAction = QtGui.QAction(
+            'Open logging directory', self,
+            triggered=self.openDefaultLoggingDirectory
+        )
+
         aboutAction = QtGui.QAction(
             'About', self,
             triggered=self.showAbout
@@ -535,6 +543,7 @@ class Application(QtGui.QMainWindow):
         menu.addSeparator()
 
         menu.addAction(openPluginDirectoryAction)
+        menu.addAction(openLoggingDirectoryAction)
         menu.addSeparator()
 
         menu.addAction(logoutAction)
@@ -707,6 +716,16 @@ class Application(QtGui.QMainWindow):
     def openDefaultPluginDirectory(self):
         '''Open default plugin directory in platform default file browser.'''
         directory = self.defaultPluginDirectory
+        self.__openDirectory(directory)
+
+    def openDefaultLoggingDirectory(self):
+        '''Open default logging directory in platform default file browser.'''
+        directory = self.defaultLoggingDirectory
+        self.__openDirectory(directory)
+
+    def __openDirectory(self, directory):
+        # Generic function to open directory
+        # in platform default file browser.
 
         if not os.path.exists(directory):
             # Create directory if not existing.
@@ -716,7 +735,7 @@ class Application(QtGui.QMainWindow):
                 messageBox = QtGui.QMessageBox(parent=self)
                 messageBox.setIcon(QtGui.QMessageBox.Warning)
                 messageBox.setText(
-                    u'Could not open or create default plugin '
+                    u'Could not open or create '
                     u'directory: {0}.'.format(directory)
                 )
                 messageBox.exec_()
