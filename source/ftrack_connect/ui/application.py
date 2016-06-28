@@ -723,10 +723,10 @@ class Application(QtGui.QMainWindow):
                 messageBox.exec_()
                 return
 
-        if sys.platform=='win32':
+        if sys.platform == 'win32':
             subprocess.Popen(['start', directory], shell=True)
 
-        elif sys.platform=='darwin':
+        elif sys.platform == 'darwin':
             subprocess.Popen(['open', directory])
 
         else:
