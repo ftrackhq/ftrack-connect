@@ -32,8 +32,6 @@ from ftrack_connect.error import NotUniqueError as _NotUniqueError
 from ftrack_connect.ui import login_tools as _login_tools
 from ftrack_connect.ui.widget import configure_scenario as _scenario_widget
 from ftrack_connect.config import get_log_directory
-import ftrack_connect.ui.config
-
 
 class ApplicationPlugin(QtGui.QWidget):
     '''Base widget for ftrack connect application plugin.'''
@@ -76,8 +74,6 @@ class Application(QtGui.QMainWindow):
         self.defaultPluginDirectory = appdirs.user_data_dir(
             'ftrack-connect-plugins', 'ftrack'
         )
-
-        self.defaultLoggingDirectory = get_log_directory()
 
         self.pluginHookPaths = set()
         self.pluginHookPaths.update(
@@ -528,11 +524,6 @@ class Application(QtGui.QMainWindow):
             triggered=self.openDefaultPluginDirectory
         )
 
-        openLoggingDirectoryAction = QtGui.QAction(
-            'Open logging directory', self,
-            triggered=self.openDefaultLoggingDirectory
-        )
-
         aboutAction = QtGui.QAction(
             'About', self,
             triggered=self.showAbout
@@ -715,17 +706,8 @@ class Application(QtGui.QMainWindow):
 
     def openDefaultPluginDirectory(self):
         '''Open default plugin directory in platform default file browser.'''
+
         directory = self.defaultPluginDirectory
-        self.__openDirectory(directory)
-
-    def openDefaultLoggingDirectory(self):
-        '''Open default logging directory in platform default file browser.'''
-        directory = self.defaultLoggingDirectory
-        self.__openDirectory(directory)
-
-    def __openDirectory(self, directory):
-        # Generic function to open directory
-        # in platform default file browser.
 
         if not os.path.exists(directory):
             # Create directory if not existing.
