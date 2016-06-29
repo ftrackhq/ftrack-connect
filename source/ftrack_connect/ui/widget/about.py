@@ -62,6 +62,7 @@ class AboutDialog(QtGui.QDialog):
         self.adjustSize()
 
     def _onLoggingButtonClicked(self):
+        '''Handle logging button clicked.'''
         directory = get_log_directory()
 
         if not os.path.exists(directory):
