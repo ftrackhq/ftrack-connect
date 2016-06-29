@@ -73,7 +73,7 @@ class AboutDialog(QtGui.QDialog):
                 messageBox = QtGui.QMessageBox(parent=self)
                 messageBox.setIcon(QtGui.QMessageBox.Warning)
                 messageBox.setText(
-                    u'Could not open or create '
+                    u'Could not open or create logging '
                     u'directory: {0}.'.format(directory)
                 )
                 messageBox.exec_()
