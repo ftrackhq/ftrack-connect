@@ -717,7 +717,7 @@ class Application(QtGui.QMainWindow):
                 messageBox = QtGui.QMessageBox(parent=self)
                 messageBox.setIcon(QtGui.QMessageBox.Warning)
                 messageBox.setText(
-                    u'Could not open or create '
+                    u'Could not open or create default plugin '
                     u'directory: {0}.'.format(directory)
                 )
                 messageBox.exec_()
