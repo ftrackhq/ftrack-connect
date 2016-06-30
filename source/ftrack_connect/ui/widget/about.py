@@ -1,9 +1,13 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
-
+import os
+import sys
 import json
+import subprocess
 
 from PySide import QtGui, QtCore
+
+from ftrack_connect.config import get_log_directory
 
 
 class AboutDialog(QtGui.QDialog):
@@ -40,6 +44,11 @@ class AboutDialog(QtGui.QDialog):
 
         layout.addWidget(self.debugButton)
 
+        self.loggingButton = QtGui.QPushButton('Open log directory')
+        self.loggingButton.clicked.connect(self._onLoggingButtonClicked)
+
+        layout.addWidget(self.loggingButton)
+
         self.debugTextEdit = QtGui.QTextEdit()
         self.debugTextEdit.setReadOnly(True)
         self.debugTextEdit.setFontPointSize(10)
@@ -51,6 +60,33 @@ class AboutDialog(QtGui.QDialog):
         self.debugButton.hide()
         self.debugTextEdit.show()
         self.adjustSize()
+
+    def _onLoggingButtonClicked(self):
+        '''Handle logging button clicked.'''
+        directory = get_log_directory()
+
+        if not os.path.exists(directory):
+            # Create directory if not existing.
+            try:
+                os.makedirs(directory)
+            except OSError:
+                messageBox = QtGui.QMessageBox(parent=self)
+                messageBox.setIcon(QtGui.QMessageBox.Warning)
+                messageBox.setText(
+                    u'Could not open or create logging '
+                    u'directory: {0}.'.format(directory)
+                )
+                messageBox.exec_()
+                return
+
+        if sys.platform == 'win32':
+            subprocess.Popen(['start', directory], shell=True)
+
+        elif sys.platform == 'darwin':
+            subprocess.Popen(['open', directory])
+
+        else:
+            subprocess.Popen(['xdg-open', directory])
 
     def setInformation(self, versionData, user, server):
         '''Set displayed *versionData*, *user*, *server*.'''

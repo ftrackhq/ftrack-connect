@@ -1,10 +1,11 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-import logging
 import os
+import logging
 
 import ftrack
+
 
 log = logging.getLogger(__name__)
 

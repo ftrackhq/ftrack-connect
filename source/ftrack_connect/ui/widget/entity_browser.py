@@ -12,6 +12,7 @@ import ftrack_connect.ui.model.entity_tree
 import ftrack_connect.ui.widget.overlay
 import ftrack_connect.session
 
+
 class EntityBrowser(QtGui.QDialog):
     '''Entity browser.'''
 

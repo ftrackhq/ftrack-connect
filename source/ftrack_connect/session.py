@@ -6,6 +6,7 @@ import logging
 import ftrack_api
 import ftrack_api.exception
 
+
 _shared_session = None
 
 

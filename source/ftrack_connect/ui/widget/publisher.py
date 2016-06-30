@@ -5,6 +5,7 @@ import logging
 
 from PySide import QtGui
 from PySide import QtCore
+
 import ftrack
 
 

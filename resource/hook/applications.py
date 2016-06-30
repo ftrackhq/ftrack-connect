@@ -7,6 +7,7 @@ import logging
 import ftrack
 import ftrack_connect.application
 
+
 ACTION_IDENTIFIER = 'ftrack-connect-launch-applications-action'
 
 

@@ -4,12 +4,12 @@
 import os
 import getpass
 import platform
-import logging
 import sys
 import subprocess
 import requests
 import requests.exceptions
 import uuid
+import logging
 
 import appdirs
 from PySide import QtGui
@@ -706,6 +706,7 @@ class Application(QtGui.QMainWindow):
 
     def openDefaultPluginDirectory(self):
         '''Open default plugin directory in platform default file browser.'''
+
         directory = self.defaultPluginDirectory
 
         if not os.path.exists(directory):
@@ -722,10 +723,10 @@ class Application(QtGui.QMainWindow):
                 messageBox.exec_()
                 return
 
-        if sys.platform=='win32':
+        if sys.platform == 'win32':
             subprocess.Popen(['start', directory], shell=True)
 
-        elif sys.platform=='darwin':
+        elif sys.platform == 'darwin':
             subprocess.Popen(['open', directory])
 
         else:
