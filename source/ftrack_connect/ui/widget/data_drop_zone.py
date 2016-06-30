@@ -1,9 +1,9 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-import logging
 import os
 import re
+import logging
 
 from PySide import QtGui, QtCore
 from PySide.QtCore import Qt

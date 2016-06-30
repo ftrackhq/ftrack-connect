@@ -7,6 +7,14 @@
 Release Notes
 *************
 
+.. release:: Upcoming
+
+    .. change:: new
+        :tags: Internal
+
+        Add logging to file for easier debug.
+
+
 .. release:: 0.1.25
     :date: 2016-06-07
 

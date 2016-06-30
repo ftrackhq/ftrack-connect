@@ -13,6 +13,7 @@ from ftrack_connect.ui.widget import asset_selector as _asset_selector
 NEW_ASSET = 'NEW_ASSET'
 EXISTING_ASSET = 'EXISTING_ASSET'
 
+
 class AssetOptions(object):
     '''Asset options: holds asset related widgets and logic.
 
