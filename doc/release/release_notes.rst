@@ -12,8 +12,8 @@ Release Notes
     .. change:: new
         :tags: Internal
 
-        Add logging to file for easier debug.
-
+        Logs are now written to file and the logs directory can be accessed
+        via the about menu.
 
 .. release:: 0.1.25
     :date: 2016-06-07
