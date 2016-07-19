@@ -7,7 +7,8 @@
 Release Notes
 *************
 
-.. release:: Upcoming
+.. release:: 0.1.26
+    :date: 2016-07-19
 
     .. change:: new
         :tags: Internal
