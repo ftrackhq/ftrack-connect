@@ -85,6 +85,19 @@ class OpenComponentDirectoryAction(object):
                     )
                 )
 
+            elif (
+                legacy_location.getPriority() == location.priority and
+                legacy_location.getId() == location['id'] and
+                legacy_location.getName() == 'ftrack.unmanaged'
+            ):
+                # The legacy api is better suited to resolve the path for a
+                # location in the ftrack.unmanaged location, since it will
+                # account for platform and disk while resolving.
+                path = legacy_component.getFilesystemPath()
+                self.logger.info(
+                    'Location is unmanaged on both legacy api and api.'
+                )
+
             else:
                 path = location.get_filesystem_path(component)
                 self.logger.info(
