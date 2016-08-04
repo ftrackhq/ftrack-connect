@@ -7,15 +7,15 @@ import ftrack_api
 import ftrack
 
 
-class RevealComponentAction(object):
-    '''Action to reveal component file path in os file browser.'''
+class OpenComponentDirectoryAction(object):
+    '''Action to open a component directory in os file browser.'''
 
-    identifier = 'ftrack-connect-reveal-component'
+    identifier = 'ftrack-connect-open-component-directory'
 
     failed = {
         'success': False,
         'message': (
-            'Could not reveal component directory.'
+            'Could not open component directory.'
         )
     }
 
@@ -33,7 +33,7 @@ class RevealComponentAction(object):
         ):
             return {
                 'items': [{
-                    'label': 'Reveal',
+                    'label': 'Open directory',
                     'actionIdentifier': self.identifier
                 }]
             }
@@ -84,7 +84,7 @@ class RevealComponentAction(object):
 
         elif sys.platform == 'darwin':
             if os.path.exists(file_path):
-                # File exists and can be revealed with a selection.
+                # File exists and can be opened with a selection.
                 subprocess.Popen(['open', '-R', file_path])
 
             else:
@@ -95,7 +95,7 @@ class RevealComponentAction(object):
 
         return {
             'success': True,
-            'message': 'Successfully revealed component directory.'
+            'message': 'Successfully opened component directory.'
         }
 
     def register(self):
@@ -122,7 +122,7 @@ def register(session, **kw):
     '''Register hooks.'''
 
     logger = logging.getLogger(
-        'ftrack_connect:reveal.register'
+        'ftrack_connect:open-component-directory'
     )
 
     # Validate that session is an instance of ftrack_api.session.Session. If
@@ -135,5 +135,5 @@ def register(session, **kw):
         )
         return
 
-    action = RevealComponentAction(session, logger)
+    action = OpenComponentDirectoryAction(session, logger)
     action.register()
