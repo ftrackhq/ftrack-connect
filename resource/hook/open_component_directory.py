@@ -1,10 +1,13 @@
+# :coding: utf-8
+# :copyright: Copyright (c) 2016 ftrack
+
 import logging
 import os
-import subprocess
-import sys
 
 import ftrack_api
 import ftrack
+
+import ftrack_connect.util
 
 
 class OpenComponentDirectoryAction(object):
@@ -47,8 +50,6 @@ class OpenComponentDirectoryAction(object):
 
         component_id = selection['entityId']
 
-        file_path = None
-
         legacy_component = None
         legacy_location = None
         try:
@@ -73,9 +74,10 @@ class OpenComponentDirectoryAction(object):
                 )
             )
 
+        path = None
         if legacy_location and location:
             if legacy_location.getPriority() < location.priority:
-                file_path = legacy_component.getFilesystemPath()
+                path = legacy_component.getFilesystemPath()
                 self.logger.info(
                     'Location is defined with a higher priority in legacy api: '
                     '{0!r}'.format(
@@ -84,7 +86,7 @@ class OpenComponentDirectoryAction(object):
                 )
 
             else:
-                file_path = location.get_filesystem_path(component)
+                path = location.get_filesystem_path(component)
                 self.logger.info(
                     'Location is defined with a higher priority in api: '
                     '{0!r}'.format(
@@ -93,7 +95,7 @@ class OpenComponentDirectoryAction(object):
                 )
 
         elif legacy_location:
-            file_path = legacy_component.getFilesystemPath()
+            path = legacy_component.getFilesystemPath()
             self.logger.info(
                 'Location is only defined in legacy api: {0!r}'.format(
                     legacy_location
@@ -101,14 +103,14 @@ class OpenComponentDirectoryAction(object):
             )
 
         elif location and hasattr(location, 'get_filesystem_path'):
-            file_path = location.get_filesystem_path(component)
+            path = location.get_filesystem_path(component)
             self.logger.info(
                 'Location is only in api: {0!r}'.format(
                     legacy_location
                 )
             )
 
-        if file_path is None:
+        if path is None:
             self.logger.info(
                 'Could not determine a valid file system path for: '
                 '{0!r}'.format(
@@ -117,29 +119,23 @@ class OpenComponentDirectoryAction(object):
             )
             return self.failed
 
-        directory = os.path.dirname(file_path)
-        if not os.path.exists(directory):
+        if os.path.exists(path):
+            # File or directory exists.
+            ftrack_connect.util.open_directory(path)
+        elif os.path.exists(os.path.dirname(path)):
+            # Handle cases where file system path is a sequence expression.
+            ftrack_connect.util.open_directory(
+                os.path.dirname(path)
+            )
+        else:
+            # No file, directory or parent directory exists for path.
             self.logger.info(
                 'Directory resolved but non-existing {0!r} and {1!r}:'
                 '{0!r}'.format(
-                    component_id, file_path
+                    component_id, path
                 )
             )
             return self.failed
-
-        if sys.platform == 'win32':
-            subprocess.Popen(['start', directory], shell=True)
-
-        elif sys.platform == 'darwin':
-            if os.path.exists(file_path):
-                # File exists and can be opened with a selection.
-                subprocess.Popen(['open', '-R', file_path])
-
-            else:
-                subprocess.Popen(['open', directory])
-
-        else:
-            subprocess.Popen(['xdg-open', directory])
 
         return {
             'success': True,
