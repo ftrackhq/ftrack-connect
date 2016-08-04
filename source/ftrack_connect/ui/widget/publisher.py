@@ -7,7 +7,7 @@ from PySide import QtGui
 from PySide import QtCore
 
 import ftrack
-
+import ftrack_api.symbol
 
 from ftrack_connect.ui.widget import data_drop_zone as _data_drop_zone
 from ftrack_connect.ui.widget import components_list as _components_list
@@ -18,6 +18,7 @@ from ftrack_connect.ui.widget import entity_selector
 
 import ftrack_connect.asynchronous
 import ftrack_connect.error
+import ftrack_connect.session
 
 
 class EntitySelector(entity_selector.EntitySelector):
@@ -128,23 +129,8 @@ class Publisher(QtGui.QWidget):
 
     def _pickLocation(self, manageData=False):
         '''Return a location based on *manageData*.'''
-        location = None
-        locations = ftrack.getLocations(excludeInaccessible=True)
-        try:
-            location = next(
-                candidateLocation for candidateLocation in locations
-                if (
-                    manageData == False
-                    or not isinstance(candidateLocation, ftrack.UnmanagedLocation)
-                )
-            )
-
-        except StopIteration:
-            pass
-
-        self.logger.debug('Picked location {0}.'.format(location))
-
-        return location
+        session = ftrack_connect.session.get_shared_session()
+        return session.pick_location()
 
     def clear(self):
         '''Clear the publish view to it's initial state.'''
@@ -215,7 +201,9 @@ class Publisher(QtGui.QWidget):
         '''Clean up after a failed publish.'''
         try:
             if version:
-                version.delete()
+                session = version.session
+                session.delete(version)
+                session.commit()
 
         except ftrack.FTrackError:
             self.logger.exception(
@@ -247,6 +235,11 @@ class Publisher(QtGui.QWidget):
         self.publishStarted.emit()
 
         try:
+            session = ftrack_connect.session.get_shared_session()
+            origin = session.get(
+                'Location', ftrack_api.symbol.ORIGIN_LOCATION_ID
+            )
+
             if not (asset or assetType):
                 self.publishFinished.emit(False)
                 raise ftrack_connect.error.ConnectError('No asset type selected.')
@@ -267,26 +260,35 @@ class Publisher(QtGui.QWidget):
                 )
                 self.assetCreated.emit(asset)
 
-            version = asset.createVersion(
-                versionDescription, taskId
+            version = session.create(
+                'AssetVersion',
+                {
+                    'description': versionDescription,
+                    'task_id': taskId,
+                    'is_published': False,
+                    'asset_id': asset.getId()
+                }
             )
 
             for componentData in components:
-                component = version.createComponent(
-                    componentData.get('name', None),
-                    path=componentData.get('filePath'),
+                component = version.create_component(
+                    componentData.get('filePath'),
+                    {
+                        'name': componentData.get('name', None)
+                    },
                     location=None
                 )
+                session.commit()
 
                 for location in componentData.get('locations', []):
-                    location.addComponent(component)
+                    location.add_component(component, origin)
 
             if previewPath:
                 ftrack.EVENT_HUB.publish(
                     ftrack.Event(
                         'ftrack.connect.publish.make-web-playable',
                         data=dict(
-                            versionId=version.getId(),
+                            versionId=version['id'],
                             path=previewPath
                         )
                     ),
@@ -294,9 +296,10 @@ class Publisher(QtGui.QWidget):
                 )
 
             if thumbnailFilePath:
-                version.createThumbnail(thumbnailFilePath)
+                version.create_thumbnail(thumbnailFilePath)
 
-            version.publish()
+            version['is_published'] = True
+            session.commit()
 
             self.publishFinished.emit(True)
 

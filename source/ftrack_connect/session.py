@@ -3,6 +3,8 @@
 import os
 import logging
 
+import ftrack_location_compatibility.plugin
+
 import ftrack_api
 import ftrack_api.exception
 
@@ -42,6 +44,9 @@ def get_shared_session(plugin_paths=None):
             api_key=os.environ['FTRACK_APIKEY'],
             api_user=os.environ['LOGNAME'],
             plugin_paths=plugin_paths
+        )
+        ftrack_location_compatibility.plugin.register_locations(
+            _shared_session
         )
 
     return _shared_session
