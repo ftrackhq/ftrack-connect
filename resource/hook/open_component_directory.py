@@ -48,35 +48,83 @@ class OpenComponentDirectoryAction(object):
         component_id = selection['entityId']
 
         file_path = None
+
+        legacy_component = None
+        legacy_location = None
         try:
             legacy_component = ftrack.Component(component_id)
-            if (
-                legacy_component.getLocation() and
-                legacy_component.getFilesystemPath()
-            ):
-                # Try to resolve with legacy api.
-                file_path = legacy_component.getFilesystemPath()
-
-            if file_path is None:
-                # Legacy api could not resolve path, try with ftrack-python-api.
-                # TODO: Switch to resolving with ftrack-python-api by default.
-                component = self.session.get('Component', component_id)
-                location = self.session.pick_location(component)
-                if hasattr(location, 'get_filesystem_path'):
-                    file_path = location.get_filesystem_path(location)
-
+            legacy_location = legacy_component.getLocation()
         except Exception:
             self.logger.exception(
-                'Could not determine path for component with id {0!r}'.format(
-                    component_id
+                'Could not pick location for legacy component {0!r}'.format(
+                    legacy_component
+                )
+            )
+
+        location = None
+        component = None
+        try:
+            component = self.session.get('Component', component_id)
+            location = self.session.pick_location(component)
+        except Exception:
+            self.logger.exception(
+                'Could not pick location for component {0!r}'.format(
+                    legacy_component
+                )
+            )
+
+        if legacy_location and location:
+            if legacy_location.getPriority() < location.priority:
+                file_path = legacy_component.getFilesystemPath()
+                self.logger.info(
+                    'Location is defined with a higher priority in legacy api: '
+                    '{0!r}'.format(
+                        legacy_location
+                    )
+                )
+
+            else:
+                file_path = location.get_filesystem_path(component)
+                self.logger.info(
+                    'Location is defined with a higher priority in api: '
+                    '{0!r}'.format(
+                        location
+                    )
+                )
+
+        elif legacy_location:
+            file_path = legacy_component.getFilesystemPath()
+            self.logger.info(
+                'Location is only defined in legacy api: {0!r}'.format(
+                    legacy_location
+                )
+            )
+
+        elif location and hasattr(location, 'get_filesystem_path'):
+            file_path = location.get_filesystem_path(component)
+            self.logger.info(
+                'Location is only in api: {0!r}'.format(
+                    legacy_location
                 )
             )
 
         if file_path is None:
+            self.logger.info(
+                'Could not determine a valid file system path for: '
+                '{0!r}'.format(
+                    component_id
+                )
+            )
             return self.failed
 
         directory = os.path.dirname(file_path)
         if not os.path.exists(directory):
+            self.logger.info(
+                'Directory resolved but non-existing {0!r} and {1!r}:'
+                '{0!r}'.format(
+                    component_id, file_path
+                )
+            )
             return self.failed
 
         if sys.platform == 'win32':
