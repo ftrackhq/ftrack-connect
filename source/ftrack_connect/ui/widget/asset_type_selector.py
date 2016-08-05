@@ -1,7 +1,10 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-from PySide import QtGui
+from Qt import QtGui
+from Qt import QtCore
+from Qt import QtWidgets
+
 import ftrack
 
 import ftrack_connect.asynchronous

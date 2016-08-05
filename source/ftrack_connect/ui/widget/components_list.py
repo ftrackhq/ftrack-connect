@@ -3,7 +3,9 @@
 
 import functools
 
-from PySide import QtGui
+from Qt import QtGui
+from Qt import QtCore
+from Qt import QtWidgets
 
 import ftrack_connect.ui.widget.component
 import ftrack_connect.ui.widget.item_list

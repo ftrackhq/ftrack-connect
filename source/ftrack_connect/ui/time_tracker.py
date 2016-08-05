@@ -4,7 +4,9 @@
 import os
 import operator
 
-from PySide import QtGui, QtCore
+from Qt import QtGui
+from Qt import QtCore
+from Qt import QtWidgets
 
 import ftrack_connect.error
 import ftrack_connect.ui.application

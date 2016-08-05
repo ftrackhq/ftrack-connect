@@ -1,7 +1,10 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
 
-from PySide import QtGui, QtCore
+from Qt import QtGui
+from Qt import QtCore
+from Qt import QtWidgets
+
 import logging
 
 import ftrack

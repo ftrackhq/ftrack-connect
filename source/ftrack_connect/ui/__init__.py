@@ -3,8 +3,9 @@
 
 # Import QtSvg and QtXml to force load libraries needed to display
 # SVG on Windows.
-from PySide import QtSvg
-from PySide import QtXml
+from Qt import QtSvg
+from Qt import QtXml
+
 
 # Load UI resources such as icons.
 from . import resource as _resource

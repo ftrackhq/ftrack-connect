@@ -4,7 +4,9 @@
 import os
 import uuid
 
-from PySide import QtGui, QtCore
+from Qt import QtGui
+from Qt import QtCore
+from Qt import QtWidgets
 
 import ftrack_connect.ui.widget.line_edit
 import ftrack_connect.ui.widget.label

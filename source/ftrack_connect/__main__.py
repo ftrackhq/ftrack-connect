@@ -8,7 +8,7 @@ import signal
 import os
 import pkg_resources
 
-from PySide import QtGui
+from Qt import QtWidgets
 
 import ftrack_connect.config
 
@@ -68,7 +68,7 @@ def main(arguments=None):
     )
 
     # Construct global application.
-    application = QtGui.QApplication('ftrack-connect')
+    application = QtWidgets.QApplication(arguments)
     application.setOrganizationName('ftrack')
     application.setOrganizationDomain('ftrack.com')
     application.setQuitOnLastWindowClosed(False)
@@ -76,10 +76,12 @@ def main(arguments=None):
     # Enable ctrl+c to quit application when started from command line.
     signal.signal(signal.SIGINT, signal.SIG_DFL)
 
+    # TODO :RESTORE STYLE ONCE ALL THE REST WORKS
+
     # Construct main connect window and apply theme.
-    connectWindow = ftrack_connect.ui.application.Application(
-        theme=namespace.theme
-    )
+    # connectWindow = ftrack_connect.ui.application.Application(
+    #     theme=namespace.theme
+    # )
 
     # Fix for Windows where font size is incorrect for some widgets. For some
     # reason, resetting the font here solves the sizing issue.

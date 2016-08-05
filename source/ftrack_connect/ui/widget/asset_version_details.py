@@ -3,7 +3,9 @@
 
 import os
 
-from PySide import QtCore, QtGui
+from Qt import QtGui
+from Qt import QtCore
+from Qt import QtWidgets
 
 import ftrack
 from ftrack_connect.connector import HelpFunctions

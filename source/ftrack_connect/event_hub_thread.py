@@ -1,7 +1,9 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-from PySide import QtCore
+from Qt import QtGui
+from Qt import QtCore
+from Qt import QtWidgets
 
 
 class EventHubThread(QtCore.QThread):

@@ -2,7 +2,9 @@
 # :copyright: Copyright (c) 2015 ftrack
 
 import ftrack
-from PySide import QtCore, QtGui
+from Qt import QtGui
+from Qt import QtCore
+from Qt import QtWidgets
 
 import entity_path as entityPath
 import entity_browser as entityBrowser
