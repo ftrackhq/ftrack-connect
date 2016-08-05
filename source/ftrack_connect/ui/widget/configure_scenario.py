@@ -3,7 +3,10 @@
 
 import webbrowser
 
-from PySide import QtGui, QtCore, QtSvg
+from Qt import QtGui
+from Qt import QtCore
+from Qt import QtWidgets
+from Qt import QtSvg
 import ftrack_api.exception
 
 

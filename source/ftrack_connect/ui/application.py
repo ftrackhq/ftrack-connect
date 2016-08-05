@@ -12,8 +12,9 @@ import uuid
 import logging
 
 import appdirs
-from PySide import QtGui
-from PySide import QtCore
+from Qt import QtGui
+from Qt import QtCore
+from Qt import QtWidgets
 import ftrack_api
 import ftrack_api._centralized_storage_scenario
 import ftrack_api.event.base

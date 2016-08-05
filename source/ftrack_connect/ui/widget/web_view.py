@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
 
-from PySide import QtGui, QtWebKit, QtCore
+from Qt import QtGui, QtWebKit, QtCore, QtWidgets
 
 # TODO: Investigate why this import exists and remove it.
 try:

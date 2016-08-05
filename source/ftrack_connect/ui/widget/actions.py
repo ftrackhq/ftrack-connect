@@ -5,8 +5,9 @@ import json
 import time
 import logging
 
-from PySide import QtGui
-from PySide import QtCore
+from Qt import QtGui
+from Qt import QtCore
+from Qt import QtWidgets
 import ftrack
 import ftrack_api.event.base
 

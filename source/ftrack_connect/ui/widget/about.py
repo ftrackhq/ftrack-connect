@@ -5,7 +5,9 @@ import sys
 import json
 import subprocess
 
-from PySide import QtGui, QtCore
+from Qt import QtGui
+from Qt import QtCore
+from Qt import QtWidgets
 
 from ftrack_connect.config import get_log_directory
 
