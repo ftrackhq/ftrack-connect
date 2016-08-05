@@ -41,15 +41,8 @@ class OpenComponentDirectoryAction(object):
                 }]
             }
 
-    def launch(self, event):
-        '''Launch action for *event*.'''
-        selection = event['data']['selection'][0]
-
-        if selection['entityType'] != 'Component':
-            return
-
-        component_id = selection['entityId']
-
+    def resolve_path(self, component_id):
+        '''Return path from *component_id*.'''
         legacy_component = None
         legacy_location = None
         try:
@@ -120,6 +113,27 @@ class OpenComponentDirectoryAction(object):
             self.logger.info(
                 'Location is only in api: {0!r}'.format(
                     legacy_location
+                )
+            )
+
+        return path
+
+    def launch(self, event):
+        '''Launch action for *event*.'''
+        selection = event['data']['selection'][0]
+
+        if selection['entityType'] != 'Component':
+            return
+
+        path = None
+        component_id = selection['entityId']
+        try:
+            path = self.resolve_path(component_id)
+        except Exception:
+            self.logger.exception(
+                'Exception raised while resolving component with id '
+                '{0!r}'.format(
+                    component_id
                 )
             )
 
