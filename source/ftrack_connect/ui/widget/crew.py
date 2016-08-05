@@ -1,8 +1,8 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
 
-import logging
 import operator
+import logging
 
 from PySide import QtGui
 
@@ -12,6 +12,7 @@ import ftrack_connect.ui.widget.user
 import ftrack_connect.ui.widget.chat
 import ftrack_connect.error
 import ftrack_connect.ui.widget.overlay
+
 
 logger = logging.getLogger(__name__)
 

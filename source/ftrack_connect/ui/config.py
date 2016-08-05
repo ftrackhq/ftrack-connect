@@ -4,8 +4,8 @@
 import os
 import os.path
 import appdirs
-import logging
 import json
+import logging
 
 
 logger = logging.getLogger('ftrack_connect.ui.config')

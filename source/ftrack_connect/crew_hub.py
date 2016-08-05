@@ -4,10 +4,10 @@
 import threading
 import time
 import uuid
-import logging
 import datetime
 import getpass
 import collections
+import logging
 
 import arrow
 
