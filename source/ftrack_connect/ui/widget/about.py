@@ -12,7 +12,7 @@ from Qt import QtWidgets
 from ftrack_connect.config import get_log_directory
 
 
-class AboutDialog(QtGui.QDialog):
+class AboutDialog(QtWidgets.QDialog):
     '''About widget.'''
 
     def __init__(

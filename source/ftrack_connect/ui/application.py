@@ -35,7 +35,7 @@ from ftrack_connect.ui.widget import configure_scenario as _scenario_widget
 import ftrack_connect.ui.config
 
 
-class ApplicationPlugin(QtGui.QWidget):
+class ApplicationPlugin(QtWidgets.QWidget):
     '''Base widget for ftrack connect application plugin.'''
 
     #: Signal to emit to request focus of this plugin in application.
@@ -53,7 +53,7 @@ class ApplicationPlugin(QtGui.QWidget):
         return self.getName().lower().replace(' ', '.')
 
 
-class Application(QtGui.QMainWindow):
+class Application(QtWidgets.QMainWindow):
     '''Main application window for ftrack connect.'''
 
     #: Signal when login fails.

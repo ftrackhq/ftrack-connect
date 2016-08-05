@@ -10,7 +10,7 @@ from Qt import QtSvg
 import ftrack_api.exception
 
 
-class ConfigureScenario(QtGui.QWidget):
+class ConfigureScenario(QtWidgets.QWidget):
     '''Configure scenario widget.'''
 
     #: Signal to emit when configuration is completed.
