@@ -14,6 +14,7 @@ from distutils.command.clean import clean as CleanCommand
 from setuptools.command.test import test as TestCommand
 import distutils.dir_util
 import distutils
+import fileinput
 
 
 ROOT_PATH = os.path.dirname(
@@ -66,6 +67,14 @@ class BuildResources(Command):
             RESOURCE_PATH, 'resource.qrc'
         )
         self.resource_target_path = RESOURCE_TARGET_PATH
+
+    def _replace_imports_(self):
+        replace = 'from Qt import QtCore'
+        for line in fileinput.input(self.resource_target_path, inplace=True):
+            if 'import QtCore' in line:
+                print line.replace(line, replace)
+            else:
+                print line
 
     def run(self):
         '''Run build.'''
@@ -120,6 +129,8 @@ class BuildResources(Command):
                 'pyside-rcc could not be found. You might need to manually add '
                 'it to your PATH. See README for more information.'
             )
+
+        self._replace_imports_()
 
 
 class BuildEgg(BuildEggCommand):
@@ -211,6 +222,7 @@ configuration = dict(
         '': 'source'
     },
     setup_requires=[
+        'Qt.py >= 0.3.1',
         'pyScss >= 1.2.0, < 2',
         'PySide >= 1.2.2, < 2',
         'sphinx >= 1.2.2, < 2',
@@ -218,6 +230,7 @@ configuration = dict(
         'lowdown >= 0.1.0, < 1'
     ],
     install_requires=[
+        'Qt.py >= 0.3.1',
         'ftrack-python-api >= 0.8.1, < 1',
         'PySide >= 1.2.2, < 2',
         'Riffle >= 0.1.0, < 2',
