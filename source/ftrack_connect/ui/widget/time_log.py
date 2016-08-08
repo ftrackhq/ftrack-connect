@@ -3,6 +3,8 @@
 
 from Qt import QtWidgets
 from Qt import QtCore
+from Qt import QtGui
+
 import ftrack_connect.ui.widget.label
 
 
@@ -41,8 +43,8 @@ class TimeLog(QtWidgets.QWidget):
         self.labelLayout.addWidget(self.descriptionLabel)
 
         # TODO: Add theme support.
-        playIcon = QtWidgets.QIcon(
-            QtWidgets.QPixmap(':/ftrack/image/light/play')
+        playIcon = QtGui.QIcon(
+            QtGui.QPixmap(':/ftrack/image/light/play')
         )
 
         self.playButton = QtWidgets.QPushButton(playIcon, '')

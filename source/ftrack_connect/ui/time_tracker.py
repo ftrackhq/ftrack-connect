@@ -6,7 +6,7 @@ import operator
 
 from Qt import QtWidgets
 from Qt import QtCore
-from Qt import QtWidgets
+from Qt import QtGui
 
 import ftrack_connect.error
 import ftrack_connect.ui.application
@@ -82,8 +82,8 @@ class TimeTracker(ftrack_connect.ui.application.ApplicationPlugin):
         self.timerPlaceholder = TimerOverlay(self.timer)
 
         # TODO: Add theme support.
-        reloadIcon = QtWidgets.QIcon(
-            QtWidgets.QPixmap(':/ftrack/image/light/reload')
+        reloadIcon = QtGui.QIcon(
+            QtGui.QPixmap(':/ftrack/image/light/reload')
         )
 
         assignedTimeLogUpdateButton = QtWidgets.QPushButton(reloadIcon, '')

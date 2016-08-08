@@ -5,6 +5,7 @@ import getpass
 
 from Qt import QtCore
 from Qt import QtWidgets
+from Qt import QtGui
 
 import ftrack
 
@@ -424,7 +425,7 @@ class AssetManagerWidget(QtWidgets.QWidget):
 
                 removeButton = QtWidgets.QPushButton()
                 removeButton.setToolTip('Remove asset from scene')
-                icon = QtWidgets.QIcon()
+                icon = QtGui.QIcon()
                 icon.addPixmap(
                     QtWidgets.QPixmap(':ftrack/image/integration/trash'),
                     QtWidgets.QIcon.Normal,
@@ -454,13 +455,13 @@ class AssetManagerWidget(QtWidgets.QWidget):
 
                 commentButton = QtWidgets.QPushButton()
                 commentButton.setText('')
-                icon = QtWidgets.QIcon()
+                icon = QtGui.QIcon()
                 icon.addPixmap(
-                    QtWidgets.QPixmap(
+                    QtGui.QPixmap(
                         ':ftrack/image/integration/comment'
                         ),
-                    QtWidgets.QIcon.Normal,
-                    QtWidgets.QIcon.Off
+                    QtGui.QIcon.Normal,
+                    QtGui.QIcon.Off
                 )
                 commentButton.setIcon(icon)
 

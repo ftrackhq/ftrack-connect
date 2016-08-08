@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-from Qt import QtWidgets, QtCore
+from Qt import QtWidgets, QtCore, QtGui
 
 
 class LineEditIconButton(QtWidgets.QToolButton):
@@ -22,16 +22,16 @@ class LineEditIconButton(QtWidgets.QToolButton):
 
         # Note: isDown should ideally use the 'active' state, but in most styles
         # this has no proper feedback.
-        state = QtWidgets.QIcon.Disabled
+        state = QtGui.QIcon.Disabled
         if self.isEnabled():
-            state = QtWidgets.QIcon.Normal
+            state = QtGui.QIcon.Normal
             if self.isDown():
-                state = QtWidgets.QIcon.Selected
+                state = QtGui.QIcon.Selected
 
         iconPixmap = self.icon().pixmap(
             QtCore.QSize(self.iconSize, self.iconSize),
             state,
-            QtWidgets.QIcon.Off
+            QtGui.QIcon.Off
         )
 
         iconRegion = QtCore.QRect(

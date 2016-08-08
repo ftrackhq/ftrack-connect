@@ -3,7 +3,7 @@
 
 import os
 
-from Qt import QtWidgets, QtCore
+from Qt import QtWidgets, QtCore, QtGui
 
 import ftrack_connect.error
 
@@ -45,8 +45,8 @@ class ThumbnailDropZone(QtWidgets.QFrame):
         layout.addWidget(self.imageLabel, alignment=QtCore.Qt.AlignLeft)
 
         # TODO: Add theme support.
-        removeIcon = QtWidgets.QIcon(
-            QtWidgets.QPixmap(':/ftrack/image/light/trash')
+        removeIcon = QtGui.QIcon(
+            QtGui.QPixmap(':/ftrack/image/light/trash')
         )
         self.removeButton = QtWidgets.QPushButton()
         self.removeButton.setVisible(False)

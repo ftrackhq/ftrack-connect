@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
 
-from Qt import QtWidgets, QtCore
+from Qt import QtWidgets, QtCore, QtGui
 import ftrack
 
 from ftrack_connect.ui.widget import entity_path as _entity_path
@@ -50,8 +50,8 @@ class EntitySelector(QtWidgets.QStackedWidget):
         presentationWidget.layout().addWidget(self.entityPath)
 
         self.discardEntityButton = QtWidgets.QPushButton()
-        removeIcon = QtWidgets.QIcon(
-            QtWidgets.QPixmap(':/ftrack/image/light/remove')
+        removeIcon = QtGui.QIcon(
+            QtGui.QPixmap(':/ftrack/image/light/remove')
         )
         self.discardEntityButton.setIconSize(QtCore.QSize(20, 20))
         self.discardEntityButton.setIcon(removeIcon)

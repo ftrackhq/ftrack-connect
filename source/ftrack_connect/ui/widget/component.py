@@ -6,6 +6,7 @@ import uuid
 
 from Qt import QtWidgets
 from Qt import QtCore
+from Qt import QtGui
 
 import ftrack_connect.ui.widget.line_edit
 import ftrack_connect.ui.widget.label
@@ -29,12 +30,12 @@ class Component(QtWidgets.QWidget):
         self.layout().addWidget(self.componentNameEdit)
 
         # TODO: Add theme support.
-        removeIcon = QtWidgets.QIcon(
-            QtWidgets.QPixmap(':/ftrack/image/light/trash')
+        removeIcon = QtGui.QIcon(
+            QtGui.QPixmap(':/ftrack/image/light/trash')
         )
 
         self.removeAction = QtWidgets.QAction(
-            QtWidgets.QIcon(removeIcon), 'Remove', self.componentNameEdit
+            QtGui.QIcon(removeIcon), 'Remove', self.componentNameEdit
         )
         self.removeAction.setStatusTip('Remove component.')
         self.componentNameEdit.addAction(

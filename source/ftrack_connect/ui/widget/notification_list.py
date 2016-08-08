@@ -3,7 +3,7 @@
 
 from collections import defaultdict
 
-from Qt import QtWidgets, QtCore
+from Qt import QtWidgets, QtCore, QtGui
 import ftrack
 
 from ftrack_connect.ui.widget import notification_directive
@@ -91,8 +91,8 @@ class Notification(QtGui.QWidget):
 
         self.setLayout(layout)
 
-        reloadIcon = QtWidgets.QIcon(
-            QtWidgets.QPixmap(':/ftrack/image/dark/reload')
+        reloadIcon = QtGui.QIcon(
+            QtGui.QPixmap(':/ftrack/image/dark/reload')
         )
 
         self.reloadButton = QtWidgets.QPushButton(reloadIcon, '')

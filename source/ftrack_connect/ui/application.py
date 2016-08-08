@@ -15,6 +15,8 @@ import appdirs
 # from Qt import QtWidgets
 from Qt import QtCore
 from Qt import QtWidgets
+from Qt import QtGui
+
 import ftrack_api
 import ftrack_api._centralized_storage_scenario
 import ftrack_api.event.base
@@ -109,8 +111,8 @@ class Application(QtWidgets.QMainWindow):
                 'No system tray located.'
             )
 
-        self.logoIcon = QtWidgets.QIcon(
-            QtWidgets.QPixmap(':/ftrack/image/default/ftrackLogoColor')
+        self.logoIcon = QtGui.QIcon(
+            QtGui.QPixmap(':/ftrack/image/default/ftrackLogoColor')
         )
 
         self._login_server_thread = None
