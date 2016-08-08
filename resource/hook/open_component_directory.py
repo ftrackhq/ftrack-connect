@@ -108,7 +108,7 @@ class OpenComponentDirectoryAction(object):
                 )
             )
 
-        elif location and hasattr(location, 'get_filesystem_path'):
+        elif location:
             path = location.get_filesystem_path(component)
             self.logger.info(
                 'Location is only in api: {0!r}'.format(
