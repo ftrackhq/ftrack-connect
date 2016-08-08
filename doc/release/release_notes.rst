@@ -7,7 +7,8 @@
 Release Notes
 *************
 
-.. release:: Upcoming
+.. release:: 0.1.27
+    :date: 2016-08-08
 
     .. change:: new
         :tags: Actions
