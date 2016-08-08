@@ -8,7 +8,6 @@ import logging
 from Qt import QtGui
 from Qt import QtCore
 from Qt import QtWidgets
-from Qt.QtCore import Qt
 
 import riffle.browser
 import riffle.model
@@ -71,7 +70,7 @@ def data(self, index, role):
     if role == self.ITEM_ROLE:
         return item
 
-    elif role == Qt.DisplayRole:
+    elif role == QtCore.Qt.DisplayRole:
 
         if column == 0:
             # Convert to unicode.
@@ -89,20 +88,20 @@ def data(self, index, role):
                 # Convert to unicode.
                 return item.modified.strftime('%c').decode('utf-8')
 
-    elif role == Qt.DecorationRole:
+    elif role ==  QtCore.Qt.DecorationRole:
         if column == 0:
             return self.iconFactory.icon(item)
 
-    elif role == Qt.TextAlignmentRole:
+    elif role ==  QtCore.Qt.TextAlignmentRole:
         if column == 1:
-            return Qt.AlignRight
+            return  QtCore.Qt.AlignRight
         else:
-            return Qt.AlignLeft
+            return  QtCore.Qt.AlignLeft
 
 riffle.model.Filesystem.data = data
 
 
-class DataDropZone(QtGui.QFrame):
+class DataDropZone(QtWidgets.QFrame):
     '''Data drop zone widget.'''
 
     dataSelected = QtCore.Signal(object)
