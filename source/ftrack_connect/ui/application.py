@@ -12,7 +12,7 @@ import uuid
 import logging
 
 import appdirs
-# from Qt import QtGui
+# from Qt import QtWidgets
 from Qt import QtCore
 from Qt import QtWidgets
 import ftrack_api

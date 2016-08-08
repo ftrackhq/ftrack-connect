@@ -1,11 +1,10 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-from Qt import QtGui
-from Qt import QtCore
 from Qt import QtWidgets
 
-class AssetNameValidator(QtGui.QValidator):
+
+class AssetNameValidator(QtWidgets.QValidator):
     '''Asset Name Validator.
 
     Validates the input's uniqueness using *assetSelector* and
@@ -34,11 +33,12 @@ class AssetNameValidator(QtGui.QValidator):
                 break
 
         if not value or not isValid:
-            return QtGui.QValidator.Intermediate
+            return QtWidgets.QValidator.Intermediate
         else:
-            return QtGui.QValidator.Acceptable
+            return QtWidgets.QValidator.Acceptable
 
-class AssetNameEdit(QtGui.QLineEdit):
+
+class AssetNameEdit(QtWidgets.QLineEdit):
     '''Asset Name line edit
 
     ..note ::

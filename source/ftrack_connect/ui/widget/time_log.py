@@ -1,12 +1,12 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-from PySide import QtGui
-from PySide import QtCore
+from Qt import QtWidgets
+from Qt import QtCore
 import ftrack_connect.ui.widget.label
 
 
-class TimeLog(QtGui.QWidget):
+class TimeLog(QtWidgets.QWidget):
     '''Represent a time log.'''
 
     selected = QtCore.Signal(object)
@@ -27,10 +27,10 @@ class TimeLog(QtGui.QWidget):
         self.setObjectName('time-log')
         self._data = None
 
-        layout = QtGui.QHBoxLayout()
+        layout = QtWidgets.QHBoxLayout()
         self.setLayout(layout)
 
-        self.labelLayout = QtGui.QVBoxLayout()
+        self.labelLayout = QtWidgets.QVBoxLayout()
         layout.addLayout(self.labelLayout, stretch=1)
 
         self.titleLabel = ftrack_connect.ui.widget.label.Label()
@@ -41,17 +41,17 @@ class TimeLog(QtGui.QWidget):
         self.labelLayout.addWidget(self.descriptionLabel)
 
         # TODO: Add theme support.
-        playIcon = QtGui.QIcon(
-            QtGui.QPixmap(':/ftrack/image/light/play')
+        playIcon = QtWidgets.QIcon(
+            QtWidgets.QPixmap(':/ftrack/image/light/play')
         )
 
-        self.playButton = QtGui.QPushButton(playIcon, '')
+        self.playButton = QtWidgets.QPushButton(playIcon, '')
         self.playButton.setFlat(True)
         self.playButton.clicked.connect(self._onPlayButtonClicked)
         layout.addWidget(self.playButton)
 
         self.setSizePolicy(
-            QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Fixed
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed
         )
 
         # Set initial values.

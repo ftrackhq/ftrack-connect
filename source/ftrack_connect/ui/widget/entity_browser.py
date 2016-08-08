@@ -5,7 +5,7 @@
 
 import os
 
-from PySide import QtGui, QtCore
+from Qt import QtWidgets, QtCore
 import ftrack_api
 
 import ftrack_connect.ui.model.entity_tree
@@ -13,7 +13,7 @@ import ftrack_connect.ui.widget.overlay
 import ftrack_connect.session
 
 
-class EntityBrowser(QtGui.QDialog):
+class EntityBrowser(QtWidgets.QDialog):
     '''Entity browser.'''
 
     #: Signal when location changed.
@@ -42,40 +42,40 @@ class EntityBrowser(QtGui.QDialog):
 
     def _construct(self):
         '''Construct widget.'''
-        self.setLayout(QtGui.QVBoxLayout())
+        self.setLayout(QtWidgets.QVBoxLayout())
 
-        self.headerLayout = QtGui.QHBoxLayout()
+        self.headerLayout = QtWidgets.QHBoxLayout()
 
-        self.navigationBar = QtGui.QTabBar()
+        self.navigationBar = QtWidgets.QTabBar()
         self.navigationBar.setExpanding(False)
         self.navigationBar.setDrawBase(False)
         self.headerLayout.addWidget(self.navigationBar, stretch=1)
 
-        self.navigateUpButton = QtGui.QToolButton()
+        self.navigateUpButton = QtWidgets.QToolButton()
         self.navigateUpButton.setObjectName('entity-browser-up-button')
         self.navigateUpButton.setIcon(
-            QtGui.QIcon(':ftrack/image/light/upArrow')
+            QtWidgets.QIcon(':ftrack/image/light/upArrow')
         )
         self.navigateUpButton.setToolTip('Navigate up a level.')
         self.headerLayout.addWidget(self.navigateUpButton)
 
-        self.reloadButton = QtGui.QToolButton()
+        self.reloadButton = QtWidgets.QToolButton()
         self.reloadButton.setObjectName('entity-browser-reload-button')
 
         self.reloadButton.setIcon(
-            QtGui.QIcon(':ftrack/image/light/reload')
+            QtWidgets.QIcon(':ftrack/image/light/reload')
         )
         self.reloadButton.setToolTip('Reload listing from server.')
         self.headerLayout.addWidget(self.reloadButton)
 
         self.layout().addLayout(self.headerLayout)
 
-        self.contentSplitter = QtGui.QSplitter()
+        self.contentSplitter = QtWidgets.QSplitter()
 
-        self.bookmarksList = QtGui.QListView()
+        self.bookmarksList = QtWidgets.QListView()
         self.contentSplitter.addWidget(self.bookmarksList)
 
-        self.view = QtGui.QTableView()
+        self.view = QtWidgets.QTableView()
         self.view.setSelectionBehavior(self.view.SelectRows)
         self.view.setSelectionMode(self.view.SingleSelection)
         self.view.verticalHeader().hide()
@@ -98,13 +98,13 @@ class EntityBrowser(QtGui.QDialog):
         self.contentSplitter.setStretchFactor(1, 1)
         self.layout().addWidget(self.contentSplitter)
 
-        self.footerLayout = QtGui.QHBoxLayout()
+        self.footerLayout = QtWidgets.QHBoxLayout()
         self.footerLayout.addStretch(1)
 
-        self.cancelButton = QtGui.QPushButton('Cancel')
+        self.cancelButton = QtWidgets.QPushButton('Cancel')
         self.footerLayout.addWidget(self.cancelButton)
 
-        self.acceptButton = QtGui.QPushButton('Choose')
+        self.acceptButton = QtWidgets.QPushButton('Choose')
         self.footerLayout.addWidget(self.acceptButton)
 
         self.layout().addLayout(self.footerLayout)
@@ -128,10 +128,10 @@ class EntityBrowser(QtGui.QDialog):
         self.model.sourceModel().loadEnded.connect(self._onLoadEnded)
 
         self.view.horizontalHeader().setResizeMode(
-            QtGui.QHeaderView.ResizeToContents
+            QtWidgets.QHeaderView.ResizeToContents
         )
         self.view.horizontalHeader().setResizeMode(
-            0, QtGui.QHeaderView.Stretch
+            0, QtWidgets.QHeaderView.Stretch
         )
 
         self.acceptButton.clicked.connect(self.accept)

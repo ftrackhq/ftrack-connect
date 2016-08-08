@@ -3,7 +3,7 @@
 
 import os
 
-from PySide import QtGui, QtCore
+from Qt import QtWidgets, QtCore
 
 import ftrack_connect.error
 
@@ -19,7 +19,7 @@ class ConnectThumbnailValidationError(ftrack_connect.error.ConnectError):
     pass
 
 
-class ThumbnailDropZone(QtGui.QFrame):
+class ThumbnailDropZone(QtWidgets.QFrame):
     '''Thumbnail widget with support for drag and drop and preview.'''
 
     def __init__(self, *args, **kwargs):
@@ -28,7 +28,7 @@ class ThumbnailDropZone(QtGui.QFrame):
 
         self.setObjectName('ftrack-connect-thumbnail-drop-zone')
 
-        layout = QtGui.QHBoxLayout()
+        layout = QtWidgets.QHBoxLayout()
         layout.addSpacing(0)
         layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(layout)
@@ -40,15 +40,15 @@ class ThumbnailDropZone(QtGui.QFrame):
         self._imageWidth = 200
         self._imageHeight = 50
 
-        self.imageLabel = QtGui.QLabel()
+        self.imageLabel = QtWidgets.QLabel()
         self.setDropZoneText()
         layout.addWidget(self.imageLabel, alignment=QtCore.Qt.AlignLeft)
 
         # TODO: Add theme support.
-        removeIcon = QtGui.QIcon(
-            QtGui.QPixmap(':/ftrack/image/light/trash')
+        removeIcon = QtWidgets.QIcon(
+            QtWidgets.QPixmap(':/ftrack/image/light/trash')
         )
-        self.removeButton = QtGui.QPushButton()
+        self.removeButton = QtWidgets.QPushButton()
         self.removeButton.setVisible(False)
         self.removeButton.setFlat(True)
         self.removeButton.setIcon(removeIcon)
@@ -95,7 +95,7 @@ class ThumbnailDropZone(QtGui.QFrame):
     def setThumbnail(self, filePath):
         '''Set thumbnail to *filePath* and display a preview.'''
         self._filePath = filePath
-        pixmap = QtGui.QPixmap(self._filePath).scaled(
+        pixmap = QtWidgets.QPixmap(self._filePath).scaled(
             self._imageWidth, self._imageHeight, QtCore.Qt.KeepAspectRatio
         )
         self.imageLabel.setPixmap(pixmap)
@@ -144,16 +144,16 @@ class ThumbnailDropZone(QtGui.QFrame):
         if not self._filePath:
             return True
 
-        response = QtGui.QMessageBox.question(
+        response = QtWidgets.QMessageBox.question(
             self,
             'Replace thumbnail',
             'Do you want to replace the current thumbnail?',
             (
-                QtGui.QMessageBox.StandardButton.Yes |
-                QtGui.QMessageBox.StandardButton.No
+                QtWidgets.QMessageBox.StandardButton.Yes |
+                QtWidgets.QMessageBox.StandardButton.No
             )
         )
-        return (response == QtGui.QMessageBox.StandardButton.Yes)
+        return (response == QtWidgets.QMessageBox.StandardButton.Yes)
 
     def dropEvent(self, event):
         '''Validate and set thumbnail when a file is droppped.'''
@@ -164,7 +164,7 @@ class ThumbnailDropZone(QtGui.QFrame):
                 self.setThumbnail(filePath)
 
         except ConnectThumbnailValidationError as error:
-            QtGui.QMessageBox.warning(
+            QtWidgets.QMessageBox.warning(
                 self, 'Invalid thumbnail', error.message
             )
 

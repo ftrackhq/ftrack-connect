@@ -3,7 +3,7 @@
 
 from collections import defaultdict
 
-from PySide import QtGui, QtCore
+from Qt import QtWidgets, QtCore
 import ftrack
 
 from ftrack_connect.ui.widget import notification_directive
@@ -36,7 +36,7 @@ class NotificationList(ftrack_connect.ui.widget.item_list.ItemList):
             parent=parent
         )
         self.list.setSelectionMode(
-            QtGui.QAbstractItemView.NoSelection
+            QtWidgets.QAbstractItemView.NoSelection
         )
         self.list.setShowGrid(False)
 
@@ -85,20 +85,20 @@ class Notification(QtGui.QWidget):
 
         self._context = defaultdict(list)
 
-        layout = QtGui.QVBoxLayout()
+        layout = QtWidgets.QVBoxLayout()
 
-        toolbar = QtGui.QHBoxLayout()
+        toolbar = QtWidgets.QHBoxLayout()
 
         self.setLayout(layout)
 
-        reloadIcon = QtGui.QIcon(
-            QtGui.QPixmap(':/ftrack/image/dark/reload')
+        reloadIcon = QtWidgets.QIcon(
+            QtWidgets.QPixmap(':/ftrack/image/dark/reload')
         )
 
-        self.reloadButton = QtGui.QPushButton(reloadIcon, '')
+        self.reloadButton = QtWidgets.QPushButton(reloadIcon, '')
         self.reloadButton.clicked.connect(self.reload)
 
-        toolbar.addWidget(QtGui.QWidget(), stretch=1)
+        toolbar.addWidget(QtWidgets.QWidget(), stretch=1)
         toolbar.addWidget(self.reloadButton, stretch=0)
 
         layout.addLayout(toolbar)
@@ -189,7 +189,7 @@ class Notification(QtGui.QWidget):
         worker.start()
 
         while worker.isRunning():
-            app = QtGui.QApplication.instance()
+            app = QtWidgets.QApplication.instance()
             app.processEvents()
 
         if worker.error:

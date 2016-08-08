@@ -3,7 +3,7 @@
 
 import time as _time
 
-from PySide import QtGui, QtCore
+from Qt import QtWidgets, QtCore
 
 import ftrack_connect.ui.widget.line_edit
 import ftrack_connect.ui.widget.label
@@ -11,7 +11,7 @@ import ftrack_connect.error
 import ftrack_connect.duration
 
 
-class Timer(QtGui.QFrame):
+class Timer(QtWidgets.QFrame):
     '''Timer for logging time.'''
 
     #: Signal when time value edited manually.
@@ -61,10 +61,10 @@ class Timer(QtGui.QFrame):
         self._tickInterval = 50
         self._elapsed = 0
 
-        layout = QtGui.QHBoxLayout()
+        layout = QtWidgets.QHBoxLayout()
         self.setLayout(layout)
 
-        self.labelLayout = QtGui.QVBoxLayout()
+        self.labelLayout = QtWidgets.QVBoxLayout()
         layout.addLayout(self.labelLayout, stretch=1)
 
         self.titleLabel = ftrack_connect.ui.widget.label.Label()
@@ -79,14 +79,14 @@ class Timer(QtGui.QFrame):
         self.timeField.setAlignment(QtCore.Qt.AlignCenter)
         layout.addWidget(self.timeField)
 
-        self.toggleButton = QtGui.QPushButton('Start')
+        self.toggleButton = QtWidgets.QPushButton('Start')
         self.toggleButton.setObjectName('primary')
         self.toggleButton.setProperty('mode', 'start')
 
         layout.addWidget(self.toggleButton)
 
         self.setSizePolicy(
-            QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Fixed
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed
         )
 
         # Install event filter at application level in order to manage focus

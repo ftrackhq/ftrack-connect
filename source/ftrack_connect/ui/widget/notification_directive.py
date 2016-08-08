@@ -6,7 +6,7 @@ import sys
 import json
 
 import arrow
-from PySide import QtGui
+from Qt import QtWidgets
 import ftrack
 import ftrack_api
 
@@ -14,7 +14,7 @@ import ftrack_api
 session = ftrack_api.Session()
 
 
-class Notification(QtGui.QWidget):
+class Notification(QtWidgets.QWidget):
     '''Represent a notification.'''
 
     #: Unique identifier for the notification class.
@@ -25,17 +25,17 @@ class Notification(QtGui.QWidget):
     ):
         '''Initialise widget with initial component *event* and *parent*.'''
         super(Notification, self).__init__(parent=parent)
-        self.horizontalLayout = QtGui.QHBoxLayout()
-        verticalLayout = QtGui.QVBoxLayout()
+        self.horizontalLayout = QtWidgets.QHBoxLayout()
+        verticalLayout = QtWidgets.QVBoxLayout()
 
         self.setLayout(self.horizontalLayout)
 
         self.horizontalLayout.addLayout(verticalLayout, stretch=1)
 
-        self.textLabel = QtGui.QLabel()
+        self.textLabel = QtWidgets.QLabel()
         verticalLayout.addWidget(self.textLabel)
 
-        self.dateLabel = QtGui.QLabel()
+        self.dateLabel = QtWidgets.QLabel()
         verticalLayout.addWidget(self.dateLabel)
 
         self.setDate(event['created_at'])

@@ -3,9 +3,7 @@
 
 import sys
 
-from Qt import QtGui
 from Qt import QtCore
-from Qt import QtWidgets
 
 
 class Worker(QtCore.QThread):

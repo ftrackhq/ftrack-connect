@@ -2,7 +2,7 @@
 # :copyright: Copyright (c) 2015 ftrack
 
 # Class for handling communication between panels
-from PySide import QtCore
+from Qt import QtCore
 
 #: TODO: Rewrite this to use ftrack events instead.
 

@@ -3,15 +3,14 @@
 
 import traceback
 
-from Qt import QtGui
-from Qt import QtCore
 from Qt import QtWidgets
+from Qt import QtCore
 import ftrack
 
 from ftrack_connect.worker import Worker
 
 
-class ComponentTableWidget(QtGui.QTableWidget):
+class ComponentTableWidget(QtWidgets.QTableWidget):
 
     '''Display components for asset version and manage importing.'''
 
@@ -37,12 +36,12 @@ class ComponentTableWidget(QtGui.QTableWidget):
         )
         self.build()
         self.postBuild()
-        self.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
+        self.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
 
     def build(self):
         '''Build widgets and layout.'''
         self.setSelectionBehavior(
-            QtGui.QAbstractItemView.SelectRows
+            QtWidgets.QAbstractItemView.SelectRows
         )
 
         self.setTextElideMode(QtCore.Qt.ElideLeft)
@@ -55,14 +54,14 @@ class ComponentTableWidget(QtGui.QTableWidget):
         self.setHorizontalHeaderLabels(self.columns)
 
         horizontalHeader = self.horizontalHeader()
-        horizontalHeader.setResizeMode(QtGui.QHeaderView.ResizeToContents)
+        horizontalHeader.setResizeMode(QtWidgets.QHeaderView.ResizeToContents)
         horizontalHeader.setResizeMode(
             self.columns.index('Path'),
-            QtGui.QHeaderView.Stretch
+            QtWidgets.QHeaderView.Stretch
         )
         horizontalHeader.setResizeMode(
             self.columns.index('Action'),
-            QtGui.QHeaderView.Fixed
+            QtWidgets.QHeaderView.Fixed
         )
         horizontalHeader.resizeSection(
             self.columns.index('Action'),
@@ -111,27 +110,27 @@ class ComponentTableWidget(QtGui.QTableWidget):
                 rowCount = self.rowCount()
                 self.insertRow(rowCount)
 
-                componentItem = QtGui.QTableWidgetItem(componentName)
+                componentItem = QtWidgets.QTableWidgetItem(componentName)
                 componentItem.setData(self.COMPONENT_ROLE, component)
                 self.setItem(
                     rowCount, column('Component'), componentItem
                 )
 
-                pathItem = QtGui.QTableWidgetItem('')
+                pathItem = QtWidgets.QTableWidgetItem('')
                 self.setItem(rowCount, column('Path'), pathItem)
 
-                availabilityItem = QtGui.QTableWidgetItem('')
+                availabilityItem = QtWidgets.QTableWidgetItem('')
                 self.setItem(
                     rowCount, column('Availability'), availabilityItem
                 )
 
-                actionItem = QtGui.QPushButton()
+                actionItem = QtWidgets.QPushButton()
                 self.setCellWidget(rowCount, column('Action'), actionItem)
 
                 actionItem.clicked.connect(self.actionSignalMapper.map)
                 self.actionSignalMapper.setMapping(actionItem, rowCount)
 
-                locationItem = QtGui.QComboBox()
+                locationItem = QtWidgets.QComboBox()
                 self.setCellWidget(rowCount, column('Location'), locationItem)
 
                 # Map version widget to row number to enable simple lookup
@@ -235,7 +234,7 @@ class ComponentTableWidget(QtGui.QTableWidget):
             # Unfortunately, this will destroy the push button, so have to
             # recreate it afterwards. If Qt adds a takeCellWidget this can be
             # improved.
-            transferProgressItem = QtGui.QProgressBar()
+            transferProgressItem = QtWidgets.QProgressBar()
             transferProgressItem.setTextVisible(False)
             self.setCellWidget(row, self.columns.index('Action'),
                                transferProgressItem)
@@ -249,7 +248,7 @@ class ComponentTableWidget(QtGui.QTableWidget):
                 worker.start()
 
                 while worker.isRunning():
-                    app = QtGui.QApplication.instance()
+                    app = QtWidgets.QApplication.instance()
                     app.processEvents()
 
                 if worker.error:
@@ -257,7 +256,7 @@ class ComponentTableWidget(QtGui.QTableWidget):
 
             except Exception as error:
                 traceback.print_exc()
-                QtGui.QMessageBox.critical(
+                QtWidgets.QMessageBox.critical(
                     None,
                     'Transfer Failed',
                     'Could not transfer to location!'
@@ -270,7 +269,7 @@ class ComponentTableWidget(QtGui.QTableWidget):
                 locationItem.setEnabled(True)
 
                 # Have to recreate action button
-                actionItem = QtGui.QPushButton()
+                actionItem = QtWidgets.QPushButton()
                 self.setCellWidget(row, column('Action'), actionItem)
 
                 actionItem.clicked.connect(self.actionSignalMapper.map)

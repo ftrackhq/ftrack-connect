@@ -1,10 +1,10 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-from PySide import QtGui, QtCore
+from Qt import QtWidgets, QtCore
 
 
-class ClickableLabel(QtGui.QLabel):
+class ClickableLabel(QtWidgets.QLabel):
     '''Clickable label class.'''
 
     clicked = QtCore.Signal()
@@ -14,7 +14,7 @@ class ClickableLabel(QtGui.QLabel):
         self.clicked.emit()
 
 
-class Login(QtGui.QWidget):
+class Login(QtWidgets.QWidget):
     '''Login widget class.'''
     # Login signal with params url, username and API key.
     login = QtCore.Signal(object, object, object)
@@ -26,38 +26,38 @@ class Login(QtGui.QWidget):
         '''Instantiate the login widget.'''
         super(Login, self).__init__(*args, **kwargs)
 
-        layout = QtGui.QVBoxLayout()
+        layout = QtWidgets.QVBoxLayout()
         layout.addSpacing(100)
         layout.setContentsMargins(50, 0, 50, 0)
         layout.setSpacing(15)
         self.setLayout(layout)
 
-        label = QtGui.QLabel()
+        label = QtWidgets.QLabel()
         label.setText('Sign in')
         label.setObjectName('login-label')
         layout.addWidget(label, alignment=QtCore.Qt.AlignCenter)
 
-        self.server = QtGui.QLineEdit()
+        self.server = QtWidgets.QLineEdit()
         self.server.setPlaceholderText('Site name or custom domain URL')
         layout.addWidget(self.server)
 
-        self.username = QtGui.QLineEdit()
+        self.username = QtWidgets.QLineEdit()
         self.username.setPlaceholderText('User name')
         self.username.hide()
         layout.addWidget(self.username)
 
-        self.apiKey = QtGui.QLineEdit()
+        self.apiKey = QtWidgets.QLineEdit()
         self.apiKey.setPlaceholderText('API key')
         self.apiKey.hide()
         layout.addWidget(self.apiKey)
 
-        loginButton = QtGui.QPushButton(text='SIGN IN')
+        loginButton = QtWidgets.QPushButton(text='SIGN IN')
         loginButton.setObjectName('primary')
         loginButton.clicked.connect(self.handleLogin)
         loginButton.setMinimumHeight(35)
         layout.addWidget(loginButton)
 
-        label = QtGui.QLabel()
+        label = QtWidgets.QLabel()
         label.setObjectName('lead-label')
         label.setContentsMargins(0, 0, 0, 0)
         label.setText(
@@ -74,7 +74,7 @@ class Login(QtGui.QWidget):
         label.setMinimumWidth(300)
         layout.addWidget(label, alignment=QtCore.Qt.AlignCenter)
 
-        self.errorLabel = QtGui.QLabel()
+        self.errorLabel = QtWidgets.QLabel()
         self.errorLabel.setWordWrap(True)
         layout.addWidget(self.errorLabel)
         self.loginError.connect(self.errorLabel.setText)

@@ -2,7 +2,7 @@
 # :copyright: Copyright (c) 2015 ftrack
 
 import arrow
-from PySide import QtGui, QtCore
+from Qt import QtWidgets, QtCore
 import copy
 
 import ftrack_connect.error
@@ -10,7 +10,7 @@ import ftrack_connect.ui.widget.label
 import ftrack_connect.ui.widget.thumbnail
 
 
-class UserExtended(QtGui.QFrame):
+class UserExtended(QtWidgets.QFrame):
     '''Extended user information.'''
 
     def __init__(
@@ -19,12 +19,12 @@ class UserExtended(QtGui.QFrame):
         '''Initialise widget with initial component *value* and *parent*.'''
         super(UserExtended, self).__init__(parent=parent)
 
-        self.applicationInfoWidget = QtGui.QLabel()
+        self.applicationInfoWidget = QtWidgets.QLabel()
 
         self._userId = userId
         self._applications = applications
 
-        self.setLayout(QtGui.QVBoxLayout())
+        self.setLayout(QtWidgets.QVBoxLayout())
 
         self.user = User(name, userId, group=None, applications=applications)
         self.layout().addWidget(self.user)
@@ -57,7 +57,7 @@ class UserExtended(QtGui.QFrame):
         })
 
 
-class User(QtGui.QFrame):
+class User(QtWidgets.QFrame):
     '''Represent a user.'''
 
     #: Item click signal.
@@ -77,7 +77,7 @@ class User(QtGui.QFrame):
 
         self.setObjectName('user')
 
-        self.setLayout(QtGui.QHBoxLayout())
+        self.setLayout(QtWidgets.QHBoxLayout())
 
         self.thumbnail = ftrack_connect.ui.widget.thumbnail.User()
         self.thumbnail.setFixedWidth(30)
@@ -87,11 +87,11 @@ class User(QtGui.QFrame):
 
         self.layout().setContentsMargins(0, 0, 0, 0)
 
-        nameAndActivity = QtGui.QWidget()
-        nameAndActivity.setLayout(QtGui.QVBoxLayout())
+        nameAndActivity = QtWidgets.QWidget()
+        nameAndActivity.setLayout(QtWidgets.QVBoxLayout())
         nameAndActivity.layout().setContentsMargins(0, 0, 0, 0)
 
-        self.countLabel = QtGui.QLabel()
+        self.countLabel = QtWidgets.QLabel()
         self.countLabel.setObjectName('user-conversation-count')
         self.countLabel.hide()
 
@@ -103,7 +103,7 @@ class User(QtGui.QFrame):
         self.activityLabel = ftrack_connect.ui.widget.label.Label()
         self.activityLabel.setObjectName('user-activity')
 
-        self.nameAndCountLayout = QtGui.QHBoxLayout()
+        self.nameAndCountLayout = QtWidgets.QHBoxLayout()
         self.nameAndCountLayout.addWidget(self.nameLabel, stretch=1)
         self.nameAndCountLayout.addWidget(self.countLabel, stretch=0)
         self.nameAndCountLayout.addSpacing(5)

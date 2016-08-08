@@ -4,7 +4,7 @@
 import os
 import urllib2
 
-from PySide import QtGui, QtCore
+from Qt import QtWidgets, QtCore
 import ftrack
 import ftrack_connect.worker
 
@@ -12,14 +12,14 @@ import ftrack_connect.worker
 IMAGE_CACHE = dict()
 
 
-class Base(QtGui.QLabel):
+class Base(QtWidgets.QLabel):
     '''Widget to load thumbnails from ftrack server.'''
 
     def __init__(self, parent=None):
         super(Base, self).__init__(parent)
 
         self.thumbnailCache = {}
-        self.setFrameStyle(QtGui.QFrame.StyledPanel)
+        self.setFrameStyle(QtWidgets.QFrame.StyledPanel)
         self.setAlignment(QtCore.Qt.AlignCenter)
 
         self.placholderThumbnail = (
@@ -37,7 +37,7 @@ class Base(QtGui.QLabel):
 
         if self._worker and self._worker.isRunning():
             while self._worker:
-                app = QtGui.QApplication.instance()
+                app = QtWidgets.QApplication.instance()
                 app.processEvents()
 
         self._worker = ftrack_connect.worker.Worker(
@@ -59,7 +59,7 @@ class Base(QtGui.QLabel):
 
     def _updatePixmapData(self, data):
         '''Update thumbnail with *data*.'''
-        pixmap = QtGui.QPixmap()
+        pixmap = QtWidgets.QPixmap()
         pixmap.loadFromData(data)
         self._scaleAndSetPixmap(pixmap)
 
@@ -99,21 +99,21 @@ class EllipseBase(Base):
 
     def paintEvent(self, event):
         '''Override paint event to make round thumbnails.'''
-        painter = QtGui.QPainter(self)
+        painter = QtWidgets.QPainter(self)
         painter.setRenderHints(
-            QtGui.QPainter.Antialiasing,
+            QtWidgets.QPainter.Antialiasing,
             True
         )
 
-        brush = QtGui.QBrush(
+        brush = QtWidgets.QBrush(
             self.pixmap()
         )
 
         painter.setBrush(brush)
 
         painter.setPen(
-            QtGui.QPen(
-                QtGui.QColor(0, 0, 0, 0)
+            QtWidgets.QPen(
+                QtWidgets.QColor(0, 0, 0, 0)
             )
         )
 
@@ -158,7 +158,7 @@ class ActionIcon(Base):
     def __init__(self, parent=None):
         '''Initialize action icon.'''
         super(ActionIcon, self).__init__(parent)
-        self.setFrameStyle(QtGui.QFrame.NoFrame)
+        self.setFrameStyle(QtWidgets.QFrame.NoFrame)
 
     def setIcon(self, icon):
         '''Set *icon* to a supported icon or show the standard icon.
@@ -178,7 +178,7 @@ class ActionIcon(Base):
 
     def loadResource(self, resource):
         '''Update current pixmap using *resource*.'''
-        pixmap = QtGui.QPixmap(
+        pixmap = QtWidgets.QPixmap(
             QtCore.QSize(self.width(), self.height())
         )
         pixmap.load(resource)

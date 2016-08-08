@@ -1,14 +1,14 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
 
-from PySide import QtGui, QtCore
+from Qt import QtWidgets, QtCore
 import ftrack
 
 from ftrack_connect.ui.widget import entity_path as _entity_path
 from ftrack_connect.ui.widget import entity_browser as _entity_browser
 
 
-class EntitySelector(QtGui.QStackedWidget):
+class EntitySelector(QtWidgets.QStackedWidget):
     '''Entity selector widget.'''
 
     entityChanged = QtCore.Signal(object)
@@ -19,8 +19,8 @@ class EntitySelector(QtGui.QStackedWidget):
         self._entity = None
 
         # Create widget used to select an entity.
-        selectionWidget = QtGui.QFrame()
-        selectionWidget.setLayout(QtGui.QHBoxLayout())
+        selectionWidget = QtWidgets.QFrame()
+        selectionWidget.setLayout(QtWidgets.QHBoxLayout())
         selectionWidget.layout().setContentsMargins(0, 0, 0, 0)
         self.insertWidget(0, selectionWidget)
 
@@ -30,28 +30,28 @@ class EntitySelector(QtGui.QStackedWidget):
             self._onEntityBrowserSelectionChanged
         )
 
-        self.entityBrowseButton = QtGui.QPushButton('Browse')
+        self.entityBrowseButton = QtWidgets.QPushButton('Browse')
 
         # TODO: Once the link is available through the API change this to a
         # combo with assigned tasks.
-        self.assignedContextSelector = QtGui.QLineEdit()
+        self.assignedContextSelector = QtWidgets.QLineEdit()
         self.assignedContextSelector.setReadOnly(True)
 
         selectionWidget.layout().addWidget(self.assignedContextSelector)
         selectionWidget.layout().addWidget(self.entityBrowseButton)
 
         # Create widget used to present current selection.
-        presentationWidget = QtGui.QFrame()
-        presentationWidget.setLayout(QtGui.QHBoxLayout())
+        presentationWidget = QtWidgets.QFrame()
+        presentationWidget.setLayout(QtWidgets.QHBoxLayout())
         presentationWidget.layout().setContentsMargins(0, 0, 0, 0)
         self.insertWidget(1, presentationWidget)
 
         self.entityPath = _entity_path.EntityPath()
         presentationWidget.layout().addWidget(self.entityPath)
 
-        self.discardEntityButton = QtGui.QPushButton()
-        removeIcon = QtGui.QIcon(
-            QtGui.QPixmap(':/ftrack/image/light/remove')
+        self.discardEntityButton = QtWidgets.QPushButton()
+        removeIcon = QtWidgets.QIcon(
+            QtWidgets.QPixmap(':/ftrack/image/light/remove')
         )
         self.discardEntityButton.setIconSize(QtCore.QSize(20, 20))
         self.discardEntityButton.setIcon(removeIcon)

@@ -3,7 +3,7 @@
 #             Copyright (c) 2014 Martin Pengelly-Phillips
 # :notice: Derived from Riffle (https://github.com/4degrees/riffle)
 
-from PySide import QtGui, QtCore
+from Qt import QtWidgets, QtCore
 
 import ftrack_api
 
@@ -55,7 +55,7 @@ class Item(object):
     @property
     def icon(self):
         '''Return icon.'''
-        return QtGui.QIcon(':/ftrack/image/default/ftrackLogoGreyDark')
+        return QtWidgets.QIcon(':/ftrack/image/default/ftrackLogoGreyDark')
 
     @property
     def row(self):
@@ -182,7 +182,7 @@ class Context(Item):
     def icon(self):
         '''Return icon.'''
         icon = self.entity.get('object_type', {}).get('icon', 'default')
-        return QtGui.QIcon(
+        return QtWidgets.QIcon(
             ':/ftrack/image/light/object_type/{0}'.format(icon)
         )
 
@@ -217,7 +217,7 @@ class Project(Context):
     @property
     def icon(self):
         '''Return icon.'''
-        return QtGui.QIcon(':/ftrack/image/light/project')
+        return QtWidgets.QIcon(':/ftrack/image/light/project')
 
 
 class EntityTreeModel(QtCore.QAbstractItemModel):
@@ -395,7 +395,7 @@ class EntityTreeModel(QtCore.QAbstractItemModel):
             worker.start()
 
             while worker.isRunning():
-                app = QtGui.QApplication.instance()
+                app = QtWidgets.QApplication.instance()
                 app.processEvents()
 
             if worker.error:
@@ -433,7 +433,7 @@ class EntityTreeModel(QtCore.QAbstractItemModel):
         self.endResetModel()
 
 
-class EntityTreeProxyModel(QtGui.QSortFilterProxyModel):
+class EntityTreeProxyModel(QtWidgets.QSortFilterProxyModel):
     '''Sort contexts before tasks.'''
 
     def lessThan(self, left, right):

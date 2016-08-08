@@ -14,7 +14,7 @@ import urllib2
 import re
 import sys
 
-from PySide import QtGui, QtNetwork, QtCore
+from Qt import QtWidgets, QtNetwork, QtCore
 
 import ftrack
 
@@ -110,8 +110,8 @@ class Connector(object):
         fileName = os.path.join(
             tempfile.gettempdir(), str(uuid.uuid4()) + '.jpg'
         )
-        QtGui.QPixmap.grabWindow(
-            QtGui.QApplication.activeWindow().winId()
+        QtWidgets.QPixmap.grabWindow(
+            QtWidgets.QApplication.activeWindow().winId()
         ).save(fileName, 'jpg')
         return fileName
 
@@ -234,7 +234,7 @@ class Connector(object):
                         'ask your administrator to check the settings for you '
                         'or drop us a line at support@ftrack.com.'
                     )
-                    QtGui.QMessageBox.critical(
+                    QtWidgets.QMessageBox.critical(
                         None,
                         'ftrack: Failed to publish.',
                         errorMessage

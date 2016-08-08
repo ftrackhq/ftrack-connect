@@ -4,7 +4,7 @@
 import os
 import operator
 
-from Qt import QtGui
+from Qt import QtWidgets
 from Qt import QtCore
 from Qt import QtWidgets
 
@@ -27,10 +27,10 @@ class TimerOverlay(ftrack_connect.ui.widget.overlay.Overlay):
     def __init__(self, parent):
         '''Initialise.'''
         super(TimerOverlay, self).__init__(parent)
-        layout = QtGui.QVBoxLayout()
+        layout = QtWidgets.QVBoxLayout()
         self.setLayout(layout)
 
-        message = QtGui.QLabel('Select a task to activate timer.')
+        message = QtWidgets.QLabel('Select a task to activate timer.')
         message.setWordWrap(True)
         message.setAlignment(QtCore.Qt.AlignVCenter)
         layout.addWidget(message)
@@ -68,10 +68,10 @@ class TimeTracker(ftrack_connect.ui.application.ApplicationPlugin):
 
         self._activeEntity = None
 
-        layout = QtGui.QVBoxLayout()
+        layout = QtWidgets.QVBoxLayout()
         self.setLayout(layout)
 
-        self.activeLabel = QtGui.QLabel('Currently running')
+        self.activeLabel = QtWidgets.QLabel('Currently running')
         self.activeLabel.setProperty('title', True)
         layout.addWidget(self.activeLabel)
 
@@ -82,11 +82,11 @@ class TimeTracker(ftrack_connect.ui.application.ApplicationPlugin):
         self.timerPlaceholder = TimerOverlay(self.timer)
 
         # TODO: Add theme support.
-        reloadIcon = QtGui.QIcon(
-            QtGui.QPixmap(':/ftrack/image/light/reload')
+        reloadIcon = QtWidgets.QIcon(
+            QtWidgets.QPixmap(':/ftrack/image/light/reload')
         )
 
-        assignedTimeLogUpdateButton = QtGui.QPushButton(reloadIcon, '')
+        assignedTimeLogUpdateButton = QtWidgets.QPushButton(reloadIcon, '')
         assignedTimeLogUpdateButton.setFlat(True)
         assignedTimeLogUpdateButton.setToolTip('Refresh list')
         assignedTimeLogUpdateButton.clicked.connect(self._updateAssignedList)

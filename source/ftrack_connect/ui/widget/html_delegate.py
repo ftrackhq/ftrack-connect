@@ -1,10 +1,10 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
 
-from PySide import QtGui, QtCore
+from Qt import QtWidgets, QtCore
 
 
-class HtmlDelegate(QtGui.QStyledItemDelegate):
+class HtmlDelegate(QtWidgets.QStyledItemDelegate):
     '''Delegate to render HTML.'''
 
     def __init__(self, formatter, *args, **kwargs):
@@ -20,7 +20,7 @@ class HtmlDelegate(QtGui.QStyledItemDelegate):
 
     def getTextDocument(self, option, item_data):
         '''Return QTextDocument based on *option* and *item_data*.'''
-        document = QtGui.QTextDocument()
+        document = QtWidgets.QTextDocument()
         document.setHtml(self.format(item_data))
         document.setTextWidth(option.rect.width())
 
@@ -28,11 +28,11 @@ class HtmlDelegate(QtGui.QStyledItemDelegate):
 
     def paint(self, painter, option, index):
         '''Paint delegate using *painter*.'''
-        options = QtGui.QStyleOptionViewItemV4(option)
+        options = QtWidgets.QStyleOptionViewItemV4(option)
         self.initStyleOption(options, index)
 
         if options.widget is None:
-            style = QtGui.QApplication.style()
+            style = QtWidgets.QApplication.style()
         else:
             style = options.widget.style()
 
@@ -45,22 +45,22 @@ class HtmlDelegate(QtGui.QStyledItemDelegate):
 
         # Draw the element with the provided painter with the style
         # options specified by option
-        style.drawControl(QtGui.QStyle.CE_ItemViewItem, options, painter)
+        style.drawControl(QtWidgets.QStyle.CE_ItemViewItem, options, painter)
 
-        paint_context = QtGui.QAbstractTextDocumentLayout.PaintContext()
+        paint_context = QtWidgets.QAbstractTextDocumentLayout.PaintContext()
 
         # If item state is selected by mouse over change the highlight color.
-        if options.state & QtGui.QStyle.State_Selected:
+        if options.state & QtWidgets.QStyle.State_Selected:
             paint_context.palette.setColor(
-                QtGui.QPalette.Text,
+                QtWidgets.QPalette.Text,
                 options.palette.color(
-                    QtGui.QPalette.Active, QtGui.QPalette.HighlightedText
+                    QtWidgets.QPalette.Active, QtWidgets.QPalette.HighlightedText
                 )
             )
 
         # Get paint rectangle in screen coordinates
         text_rectangle = style.subElementRect(
-            QtGui.QStyle.SE_ItemViewItemText, options
+            QtWidgets.QStyle.SE_ItemViewItemText, options
         )
 
         # Adjust the rectangle to fix issue occurring on windows.
@@ -76,7 +76,7 @@ class HtmlDelegate(QtGui.QStyledItemDelegate):
 
     def sizeHint(self, option, index):
         '''Return preferred size hint.'''
-        options = QtGui.QStyleOptionViewItemV4(option)
+        options = QtWidgets.QStyleOptionViewItemV4(option)
         self.initStyleOption(options, index)
 
         data = index.data(role=QtCore.Qt.UserRole)

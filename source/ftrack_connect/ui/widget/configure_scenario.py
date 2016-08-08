@@ -3,9 +3,8 @@
 
 import webbrowser
 
-from Qt import QtGui
-from Qt import QtCore
 from Qt import QtWidgets
+from Qt import QtCore
 from Qt import QtSvg
 import ftrack_api.exception
 
@@ -32,7 +31,7 @@ class ConfigureScenario(QtWidgets.QWidget):
         except ftrack_api.exception.NoResultFoundError:
             can_configure_scenario = False
 
-        layout = QtGui.QVBoxLayout()
+        layout = QtWidgets.QVBoxLayout()
         layout.addSpacing(0)
         layout.setContentsMargins(50, 0, 50, 0)
         self.setLayout(layout)
@@ -40,22 +39,22 @@ class ConfigureScenario(QtWidgets.QWidget):
         layout.addSpacing(100)
 
         svg_renderer = QtSvg.QSvgRenderer(':ftrack/image/default/cloud-done')
-        image = QtGui.QImage(50, 50, QtGui.QImage.Format_ARGB32)
+        image = QtWidgets.QImage(50, 50, QtWidgets.QImage.Format_ARGB32)
 
         # Set the ARGB to 0 to prevent rendering artifacts.
         image.fill(0x00000000)
 
-        svg_renderer.render(QtGui.QPainter(image))
+        svg_renderer.render(QtWidgets.QPainter(image))
 
-        icon = QtGui.QLabel()
-        icon.setPixmap(QtGui.QPixmap.fromImage(image))
+        icon = QtWidgets.QLabel()
+        icon.setPixmap(QtWidgets.QPixmap.fromImage(image))
         icon.setAlignment(QtCore.Qt.AlignCenter)
         icon.setObjectName('icon-label')
         layout.addWidget(icon)
 
         layout.addSpacing(50)
 
-        label = QtGui.QLabel()
+        label = QtWidgets.QLabel()
         label.setObjectName('regular-label')
         text = (
             'Hi there, Connect needs to be configured so that ftrack can '
@@ -83,18 +82,18 @@ class ConfigureScenario(QtWidgets.QWidget):
 
         layout.addSpacing(20)
 
-        configure_button = QtGui.QPushButton(text='Configure now')
+        configure_button = QtWidgets.QPushButton(text='Configure now')
         configure_button.setObjectName('primary')
         configure_button.clicked.connect(self._configure_storage_scenario)
         configure_button.setMinimumHeight(40)
         configure_button.setMaximumWidth(125)
 
-        dismiss_button = QtGui.QPushButton(text='Do it later')
+        dismiss_button = QtWidgets.QPushButton(text='Do it later')
         dismiss_button.clicked.connect(self._complete_configuration)
         dismiss_button.setMinimumHeight(40)
         dismiss_button.setMaximumWidth(125)
 
-        hbox = QtGui.QHBoxLayout()
+        hbox = QtWidgets.QHBoxLayout()
         hbox.addWidget(dismiss_button)
         if can_configure_scenario:
             hbox.addSpacing(10)
@@ -103,7 +102,7 @@ class ConfigureScenario(QtWidgets.QWidget):
 
         layout.addSpacing(20)
 
-        label = QtGui.QLabel()
+        label = QtWidgets.QLabel()
         label.setObjectName('lead-label')
         label.setText(
             'If you decide to do this later, some of the functionality in '
@@ -122,7 +121,7 @@ class ConfigureScenario(QtWidgets.QWidget):
 
         layout.addStretch(1)
 
-        label = QtGui.QLabel()
+        label = QtWidgets.QLabel()
         label.setObjectName('green-link')
         label.setText(
             '<a style="color: #1CBC90;" '

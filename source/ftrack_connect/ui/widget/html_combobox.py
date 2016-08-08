@@ -1,12 +1,12 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
 
-from PySide import QtGui, QtCore
+from Qt import QtWidgets, QtCore
 
 import ftrack_connect.ui.widget.html_delegate
 
 
-class HtmlComboBox(QtGui.QComboBox):
+class HtmlComboBox(QtWidgets.QComboBox):
     '''Combo box that draws items with html.'''
 
     def __init__(self, formatter, *args, **kwargs):
@@ -26,7 +26,7 @@ class HtmlComboBox(QtGui.QComboBox):
         self.setItemDelegate(
             ftrack_connect.ui.widget.html_delegate.HtmlDelegate(formatter)
         )
-        self.setSizeAdjustPolicy(QtGui.QComboBox.AdjustToContents)
+        self.setSizeAdjustPolicy(QtWidgets.QComboBox.AdjustToContents)
 
     def paintEvent(self, event):
         '''Handle paint *event*.'''
@@ -34,12 +34,12 @@ class HtmlComboBox(QtGui.QComboBox):
 
         if itemData:
             # Draw main control.
-            painter = QtGui.QStylePainter(self)
-            painter.setPen(self.palette().color(QtGui.QPalette.Text))
+            painter = QtWidgets.QStylePainter(self)
+            painter.setPen(self.palette().color(QtWidgets.QPalette.Text))
 
-            option = QtGui.QStyleOptionComboBox()
+            option = QtWidgets.QStyleOptionComboBox()
             self.initStyleOption(option)
-            painter.drawComplexControl(QtGui.QStyle.CC_ComboBox, option)
+            painter.drawComplexControl(QtWidgets.QStyle.CC_ComboBox, option)
 
             # Get QTextDocument from delegate to use for painting HTML text.
             delegate = self.itemDelegate()
@@ -47,11 +47,11 @@ class HtmlComboBox(QtGui.QComboBox):
                 option, self.itemData(self.currentIndex())
             )
 
-            style = painter.style()  # QtGui.QApplication.style()
-            paint_context = QtGui.QAbstractTextDocumentLayout.PaintContext()
+            style = painter.style()  # QtWidgets.QApplication.style()
+            paint_context = QtWidgets.QAbstractTextDocumentLayout.PaintContext()
 
             text_rectangle = style.subElementRect(
-                QtGui.QStyle.SE_ComboBoxFocusRect, option, self
+                QtWidgets.QStyle.SE_ComboBoxFocusRect, option, self
             )
 
             painter.save()
@@ -91,7 +91,7 @@ class HtmlComboBox(QtGui.QComboBox):
 
     def sizeHint(self):
         '''Return preferred size hint.'''
-        option = QtGui.QStyleOptionComboBox()
+        option = QtWidgets.QStyleOptionComboBox()
         self.initStyleOption(option)
 
         data = self.itemData(self.currentIndex())

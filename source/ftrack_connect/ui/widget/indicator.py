@@ -1,10 +1,10 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-from PySide import QtGui, QtCore, QtSvg
+from Qt import QtWidgets, QtCore, QtSvg
 
 
-class BusyIndicator(QtGui.QWidget):
+class BusyIndicator(QtWidgets.QWidget):
     '''Draw a busy indicator.'''
 
     def __init__(self, parent=None):
@@ -41,11 +41,11 @@ class BusyIndicator(QtGui.QWidget):
 
     def paintEvent(self, event):
         '''Paint widget.'''
-        painter = QtGui.QPainter()
+        painter = QtWidgets.QPainter()
         painter.begin(self)
 
         try:
-            painter.setRenderHint(QtGui.QPainter.Antialiasing)
+            painter.setRenderHint(QtWidgets.QPainter.Antialiasing)
             area = QtCore.QRect(
                 0, 0, painter.device().width(), painter.device().height()
             )
@@ -78,18 +78,18 @@ class BusyIndicator(QtGui.QWidget):
             svgRenderer.render(painter, logoArea)
 
             # Draw spinner at current spin angle.
-            pen = QtGui.QPen()
+            pen = QtWidgets.QPen()
             penWidth = 5.0
             pen.setWidth(penWidth)
 
-            gradient = QtGui.QConicalGradient(
+            gradient = QtWidgets.QConicalGradient(
                 QtCore.QPoint(0, 0),
                 -self._spinnerAngle
             )
             gradient.setColorAt(0.95, QtCore.Qt.transparent)
             gradient.setColorAt(0, self._spinnerColor)
 
-            brush = QtGui.QBrush(gradient)
+            brush = QtWidgets.QBrush(gradient)
             pen.setBrush(brush)
             painter.setPen(pen)
 

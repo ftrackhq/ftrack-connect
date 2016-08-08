@@ -3,8 +3,6 @@
 
 import logging
 
-from Qt import QtGui
-from Qt import QtCore
 from Qt import QtWidgets
 
 from ftrack_connect.error import NotUniqueError
@@ -37,15 +35,15 @@ class AssetOptions(object):
         self._entity = None
         self._hasEditedName = False
 
-        self.radioButtonFrame = QtGui.QFrame()
-        self.radioButtonFrame.setLayout(QtGui.QHBoxLayout())
+        self.radioButtonFrame = QtWidgets.QFrame()
+        self.radioButtonFrame.setLayout(QtWidgets.QHBoxLayout())
         self.radioButtonFrame.layout().setContentsMargins(5, 5, 5, 5)
 
-        self.newAssetButton = QtGui.QRadioButton('Create new')
+        self.newAssetButton = QtWidgets.QRadioButton('Create new')
         self.newAssetButton.toggled.connect(self._onNewAssetToggled)
         self.radioButtonFrame.layout().addWidget(self.newAssetButton)
 
-        self.existingAssetButton = QtGui.QRadioButton('Version up existing')
+        self.existingAssetButton = QtWidgets.QRadioButton('Version up existing')
         self.existingAssetButton.toggled.connect(self._onExistingAssetToggled)
         self.radioButtonFrame.layout().addWidget(self.existingAssetButton)
 

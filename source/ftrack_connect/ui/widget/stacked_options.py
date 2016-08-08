@@ -1,10 +1,10 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
 
-from PySide import QtGui, QtXml
+from Qt import QtWidgets, QtXml
 
 
-class StackedOptionsWidget(QtGui.QStackedWidget):
+class StackedOptionsWidget(QtWidgets.QStackedWidget):
     '''Stacked options widget.'''
 
     def __init__(self, parent, task=None, connector=None):
@@ -22,9 +22,9 @@ class StackedOptionsWidget(QtGui.QStackedWidget):
 
         if self.connector.getConnectorName() == 'nuke':
             p = self.palette()
-            currentColor = p.color(QtGui.QPalette.Window)
+            currentColor = p.color(QtWidgets.QPalette.Window)
             p.setBrush(
-                QtGui.QPalette.Window, QtGui.QBrush(currentColor.lighter(175))
+                QtWidgets.QPalette.Window, QtWidgets.QBrush(currentColor.lighter(175))
             )
             self.setPalette(p)
 
@@ -53,11 +53,11 @@ class StackedOptionsWidget(QtGui.QStackedWidget):
         connectorName = self.connector.getConnectorName()
         maxRowCount = 0
         for i in range(assetTypeElements.length()):
-            assetTypePages[i] = QtGui.QWidget()
+            assetTypePages[i] = QtWidgets.QWidget()
             assetTypePages[i].setObjectName('page' + str(i))
             assetTypeElement = assetTypeElements.item(i).toElement()
 
-            mainLayout = QtGui.QVBoxLayout()
+            mainLayout = QtWidgets.QVBoxLayout()
             mainLayout.setContentsMargins(0, 0, 0, 0)
             mainLayout.setSpacing(0)
             assetTypePages[i].setLayout(mainLayout)
@@ -68,12 +68,12 @@ class StackedOptionsWidget(QtGui.QStackedWidget):
 
             tabElements = assetTypeElement.elementsByTagName('tab')
             if tabElements.length() > 0:
-                tabWidget = QtGui.QTabWidget()
+                tabWidget = QtWidgets.QTabWidget()
                 mainLayout.addWidget(tabWidget)
 
                 for j in range(tabElements.length()):
-                    tab = QtGui.QWidget()
-                    tabLayout = QtGui.QVBoxLayout()
+                    tab = QtWidgets.QWidget()
+                    tabLayout = QtWidgets.QVBoxLayout()
                     tabLayout.setSpacing(2)
                     tab.setLayout(tabLayout)
                     tabElement = tabElements.item(j).toElement()
@@ -100,9 +100,9 @@ class StackedOptionsWidget(QtGui.QStackedWidget):
                         maxRowCount = max(rowCount, maxRowCount)
                         tabWidget.addTab(tab, tabName)
 
-                    spacerItem3 = QtGui.QSpacerItem(
-                        1, 1, QtGui.QSizePolicy.Minimum,
-                        QtGui.QSizePolicy.Expanding
+                    spacerItem3 = QtWidgets.QSpacerItem(
+                        1, 1, QtWidgets.QSizePolicy.Minimum,
+                        QtWidgets.QSizePolicy.Expanding
                     )
                     tabLayout.addItem(spacerItem3)
 
@@ -111,15 +111,15 @@ class StackedOptionsWidget(QtGui.QStackedWidget):
     def getOptions(self):
         '''Return options.'''
         currentOptions = dict()
-        for child in self.currentWidget().findChildren(QtGui.QDoubleSpinBox):
+        for child in self.currentWidget().findChildren(QtWidgets.QDoubleSpinBox):
             currentOptions[child.objectName()] = float(child.value())
-        for child in self.currentWidget().findChildren(QtGui.QCheckBox):
+        for child in self.currentWidget().findChildren(QtWidgets.QCheckBox):
             currentOptions[child.objectName()] = bool(child.checkState())
-        for child in self.currentWidget().findChildren(QtGui.QLineEdit):
+        for child in self.currentWidget().findChildren(QtWidgets.QLineEdit):
             currentOptions[child.objectName()] = child.text()
-        for child in self.currentWidget().findChildren(QtGui.QComboBox):
+        for child in self.currentWidget().findChildren(QtWidgets.QComboBox):
             currentOptions[child.objectName()] = child.currentText()
-        for child in self.currentWidget().findChildren(QtGui.QRadioButton):
+        for child in self.currentWidget().findChildren(QtWidgets.QRadioButton):
             if child.isChecked():
                 currentOptions[child.objectName()] = child.text()
 
@@ -130,11 +130,11 @@ class StackedOptionsWidget(QtGui.QStackedWidget):
         accepts = rowElement.attribute('accepts')
         acceptsSplit = accepts.split(',')
         if accepts == '' or connectorName in acceptsSplit:
-            rowLayout = QtGui.QHBoxLayout()
+            rowLayout = QtWidgets.QHBoxLayout()
             rowName = rowElement.attribute('name')
             rowEnabled = rowElement.attribute('enabled')
 
-            optionLabel = QtGui.QLabel(rowName)
+            optionLabel = QtWidgets.QLabel(rowName)
             optionLabel.setFixedWidth(160)
             rowLayout.addWidget(optionLabel)
 
@@ -168,7 +168,7 @@ class StackedOptionsWidget(QtGui.QStackedWidget):
             self.stackedOptions[assetTypeName].append(optionName)
 
             if optionType == 'float':
-                floatBox = QtGui.QDoubleSpinBox()
+                floatBox = QtWidgets.QDoubleSpinBox()
                 floatBox.setEnabled(enabled)
                 floatBox.setObjectName(optionName)
                 floatBox.setSingleStep(0.1)
@@ -177,7 +177,7 @@ class StackedOptionsWidget(QtGui.QStackedWidget):
                 optionsCount = 1
 
             if optionType == 'checkbox':
-                checkBox = QtGui.QCheckBox()
+                checkBox = QtWidgets.QCheckBox()
                 checkBox.setEnabled(enabled)
                 checkBox.setChecked(bool(optionValue))
                 checkBox.setObjectName(optionName)
@@ -185,7 +185,7 @@ class StackedOptionsWidget(QtGui.QStackedWidget):
                 optionsCount = 1
 
             if optionType == 'string':
-                textBox = QtGui.QLineEdit()
+                textBox = QtWidgets.QLineEdit()
                 textBox.setEnabled(enabled)
                 textBox.setText(optionValue)
                 textBox.setObjectName(optionName)
@@ -193,7 +193,7 @@ class StackedOptionsWidget(QtGui.QStackedWidget):
                 optionsCount = 1
 
             if optionType == 'combo':
-                comboBox = QtGui.QComboBox()
+                comboBox = QtWidgets.QComboBox()
                 comboBox.setEnabled(enabled)
                 optionitemElements = optionElement.elementsByTagName(
                     'optionitem')
@@ -207,8 +207,8 @@ class StackedOptionsWidget(QtGui.QStackedWidget):
                 optionsCount = optionitemElements.length()
 
             if optionType == 'radio':
-                radioWidget = QtGui.QWidget()
-                radioLayout = QtGui.QVBoxLayout()
+                radioWidget = QtWidgets.QWidget()
+                radioLayout = QtWidgets.QVBoxLayout()
                 radioLayout.setSpacing(1)
                 radioWidget.setLayout(radioLayout)
                 optionitemElements = optionElement.elementsByTagName(
@@ -218,7 +218,7 @@ class StackedOptionsWidget(QtGui.QStackedWidget):
                     optionitemElement = optionitemElements.item(t).toElement()
                     optionitemValue = optionitemElement.attribute('value')
                     optionitemName = optionitemElement.attribute('name')
-                    radioButton = QtGui.QRadioButton(optionitemName)
+                    radioButton = QtWidgets.QRadioButton(optionitemName)
                     if bool(optionitemValue):
                         radioButton.setChecked(True)
                     radioLayout.addWidget(radioButton)

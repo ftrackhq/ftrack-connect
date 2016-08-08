@@ -1,10 +1,10 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-from PySide import QtGui, QtCore
+from Qt import QtWidgets, QtCore
 
 
-class LineEditIconButton(QtGui.QToolButton):
+class LineEditIconButton(QtWidgets.QToolButton):
     '''Icon button for use in a :py:class:`LineEdit` widget.'''
 
     iconSize = 16
@@ -18,20 +18,20 @@ class LineEditIconButton(QtGui.QToolButton):
 
     def paintEvent(self, event):
         '''Handle paint *event*.'''
-        painter = QtGui.QPainter(self)
+        painter = QtWidgets.QPainter(self)
 
         # Note: isDown should ideally use the 'active' state, but in most styles
         # this has no proper feedback.
-        state = QtGui.QIcon.Disabled
+        state = QtWidgets.QIcon.Disabled
         if self.isEnabled():
-            state = QtGui.QIcon.Normal
+            state = QtWidgets.QIcon.Normal
             if self.isDown():
-                state = QtGui.QIcon.Selected
+                state = QtWidgets.QIcon.Selected
 
         iconPixmap = self.icon().pixmap(
             QtCore.QSize(self.iconSize, self.iconSize),
             state,
-            QtGui.QIcon.Off
+            QtWidgets.QIcon.Off
         )
 
         iconRegion = QtCore.QRect(
@@ -42,7 +42,7 @@ class LineEditIconButton(QtGui.QToolButton):
         painter.drawPixmap(iconRegion, iconPixmap)
 
 
-class LineEdit(QtGui.QLineEdit):
+class LineEdit(QtWidgets.QLineEdit):
     '''Line edit that supports embedded actions.'''
 
     def __init__(self, *args, **kw):

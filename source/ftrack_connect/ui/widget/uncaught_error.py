@@ -6,10 +6,10 @@ import traceback
 import cStringIO
 import logging
 
-from PySide import QtGui, QtCore
+from Qt import QtWidgets, QtCore
 
 
-class UncaughtError(QtGui.QMessageBox):
+class UncaughtError(QtWidgets.QMessageBox):
     '''Widget that handles uncaught errors and presents a message box.'''
 
     onError = QtCore.Signal(object, object, object)
@@ -17,7 +17,7 @@ class UncaughtError(QtGui.QMessageBox):
     def __init__(self, *args, **kwargs):
         '''Initialise and setup widget.'''
         super(UncaughtError, self).__init__(*args, **kwargs)
-        self.setIcon(QtGui.QMessageBox.Critical)
+        self.setIcon(QtWidgets.QMessageBox.Critical)
         self.onError.connect(self.exceptHook)
 
         # Listen to all unhandled exceptions.
@@ -55,7 +55,7 @@ class UncaughtError(QtGui.QMessageBox):
         '''Hook into the resize *event* and force width of detailed text.'''
         result = super(UncaughtError, self).resizeEvent(event)
 
-        detailsBox = self.findChild(QtGui.QTextEdit)
+        detailsBox = self.findChild(QtWidgets.QTextEdit)
         if detailsBox is not None:
             detailsBox.setFixedSize(500, 200)
 

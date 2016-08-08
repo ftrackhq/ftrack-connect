@@ -3,8 +3,6 @@
 
 import functools
 
-from Qt import QtGui
-from Qt import QtCore
 from Qt import QtWidgets
 
 import ftrack_connect.ui.widget.component
@@ -26,11 +24,11 @@ class ComponentsList(ftrack_connect.ui.widget.item_list.ItemList):
             parent=parent
         )
         self.list.setSelectionMode(
-            QtGui.QAbstractItemView.NoSelection
+            QtWidgets.QAbstractItemView.NoSelection
         )
         self.list.setShowGrid(False)
 
-        self.label = QtGui.QLabel('Components')
+        self.label = QtWidgets.QLabel('Components')
         self.layout().insertWidget(0, self.label)
 
     def _createComponentWidget(self, item):

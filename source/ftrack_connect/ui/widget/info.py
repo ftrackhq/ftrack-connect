@@ -4,14 +4,14 @@
 import os
 import getpass
 
-from PySide import QtGui
+from Qt import QtWidgets
 
 from ftrack_connect.connector import PanelComInstance
 from ftrack_connect.ui.widget.web_view import WebViewWidget
 from ftrack_connect.ui.widget import header
 
 
-class FtrackInfoDialog(QtGui.QDialog):
+class FtrackInfoDialog(QtWidgets.QDialog):
     '''Info dialog class.'''
 
     def __init__(self, parent=None, connector=None):
@@ -21,14 +21,14 @@ class FtrackInfoDialog(QtGui.QDialog):
 
         self.setMinimumWidth(400)
         self.setSizePolicy(
-            QtGui.QSizePolicy(
-                QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding
+            QtWidgets.QSizePolicy(
+                QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding
             )
         )
 
-        self.centralwidget = QtGui.QWidget(self)
-        self.verticalMainLayout = QtGui.QVBoxLayout(self)
-        self.horizontalLayout = QtGui.QHBoxLayout()
+        self.centralwidget = QtWidgets.QWidget(self)
+        self.verticalMainLayout = QtWidgets.QVBoxLayout(self)
+        self.horizontalLayout = QtWidgets.QHBoxLayout()
 
         shotId = os.getenv('FTRACK_SHOTID')
         taskId = os.getenv('FTRACK_TASKID', shotId)

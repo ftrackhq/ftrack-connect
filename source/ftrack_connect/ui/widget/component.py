@@ -4,15 +4,14 @@
 import os
 import uuid
 
-from Qt import QtGui
-from Qt import QtCore
 from Qt import QtWidgets
+from Qt import QtCore
 
 import ftrack_connect.ui.widget.line_edit
 import ftrack_connect.ui.widget.label
 
 
-class Component(QtGui.QWidget):
+class Component(QtWidgets.QWidget):
     '''Represent a component.'''
 
     nameChanged = QtCore.Signal()
@@ -21,7 +20,7 @@ class Component(QtGui.QWidget):
                  parent=None):
         '''Initialise widget with initial component *value* and *parent*.'''
         super(Component, self).__init__(parent=parent)
-        self.setLayout(QtGui.QVBoxLayout())
+        self.setLayout(QtWidgets.QVBoxLayout())
 
         self.componentNameEdit = ftrack_connect.ui.widget.line_edit.LineEdit()
         self.componentNameEdit.setPlaceholderText('Enter component name')
@@ -30,12 +29,12 @@ class Component(QtGui.QWidget):
         self.layout().addWidget(self.componentNameEdit)
 
         # TODO: Add theme support.
-        removeIcon = QtGui.QIcon(
-            QtGui.QPixmap(':/ftrack/image/light/trash')
+        removeIcon = QtWidgets.QIcon(
+            QtWidgets.QPixmap(':/ftrack/image/light/trash')
         )
 
-        self.removeAction = QtGui.QAction(
-            QtGui.QIcon(removeIcon), 'Remove', self.componentNameEdit
+        self.removeAction = QtWidgets.QAction(
+            QtWidgets.QIcon(removeIcon), 'Remove', self.componentNameEdit
         )
         self.removeAction.setStatusTip('Remove component.')
         self.componentNameEdit.addAction(

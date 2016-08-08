@@ -3,8 +3,8 @@
 
 import logging
 
-from PySide import QtGui
-from PySide import QtCore
+from Qt import QtWidgets
+from Qt import QtCore
 
 import ftrack
 
@@ -29,7 +29,7 @@ class EntitySelector(entity_selector.EntitySelector):
         return entity.entity_type != 'Project'
 
 
-class Publisher(QtGui.QWidget):
+class Publisher(QtWidgets.QWidget):
     '''Publish widget for ftrack connect Publisher.'''
     publishStarted = QtCore.Signal()
     publishFinished = QtCore.Signal(bool)
@@ -48,7 +48,7 @@ class Publisher(QtGui.QWidget):
         self._entity = None
         self._manageData = False
 
-        layout = QtGui.QVBoxLayout()
+        layout = QtWidgets.QVBoxLayout()
 
         self.setLayout(layout)
 
@@ -68,7 +68,7 @@ class Publisher(QtGui.QWidget):
         self.componentsList.hide()
 
         # Create form layout to keep track of publish form items.
-        formLayout = QtGui.QFormLayout()
+        formLayout = QtWidgets.QFormLayout()
         layout.addLayout(formLayout, stretch=0)
 
         # Add entity selector.
@@ -97,10 +97,10 @@ class Publisher(QtGui.QWidget):
         formLayout.addRow('Thumbnail', self.thumbnailDropZone)
 
         # Add version description component.
-        self.versionDescription = QtGui.QTextEdit()
+        self.versionDescription = QtWidgets.QTextEdit()
         formLayout.addRow('Description', self.versionDescription)
 
-        publishButton = QtGui.QPushButton(text='Publish')
+        publishButton = QtWidgets.QPushButton(text='Publish')
         publishButton.setObjectName('primary')
         publishButton.clicked.connect(self.publish)
 

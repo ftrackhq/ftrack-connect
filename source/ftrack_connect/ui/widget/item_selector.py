@@ -1,10 +1,10 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-from PySide import QtGui
+from Qt import QtWidgets
 
 
-class ItemSelector(QtGui.QComboBox):
+class ItemSelector(QtWidgets.QComboBox):
     '''Item selector widget.'''
 
     def __init__(
@@ -22,7 +22,7 @@ class ItemSelector(QtGui.QComboBox):
         super(ItemSelector, self).__init__(*args, **kwargs)
 
         # Set style delegate to allow styling of combobox menu via Qt Stylesheet
-        itemDelegate = QtGui.QStyledItemDelegate()
+        itemDelegate = QtWidgets.QStyledItemDelegate()
         self.setItemDelegate(itemDelegate)
 
         self._idField = idField

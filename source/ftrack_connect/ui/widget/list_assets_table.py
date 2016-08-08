@@ -4,13 +4,13 @@
 import sys
 import traceback
 
-from PySide import QtCore, QtGui
+from Qt import QtCore, QtWidgets
 import ftrack
 
 from ftrack_connect.connector import FTAssetHandlerInstance
 
 
-class ListAssetsTableWidget(QtGui.QWidget):
+class ListAssetsTableWidget(QtWidgets.QWidget):
     '''View assets as a table.'''
 
     assetTypeSelectedSignal = QtCore.Signal(str)
@@ -30,26 +30,26 @@ class ListAssetsTableWidget(QtGui.QWidget):
 
     def build(self):
         '''Build widgets and layout.'''
-        self.setLayout(QtGui.QVBoxLayout())
+        self.setLayout(QtWidgets.QVBoxLayout())
         self.layout().setContentsMargins(0, 0, 0, 0)
 
-        self.optionsLayout = QtGui.QHBoxLayout()
-        self.assetTypeSelector = QtGui.QComboBox()
+        self.optionsLayout = QtWidgets.QHBoxLayout()
+        self.assetTypeSelector = QtWidgets.QComboBox()
         self.optionsLayout.addWidget(self.assetTypeSelector)
 
-        self.refreshButton = QtGui.QPushButton(self.tr('Refresh'))
+        self.refreshButton = QtWidgets.QPushButton(self.tr('Refresh'))
         self.optionsLayout.addWidget(self.refreshButton)
         self.optionsLayout.addStretch(1)
 
         self.layout().addLayout(self.optionsLayout)
 
-        self.assetTable = QtGui.QTableWidget()
-        self.assetTable.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
+        self.assetTable = QtWidgets.QTableWidget()
+        self.assetTable.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.assetTable.setSelectionMode(
-            QtGui.QAbstractItemView.SingleSelection
+            QtWidgets.QAbstractItemView.SingleSelection
         )
         self.assetTable.setSelectionBehavior(
-            QtGui.QAbstractItemView.SelectRows
+            QtWidgets.QAbstractItemView.SelectRows
         )
 
         self.assetTable.setColumnCount(len(self.assetTableColumns))
@@ -59,12 +59,12 @@ class ListAssetsTableWidget(QtGui.QWidget):
         self.assetTable.setHorizontalHeaderLabels(self.assetTableColumns)
 
         horizontalHeader = self.assetTable.horizontalHeader()
-        horizontalHeader.setResizeMode(QtGui.QHeaderView.Fixed)
+        horizontalHeader.setResizeMode(QtWidgets.QHeaderView.Fixed)
 
         self.assetTable.horizontalHeader().setDefaultSectionSize(100)
         self.assetTable.setColumnWidth(1, 63)
         self.assetTable.horizontalHeader().setResizeMode(
-            0, QtGui.QHeaderView.Stretch
+            0, QtWidgets.QHeaderView.Stretch
         )
 
         self.layout().addWidget(self.assetTable)
@@ -78,7 +78,7 @@ class ListAssetsTableWidget(QtGui.QWidget):
             self.assetTableColumns.index('Asset Type Code')
         )
 
-        self.assetTypeSelectorModel = QtGui.QStandardItemModel()
+        self.assetTypeSelectorModel = QtWidgets.QStandardItemModel()
         self.assetTypeSelector.setModel(self.assetTypeSelectorModel)
 
         self.assetTable.clicked.connect(self.rowSelectedEmitSignal)
@@ -97,7 +97,7 @@ class ListAssetsTableWidget(QtGui.QWidget):
             key=lambda assetType: assetType.getName().lower()
         )
 
-        assetTypeItem = QtGui.QStandardItem('Show All')
+        assetTypeItem = QtWidgets.QStandardItem('Show All')
         self.assetTypeSelectorModel.appendRow(assetTypeItem)
 
         assetHandler = FTAssetHandlerInstance.instance()
@@ -110,7 +110,7 @@ class ListAssetsTableWidget(QtGui.QWidget):
                 print assetTypeStr + ' not available in ftrack'
                 continue
 
-            assetTypeItem = QtGui.QStandardItem(assetType.getName())
+            assetTypeItem = QtWidgets.QStandardItem(assetType.getName())
             assetTypeItem.type = assetType.getShort()
             self.assetTypeSelectorModel.appendRow(assetTypeItem)
 
@@ -154,7 +154,7 @@ class ListAssetsTableWidget(QtGui.QWidget):
                 column = self.assetTableColumns.index
 
                 if assetName != '' and assetVersions:
-                    item = QtGui.QTableWidgetItem(assetName)
+                    item = QtWidgets.QTableWidgetItem(assetName)
                     item.id = assets[i].getId()
                     item.setToolTip(assetName)
 
@@ -162,26 +162,26 @@ class ListAssetsTableWidget(QtGui.QWidget):
                     self.assetTable.setItem(j, column('Asset'), item)
 
                     self.assetTable.setItem(
-                        j, column('Author'), QtGui.QTableWidgetItem('')
+                        j, column('Author'), QtWidgets.QTableWidgetItem('')
                     )
 
                     self.assetTable.setItem(
-                        j, column('Date'), QtGui.QTableWidgetItem('')
+                        j, column('Date'), QtWidgets.QTableWidgetItem('')
                     )
 
                     assetType = assets[i].getType()
-                    itemType = QtGui.QTableWidgetItem(assetType.getShort())
+                    itemType = QtWidgets.QTableWidgetItem(assetType.getShort())
                     self.assetTable.setItem(
                         j, column('Asset Type Code'), itemType
                     )
 
-                    itemTypeLong = QtGui.QTableWidgetItem(assetType.getName())
+                    itemTypeLong = QtWidgets.QTableWidgetItem(assetType.getName())
                     self.assetTable.setItem(
                         j, column('Asset Type'), itemTypeLong
                     )
 
                     assetVersions = assets[i].getVersions()
-                    versionComboBox = QtGui.QComboBox()
+                    versionComboBox = QtWidgets.QComboBox()
                     self.assetTable.setCellWidget(
                         j, column('Version'), versionComboBox
                     )
@@ -193,11 +193,11 @@ class ListAssetsTableWidget(QtGui.QWidget):
                             version
                         )
 
-                    author = QtGui.QTableWidgetItem(
+                    author = QtWidgets.QTableWidgetItem(
                         assetVersions[-1].getUser().getName())
                     self.assetTable.setItem(j, column('Author'), author)
 
-                    author = QtGui.QTableWidgetItem(
+                    author = QtWidgets.QTableWidgetItem(
                         assetVersions[-1].getDate().strftime('%Y-%m-%d %H:%M')
                     )
                     self.assetTable.setItem(j, column('Date'), author)
@@ -232,7 +232,7 @@ class ListAssetsTableWidget(QtGui.QWidget):
         index = self.assetTable.model().index(row, 0)
         self.assetTable.selectionModel().select(
             index,
-            QtGui.QItemSelectionModel.Select | QtGui.QItemSelectionModel.Rows
+            QtWidgets.QItemSelectionModel.Select | QtWidgets.QItemSelectionModel.Rows
         )
 
         # Temporary alias

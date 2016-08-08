@@ -1,12 +1,12 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-from PySide import QtGui, QtCore
+from Qt import QtGui, QtCore, QtWidgets
 
 import ftrack_connect.ui.widget.indicator
 
 
-class Overlay(QtGui.QFrame):
+class Overlay(QtWidgets.QFrame):
     '''Display a transparent overlay over another widget.
 
     Customise the background colour using stylesheets. The widget has an object
@@ -21,7 +21,7 @@ class Overlay(QtGui.QFrame):
         '''Initialise overlay for target *parent*.'''
         super(Overlay, self).__init__(parent=parent)
         self.setObjectName('overlay')
-        self.setFrameStyle(QtGui.QFrame.StyledPanel | QtGui.QFrame.Plain)
+        self.setFrameStyle(QtWidgets.QFrame.StyledPanel | QtGui.QFrame.Plain)
 
         # Install global event filter that will deal with matching parent size
         # and disabling parent interaction when overlay is visible.
