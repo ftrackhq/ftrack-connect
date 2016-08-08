@@ -4,8 +4,6 @@
 import os
 import getpass
 import platform
-import sys
-import subprocess
 import requests
 import requests.exceptions
 import uuid
@@ -22,6 +20,7 @@ import ftrack_connect
 import ftrack_connect.session
 import ftrack_connect.event_hub_thread as _event_hub_thread
 import ftrack_connect.error
+import ftrack_connect.util
 import ftrack_connect.ui.theme
 import ftrack_connect.ui.widget.overlay
 from ftrack_connect.ui.widget import uncaught_error as _uncaught_error
@@ -723,11 +722,4 @@ class Application(QtGui.QMainWindow):
                 messageBox.exec_()
                 return
 
-        if sys.platform == 'win32':
-            subprocess.Popen(['start', directory], shell=True)
-
-        elif sys.platform == 'darwin':
-            subprocess.Popen(['open', directory])
-
-        else:
-            subprocess.Popen(['xdg-open', directory])
+        ftrack_connect.util.open_directory(directory)
