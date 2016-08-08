@@ -3,11 +3,12 @@
 
 from Qt import QtCore
 from Qt import QtWidgets
+from Qt import QtGui
 
 
 def applyFont(font=':/ftrack/font/main'):
     '''Add application font.'''
-    QtWidgets.QFontDatabase.addApplicationFont(font)
+    QtGui.QFontDatabase.addApplicationFont(font)
 
 
 def applyTheme(widget, theme='light', baseTheme=None):

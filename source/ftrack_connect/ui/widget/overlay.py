@@ -21,7 +21,7 @@ class Overlay(QtWidgets.QFrame):
         '''Initialise overlay for target *parent*.'''
         super(Overlay, self).__init__(parent=parent)
         self.setObjectName('overlay')
-        self.setFrameStyle(QtWidgets.QFrame.StyledPanel | QtGui.QFrame.Plain)
+        self.setFrameStyle(QtWidgets.QFrame.StyledPanel | QtWidgets.QFrame.Plain)
 
         # Install global event filter that will deal with matching parent size
         # and disabling parent interaction when overlay is visible.
@@ -38,7 +38,7 @@ class Overlay(QtWidgets.QFrame):
             if parent.hasFocus():
                 parent.clearFocus()
             else:
-                for widget in parent.findChildren(QtGui.QWidget):
+                for widget in parent.findChildren(QtWidgets.QWidget):
                     if self.isAncestorOf(widget):
                         # Ignore widgets that are part of the overlay.
                         continue
@@ -84,7 +84,7 @@ class Overlay(QtWidgets.QFrame):
         ):
             parent = self.parent()
             if (
-                isinstance(obj, QtGui.QWidget)
+                isinstance(obj, QtWidgets.QWidget)
                 and parent.isAncestorOf(obj)
             ):
                 # Ensure the targeted object loses its focus.
@@ -114,7 +114,7 @@ class Overlay(QtWidgets.QFrame):
                     seen.append(candidate)
 
                     if (
-                        isinstance(candidate, QtGui.QWidget)
+                        isinstance(candidate, QtWidgets.QWidget)
                         and not parent.isAncestorOf(candidate)
                     ):
                         candidate.setFocus(event.reason())
@@ -140,21 +140,21 @@ class BlockingOverlay(Overlay):
 
          '''
         super(BlockingOverlay, self).__init__(parent)
-        layout = QtGui.QVBoxLayout()
+        layout = QtWidgets.QVBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(layout)
 
-        self.content = QtGui.QFrame()
+        self.content = QtWidgets.QFrame()
         self.content.setObjectName('content')
         layout.addWidget(
             self.content, alignment=QtCore.Qt.AlignCenter
         )
 
-        self.contentLayout = QtGui.QVBoxLayout()
+        self.contentLayout = QtWidgets.QVBoxLayout()
         self.contentLayout.setContentsMargins(0, 0, 0, 0)
         self.content.setLayout(self.contentLayout)
 
-        self.icon = QtGui.QLabel()
+        self.icon = QtWidgets.QLabel()
         pixmap = QtGui.QPixmap(icon)
         self.icon.setPixmap(
             pixmap.scaledToHeight(36, mode=QtCore.Qt.SmoothTransformation)
@@ -162,7 +162,7 @@ class BlockingOverlay(Overlay):
         self.icon.setAlignment(QtCore.Qt.AlignCenter)
         self.contentLayout.addWidget(self.icon)
 
-        self.messageLabel = QtGui.QLabel()
+        self.messageLabel = QtWidgets.QLabel()
         self.messageLabel.setWordWrap(True)
         self.messageLabel.setAlignment(QtCore.Qt.AlignCenter)
         self.contentLayout.addWidget(self.messageLabel)
@@ -231,7 +231,7 @@ class CancelOverlay(BusyOverlay):
 
         self.contentLayout.addSpacing(10)
 
-        loginButton = QtGui.QPushButton(text='Cancel')
+        loginButton = QtWidgets.QPushButton(text='Cancel')
         loginButton.clicked.connect(self.hide)
 
         self.contentLayout.addWidget(

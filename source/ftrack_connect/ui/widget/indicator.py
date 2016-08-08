@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-from Qt import QtWidgets, QtCore, QtSvg
+from Qt import QtWidgets, QtCore, QtSvg, QtGui
 
 
 class BusyIndicator(QtWidgets.QWidget):
@@ -41,11 +41,11 @@ class BusyIndicator(QtWidgets.QWidget):
 
     def paintEvent(self, event):
         '''Paint widget.'''
-        painter = QtWidgets.QPainter()
+        painter = QtGui.QPainter()
         painter.begin(self)
 
         try:
-            painter.setRenderHint(QtWidgets.QPainter.Antialiasing)
+            painter.setRenderHint(QtGui.QPainter.Antialiasing)
             area = QtCore.QRect(
                 0, 0, painter.device().width(), painter.device().height()
             )
@@ -78,18 +78,22 @@ class BusyIndicator(QtWidgets.QWidget):
             svgRenderer.render(painter, logoArea)
 
             # Draw spinner at current spin angle.
-            pen = QtWidgets.QPen()
+            pen = QtGui.QPen()
             penWidth = 5.0
             pen.setWidth(penWidth)
 
-            gradient = QtWidgets.QConicalGradient(
+            gradient = QtGui.QConicalGradient(
                 QtCore.QPoint(0, 0),
                 -self._spinnerAngle
             )
-            gradient.setColorAt(0.95, QtCore.Qt.transparent)
-            gradient.setColorAt(0, self._spinnerColor)
+            
+            # TODO : Find why error with :  
+            # TypeError: QGradient.setColorAt(float, QColor): argument 2 has unexpected type 'str'
 
-            brush = QtWidgets.QBrush(gradient)
+            # gradient.setColorAt(0.95, QtCore.Qt.transparent)
+            # gradient.setColorAt(0, self._spinnerColor)
+
+            brush = QtGui.QBrush(gradient)
             pen.setBrush(brush)
             painter.setPen(pen)
 
