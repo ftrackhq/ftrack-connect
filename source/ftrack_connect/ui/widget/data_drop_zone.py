@@ -5,7 +5,6 @@ import os
 import re
 import logging
 
-from Qt import QtGui
 from Qt import QtCore
 from Qt import QtWidgets
 
@@ -115,19 +114,19 @@ class DataDropZone(QtWidgets.QFrame):
         self.setObjectName('ftrack-connect-publisher-browse-button')
         self.setProperty('ftrackDropZone', True)
 
-        layout = QtGui.QVBoxLayout()
+        layout = QtWidgets.QVBoxLayout()
         self.setLayout(layout)
 
         bottomCenterAlignment = QtCore.Qt.AlignBottom | QtCore.Qt.AlignHCenter
         topCenterAlignment = QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter
 
-        self._label = QtGui.QLabel('Drop files here or')
+        self._label = QtWidgets.QLabel('Drop files here or')
         layout.addWidget(
             self._label,
             alignment=bottomCenterAlignment
         )
 
-        self._browseButton = QtGui.QPushButton('Browse')
+        self._browseButton = QtWidgets.QPushButton('Browse')
         self._browseButton.setToolTip('Browse for file(s).')
         layout.addWidget(
             self._browseButton, alignment=topCenterAlignment
@@ -186,7 +185,7 @@ class DataDropZone(QtWidgets.QFrame):
         validPaths = []
 
         if not mimeData.hasUrls():
-            QtGui.QMessageBox.warning(
+            QtWidgets.QMessageBox.warning(
                 self,
                 'Invalid file',
                 'Invalid file: the dropped item is not a valid file.'
@@ -208,7 +207,7 @@ class DataDropZone(QtWidgets.QFrame):
                         'folders are not supported. This will be enabled in a '
                         'later release of ftrack connect.'
                     )
-                QtGui.QMessageBox.warning(
+                QtWidgets.QMessageBox.warning(
                     self, 'Invalid file', message
                 )
 

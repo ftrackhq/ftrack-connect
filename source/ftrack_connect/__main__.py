@@ -68,7 +68,8 @@ def main(arguments=None):
     )
 
     # Construct global application.
-    application = QtWidgets.QApplication(arguments)
+    application = QtWidgets.QApplication([])
+
     application.setOrganizationName('ftrack')
     application.setOrganizationDomain('ftrack.com')
     application.setQuitOnLastWindowClosed(False)
@@ -79,9 +80,9 @@ def main(arguments=None):
     # TODO :RESTORE STYLE ONCE ALL THE REST WORKS
 
     # Construct main connect window and apply theme.
-    # connectWindow = ftrack_connect.ui.application.Application(
-    #     theme=namespace.theme
-    # )
+    connectWindow = ftrack_connect.ui.application.Application(
+        theme=namespace.theme
+    )
 
     # Fix for Windows where font size is incorrect for some widgets. For some
     # reason, resetting the font here solves the sizing issue.

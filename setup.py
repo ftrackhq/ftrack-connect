@@ -7,6 +7,7 @@ import subprocess
 import re
 import glob
 
+
 from setuptools import setup, find_packages, Command
 from distutils.command.build import build as BuildCommand
 from setuptools.command.bdist_egg import bdist_egg as BuildEggCommand
