@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
 
-from Qt import QtGui, QtWebKit, QtCore, QtWidgets
+from Qt import QtGui, QtWebKitWidgets, QtCore, QtWidgets
 
 # TODO: Investigate why this import exists and remove it.
 try:
@@ -24,7 +24,7 @@ class Ui_WebView(object):
         self.horizontalLayout = QtGui.QHBoxLayout(WebView)
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout.setObjectName('horizontalLayout')
-        self.WebViewView = QtWebKit.QWebView(WebView)
+        self.WebViewView = QtWebKitWidgets.QWebView(WebView)
         font = QtGui.QFont()
         font.setFamily('Anonymous Pro')
         self.WebViewView.setFont(font)
@@ -100,7 +100,7 @@ class WebView(QtGui.QFrame):
         layout.setSpacing(0)
         self.setLayout(layout)
 
-        self._webView = QtWebKit.QWebView()
+        self._webView = QtWebKitWidgets.QWebView()
         layout.addWidget(self._webView)
 
         self.set_url(url)
