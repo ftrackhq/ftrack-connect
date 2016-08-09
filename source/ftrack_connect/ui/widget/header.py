@@ -3,7 +3,7 @@
 
 import os
 
-from Qt import QtCore, QtWidgets
+from Qt import QtCore, QtWidgets, QtGui
 
 import ftrack
 from ftrack_connect.ui import resource
@@ -95,7 +95,7 @@ class Logo(QtWidgets.QLabel):
         )
         self.setLayout(self.main_layout)
 
-        logoPixmap = QtWidgets.QPixmap(':ftrack/image/default/ftrackLogoLabel')
+        logoPixmap = QtGui.QPixmap(':ftrack/image/default/ftrackLogoLabel')
         self.setPixmap(
             logoPixmap.scaled(
                 self.size(),
