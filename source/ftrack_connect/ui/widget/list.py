@@ -24,9 +24,20 @@ class List(QtWidgets.QTableWidget):
             QtWidgets.QAbstractItemView.ScrollPerPixel
         )
         self.verticalHeader().hide()
-        self.verticalHeader().setResizeMode(
-            QtWidgets.QHeaderView.ResizeToContents
-        )
+
+        # Compatibility layer for PySide2/Qt5 
+        # Please see : https://github.com/mottosso/Qt.py/issues/72
+        # for more informations
+
+        try:
+            self.verticalHeader().setResizeMode(
+                QtWidgets.QHeaderView.ResizeToContents
+            )
+        except:
+            self.verticalHeader().setSectionResizeMode(
+                QtWidgets.QHeaderView.ResizeToContents
+            )
+
         self.horizontalHeader().setStretchLastSection(True)
         self.horizontalHeader().hide()
 

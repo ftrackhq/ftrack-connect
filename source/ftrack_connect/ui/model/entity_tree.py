@@ -433,7 +433,7 @@ class EntityTreeModel(QtCore.QAbstractItemModel):
         self.endResetModel()
 
 
-class EntityTreeProxyModel(QtWidgets.QSortFilterProxyModel):
+class EntityTreeProxyModel(QtCore.QSortFilterProxyModel):
     '''Sort contexts before tasks.'''
 
     def lessThan(self, left, right):

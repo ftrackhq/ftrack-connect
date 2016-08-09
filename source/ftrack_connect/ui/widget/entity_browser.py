@@ -5,7 +5,7 @@
 
 import os
 
-from Qt import QtWidgets, QtCore
+from Qt import QtWidgets, QtCore, QtGui
 import ftrack_api
 
 import ftrack_connect.ui.model.entity_tree
@@ -54,7 +54,7 @@ class EntityBrowser(QtWidgets.QDialog):
         self.navigateUpButton = QtWidgets.QToolButton()
         self.navigateUpButton.setObjectName('entity-browser-up-button')
         self.navigateUpButton.setIcon(
-            QtWidgets.QIcon(':ftrack/image/light/upArrow')
+            QtGui.QIcon(':ftrack/image/light/upArrow')
         )
         self.navigateUpButton.setToolTip('Navigate up a level.')
         self.headerLayout.addWidget(self.navigateUpButton)
@@ -63,7 +63,7 @@ class EntityBrowser(QtWidgets.QDialog):
         self.reloadButton.setObjectName('entity-browser-reload-button')
 
         self.reloadButton.setIcon(
-            QtWidgets.QIcon(':ftrack/image/light/reload')
+            QtGui.QIcon(':ftrack/image/light/reload')
         )
         self.reloadButton.setToolTip('Reload listing from server.')
         self.headerLayout.addWidget(self.reloadButton)
@@ -127,12 +127,24 @@ class EntityBrowser(QtWidgets.QDialog):
         self.model.sourceModel().loadStarted.connect(self._onLoadStarted)
         self.model.sourceModel().loadEnded.connect(self._onLoadEnded)
 
-        self.view.horizontalHeader().setResizeMode(
-            QtWidgets.QHeaderView.ResizeToContents
-        )
-        self.view.horizontalHeader().setResizeMode(
-            0, QtWidgets.QHeaderView.Stretch
-        )
+        # Compatibility layer for PySide2/Qt5 
+        # Please see : https://github.com/mottosso/Qt.py/issues/72
+        # for more informations
+
+        try:
+            self.view.horizontalHeader().setResizeMode(
+                QtWidgets.QHeaderView.ResizeToContents
+            )
+            self.view.horizontalHeader().setResizeMode(
+                0, QtWidgets.QHeaderView.Stretch
+            )
+        except:
+            self.view.horizontalHeader().setSectionResizeMode(
+                QtWidgets.QHeaderView.ResizeToContents
+            )
+            self.view.horizontalHeader().setSectionResizeMode(
+                0, QtWidgets.QHeaderView.Stretch
+            )
 
         self.acceptButton.clicked.connect(self.accept)
         self.cancelButton.clicked.connect(self.reject)

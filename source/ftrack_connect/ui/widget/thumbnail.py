@@ -4,7 +4,7 @@
 import os
 import urllib2
 
-from Qt import QtWidgets, QtCore
+from Qt import QtWidgets, QtCore, QtGui
 import ftrack
 import ftrack_connect.worker
 
@@ -59,7 +59,7 @@ class Base(QtWidgets.QLabel):
 
     def _updatePixmapData(self, data):
         '''Update thumbnail with *data*.'''
-        pixmap = QtWidgets.QPixmap()
+        pixmap = QtGui.QPixmap()
         pixmap.loadFromData(data)
         self._scaleAndSetPixmap(pixmap)
 
@@ -99,13 +99,13 @@ class EllipseBase(Base):
 
     def paintEvent(self, event):
         '''Override paint event to make round thumbnails.'''
-        painter = QtWidgets.QPainter(self)
+        painter = QtGui.QPainter(self)
         painter.setRenderHints(
             QtWidgets.QPainter.Antialiasing,
             True
         )
 
-        brush = QtWidgets.QBrush(
+        brush = QtGui.QBrush(
             self.pixmap()
         )
 
@@ -178,7 +178,7 @@ class ActionIcon(Base):
 
     def loadResource(self, resource):
         '''Update current pixmap using *resource*.'''
-        pixmap = QtWidgets.QPixmap(
+        pixmap = QtGui.QPixmap(
             QtCore.QSize(self.width(), self.height())
         )
         pixmap.load(resource)
