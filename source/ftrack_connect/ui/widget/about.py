@@ -7,6 +7,8 @@ import subprocess
 
 from Qt import QtCore
 from Qt import QtWidgets
+from Qt import QtGui
+
 
 from ftrack_connect.config import get_log_directory
 
@@ -26,7 +28,7 @@ class AboutDialog(QtWidgets.QDialog):
         self.setLayout(layout)
 
         self.icon = QtWidgets.QLabel()
-        pixmap = QtWidgets.QPixmap(icon)
+        pixmap = QtGui.QPixmap(icon)
         self.icon.setPixmap(
             pixmap.scaledToHeight(36, mode=QtCore.Qt.SmoothTransformation)
         )
