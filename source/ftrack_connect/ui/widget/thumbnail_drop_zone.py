@@ -95,7 +95,7 @@ class ThumbnailDropZone(QtWidgets.QFrame):
     def setThumbnail(self, filePath):
         '''Set thumbnail to *filePath* and display a preview.'''
         self._filePath = filePath
-        pixmap = QtWidgets.QPixmap(self._filePath).scaled(
+        pixmap = QtGui.QPixmap(self._filePath).scaled(
             self._imageWidth, self._imageHeight, QtCore.Qt.KeepAspectRatio
         )
         self.imageLabel.setPixmap(pixmap)

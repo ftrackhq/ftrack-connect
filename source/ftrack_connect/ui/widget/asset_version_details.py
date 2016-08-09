@@ -5,6 +5,7 @@ import os
 
 from Qt import QtWidgets
 from Qt import QtCore
+from Qt import QtGui
 
 import ftrack
 from ftrack_connect.connector import HelpFunctions
@@ -137,7 +138,7 @@ class AssetVersionDetailsWidget(QtWidgets.QWidget):
         pixmap = self.thumbnailCache.get(url)
         if pixmap is None:
             data = HelpFunctions.getFileFromUrl(url)
-            pixmap = QtWidgets.QPixmap()
+            pixmap = QtGui.QPixmap()
             pixmap.loadFromData(data)
             self.thumbnailCache[url] = pixmap
 

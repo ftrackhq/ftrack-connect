@@ -6,6 +6,8 @@ import webbrowser
 from Qt import QtWidgets
 from Qt import QtCore
 from Qt import QtSvg
+from Qt import QtGui
+
 import ftrack_api.exception
 
 
@@ -44,10 +46,10 @@ class ConfigureScenario(QtWidgets.QWidget):
         # Set the ARGB to 0 to prevent rendering artifacts.
         image.fill(0x00000000)
 
-        svg_renderer.render(QtWidgets.QPainter(image))
+        svg_renderer.render(QtGui.QPainter(image))
 
         icon = QtWidgets.QLabel()
-        icon.setPixmap(QtWidgets.QPixmap.fromImage(image))
+        icon.setPixmap(QtGui.QPixmap.fromImage(image))
         icon.setAlignment(QtCore.Qt.AlignCenter)
         icon.setObjectName('icon-label')
         layout.addWidget(icon)

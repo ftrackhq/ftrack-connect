@@ -427,9 +427,9 @@ class AssetManagerWidget(QtWidgets.QWidget):
                 removeButton.setToolTip('Remove asset from scene')
                 icon = QtGui.QIcon()
                 icon.addPixmap(
-                    QtWidgets.QPixmap(':ftrack/image/integration/trash'),
-                    QtWidgets.QIcon.Normal,
-                    QtWidgets.QIcon.Off
+                    QtGui.QPixmap(':ftrack/image/integration/trash'),
+                    QtGui.QIcon.Normal,
+                    QtGui.QIcon.Off
                 )
                 removeButton.setIcon(icon)
                 self.ui.AssertManagerTableWidget.setCellWidget(
