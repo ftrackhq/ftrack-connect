@@ -4,7 +4,7 @@
 import sys
 import traceback
 
-from Qt import QtCore, QtWidgets
+from Qt import QtCore, QtWidgets, QtGui
 import ftrack
 
 from ftrack_connect.connector import FTAssetHandlerInstance
@@ -78,7 +78,7 @@ class ListAssetsTableWidget(QtWidgets.QWidget):
             self.assetTableColumns.index('Asset Type Code')
         )
 
-        self.assetTypeSelectorModel = QtWidgets.QStandardItemModel()
+        self.assetTypeSelectorModel = QtGui.QStandardItemModel()
         self.assetTypeSelector.setModel(self.assetTypeSelectorModel)
 
         self.assetTable.clicked.connect(self.rowSelectedEmitSignal)
@@ -97,7 +97,7 @@ class ListAssetsTableWidget(QtWidgets.QWidget):
             key=lambda assetType: assetType.getName().lower()
         )
 
-        assetTypeItem = QtWidgets.QStandardItem('Show All')
+        assetTypeItem = QtGui.QStandardItem('Show All')
         self.assetTypeSelectorModel.appendRow(assetTypeItem)
 
         assetHandler = FTAssetHandlerInstance.instance()
@@ -110,7 +110,7 @@ class ListAssetsTableWidget(QtWidgets.QWidget):
                 print assetTypeStr + ' not available in ftrack'
                 continue
 
-            assetTypeItem = QtWidgets.QStandardItem(assetType.getName())
+            assetTypeItem = QtGui.QStandardItem(assetType.getName())
             assetTypeItem.type = assetType.getShort()
             self.assetTypeSelectorModel.appendRow(assetTypeItem)
 
