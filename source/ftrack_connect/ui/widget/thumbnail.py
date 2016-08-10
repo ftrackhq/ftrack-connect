@@ -112,8 +112,8 @@ class EllipseBase(Base):
         painter.setBrush(brush)
 
         painter.setPen(
-            QtWidgets.QPen(
-                QtWidgets.QColor(0, 0, 0, 0)
+            QtGui.QPen(
+                QtGui.QColor(0, 0, 0, 0)
             )
         )
 
