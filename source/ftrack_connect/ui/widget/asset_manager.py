@@ -76,7 +76,7 @@ class Ui_AssetManager(object):
         self.AssertManagerTableWidget.setRowCount(0)
         self.verticalLayout.addWidget(self.AssertManagerTableWidget)
 
-        # self.retranslateUi(AssetManager)
+        self.retranslateUi(AssetManager)
 
         # Connect signals.
         self.refreshButton.clicked.connect(
@@ -105,42 +105,42 @@ class Ui_AssetManager(object):
 
         QtCore.QMetaObject.connectSlotsByName(AssetManager)
 
-    # def retranslateUi(self, AssetManager):
-    #     '''Retranslate ui for *AssetManager*.'''
-    #     AssetManager.setWindowTitle(
-    #         QtWidgets.QApplication.translate(
-    #             'AssetManager', 'Form', None, QtWidgets.QApplication.UnicodeUTF8
-    #         )
-    #     )
-    #     self.versionDownButton.setText(
-    #         QtWidgets.QApplication.translate(
-    #             'AssetManager', '-', None, QtWidgets.QApplication.UnicodeUTF8)
-    #     )
-    #     self.versionUpButton.setText(
-    #         QtWidgets.QApplication.translate(
-    #             'AssetManager', '+', None, QtWidgets.QApplication.UnicodeUTF8)
-    #     )
-    #     self.latestButton.setText(
-    #         QtWidgets.QApplication.translate(
-    #             'AssetManager', 'Latest', None, QtWidgets.QApplication.UnicodeUTF8
-    #         )
-    #     )
-    #     self.selectAllButton.setText(
-    #         QtWidgets.QApplication.translate(
-    #             'AssetManager', 'Select All', None,
-    #             QtWidgets.QApplication.UnicodeUTF8
-    #         )
-    #     )
-    #     self.menuButton.setText(
-    #         QtWidgets.QApplication.translate(
-    #             'AssetManager', 'Extra', None, QtWidgets.QApplication.UnicodeUTF8
-    #         )
-    #     )
-    #     self.refreshButton.setText(
-    #         QtWidgets.QApplication.translate(
-    #             'AssetManager', 'Refresh', None, QtWidgets.QApplication.UnicodeUTF8
-    #         )
-    #     )
+    def retranslateUi(self, AssetManager):
+        '''Retranslate ui for *AssetManager*.'''
+        AssetManager.setWindowTitle(
+            QtWidgets.QApplication.translate(
+                'AssetManager', 'Form', None, QtWidgets.QApplication.UnicodeUTF8
+            )
+        )
+        self.versionDownButton.setText(
+            QtWidgets.QApplication.translate(
+                'AssetManager', '-', None, QtWidgets.QApplication.UnicodeUTF8)
+        )
+        self.versionUpButton.setText(
+            QtWidgets.QApplication.translate(
+                'AssetManager', '+', None, QtWidgets.QApplication.UnicodeUTF8)
+        )
+        self.latestButton.setText(
+            QtWidgets.QApplication.translate(
+                'AssetManager', 'Latest', None, QtWidgets.QApplication.UnicodeUTF8
+            )
+        )
+        self.selectAllButton.setText(
+            QtWidgets.QApplication.translate(
+                'AssetManager', 'Select All', None,
+                QtWidgets.QApplication.UnicodeUTF8
+            )
+        )
+        self.menuButton.setText(
+            QtWidgets.QApplication.translate(
+                'AssetManager', 'Extra', None, QtWidgets.QApplication.UnicodeUTF8
+            )
+        )
+        self.refreshButton.setText(
+            QtWidgets.QApplication.translate(
+                'AssetManager', 'Refresh', None, QtWidgets.QApplication.UnicodeUTF8
+            )
+        )
 
 
 class FtrackAssetManagerDialog(QtWidgets.QDialog):
@@ -608,8 +608,8 @@ class AssetManagerWidget(QtWidgets.QWidget):
             selModel = self.ui.AssertManagerTableWidget.selectionModel()
             selModel.select(
                 index,
-                QtWidgets.QItemSelectionModel.Select |
-                QtWidgets.QItemSelectionModel.Rows
+                QtCore.QItemSelectionModel.Select |
+                QtCore.QItemSelectionModel.Rows
             )
 
     def getSceneSelection(self):
@@ -625,8 +625,8 @@ class AssetManagerWidget(QtWidgets.QWidget):
             )
             selModel = self.ui.AssertManagerTableWidget.selectionModel()
             selModel.select(
-                index, QtWidgets.QItemSelectionModel.Select |
-                QtWidgets.QItemSelectionModel.Rows
+                index, QtCore.QItemSelectionModel.Select |
+                QtCore.QItemSelectionModel.Rows
             )
 
     def setSceneSelection(self):

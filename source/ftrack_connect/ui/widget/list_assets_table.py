@@ -232,7 +232,7 @@ class ListAssetsTableWidget(QtWidgets.QWidget):
         index = self.assetTable.model().index(row, 0)
         self.assetTable.selectionModel().select(
             index,
-            QtWidgets.QItemSelectionModel.Select | QtWidgets.QItemSelectionModel.Rows
+            QtCore.QItemSelectionModel.Select | QtCore.QItemSelectionModel.Rows
         )
 
         # Temporary alias

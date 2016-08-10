@@ -32,16 +32,16 @@ class Ui_WebView(object):
         self.WebViewView.setObjectName('WebViewView')
         self.horizontalLayout.addWidget(self.WebViewView)
 
-        # self.retranslateUi(WebView)
+        self.retranslateUi(WebView)
         QtCore.QMetaObject.connectSlotsByName(WebView)
 
-    # def retranslateUi(self, WebView):
-    #     '''Translate text for *WebView*.'''
-    #     WebView.setWindowTitle(
-    #         QtGui.QApplication.translate(
-    #             'WebView', 'Form', None, QtWidgets.QApplication.UnicodeUTF8
-    #         )
-    #     )
+    def retranslateUi(self, WebView):
+        '''Translate text for *WebView*.'''
+        WebView.setWindowTitle(
+            QtWidgets.QApplication.translate(
+                'WebView', 'Form', None, QtWidgets.QApplication.UnicodeUTF8
+            )
+        )
 
 
 class WebPage(QtWebKitWidgets.QWebPage):
