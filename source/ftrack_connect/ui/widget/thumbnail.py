@@ -101,7 +101,7 @@ class EllipseBase(Base):
         '''Override paint event to make round thumbnails.'''
         painter = QtGui.QPainter(self)
         painter.setRenderHints(
-            QtWidgets.QPainter.Antialiasing,
+            QtGui.QPainter.Antialiasing,
             True
         )
 
