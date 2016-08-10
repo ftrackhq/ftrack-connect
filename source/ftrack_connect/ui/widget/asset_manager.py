@@ -76,7 +76,7 @@ class Ui_AssetManager(object):
         self.AssertManagerTableWidget.setRowCount(0)
         self.verticalLayout.addWidget(self.AssertManagerTableWidget)
 
-        self.retranslateUi(AssetManager)
+        # self.retranslateUi(AssetManager)
 
         # Connect signals.
         self.refreshButton.clicked.connect(
@@ -105,42 +105,42 @@ class Ui_AssetManager(object):
 
         QtCore.QMetaObject.connectSlotsByName(AssetManager)
 
-    def retranslateUi(self, AssetManager):
-        '''Retranslate ui for *AssetManager*.'''
-        AssetManager.setWindowTitle(
-            QtWidgets.QApplication.translate(
-                'AssetManager', 'Form', None, QtWidgets.QApplication.UnicodeUTF8
-            )
-        )
-        self.versionDownButton.setText(
-            QtWidgets.QApplication.translate(
-                'AssetManager', '-', None, QtWidgets.QApplication.UnicodeUTF8)
-        )
-        self.versionUpButton.setText(
-            QtWidgets.QApplication.translate(
-                'AssetManager', '+', None, QtWidgets.QApplication.UnicodeUTF8)
-        )
-        self.latestButton.setText(
-            QtWidgets.QApplication.translate(
-                'AssetManager', 'Latest', None, QtWidgets.QApplication.UnicodeUTF8
-            )
-        )
-        self.selectAllButton.setText(
-            QtWidgets.QApplication.translate(
-                'AssetManager', 'Select All', None,
-                QtWidgets.QApplication.UnicodeUTF8
-            )
-        )
-        self.menuButton.setText(
-            QtWidgets.QApplication.translate(
-                'AssetManager', 'Extra', None, QtWidgets.QApplication.UnicodeUTF8
-            )
-        )
-        self.refreshButton.setText(
-            QtWidgets.QApplication.translate(
-                'AssetManager', 'Refresh', None, QtWidgets.QApplication.UnicodeUTF8
-            )
-        )
+    # def retranslateUi(self, AssetManager):
+    #     '''Retranslate ui for *AssetManager*.'''
+    #     AssetManager.setWindowTitle(
+    #         QtWidgets.QApplication.translate(
+    #             'AssetManager', 'Form', None, QtWidgets.QApplication.UnicodeUTF8
+    #         )
+    #     )
+    #     self.versionDownButton.setText(
+    #         QtWidgets.QApplication.translate(
+    #             'AssetManager', '-', None, QtWidgets.QApplication.UnicodeUTF8)
+    #     )
+    #     self.versionUpButton.setText(
+    #         QtWidgets.QApplication.translate(
+    #             'AssetManager', '+', None, QtWidgets.QApplication.UnicodeUTF8)
+    #     )
+    #     self.latestButton.setText(
+    #         QtWidgets.QApplication.translate(
+    #             'AssetManager', 'Latest', None, QtWidgets.QApplication.UnicodeUTF8
+    #         )
+    #     )
+    #     self.selectAllButton.setText(
+    #         QtWidgets.QApplication.translate(
+    #             'AssetManager', 'Select All', None,
+    #             QtWidgets.QApplication.UnicodeUTF8
+    #         )
+    #     )
+    #     self.menuButton.setText(
+    #         QtWidgets.QApplication.translate(
+    #             'AssetManager', 'Extra', None, QtWidgets.QApplication.UnicodeUTF8
+    #         )
+    #     )
+    #     self.refreshButton.setText(
+    #         QtWidgets.QApplication.translate(
+    #             'AssetManager', 'Refresh', None, QtWidgets.QApplication.UnicodeUTF8
+    #         )
+    #     )
 
 
 class FtrackAssetManagerDialog(QtWidgets.QDialog):
@@ -270,16 +270,16 @@ class AssetManagerWidget(QtWidgets.QWidget):
             self.columnHeaders
         )
 
-        self.ui.AssetManagerComboBoxModel = QtWidgets.QStandardItemModel()
+        self.ui.AssetManagerComboBoxModel = QtGui.QStandardItemModel()
 
         assetTypes = ftrack.getAssetTypes()
         assetTypes = sorted(assetTypes, key=lambda a: a.getName().lower())
 
-        assetTypeItem = QtWidgets.QStandardItem('Show All')
+        assetTypeItem = QtGui.QStandardItem('Show All')
         self.ui.AssetManagerComboBoxModel.appendRow(assetTypeItem)
 
         for assetType in assetTypes:
-            assetTypeItem = QtWidgets.QStandardItem(assetType.getName())
+            assetTypeItem = QtGui.QStandardItem(assetType.getName())
             assetTypeItem.type = assetType.getShort()
             self.ui.AssetManagerComboBoxModel.appendRow(assetTypeItem)
 
