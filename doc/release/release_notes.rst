@@ -7,6 +7,15 @@
 Release Notes
 *************
 
+.. release:: 0.1.27
+    :date: 2016-08-08
+
+    .. change:: new
+        :tags: Actions
+
+        Added default action to reveal a Component in the OS default file
+        browser.
+
 .. release:: 0.1.26
     :date: 2016-07-19
 
