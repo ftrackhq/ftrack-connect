@@ -7,6 +7,13 @@
 Release Notes
 *************
 
+.. release:: Upcoming
+
+    .. change:: changed
+        :tags: Internal
+
+        Add support to PySide2 / Qt5
+
 .. release:: 0.1.26
     :date: 2016-07-19
 
