@@ -7,6 +7,13 @@
 Release Notes
 *************
 
+.. release:: Upcoming
+
+    .. change:: fixed
+        :tags: Internal
+
+        Connect logs are saved to the wrong directory.
+
 .. release:: 0.1.27
     :date: 2016-08-08
 

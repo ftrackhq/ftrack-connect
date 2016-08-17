@@ -14,7 +14,7 @@ def get_log_directory():
 
     Raise if the directory can not be created.
     '''
-    user_data_dir = appdirs.user_data_dir('ftrack_connect', 'ftrack')
+    user_data_dir = appdirs.user_data_dir('ftrack-connect', 'ftrack')
     log_directory = os.path.join(user_data_dir, 'log')
 
     if not os.path.exists(log_directory):
