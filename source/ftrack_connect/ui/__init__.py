@@ -3,8 +3,8 @@
 
 # Import QtSvg and QtXml to force load libraries needed to display
 # SVG on Windows.
-from Qt import QtSvg
-from Qt import QtXml
+from QtExt import QtSvg
+from QtExt import QtXml
 
 
 # Load UI resources such as icons.

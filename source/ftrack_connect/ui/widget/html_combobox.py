@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
 
-from Qt import QtWidgets, QtCore
+from QtExt import QtWidgets, QtCore
 
 import ftrack_connect.ui.widget.html_delegate
 

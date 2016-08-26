@@ -4,9 +4,9 @@
 import os
 import uuid
 
-from Qt import QtWidgets
-from Qt import QtCore
-from Qt import QtGui
+from QtExt import QtWidgets
+from QtExt import QtCore
+from QtExt import QtGui
 
 import ftrack_connect.ui.widget.line_edit
 import ftrack_connect.ui.widget.label

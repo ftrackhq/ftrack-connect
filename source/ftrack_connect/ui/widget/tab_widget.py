@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-from Qt import QtWidgets
+from QtExt import QtWidgets
 
 
 class TabWidget(QtWidgets.QTabWidget):

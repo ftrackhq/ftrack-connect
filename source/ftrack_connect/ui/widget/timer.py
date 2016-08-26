@@ -3,7 +3,7 @@
 
 import time as _time
 
-from Qt import QtWidgets, QtCore
+from QtExt import QtWidgets, QtCore
 
 import ftrack_connect.ui.widget.line_edit
 import ftrack_connect.ui.widget.label

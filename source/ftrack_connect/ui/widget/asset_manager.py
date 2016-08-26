@@ -3,9 +3,9 @@
 
 import getpass
 
-from Qt import QtCore
-from Qt import QtWidgets
-from Qt import QtGui
+from QtExt import QtCore
+from QtExt import QtWidgets
+from QtExt import QtGui
 
 import ftrack
 

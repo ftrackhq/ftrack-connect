@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
 
-from Qt import QtGui, QtWebKitWidgets, QtCore, QtWidgets
+from QtExt import QtGui, QtWebKitWidgets, QtCore, QtWidgets
 
 # TODO: Investigate why this import exists and remove it.
 try:

@@ -10,7 +10,7 @@ import pkg_resources
 
 os.environ.setdefault('QT_PREFERRED_BINDING', 'PySide:PySide2')
 
-from Qt import QtWidgets
+from QtExt import QtWidgets
 
 import ftrack_connect.config
 

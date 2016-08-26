@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-from Qt import QtWidgets, QtCore, QtGui
+from QtExt import QtWidgets, QtCore, QtGui
 
 
 class LineEditIconButton(QtWidgets.QToolButton):

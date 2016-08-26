@@ -70,7 +70,7 @@ class BuildResources(Command):
         self.resource_target_path = RESOURCE_TARGET_PATH
 
     def _replace_imports_(self):
-        replace = 'from Qt import QtCore'
+        replace = 'from QtExt import QtCore'
         for line in fileinput.input(self.resource_target_path, inplace=True):
             if 'import QtCore' in line:
                 print line.replace(line, replace)

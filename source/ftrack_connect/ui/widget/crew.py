@@ -4,7 +4,7 @@
 import operator
 import logging
 
-from Qt import QtWidgets
+from QtExt import QtWidgets
 
 import ftrack_connect.ui.widget.label
 import ftrack_connect.ui.widget.user_list

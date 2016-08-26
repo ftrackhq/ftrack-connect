@@ -3,7 +3,7 @@
 
 from collections import defaultdict
 
-from Qt import QtWidgets, QtCore, QtGui
+from QtExt import QtWidgets, QtCore, QtGui
 import ftrack
 
 from ftrack_connect.ui.widget import notification_directive

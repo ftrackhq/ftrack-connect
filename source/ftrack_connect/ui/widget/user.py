@@ -2,7 +2,7 @@
 # :copyright: Copyright (c) 2015 ftrack
 
 import arrow
-from Qt import QtWidgets, QtCore
+from QtExt import QtWidgets, QtCore
 import copy
 
 import ftrack_connect.error

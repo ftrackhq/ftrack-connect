@@ -3,7 +3,7 @@
 
 import os
 
-from Qt import QtCore, QtWidgets, QtGui
+from QtExt import QtCore, QtWidgets, QtGui
 
 import ftrack
 from ftrack_connect.ui import resource

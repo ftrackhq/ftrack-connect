@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
 
-from Qt import QtWidgets, QtCore, QtGui
+from QtExt import QtWidgets, QtCore, QtGui
 import ftrack
 
 from ftrack_connect.ui.widget import entity_path as _entity_path

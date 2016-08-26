@@ -12,10 +12,10 @@ import uuid
 import logging
 
 import appdirs
-# from Qt import QtWidgets
-from Qt import QtCore
-from Qt import QtWidgets
-from Qt import QtGui
+
+from QtExt import QtCore
+from QtExt import QtWidgets
+from QtExt import QtGui
 
 import ftrack_api
 import ftrack_api._centralized_storage_scenario

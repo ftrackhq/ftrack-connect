@@ -6,7 +6,7 @@ import sys
 import json
 
 import arrow
-from Qt import QtWidgets
+from QtExt import QtWidgets
 import ftrack
 import ftrack_api
 

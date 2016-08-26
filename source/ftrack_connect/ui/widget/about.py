@@ -5,9 +5,9 @@ import sys
 import json
 import subprocess
 
-from Qt import QtCore
-from Qt import QtWidgets
-from Qt import QtGui
+from QtExt import QtCore
+from QtExt import QtWidgets
+from QtExt import QtGui
 
 
 from ftrack_connect.config import get_log_directory

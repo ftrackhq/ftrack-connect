@@ -3,7 +3,7 @@
 import os
 import getpass
 import ftrack
-from Qt import QtCore, QtWidgets
+from QtExt import QtCore, QtWidgets
 
 from ftrack_connect.connector import PanelComInstance, FTAssetObject
 from ftrack_connect.ui.widget.list_assets_table import ListAssetsTableWidget

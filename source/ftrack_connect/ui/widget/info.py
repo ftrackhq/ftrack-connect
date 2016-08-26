@@ -4,7 +4,7 @@
 import os
 import getpass
 
-from Qt import QtWidgets
+from QtExt import QtWidgets
 
 from ftrack_connect.connector import PanelComInstance
 from ftrack_connect.ui.widget.web_view import WebViewWidget

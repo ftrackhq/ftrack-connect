@@ -3,7 +3,7 @@
 
 import functools
 
-from Qt import QtWidgets
+from QtExt import QtWidgets
 
 import ftrack_connect.ui.widget.component
 import ftrack_connect.ui.widget.item_list

@@ -5,8 +5,8 @@ import json
 import time
 import logging
 
-from Qt import QtCore
-from Qt import QtWidgets
+from QtExt import QtCore
+from QtExt import QtWidgets
 import ftrack
 import ftrack_api.event.base
 
