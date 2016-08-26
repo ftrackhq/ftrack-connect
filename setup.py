@@ -223,7 +223,7 @@ configuration = dict(
         '': 'source'
     },
     setup_requires=[
-        'Qt.py >= 0.3.1',
+        'QtExt >= 0.1.0',
         'pyScss >= 1.2.0, < 2',
         'PySide >= 1.2.2, < 2',
         'sphinx >= 1.2.2, < 2',
@@ -231,10 +231,10 @@ configuration = dict(
         'lowdown >= 0.1.0, < 1'
     ],
     install_requires=[
-        'Qt.py >= 0.3.1',
+        'QtExt >= 0.1.0',
         'ftrack-python-api >= 0.8.1, < 1',
         'PySide >= 1.2.2, < 2',
-        'Riffle >= 0.1.0, < 2',
+        'Riffle >= 0.3.1, < 2',
         'arrow >= 0.4.6, < 1',
         'appdirs == 1.4.0',
         'requests >= 2, <3'
@@ -248,10 +248,9 @@ configuration = dict(
         'test': PyTest
     },
     dependency_links=[
-        (
-            'https://bitbucket.org/ftrack/lowdown/get/0.1.0.zip'
-            '#egg=lowdown-0.1.0'
-        )
+            'https://bitbucket.org/ftrack/lowdown/get/0.1.0.zip#egg=lowdown-0.1.0',
+            'https://gitlab.com/langeli/riffle/repository/archive.zip?ref=18-pyside2-compatible#egg=Riffle-0.3.1',
+            'https://bitbucket.org/efestolab/qtext/get/0.1.0.zip#egg=QtExt-0.1.0'
     ],
     options={},
     data_files=[
