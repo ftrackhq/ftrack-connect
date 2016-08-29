@@ -64,7 +64,7 @@ def main(arguments=None):
     namespace = parser.parse_args(arguments)
 
     ftrack_connect.config.configure_logging(
-        'ftrack-connect', level=loggingLevels[namespace.verbosity]
+        'ftrack_connect', level=loggingLevels[namespace.verbosity]
     )
 
     # Construct global application.
