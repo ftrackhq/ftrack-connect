@@ -9,7 +9,7 @@ Release Notes
 
 .. release:: Upcoming
 
-    .. change:: fixed
+    .. change:: Asset Manager
         :tags: Internal
 
         Speedup asset manager.
