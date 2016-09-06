@@ -71,18 +71,22 @@ class Base(QtGui.QLabel):
         )
         self.setPixmap(scaledPixmap)
 
+    def _check_url(self, url, opener_callback, timeout=0.5):
+        '''
+        If the *url* is not accessible through the given *opener_callback*
+        (either does not exist or *timeout*), the default icon is used.
+        '''
+        placeholder = self.placholderThumbnail
+        try:
+            response = opener_callback(url, timeout=timeout)
+        except urllib2.URLError:
+            response = opener_callback(placeholder, timeout=timeout)
+
+        return response
+
     def _download(self, url):
         '''Return thumbnail file from *url*.
-
-        If the icon url is not accessible (either does not exist or times out),
-        the default icon is used.
-
         '''
-        try:
-            urllib2.urlopen(url, timeout=0.5)
-        except urllib2.URLError:
-            url = self.placholderThumbnail
-
         ftrackProxy = os.getenv('FTRACK_PROXY', '')
         ftrackServer = os.getenv('FTRACK_SERVER', '')
         if ftrackProxy != '':
@@ -93,13 +97,14 @@ class Base(QtGui.QLabel):
 
             proxy = urllib2.ProxyHandler({httpHandle: ftrackProxy})
             opener = urllib2.build_opener(proxy)
-            response = opener.open(url)
+            response = self._check_url(url, opener.open)
             html = response.read()
         else:
-            response = urllib2.urlopen(url)
+            response = self._check_url(url, urllib2.urlopen)
             html = response.read()
 
         return html
+
 
 class EllipseBase(Base):
     '''Thumbnail which is drawn as an ellipse.'''
