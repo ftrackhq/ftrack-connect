@@ -10,6 +10,8 @@ import pkg_resources
 
 from PySide import QtGui
 
+import ftrack_connect.config
+
 
 # Hooks use the ftrack event system. Set the FTRACK_EVENT_PLUGIN_PATH
 # to pick up the default hooks if it has not already been set.
@@ -49,7 +51,7 @@ def main(arguments=None):
         '-v', '--verbosity',
         help='Set the logging output verbosity.',
         choices=loggingLevels.keys(),
-        default='info'
+        default='warning'
     )
 
     parser.add_argument(
@@ -61,7 +63,9 @@ def main(arguments=None):
 
     namespace = parser.parse_args(arguments)
 
-    logging.basicConfig(level=loggingLevels[namespace.verbosity])
+    ftrack_connect.config.configure_logging(
+        'ftrack_connect', level=loggingLevels[namespace.verbosity]
+    )
 
     # Construct global application.
     application = QtGui.QApplication('ftrack-connect')

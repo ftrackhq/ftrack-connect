@@ -13,6 +13,31 @@ Release Notes
 
         Connect break in case of slow connection or missing url icon.
 
+.. release:: Upcoming
+
+    .. change:: fixed
+        :tags: Internal
+
+        Connect logs are saved to the wrong directory.
+
+.. release:: 0.1.27
+    :date: 2016-08-08
+
+    .. change:: new
+        :tags: Actions
+
+        Added default action to reveal a Component in the OS default file
+        browser.
+
+.. release:: 0.1.26
+    :date: 2016-07-19
+
+    .. change:: new
+        :tags: Internal
+
+        Logs are now written to file and the logs directory can be accessed
+        via the about menu.
+
 .. release:: 0.1.25
     :date: 2016-06-07
 
