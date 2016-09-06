@@ -175,9 +175,11 @@ class ActionIcon(Base):
        '''
         if icon and icon[:4] == 'http':
             self.load(icon)
+
         elif self.AVAILABLE_ICONS.get(icon):
             url = os.environ['FTRACK_SERVER'] + self.AVAILABLE_ICONS[icon]
             self.load(url)
+
         else:
             self.loadResource(':/ftrack/image/light/action')
 
