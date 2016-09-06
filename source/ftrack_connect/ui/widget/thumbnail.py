@@ -80,7 +80,7 @@ class Base(QtGui.QLabel):
         try:
             response = opener_callback(url, timeout=timeout)
         except urllib2.URLError:
-            response = opener_callback(placeholder, timeout=timeout)
+            response = opener_callback(placeholder)
 
         return response
 
