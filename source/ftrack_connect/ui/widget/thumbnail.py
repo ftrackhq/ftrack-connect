@@ -73,7 +73,9 @@ class Base(QtGui.QLabel):
 
     def _download(self, url):
         '''Return thumbnail file from *url*.'''
-        if url is None:
+        try:
+            urllib2.urlopen(url, timeout=0.5)
+        except urllib2.URLError:
             url = self.placholderThumbnail
 
         ftrackProxy = os.getenv('FTRACK_PROXY', '')
@@ -172,12 +174,6 @@ class ActionIcon(Base):
        out), the default icon is used.
        '''
         if icon and icon[:4] == 'http':
-            try:
-                urllib2.urlopen(icon, timeout=0.1)
-            except urllib2.URLError:
-                self.loadResource(':/ftrack/image/light/action')
-                return
-
             self.load(icon)
         elif self.AVAILABLE_ICONS.get(icon):
             url = os.environ['FTRACK_SERVER'] + self.AVAILABLE_ICONS[icon]
