@@ -72,7 +72,12 @@ class Base(QtGui.QLabel):
         self.setPixmap(scaledPixmap)
 
     def _download(self, url):
-        '''Return thumbnail file from *url*.'''
+        '''Return thumbnail file from *url*.
+
+        If the icon url is not accessible (either does not exist or times out),
+        the default icon is used.
+
+        '''
         try:
             urllib2.urlopen(url, timeout=0.5)
         except urllib2.URLError:
@@ -169,9 +174,6 @@ class ActionIcon(Base):
 
             * A URL to load the image from starting with 'http'.
             * One of the predefined icons in AVAILABLE_ICONS
-
-       If the icon url is not accessible (either does not exist or times
-       out), the default icon is used.
        '''
         if icon and icon[:4] == 'http':
             self.load(icon)
