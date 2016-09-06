@@ -71,7 +71,7 @@ class Base(QtGui.QLabel):
         )
         self.setPixmap(scaledPixmap)
 
-    def _check_url(self, url, opener_callback, timeout=0.5):
+    def _checkUrl(self, url, opener_callback, timeout=0.5):
         '''
         If the *url* is not accessible through the given *opener_callback*
         (either does not exist or *timeout*), the default icon is used.
@@ -97,10 +97,10 @@ class Base(QtGui.QLabel):
 
             proxy = urllib2.ProxyHandler({httpHandle: ftrackProxy})
             opener = urllib2.build_opener(proxy)
-            response = self._check_url(url, opener.open)
+            response = self._checkUrl(url, opener.open)
             html = response.read()
         else:
-            response = self._check_url(url, urllib2.urlopen)
+            response = self._checkUrl(url, urllib2.urlopen)
             html = response.read()
 
         return html
