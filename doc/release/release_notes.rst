@@ -7,6 +7,12 @@
 Release Notes
 *************
 
+.. release:: Upcoming
+    .. change:: fix
+        :tags: Internal, API
+
+        Connect break in case of slow connection or missing url icon.
+
 .. release:: 0.1.25
     :date: 2016-06-07
 
