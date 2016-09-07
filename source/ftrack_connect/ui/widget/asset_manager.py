@@ -563,12 +563,6 @@ class AssetManagerWidget(QtGui.QWidget):
                 row, 5
             ).setCurrentIndex(newIndex)
 
-            newVersion = self.ui.AssertManagerTableWidget.cellWidget(
-                row, 5
-            ).currentText()
-
-            self.changeVersion(row, newVersion)
-
     def versionUpSelected(self):
         '''Version up selected assets.'''
         rows = self.getSelectedRows()
@@ -580,10 +574,6 @@ class AssetManagerWidget(QtGui.QWidget):
             self.ui.AssertManagerTableWidget.cellWidget(
                 row, 5
             ).setCurrentIndex(newIndex)
-            newVersion = self.ui.AssertManagerTableWidget.cellWidget(
-                row, 5
-            ).currentText()
-            self.changeVersion(row, newVersion)
 
     def versionLatestSelected(self):
         '''Version up assets to latest.'''
@@ -593,10 +583,6 @@ class AssetManagerWidget(QtGui.QWidget):
             self.ui.AssertManagerTableWidget.cellWidget(
                 row, 5
             ).setCurrentIndex(newIndex)
-            newVersion = self.ui.AssertManagerTableWidget.cellWidget(
-                row, 5
-            ).currentText()
-            self.changeVersion(row, newVersion)
 
     def selectAll(self):
         '''Select all assets rows.'''
