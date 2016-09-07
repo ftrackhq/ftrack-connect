@@ -71,11 +71,16 @@ class Base(QtGui.QLabel):
         )
         self.setPixmap(scaledPixmap)
 
-    def _checkUrl(self, url, opener_callback, timeout=0.5):
+    def _safeDownload(self, url, opener_callback, timeout=0.5):
+        '''Check *url* through the given *openener_callback*.
+
+        .. note::
+
+           A placeholder image will be returned if there is not response within the
+           given *timeout*.
+
         '''
-        If the *url* is not accessible through the given *opener_callback*
-        (either does not exist or *timeout*), the default icon is used.
-        '''
+
         placeholder = self.placholderThumbnail
         try:
             response = opener_callback(url, timeout=timeout)
@@ -85,8 +90,8 @@ class Base(QtGui.QLabel):
         return response
 
     def _download(self, url):
-        '''Return thumbnail file from *url*.
-        '''
+        '''Return thumbnail file from *url*.'''
+
         ftrackProxy = os.getenv('FTRACK_PROXY', '')
         ftrackServer = os.getenv('FTRACK_SERVER', '')
         if ftrackProxy != '':
@@ -97,10 +102,10 @@ class Base(QtGui.QLabel):
 
             proxy = urllib2.ProxyHandler({httpHandle: ftrackProxy})
             opener = urllib2.build_opener(proxy)
-            response = self._checkUrl(url, opener.open)
+            response = self._safeDownload(url, opener.open)
             html = response.read()
         else:
-            response = self._checkUrl(url, urllib2.urlopen)
+            response = self._safeDownload(url, urllib2.urlopen)
             html = response.read()
 
         return html
