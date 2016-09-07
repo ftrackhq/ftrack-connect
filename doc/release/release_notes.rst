@@ -9,6 +9,13 @@ Release Notes
 
 .. release:: Upcoming
 
+    .. change:: Asset Manager
+        :tags: Internal
+
+        Speedup asset manager.
+
+.. release:: Upcoming
+
     .. change:: fixed
         :tags: Internal
 
