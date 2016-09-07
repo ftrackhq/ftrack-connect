@@ -13,8 +13,6 @@ Release Notes
 
         Connect break in case of slow connection or missing url icon.
 
-.. release:: Upcoming
-
     .. change:: fixed
         :tags: Internal
 
