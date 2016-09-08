@@ -71,7 +71,7 @@ class Base(QtGui.QLabel):
         )
         self.setPixmap(scaledPixmap)
 
-    def _safeDownload(self, url, opener_callback, timeout=0.5):
+    def _safeDownload(self, url, opener_callback, timeout=5):
         '''Check *url* through the given *openener_callback*.
 
         .. note::
