@@ -25,15 +25,14 @@ class List(QtWidgets.QTableWidget):
         )
         self.verticalHeader().hide()
 
-        # Compatibility layer for PySide2/Qt5 
-        # Please see : https://github.com/mottosso/Qt.py/issues/72
-        # for more informations
-
+        # Compatibility layer for PySide2/Qt5.
+        # Please see: https://github.com/mottosso/Qt.py/issues/72
+        # for more information.
         try:
             self.verticalHeader().setResizeMode(
                 QtWidgets.QHeaderView.ResizeToContents
             )
-        except:
+        except Exception:
             self.verticalHeader().setSectionResizeMode(
                 QtWidgets.QHeaderView.ResizeToContents
             )
