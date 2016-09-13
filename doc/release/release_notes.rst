@@ -1,3 +1,4 @@
+
 ..
     :copyright: Copyright (c) 2014 ftrack
 
@@ -7,7 +8,14 @@
 Release Notes
 *************
 
+
 .. release:: Upcoming
+
+    .. change:: changed
+        :tags: Internal
+
+        Add support to PySide2 / Qt5
+
     .. change:: fix
         :tags: Internal, API
 
@@ -17,8 +25,6 @@ Release Notes
         :tags: Internal
 
         Speedup asset manager.
-
-.. release:: Upcoming
 
     .. change:: fixed
         :tags: Internal

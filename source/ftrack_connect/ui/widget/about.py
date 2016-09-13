@@ -3,13 +3,16 @@
 import os
 import json
 
-from PySide import QtGui, QtCore
+from QtExt import QtCore
+from QtExt import QtWidgets
+from QtExt import QtGui
+
 
 from ftrack_connect.config import get_log_directory
 import ftrack_connect.util
 
 
-class AboutDialog(QtGui.QDialog):
+class AboutDialog(QtWidgets.QDialog):
     '''About widget.'''
 
     def __init__(
@@ -18,12 +21,12 @@ class AboutDialog(QtGui.QDialog):
     ):
         super(AboutDialog, self).__init__(parent)
 
-        layout = QtGui.QVBoxLayout()
+        layout = QtWidgets.QVBoxLayout()
         layout.setContentsMargins(20, 20, 20, 20)
-        layout.setSizeConstraint(QtGui.QLayout.SetFixedSize)
+        layout.setSizeConstraint(QtWidgets.QLayout.SetFixedSize)
         self.setLayout(layout)
 
-        self.icon = QtGui.QLabel()
+        self.icon = QtWidgets.QLabel()
         pixmap = QtGui.QPixmap(icon)
         self.icon.setPixmap(
             pixmap.scaledToHeight(36, mode=QtCore.Qt.SmoothTransformation)
@@ -31,24 +34,24 @@ class AboutDialog(QtGui.QDialog):
         self.icon.setAlignment(QtCore.Qt.AlignCenter)
         layout.addWidget(self.icon)
 
-        self.messageLabel = QtGui.QLabel()
+        self.messageLabel = QtWidgets.QLabel()
         self.messageLabel.setWordWrap(True)
         self.messageLabel.setAlignment(QtCore.Qt.AlignLeft)
         layout.addWidget(self.messageLabel)
 
         layout.addSpacing(25)
 
-        self.debugButton = QtGui.QPushButton('More info')
+        self.debugButton = QtWidgets.QPushButton('More info')
         self.debugButton.clicked.connect(self._onDebugButtonClicked)
 
         layout.addWidget(self.debugButton)
 
-        self.loggingButton = QtGui.QPushButton('Open log directory')
+        self.loggingButton = QtWidgets.QPushButton('Open log directory')
         self.loggingButton.clicked.connect(self._onLoggingButtonClicked)
 
         layout.addWidget(self.loggingButton)
 
-        self.debugTextEdit = QtGui.QTextEdit()
+        self.debugTextEdit = QtWidgets.QTextEdit()
         self.debugTextEdit.setReadOnly(True)
         self.debugTextEdit.setFontPointSize(10)
         self.debugTextEdit.hide()
@@ -69,8 +72,8 @@ class AboutDialog(QtGui.QDialog):
             try:
                 os.makedirs(directory)
             except OSError:
-                messageBox = QtGui.QMessageBox(parent=self)
-                messageBox.setIcon(QtGui.QMessageBox.Warning)
+                messageBox = QtWidgets.QMessageBox(parent=self)
+                messageBox.setIcon(QtWidgets.QMessageBox.Warning)
                 messageBox.setText(
                     u'Could not open or create logging '
                     u'directory: {0}.'.format(directory)

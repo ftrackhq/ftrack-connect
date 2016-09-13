@@ -13,7 +13,7 @@ import arrow
 
 import ftrack_connect.asynchronous
 
-from PySide import QtCore
+from QtExt import QtCore
 import ftrack
 import ftrack_api
 

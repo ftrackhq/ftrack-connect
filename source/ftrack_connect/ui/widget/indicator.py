@@ -1,10 +1,10 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-from PySide import QtGui, QtCore, QtSvg
+from QtExt import QtWidgets, QtCore, QtSvg, QtGui
 
 
-class BusyIndicator(QtGui.QWidget):
+class BusyIndicator(QtWidgets.QWidget):
     '''Draw a busy indicator.'''
 
     def __init__(self, parent=None):
@@ -86,8 +86,12 @@ class BusyIndicator(QtGui.QWidget):
                 QtCore.QPoint(0, 0),
                 -self._spinnerAngle
             )
-            gradient.setColorAt(0.95, QtCore.Qt.transparent)
-            gradient.setColorAt(0, self._spinnerColor)
+            
+            # TODO : Find why error with :  
+            # TypeError: QGradient.setColorAt(float, QColor): argument 2 has unexpected type 'str'
+
+            # gradient.setColorAt(0.95, QtCore.Qt.transparent)
+            # gradient.setColorAt(0, self._spinnerColor)
 
             brush = QtGui.QBrush(gradient)
             pen.setBrush(brush)

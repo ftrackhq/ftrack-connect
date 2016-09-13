@@ -1,10 +1,10 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-from PySide import QtGui
+from QtExt import QtWidgets
 
 
-class List(QtGui.QTableWidget):
+class List(QtWidgets.QTableWidget):
     '''Manage a list of widgets.'''
 
     def __init__(self, parent=None):
@@ -15,18 +15,29 @@ class List(QtGui.QTableWidget):
 
         self.setColumnCount(1)
         self.setSelectionBehavior(
-            QtGui.QAbstractItemView.SelectRows
+            QtWidgets.QAbstractItemView.SelectRows
         )
         self.setSelectionMode(
-            QtGui.QAbstractItemView.ExtendedSelection
+            QtWidgets.QAbstractItemView.ExtendedSelection
         )
         self.setVerticalScrollMode(
-            QtGui.QAbstractItemView.ScrollPerPixel
+            QtWidgets.QAbstractItemView.ScrollPerPixel
         )
         self.verticalHeader().hide()
-        self.verticalHeader().setResizeMode(
-            QtGui.QHeaderView.ResizeToContents
-        )
+
+        # Compatibility layer for PySide2/Qt5 
+        # Please see : https://github.com/mottosso/Qt.py/issues/72
+        # for more informations
+
+        try:
+            self.verticalHeader().setResizeMode(
+                QtWidgets.QHeaderView.ResizeToContents
+            )
+        except:
+            self.verticalHeader().setSectionResizeMode(
+                QtWidgets.QHeaderView.ResizeToContents
+            )
+
         self.horizontalHeader().setStretchLastSection(True)
         self.horizontalHeader().hide()
 

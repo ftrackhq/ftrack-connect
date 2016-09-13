@@ -4,13 +4,15 @@
 import os
 import uuid
 
-from PySide import QtGui, QtCore
+from QtExt import QtWidgets
+from QtExt import QtCore
+from QtExt import QtGui
 
 import ftrack_connect.ui.widget.line_edit
 import ftrack_connect.ui.widget.label
 
 
-class Component(QtGui.QWidget):
+class Component(QtWidgets.QWidget):
     '''Represent a component.'''
 
     nameChanged = QtCore.Signal()
@@ -19,7 +21,7 @@ class Component(QtGui.QWidget):
                  parent=None):
         '''Initialise widget with initial component *value* and *parent*.'''
         super(Component, self).__init__(parent=parent)
-        self.setLayout(QtGui.QVBoxLayout())
+        self.setLayout(QtWidgets.QVBoxLayout())
 
         self.componentNameEdit = ftrack_connect.ui.widget.line_edit.LineEdit()
         self.componentNameEdit.setPlaceholderText('Enter component name')
@@ -32,7 +34,7 @@ class Component(QtGui.QWidget):
             QtGui.QPixmap(':/ftrack/image/light/trash')
         )
 
-        self.removeAction = QtGui.QAction(
+        self.removeAction = QtWidgets.QAction(
             QtGui.QIcon(removeIcon), 'Remove', self.componentNameEdit
         )
         self.removeAction.setStatusTip('Remove component.')

@@ -1,7 +1,9 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-from PySide import QtGui, QtCore
+from QtExt import QtWidgets
+from QtExt import QtCore
+from QtExt import QtWidgets
 import ftrack
 
 import ftrack_connect.ui.application
@@ -21,7 +23,7 @@ class Actions(ftrack_connect.ui.application.ApplicationPlugin):
     def __init__(self, *args, **kwargs):
         '''Instantiate the actions widget.'''
         super(Actions, self).__init__(*args, **kwargs)
-        layout = QtGui.QVBoxLayout()
+        layout = QtWidgets.QVBoxLayout()
         self.setLayout(layout)
 
         self.actionsView = ftrack_connect.ui.widget.actions.Actions()

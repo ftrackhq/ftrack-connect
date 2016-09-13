@@ -1,7 +1,8 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-from PySide import QtGui, QtCore
+from QtExt import QtCore
+from QtExt import QtWidgets
 import ftrack
 
 import ftrack_connect.ui.application
@@ -23,7 +24,7 @@ class PublisherBlockingOverlay(
 
     def __init__(self, parent, message=''):
         super(PublisherBlockingOverlay, self).__init__(parent, message=message)
-        self.confirmButton = QtGui.QPushButton('Ok')
+        self.confirmButton = QtWidgets.QPushButton('Ok')
         self.contentLayout.insertWidget(
             3, self.confirmButton, alignment=QtCore.Qt.AlignCenter, stretch=0
         )
@@ -41,7 +42,7 @@ class Publisher(ftrack_connect.ui.application.ApplicationPlugin):
     def __init__(self, *args, **kwargs):
         '''Instantiate the publisher widget.'''
         super(Publisher, self).__init__(*args, **kwargs)
-        layout = QtGui.QVBoxLayout()
+        layout = QtWidgets.QVBoxLayout()
         self.setLayout(layout)
 
         self.publishView = ftrack_connect.ui.widget.publisher.Publisher()

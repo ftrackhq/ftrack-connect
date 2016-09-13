@@ -3,7 +3,9 @@
 
 import getpass
 
-from PySide import QtCore, QtGui
+from QtExt import QtCore
+from QtExt import QtWidgets
+from QtExt import QtGui
 
 import ftrack
 
@@ -21,53 +23,53 @@ class Ui_AssetManager(object):
         '''Setup ui for *AssetManager*.'''
         AssetManager.setObjectName('AssetManager')
         AssetManager.resize(549, 419)
-        self.verticalLayout = QtGui.QVBoxLayout(AssetManager)
+        self.verticalLayout = QtWidgets.QVBoxLayout(AssetManager)
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout.setObjectName('verticalLayout')
-        self.horizontalLayout = QtGui.QHBoxLayout()
+        self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName('horizontalLayout')
-        self.AssetManagerComboBox = QtGui.QComboBox(AssetManager)
+        self.AssetManagerComboBox = QtWidgets.QComboBox(AssetManager)
         self.AssetManagerComboBox.setMaximumSize(QtCore.QSize(120, 16777215))
         self.AssetManagerComboBox.setObjectName('AssetManagerComboBox')
         self.horizontalLayout.addWidget(self.AssetManagerComboBox)
-        self.versionDownButton = QtGui.QPushButton(AssetManager)
+        self.versionDownButton = QtWidgets.QPushButton(AssetManager)
         self.versionDownButton.setMinimumSize(QtCore.QSize(20, 0))
         self.versionDownButton.setMaximumSize(QtCore.QSize(20, 16777215))
         self.versionDownButton.setObjectName('versionDownButton')
         self.horizontalLayout.addWidget(self.versionDownButton)
-        self.versionUpButton = QtGui.QPushButton(AssetManager)
+        self.versionUpButton = QtWidgets.QPushButton(AssetManager)
         self.versionUpButton.setMinimumSize(QtCore.QSize(20, 0))
         self.versionUpButton.setMaximumSize(QtCore.QSize(20, 16777215))
         self.versionUpButton.setObjectName('versionUpButton')
         self.horizontalLayout.addWidget(self.versionUpButton)
-        self.latestButton = QtGui.QPushButton(AssetManager)
+        self.latestButton = QtWidgets.QPushButton(AssetManager)
         self.latestButton.setMinimumSize(QtCore.QSize(60, 0))
         self.latestButton.setMaximumSize(QtCore.QSize(60, 16777215))
         self.latestButton.setObjectName('latestButton')
         self.horizontalLayout.addWidget(self.latestButton)
-        self.selectAllButton = QtGui.QPushButton(AssetManager)
+        self.selectAllButton = QtWidgets.QPushButton(AssetManager)
         self.selectAllButton.setMinimumSize(QtCore.QSize(80, 0))
         self.selectAllButton.setMaximumSize(QtCore.QSize(80, 16777215))
         self.selectAllButton.setObjectName('selectAllButton')
         self.horizontalLayout.addWidget(self.selectAllButton)
-        self.menuButton = QtGui.QPushButton(AssetManager)
+        self.menuButton = QtWidgets.QPushButton(AssetManager)
         self.menuButton.setMaximumSize(QtCore.QSize(70, 16777215))
         self.menuButton.setObjectName('menuButton')
         self.horizontalLayout.addWidget(self.menuButton)
-        self.whiteSpaceLabel = QtGui.QLabel(AssetManager)
+        self.whiteSpaceLabel = QtWidgets.QLabel(AssetManager)
         self.whiteSpaceLabel.setText('')
         self.whiteSpaceLabel.setObjectName('whiteSpaceLabel')
         self.horizontalLayout.addWidget(self.whiteSpaceLabel)
-        self.refreshButton = QtGui.QPushButton(AssetManager)
+        self.refreshButton = QtWidgets.QPushButton(AssetManager)
         self.refreshButton.setMaximumSize(QtCore.QSize(80, 16777215))
         self.refreshButton.setObjectName('refreshButton')
         self.horizontalLayout.addWidget(self.refreshButton)
         self.verticalLayout.addLayout(self.horizontalLayout)
-        self.AssertManagerTableWidget = QtGui.QTableWidget(AssetManager)
-        self.AssertManagerTableWidget.setFrameShape(QtGui.QFrame.Box)
-        self.AssertManagerTableWidget.setFrameShadow(QtGui.QFrame.Sunken)
+        self.AssertManagerTableWidget = QtWidgets.QTableWidget(AssetManager)
+        self.AssertManagerTableWidget.setFrameShape(QtWidgets.QFrame.Box)
+        self.AssertManagerTableWidget.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.AssertManagerTableWidget.setSelectionBehavior(
-            QtGui.QAbstractItemView.SelectRows
+            QtWidgets.QAbstractItemView.SelectRows
         )
         self.AssertManagerTableWidget.setObjectName('AssertManagerTableWidget')
         self.AssertManagerTableWidget.setColumnCount(0)
@@ -106,42 +108,42 @@ class Ui_AssetManager(object):
     def retranslateUi(self, AssetManager):
         '''Retranslate ui for *AssetManager*.'''
         AssetManager.setWindowTitle(
-            QtGui.QApplication.translate(
-                'AssetManager', 'Form', None, QtGui.QApplication.UnicodeUTF8
+            QtWidgets.QApplication.translate(
+                'AssetManager', 'Form', None, QtWidgets.QApplication.UnicodeUTF8
             )
         )
         self.versionDownButton.setText(
-            QtGui.QApplication.translate(
-                'AssetManager', '-', None, QtGui.QApplication.UnicodeUTF8)
+            QtWidgets.QApplication.translate(
+                'AssetManager', '-', None, QtWidgets.QApplication.UnicodeUTF8)
         )
         self.versionUpButton.setText(
-            QtGui.QApplication.translate(
-                'AssetManager', '+', None, QtGui.QApplication.UnicodeUTF8)
+            QtWidgets.QApplication.translate(
+                'AssetManager', '+', None, QtWidgets.QApplication.UnicodeUTF8)
         )
         self.latestButton.setText(
-            QtGui.QApplication.translate(
-                'AssetManager', 'Latest', None, QtGui.QApplication.UnicodeUTF8
+            QtWidgets.QApplication.translate(
+                'AssetManager', 'Latest', None, QtWidgets.QApplication.UnicodeUTF8
             )
         )
         self.selectAllButton.setText(
-            QtGui.QApplication.translate(
+            QtWidgets.QApplication.translate(
                 'AssetManager', 'Select All', None,
-                QtGui.QApplication.UnicodeUTF8
+                QtWidgets.QApplication.UnicodeUTF8
             )
         )
         self.menuButton.setText(
-            QtGui.QApplication.translate(
-                'AssetManager', 'Extra', None, QtGui.QApplication.UnicodeUTF8
+            QtWidgets.QApplication.translate(
+                'AssetManager', 'Extra', None, QtWidgets.QApplication.UnicodeUTF8
             )
         )
         self.refreshButton.setText(
-            QtGui.QApplication.translate(
-                'AssetManager', 'Refresh', None, QtGui.QApplication.UnicodeUTF8
+            QtWidgets.QApplication.translate(
+                'AssetManager', 'Refresh', None, QtWidgets.QApplication.UnicodeUTF8
             )
         )
 
 
-class FtrackAssetManagerDialog(QtGui.QDialog):
+class FtrackAssetManagerDialog(QtWidgets.QDialog):
     '''Class to represent an asset manager dialog.'''
 
     def __init__(self, parent=None, connector=None):
@@ -158,16 +160,16 @@ class FtrackAssetManagerDialog(QtGui.QDialog):
         self.connector = connector
         self.setMinimumWidth(400)
         self.setSizePolicy(
-            QtGui.QSizePolicy(
-                QtGui.QSizePolicy.Expanding,
-                QtGui.QSizePolicy.Expanding
+            QtWidgets.QSizePolicy(
+                QtWidgets.QSizePolicy.Expanding,
+                QtWidgets.QSizePolicy.Expanding
             )
         )
 
-        self.centralwidget = QtGui.QWidget(self)
-        self.verticalMainLayout = QtGui.QVBoxLayout(self)
+        self.centralwidget = QtWidgets.QWidget(self)
+        self.verticalMainLayout = QtWidgets.QVBoxLayout(self)
         self.verticalMainLayout.setSpacing(6)
-        self.horizontalLayout = QtGui.QHBoxLayout()
+        self.horizontalLayout = QtWidgets.QHBoxLayout()
 
         self.headerWidget = header.Header(getpass.getuser(), self)
         self.verticalMainLayout.addWidget(self.headerWidget)
@@ -189,7 +191,7 @@ class FtrackAssetManagerDialog(QtGui.QDialog):
         )
 
 
-class AssetManagerWidget(QtGui.QWidget):
+class AssetManagerWidget(QtWidgets.QWidget):
     '''Asset manager widget'''
 
     notVersionable = dict()
@@ -197,7 +199,7 @@ class AssetManagerWidget(QtGui.QWidget):
 
     def __init__(self, parent, task=None, connector=None):
         '''Instantiate asset manager with *connector*.'''
-        QtGui.QWidget.__init__(self, parent)
+        QtWidgets.QWidget.__init__(self, parent)
 
         if not connector:
             raise ValueError(
@@ -225,28 +227,28 @@ class AssetManagerWidget(QtGui.QWidget):
         self.ui.AssertManagerTableWidget.setColumnWidth(11, 20)
         self.ui.AssertManagerTableWidget.setColumnWidth(15, 20)
         self.ui.AssertManagerTableWidget.horizontalHeader().setResizeMode(
-            QtGui.QHeaderView.Stretch
+            QtWidgets.QHeaderView.Stretch
         )
         self.ui.AssertManagerTableWidget.horizontalHeader().setResizeMode(
-            0, QtGui.QHeaderView.Fixed
+            0, QtWidgets.QHeaderView.Fixed
         )
         self.ui.AssertManagerTableWidget.horizontalHeader().setResizeMode(
-            5, QtGui.QHeaderView.Fixed
+            5, QtWidgets.QHeaderView.Fixed
         )
         self.ui.AssertManagerTableWidget.horizontalHeader().setResizeMode(
-            6, QtGui.QHeaderView.Fixed
+            6, QtWidgets.QHeaderView.Fixed
         )
         self.ui.AssertManagerTableWidget.horizontalHeader().setResizeMode(
-            9, QtGui.QHeaderView.Fixed
+            9, QtWidgets.QHeaderView.Fixed
         )
         self.ui.AssertManagerTableWidget.horizontalHeader().setResizeMode(
-            10, QtGui.QHeaderView.Fixed
+            10, QtWidgets.QHeaderView.Fixed
         )
         self.ui.AssertManagerTableWidget.horizontalHeader().setResizeMode(
-            11, QtGui.QHeaderView.Fixed
+            11, QtWidgets.QHeaderView.Fixed
         )
         self.ui.AssertManagerTableWidget.horizontalHeader().setResizeMode(
-            15, QtGui.QHeaderView.Fixed
+            15, QtWidgets.QHeaderView.Fixed
         )
 
         self.ui.AssertManagerTableWidget.setColumnHidden(2, True)
@@ -297,7 +299,7 @@ class AssetManagerWidget(QtGui.QWidget):
         self.signalMapperChangeVersion = QtCore.QSignalMapper()
         self.signalMapperChangeVersion.mapped[int].connect(self.changeVersion)
 
-        extraOptionsMenu = QtGui.QMenu(self.ui.menuButton)
+        extraOptionsMenu = QtWidgets.QMenu(self.ui.menuButton)
         extraOptionsMenu.addAction(
             'Get SceneSelection',
             self.getSceneSelection
@@ -333,7 +335,7 @@ class AssetManagerWidget(QtGui.QWidget):
                 )
                 latestAssetVersion = assetVersions[-1].getVersion()
 
-                versionIndicatorButton = QtGui.QPushButton('')
+                versionIndicatorButton = QtWidgets.QPushButton('')
                 if assetVersionNr == latestAssetVersion:
                     versionIndicatorButton.setStyleSheet(
                         'background-color: #1CBC90;'
@@ -352,21 +354,21 @@ class AssetManagerWidget(QtGui.QWidget):
                     i, 0, versionIndicatorButton
                 )
 
-                componentName = QtGui.QTableWidgetItem(componentNameStr)
+                componentName = QtWidgets.QTableWidgetItem(componentNameStr)
                 self.ui.AssertManagerTableWidget.setItem(i, 1, componentName)
 
-                componentId = QtGui.QTableWidgetItem(ftrackComponent.getId())
+                componentId = QtWidgets.QTableWidgetItem(ftrackComponent.getId())
                 self.ui.AssertManagerTableWidget.setItem(i, 2, componentId)
 
-                assetType = QtGui.QTableWidgetItem(asset.getType().getShort())
+                assetType = QtWidgets.QTableWidgetItem(asset.getType().getShort())
                 self.ui.AssertManagerTableWidget.setItem(i, 3, assetType)
 
-                assetTypeLong = QtGui.QTableWidgetItem(
+                assetTypeLong = QtWidgets.QTableWidgetItem(
                     asset.getType().getName()
                 )
                 self.ui.AssertManagerTableWidget.setItem(i, 4, assetTypeLong)
 
-                versionNumberComboBox = QtGui.QComboBox()
+                versionNumberComboBox = QtWidgets.QComboBox()
                 for version in reversed(assetVersions):
                     versionNumberComboBox.addItem(str(version.getVersion()))
 
@@ -390,24 +392,24 @@ class AssetManagerWidget(QtGui.QWidget):
                     versionNumberComboBox, -1
                 )
 
-                latestVersionNumber = QtGui.QTableWidgetItem(
+                latestVersionNumber = QtWidgets.QTableWidgetItem(
                     str(latestAssetVersion)
                 )
                 self.ui.AssertManagerTableWidget.setItem(
                     i, 6, latestVersionNumber
                 )
 
-                assetName = QtGui.QTableWidgetItem(asset.getName())
+                assetName = QtWidgets.QTableWidgetItem(asset.getName())
                 assetName.setToolTip(asset.getName())
                 self.ui.AssertManagerTableWidget.setItem(i, 7, assetName)
 
-                assetNameInScene = QtGui.QTableWidgetItem(assets[i][1])
+                assetNameInScene = QtWidgets.QTableWidgetItem(assets[i][1])
                 assetNameInScene.setToolTip(assets[i][1])
                 self.ui.AssertManagerTableWidget.setItem(
                     i, 8, assetNameInScene
                 )
 
-                selectButton = QtGui.QPushButton('S')
+                selectButton = QtWidgets.QPushButton('S')
                 selectButton.setToolTip('Select asset in scene')
                 self.ui.AssertManagerTableWidget.setCellWidget(
                     i, 9, selectButton
@@ -416,12 +418,12 @@ class AssetManagerWidget(QtGui.QWidget):
 
                 self.signalMapperSelect.setMapping(selectButton, assets[i][1])
 
-                replaceButton = QtGui.QPushButton('R')
+                replaceButton = QtWidgets.QPushButton('R')
                 self.ui.AssertManagerTableWidget.setCellWidget(
                     i, 10, replaceButton
                 )
 
-                removeButton = QtGui.QPushButton()
+                removeButton = QtWidgets.QPushButton()
                 removeButton.setToolTip('Remove asset from scene')
                 icon = QtGui.QIcon()
                 icon.addPixmap(
@@ -436,22 +438,22 @@ class AssetManagerWidget(QtGui.QWidget):
                 removeButton.clicked.connect(self.signalMapperRemove.map)
                 self.signalMapperRemove.setMapping(removeButton, assets[i][1])
 
-                assetId = QtGui.QTableWidgetItem(str(asset.getId()))
+                assetId = QtWidgets.QTableWidgetItem(str(asset.getId()))
                 self.ui.AssertManagerTableWidget.setItem(i, 12, assetId)
 
-                assetVersionId = QtGui.QTableWidgetItem(
+                assetVersionId = QtWidgets.QTableWidgetItem(
                     str(assetVersion.getId())
                 )
                 self.ui.AssertManagerTableWidget.setItem(i, 13, assetVersionId)
 
-                currentVersionFallback = QtGui.QTableWidgetItem(
+                currentVersionFallback = QtWidgets.QTableWidgetItem(
                     str(assetVersionNr)
                 )
                 self.ui.AssertManagerTableWidget.setItem(
                     i, 14, currentVersionFallback
                 )
 
-                commentButton = QtGui.QPushButton()
+                commentButton = QtWidgets.QPushButton()
                 commentButton.setText('')
                 icon = QtGui.QIcon()
                 icon.addPixmap(
@@ -488,7 +490,7 @@ class AssetManagerWidget(QtGui.QWidget):
         self.comment_dialog = FtrackInfoDialog(connector=self.connector)
         self.comment_dialog.show()
         self.comment_dialog.move(
-            QtGui.QApplication.desktop().screen().rect().center()
+            QtWidgets.QApplication.desktop().screen().rect().center()
             - self.comment_dialog.rect().center()
         )
         panelComInstance = PanelComInstance.instance()
@@ -522,15 +524,15 @@ class AssetManagerWidget(QtGui.QWidget):
     @QtCore.Slot(str)
     def removeObject(self, objectName):
         '''Remove object with *objectName* from scene.'''
-        msgBox = QtGui.QMessageBox()
+        msgBox = QtWidgets.QMessageBox()
         msgBox.setText('Remove asset.')
         msgBox.setInformativeText('Are you sure you want to remove the asset?')
         msgBox.setStandardButtons(
-            QtGui.QMessageBox.Ok | QtGui.QMessageBox.Cancel
+            QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel
         )
-        msgBox.setDefaultButton(QtGui.QMessageBox.Ok)
+        msgBox.setDefaultButton(QtWidgets.QMessageBox.Ok)
         ret = msgBox.exec_()
-        if ret == QtGui.QMessageBox.Ok:
+        if ret == QtWidgets.QMessageBox.Ok:
             self.connector.removeObject(applicationObject=objectName)
             foundItem = self.ui.AssertManagerTableWidget.findItems(
                 objectName, QtCore.Qt.MatchExactly
@@ -592,8 +594,8 @@ class AssetManagerWidget(QtGui.QWidget):
             selModel = self.ui.AssertManagerTableWidget.selectionModel()
             selModel.select(
                 index,
-                QtGui.QItemSelectionModel.Select |
-                QtGui.QItemSelectionModel.Rows
+                QtCore.QItemSelectionModel.Select |
+                QtCore.QItemSelectionModel.Rows
             )
 
     def getSceneSelection(self):
@@ -609,8 +611,8 @@ class AssetManagerWidget(QtGui.QWidget):
             )
             selModel = self.ui.AssertManagerTableWidget.selectionModel()
             selModel.select(
-                index, QtGui.QItemSelectionModel.Select |
-                QtGui.QItemSelectionModel.Rows
+                index, QtCore.QItemSelectionModel.Select |
+                QtCore.QItemSelectionModel.Rows
             )
 
     def setSceneSelection(self):
@@ -624,7 +626,7 @@ class AssetManagerWidget(QtGui.QWidget):
 
     def getCurrenRow(self):
         '''Return current row.'''
-        fw = QtGui.QApplication.focusWidget()
+        fw = QtWidgets.QApplication.focusWidget()
         modelindexComboBox = self.ui.AssertManagerTableWidget.indexAt(fw.pos())
         row = modelindexComboBox.row()
         return row

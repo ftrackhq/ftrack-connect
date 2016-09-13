@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
 
-from PySide import QtGui, QtWebKit, QtCore
+from QtExt import QtGui, QtWebKitWidgets, QtCore, QtWidgets
 
 # TODO: Investigate why this import exists and remove it.
 try:
@@ -21,10 +21,10 @@ class Ui_WebView(object):
         '''Setup UI for *WebView*.'''
         WebView.setObjectName('WebView')
         WebView.resize(688, 555)
-        self.horizontalLayout = QtGui.QHBoxLayout(WebView)
+        self.horizontalLayout = QtWidgets.QHBoxLayout(WebView)
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout.setObjectName('horizontalLayout')
-        self.WebViewView = QtWebKit.QWebView(WebView)
+        self.WebViewView = QtWebKitWidgets.QWebView(WebView)
         font = QtGui.QFont()
         font.setFamily('Anonymous Pro')
         self.WebViewView.setFont(font)
@@ -38,13 +38,13 @@ class Ui_WebView(object):
     def retranslateUi(self, WebView):
         '''Translate text for *WebView*.'''
         WebView.setWindowTitle(
-            QtGui.QApplication.translate(
-                'WebView', 'Form', None, QtGui.QApplication.UnicodeUTF8
+            QtWidgets.QApplication.translate(
+                'WebView', 'Form', None, QtWidgets.QApplication.UnicodeUTF8
             )
         )
 
 
-class WebPage(QtWebKit.QWebPage):
+class WebPage(QtWebKitWidgets.QWebPage):
     '''WebPage widget.'''
 
     def javaScriptConsoleMessage(self, msg, line, source):
@@ -53,12 +53,12 @@ class WebPage(QtWebKit.QWebPage):
 
 
 # TODO: Remove this widget and refactor Maya plugin to use WebView.
-class WebViewWidget(QtGui.QWidget):
+class WebViewWidget(QtWidgets.QWidget):
     '''Webview widget class.'''
 
     def __init__(self, parent, task=None):
         '''Instansiate web view widget.'''
-        QtGui.QWidget.__init__(self, parent)
+        QtWidgets.QWidget.__init__(self, parent)
         self.ui = Ui_WebView()
         self.ui.setupUi(self)
 
@@ -81,7 +81,7 @@ class WebViewWidget(QtGui.QWidget):
         self.ui.WebViewView.load(QtCore.QUrl(url))
 
 
-class WebView(QtGui.QFrame):
+class WebView(QtWidgets.QFrame):
     '''Display information about selected entity.'''
 
     def __init__(self, parent=None, url=None):
@@ -95,12 +95,12 @@ class WebView(QtGui.QFrame):
             )
         )
 
-        layout = QtGui.QVBoxLayout()
+        layout = QtWidgets.QVBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
         self.setLayout(layout)
 
-        self._webView = QtWebKit.QWebView()
+        self._webView = QtWebKitWidgets.QWebView()
         layout.addWidget(self._webView)
 
         self.set_url(url)
