@@ -8,6 +8,10 @@ Release Notes
 *************
 
 .. release:: Upcoming
+    .. change:: fix
+        :tags: Internal, API
+
+        Connect break in case of slow connection or missing url icon.
 
     .. change:: Asset Manager
         :tags: Internal
