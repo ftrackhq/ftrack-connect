@@ -14,7 +14,8 @@ Release Notes
     .. change:: changed
         :tags: Internal
 
-        Add support to PySide2 / Qt5
+        Add wrapper for PySide2 / Qt5 to support Maya 2017 and other future
+        applications that rely on later versions of Qt.
 
     .. change:: fix
         :tags: Internal, API
