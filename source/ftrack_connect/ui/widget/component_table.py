@@ -3,8 +3,7 @@
 
 import traceback
 
-from QtExt import QtWidgets
-from QtExt import QtCore
+from QtExt import QtWidgets, QtCore
 import ftrack
 
 from ftrack_connect.worker import Worker

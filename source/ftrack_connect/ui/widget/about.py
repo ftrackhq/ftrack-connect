@@ -3,9 +3,7 @@
 import os
 import json
 
-from QtExt import QtCore
-from QtExt import QtWidgets
-from QtExt import QtGui
+from QtExt import QtCore, QtWidgets, QtGui
 
 
 from ftrack_connect.config import get_log_directory

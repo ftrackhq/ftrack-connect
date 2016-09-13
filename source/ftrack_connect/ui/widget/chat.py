@@ -1,8 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
 
-from QtExt import QtWidgets
-from QtExt import QtCore
+from QtExt import QtWidgets, QtCore
 
 
 import ftrack_connect.ui.widget.item_list

@@ -3,10 +3,7 @@
 
 import webbrowser
 
-from QtExt import QtWidgets
-from QtExt import QtCore
-from QtExt import QtSvg
-from QtExt import QtGui
+from QtExt import QtWidgets, QtCore, QtSvg, QtGui
 
 import ftrack_api.exception
 

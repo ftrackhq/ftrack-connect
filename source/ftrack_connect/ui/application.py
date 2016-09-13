@@ -11,9 +11,7 @@ import logging
 
 import appdirs
 
-from QtExt import QtCore
-from QtExt import QtWidgets
-from QtExt import QtGui
+from QtExt import QtCore, QtWidgets, QtGui
 
 import ftrack_api
 import ftrack_api._centralized_storage_scenario
