@@ -71,10 +71,26 @@ class Base(QtWidgets.QLabel):
         )
         self.setPixmap(scaledPixmap)
 
+    def _safeDownload(self, url, opener_callback, timeout=5):
+        '''Check *url* through the given *openener_callback*.
+
+        .. note::
+
+           A placeholder image will be returned if there is not response within the
+           given *timeout*.
+
+        '''
+
+        placeholder = self.placholderThumbnail
+        try:
+            response = opener_callback(url, timeout=timeout)
+        except urllib2.URLError:
+            response = opener_callback(placeholder)
+
+        return response
+
     def _download(self, url):
         '''Return thumbnail file from *url*.'''
-        if url is None:
-            url = self.placholderThumbnail
 
         ftrackProxy = os.getenv('FTRACK_PROXY', '')
         ftrackServer = os.getenv('FTRACK_SERVER', '')
@@ -86,13 +102,14 @@ class Base(QtWidgets.QLabel):
 
             proxy = urllib2.ProxyHandler({httpHandle: ftrackProxy})
             opener = urllib2.build_opener(proxy)
-            response = opener.open(url)
+            response = self._safeDownload(url, opener.open)
             html = response.read()
         else:
-            response = urllib2.urlopen(url)
+            response = self._safeDownload(url, urllib2.urlopen)
             html = response.read()
 
         return html
+
 
 class EllipseBase(Base):
     '''Thumbnail which is drawn as an ellipse.'''
@@ -170,9 +187,11 @@ class ActionIcon(Base):
         '''
         if icon and icon[:4] == 'http':
             self.load(icon)
+
         elif self.AVAILABLE_ICONS.get(icon):
             url = os.environ['FTRACK_SERVER'] + self.AVAILABLE_ICONS[icon]
             self.load(url)
+
         else:
             self.loadResource(':/ftrack/image/light/action')
 
@@ -187,7 +206,7 @@ class ActionIcon(Base):
     def _scaleAndSetPixmap(self, pixmap):
         '''Scale *pixmap* to fit within current bounds'''
         scaledPixmap = pixmap.scaled(
-            self.width(), self.height(), QtCore.Qt.KeepAspectRatio, 
+            self.width(), self.height(), QtCore.Qt.KeepAspectRatio,
             QtCore.Qt.SmoothTransformation
         )
         self.setPixmap(scaledPixmap)

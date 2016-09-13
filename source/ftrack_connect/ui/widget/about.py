@@ -1,9 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
 import os
-import sys
 import json
-import subprocess
 
 from QtExt import QtCore
 from QtExt import QtWidgets
@@ -11,6 +9,7 @@ from QtExt import QtGui
 
 
 from ftrack_connect.config import get_log_directory
+import ftrack_connect.util
 
 
 class AboutDialog(QtWidgets.QDialog):
@@ -82,14 +81,7 @@ class AboutDialog(QtWidgets.QDialog):
                 messageBox.exec_()
                 return
 
-        if sys.platform == 'win32':
-            subprocess.Popen(['start', directory], shell=True)
-
-        elif sys.platform == 'darwin':
-            subprocess.Popen(['open', directory])
-
-        else:
-            subprocess.Popen(['xdg-open', directory])
+        ftrack_connect.util.open_directory(directory)
 
     def setInformation(self, versionData, user, server):
         '''Set displayed *versionData*, *user*, *server*.'''

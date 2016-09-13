@@ -1,3 +1,4 @@
+
 ..
     :copyright: Copyright (c) 2014 ftrack
 
@@ -7,12 +8,37 @@
 Release Notes
 *************
 
+
 .. release:: Upcoming
 
     .. change:: changed
         :tags: Internal
 
         Add support to PySide2 / Qt5
+
+    .. change:: fix
+        :tags: Internal, API
+
+        Connect break in case of slow connection or missing url icon.
+
+    .. change:: Asset Manager
+        :tags: Internal
+
+        Speedup asset manager.
+
+    .. change:: fixed
+        :tags: Internal
+
+        Connect logs are saved to the wrong directory.
+
+.. release:: 0.1.27
+    :date: 2016-08-08
+
+    .. change:: new
+        :tags: Actions
+
+        Added default action to reveal a Component in the OS default file
+        browser.
 
 .. release:: 0.1.26
     :date: 2016-07-19
