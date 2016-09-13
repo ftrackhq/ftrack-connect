@@ -70,11 +70,19 @@ class BuildResources(Command):
         self.resource_target_path = RESOURCE_TARGET_PATH
 
     def _replace_imports_(self):
+        '''Replace imports in resource files to QtExt instead of QtCore.
+
+        This allows the resource file to work with many different versions of
+        Qt.
+
+        '''
         replace = 'from QtExt import QtCore'
         for line in fileinput.input(self.resource_target_path, inplace=True):
             if 'import QtCore' in line:
+                # Calling print will yield a new line in the resource file.
                 print line.replace(line, replace)
             else:
+                # Calling print will yield a new line in the resource file.
                 print line
 
     def run(self):
@@ -248,9 +256,18 @@ configuration = dict(
         'test': PyTest
     },
     dependency_links=[
-            'git+https://bitbucket.org/ftrack/lowdown/get/0.1.0.zip#egg=lowdown-0.1.0',
-            'git+https://gitlab.com/langeli/riffle/repository/archive.zip?ref=18-pyside2-compatible#egg=Riffle-0.3.1',
-            'git+https://bitbucket.org/efestolab/qtext/get/0.1.0.zip#egg=QtExt-0.1.0'
+        (
+            'git+https://bitbucket.org/ftrack/lowdown/get/0.1.0.zip'
+            '#egg=lowdown-0.1.0'
+        ),
+        (
+            'git+https://gitlab.com/langeli/riffle/repository/archive.zip'
+            '?ref=18-pyside2-compatible#egg=Riffle-0.3.1'
+        ),
+        (
+            'git+https://bitbucket.org/efestolab/qtext/get/0.1.0.zip'
+            '#egg=QtExt-0.1.0'
+        )
     ],
     options={},
     data_files=[
