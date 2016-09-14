@@ -30,18 +30,10 @@ class Ui_ImportOptions(object):
 
     def retranslateUi(self, ImportOptions):
         '''Translate text for *ImportOptions*.'''
-        try:
-            # PySide
-            translate = QtWidgets.QApplication.translate(
-                'ImportOptions', 'Form', None,
-                QtWidgets.QApplication.UnicodeUTF8
-            )
-        except Exception:
-            # PySide2/Qt5
-            # https://wiki.qt.io/Transition_from_Qt_4.x_to_Qt5#QCoreApplication::UnicodeUTF8_is_deprecated
-            translate = QtWidgets.QApplication.translate(
-                'ImportOptions', 'Form', None
-            )
+        translate = QtWidgets.QApplication.translate(
+            'ImportOptions', 'Form', None,
+            QtWidgets.QApplication.UnicodeUTF8
+        )
 
         ImportOptions.setWindowTitle(translate)
 
