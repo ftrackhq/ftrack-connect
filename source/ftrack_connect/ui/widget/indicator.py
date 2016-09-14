@@ -15,7 +15,7 @@ class BusyIndicator(QtWidgets.QWidget):
         self._speed = 8.0
         self._spinnerAngle = 0
         # TODO: Use properties to enable setting this colour via stylesheets.
-        self._spinnerColor = '#11b0e9'
+        self._spinnerColor = QtGui.QColor(17, 176, 233)  # Color: '#11b0e9'
         self._logo = ':ftrack/image/default/ftrackLogoColor'
 
         self.start()
@@ -86,12 +86,9 @@ class BusyIndicator(QtWidgets.QWidget):
                 QtCore.QPoint(0, 0),
                 -self._spinnerAngle
             )
-            
-            # TODO : Find why error with :  
-            # TypeError: QGradient.setColorAt(float, QColor): argument 2 has unexpected type 'str'
 
-            # gradient.setColorAt(0.95, QtCore.Qt.transparent)
-            # gradient.setColorAt(0, self._spinnerColor)
+            gradient.setColorAt(0.95, QtCore.Qt.transparent)
+            gradient.setColorAt(0, self._spinnerColor)
 
             brush = QtGui.QBrush(gradient)
             pen.setBrush(brush)
