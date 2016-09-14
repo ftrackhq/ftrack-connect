@@ -265,7 +265,7 @@ configuration = dict(
             '?ref=18-pyside2-compatible#egg=Riffle-0.3.1'
         ),
         (
-            'git+https://bitbucket.org/efestolab/qtext/get/0.1.0.zip'
+            'git+https://bitbucket.org/ftrack/qtext/get/0.1.0.zip'
             '#egg=QtExt-0.1.0'
         )
     ],
