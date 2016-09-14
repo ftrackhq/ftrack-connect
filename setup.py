@@ -261,7 +261,7 @@ configuration = dict(
             '#egg=lowdown-0.1.0'
         ),
         (
-            'git+https://gitlab.com/langeli/riffle/repository/archive.zip'
+            'https://gitlab.com/langeli/riffle/repository/archive.zip'
             '?ref=18-pyside2-compatible#egg=Riffle-0.3.1'
         ),
         (
