@@ -2,6 +2,7 @@
 # :copyright: Copyright (c) 2015 ftrack
 
 import getpass
+import functools
 
 from QtExt import QtCore, QtWidgets, QtGui
 
@@ -382,8 +383,11 @@ class AssetManagerWidget(QtWidgets.QWidget):
                     i, 5, versionNumberComboBox
                 )
 
-                versionNumberComboBox.currentIndexChanged[str].connect(
-                    self.signalMapperChangeVersion.map
+                versionNumberComboBox.currentIndexChanged.connect(
+                    functools.partial(
+                        self.changeVersion,
+                        i
+                    )
                 )
 
                 self.signalMapperChangeVersion.setMapping(
