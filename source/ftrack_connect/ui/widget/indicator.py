@@ -1,10 +1,10 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-from PySide import QtGui, QtCore, QtSvg
+from QtExt import QtWidgets, QtCore, QtSvg, QtGui
 
 
-class BusyIndicator(QtGui.QWidget):
+class BusyIndicator(QtWidgets.QWidget):
     '''Draw a busy indicator.'''
 
     def __init__(self, parent=None):
@@ -15,7 +15,7 @@ class BusyIndicator(QtGui.QWidget):
         self._speed = 8.0
         self._spinnerAngle = 0
         # TODO: Use properties to enable setting this colour via stylesheets.
-        self._spinnerColor = '#11b0e9'
+        self._spinnerColor = QtGui.QColor(17, 176, 233)  # Color: '#11b0e9'
         self._logo = ':ftrack/image/default/ftrackLogoColor'
 
         self.start()
@@ -86,6 +86,7 @@ class BusyIndicator(QtGui.QWidget):
                 QtCore.QPoint(0, 0),
                 -self._spinnerAngle
             )
+
             gradient.setColorAt(0.95, QtCore.Qt.transparent)
             gradient.setColorAt(0, self._spinnerColor)
 

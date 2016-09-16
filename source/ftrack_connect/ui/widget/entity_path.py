@@ -1,13 +1,13 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-from PySide import QtGui
+from QtExt import QtWidgets
 import ftrack
 
 import ftrack_connect.asynchronous
 
 
-class EntityPath(QtGui.QLineEdit):
+class EntityPath(QtWidgets.QLineEdit):
     '''Entity path widget.'''
 
     def __init__(self, *args, **kwargs):

@@ -2,14 +2,15 @@
 # :copyright: Copyright (c) 2015 ftrack
 
 import ftrack
-from PySide import QtCore, QtGui
+from QtExt import QtWidgets
+from QtExt import QtCore
 
 import entity_path as entityPath
 import entity_browser as entityBrowser
 from ftrack_connect.ui.theme import applyTheme
 
 
-class ContextSelector(QtGui.QWidget):
+class ContextSelector(QtWidgets.QWidget):
     '''Context browser with entity path field.'''
 
     entityChanged = QtCore.Signal(object)
@@ -21,9 +22,9 @@ class ContextSelector(QtGui.QWidget):
         self.entityBrowser = entityBrowser.EntityBrowser()
         self.entityBrowser.setMinimumWidth(600)
         self.entityPath = entityPath.EntityPath()
-        self.entityBrowseButton = QtGui.QPushButton('Browse')
+        self.entityBrowseButton = QtWidgets.QPushButton('Browse')
         applyTheme(self.entityBrowser, 'integration')
-        layout = QtGui.QHBoxLayout()
+        layout = QtWidgets.QHBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
 
         self.setLayout(layout)

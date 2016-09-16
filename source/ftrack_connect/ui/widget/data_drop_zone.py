@@ -5,8 +5,8 @@ import os
 import re
 import logging
 
-from PySide import QtGui, QtCore
-from PySide.QtCore import Qt
+from QtExt import QtCore
+from QtExt import QtWidgets
 
 import riffle.browser
 import riffle.model
@@ -69,7 +69,7 @@ def data(self, index, role):
     if role == self.ITEM_ROLE:
         return item
 
-    elif role == Qt.DisplayRole:
+    elif role == QtCore.Qt.DisplayRole:
 
         if column == 0:
             # Convert to unicode.
@@ -87,20 +87,20 @@ def data(self, index, role):
                 # Convert to unicode.
                 return item.modified.strftime('%c').decode('utf-8')
 
-    elif role == Qt.DecorationRole:
+    elif role ==  QtCore.Qt.DecorationRole:
         if column == 0:
             return self.iconFactory.icon(item)
 
-    elif role == Qt.TextAlignmentRole:
+    elif role ==  QtCore.Qt.TextAlignmentRole:
         if column == 1:
-            return Qt.AlignRight
+            return  QtCore.Qt.AlignRight
         else:
-            return Qt.AlignLeft
+            return  QtCore.Qt.AlignLeft
 
 riffle.model.Filesystem.data = data
 
 
-class DataDropZone(QtGui.QFrame):
+class DataDropZone(QtWidgets.QFrame):
     '''Data drop zone widget.'''
 
     dataSelected = QtCore.Signal(object)
@@ -114,19 +114,19 @@ class DataDropZone(QtGui.QFrame):
         self.setObjectName('ftrack-connect-publisher-browse-button')
         self.setProperty('ftrackDropZone', True)
 
-        layout = QtGui.QVBoxLayout()
+        layout = QtWidgets.QVBoxLayout()
         self.setLayout(layout)
 
         bottomCenterAlignment = QtCore.Qt.AlignBottom | QtCore.Qt.AlignHCenter
         topCenterAlignment = QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter
 
-        self._label = QtGui.QLabel('Drop files here or')
+        self._label = QtWidgets.QLabel('Drop files here or')
         layout.addWidget(
             self._label,
             alignment=bottomCenterAlignment
         )
 
-        self._browseButton = QtGui.QPushButton('Browse')
+        self._browseButton = QtWidgets.QPushButton('Browse')
         self._browseButton.setToolTip('Browse for file(s).')
         layout.addWidget(
             self._browseButton, alignment=topCenterAlignment
@@ -185,7 +185,7 @@ class DataDropZone(QtGui.QFrame):
         validPaths = []
 
         if not mimeData.hasUrls():
-            QtGui.QMessageBox.warning(
+            QtWidgets.QMessageBox.warning(
                 self,
                 'Invalid file',
                 'Invalid file: the dropped item is not a valid file.'
@@ -207,7 +207,7 @@ class DataDropZone(QtGui.QFrame):
                         'folders are not supported. This will be enabled in a '
                         'later release of ftrack connect.'
                     )
-                QtGui.QMessageBox.warning(
+                QtWidgets.QMessageBox.warning(
                     self, 'Invalid file', message
                 )
 

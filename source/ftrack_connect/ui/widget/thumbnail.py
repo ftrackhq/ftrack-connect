@@ -4,7 +4,7 @@
 import os
 import urllib2
 
-from PySide import QtGui, QtCore
+from QtExt import QtWidgets, QtCore, QtGui
 import ftrack
 import ftrack_connect.worker
 
@@ -12,14 +12,14 @@ import ftrack_connect.worker
 IMAGE_CACHE = dict()
 
 
-class Base(QtGui.QLabel):
+class Base(QtWidgets.QLabel):
     '''Widget to load thumbnails from ftrack server.'''
 
     def __init__(self, parent=None):
         super(Base, self).__init__(parent)
 
         self.thumbnailCache = {}
-        self.setFrameStyle(QtGui.QFrame.StyledPanel)
+        self.setFrameStyle(QtWidgets.QFrame.StyledPanel)
         self.setAlignment(QtCore.Qt.AlignCenter)
 
         self.placholderThumbnail = (
@@ -37,7 +37,7 @@ class Base(QtGui.QLabel):
 
         if self._worker and self._worker.isRunning():
             while self._worker:
-                app = QtGui.QApplication.instance()
+                app = QtWidgets.QApplication.instance()
                 app.processEvents()
 
         self._worker = ftrack_connect.worker.Worker(
@@ -175,7 +175,7 @@ class ActionIcon(Base):
     def __init__(self, parent=None):
         '''Initialize action icon.'''
         super(ActionIcon, self).__init__(parent)
-        self.setFrameStyle(QtGui.QFrame.NoFrame)
+        self.setFrameStyle(QtWidgets.QFrame.NoFrame)
 
     def setIcon(self, icon):
         '''Set *icon* to a supported icon or show the standard icon.

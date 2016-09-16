@@ -10,8 +10,9 @@ import uuid
 import logging
 
 import appdirs
-from PySide import QtGui
-from PySide import QtCore
+
+from QtExt import QtCore, QtWidgets, QtGui
+
 import ftrack_api
 import ftrack_api._centralized_storage_scenario
 import ftrack_api.event.base
@@ -33,7 +34,7 @@ from ftrack_connect.ui.widget import configure_scenario as _scenario_widget
 import ftrack_connect.ui.config
 
 
-class ApplicationPlugin(QtGui.QWidget):
+class ApplicationPlugin(QtWidgets.QWidget):
     '''Base widget for ftrack connect application plugin.'''
 
     #: Signal to emit to request focus of this plugin in application.
@@ -51,7 +52,7 @@ class ApplicationPlugin(QtGui.QWidget):
         return self.getName().lower().replace(' ', '.')
 
 
-class Application(QtGui.QMainWindow):
+class Application(QtWidgets.QMainWindow):
     '''Main application window for ftrack connect.'''
 
     #: Signal when login fails.
@@ -102,7 +103,7 @@ class Application(QtGui.QMainWindow):
             parent=self
         )
 
-        if not QtGui.QSystemTrayIcon.isSystemTrayAvailable():
+        if not QtWidgets.QSystemTrayIcon.isSystemTrayAvailable():
             raise ftrack_connect.error.ConnectError(
                 'No system tray located.'
             )
@@ -163,7 +164,7 @@ class Application(QtGui.QMainWindow):
         config['accounts'] = []
         ftrack_connect.ui.config.write_json_config(config)
 
-        QtGui.qApp.quit()
+        QtWidgets.qApp.quit()
 
     def _clear_qsettings(self):
         '''Remove credentials from QSettings.'''
@@ -422,8 +423,8 @@ class Application(QtGui.QMainWindow):
             problem for problem in results if isinstance(problem, basestring)
         ]
         if problems:
-            msgBox = QtGui.QMessageBox(parent=self)
-            msgBox.setIcon(QtGui.QMessageBox.Warning)
+            msgBox = QtWidgets.QMessageBox(parent=self)
+            msgBox.setIcon(QtWidgets.QMessageBox.Warning)
             msgBox.setText('\n\n'.join(problems))
             msgBox.exec_()
 
@@ -491,7 +492,7 @@ class Application(QtGui.QMainWindow):
         '''Initialise and add application icon to system tray.'''
         self.trayMenu = self._createTrayMenu()
 
-        self.tray = QtGui.QSystemTrayIcon(self)
+        self.tray = QtWidgets.QSystemTrayIcon(self)
 
         self.tray.setContextMenu(
             self.trayMenu
@@ -502,29 +503,29 @@ class Application(QtGui.QMainWindow):
 
     def _createTrayMenu(self):
         '''Return a menu for system tray.'''
-        menu = QtGui.QMenu(self)
+        menu = QtWidgets.QMenu(self)
 
-        logoutAction = QtGui.QAction(
+        logoutAction = QtWidgets.QAction(
             'Log Out && Quit', self,
             triggered=self.logout
         )
 
-        quitAction = QtGui.QAction(
+        quitAction = QtWidgets.QAction(
             'Quit', self,
-            triggered=QtGui.qApp.quit
+            triggered=QtWidgets.qApp.quit
         )
 
-        focusAction = QtGui.QAction(
+        focusAction = QtWidgets.QAction(
             'Open', self,
             triggered=self.focus
         )
 
-        openPluginDirectoryAction = QtGui.QAction(
+        openPluginDirectoryAction = QtWidgets.QAction(
             'Open plugin directory', self,
             triggered=self.openDefaultPluginDirectory
         )
 
-        aboutAction = QtGui.QAction(
+        aboutAction = QtWidgets.QAction(
             'About', self,
             triggered=self.showAbout
         )
@@ -713,8 +714,8 @@ class Application(QtGui.QMainWindow):
             try:
                 os.makedirs(directory)
             except OSError:
-                messageBox = QtGui.QMessageBox(parent=self)
-                messageBox.setIcon(QtGui.QMessageBox.Warning)
+                messageBox = QtWidgets.QMessageBox(parent=self)
+                messageBox.setIcon(QtWidgets.QMessageBox.Warning)
                 messageBox.setText(
                     u'Could not open or create default plugin '
                     u'directory: {0}.'.format(directory)
