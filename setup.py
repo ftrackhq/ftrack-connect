@@ -242,7 +242,7 @@ configuration = dict(
         'qtext',
         'ftrack-python-api >= 0.8.1, < 1',
         'PySide >= 1.2.2, < 2',
-        'Riffle >= 0.3.1, < 2',
+        'Riffle',
         'arrow >= 0.4.6, < 1',
         'appdirs == 1.4.0',
         'requests >= 2, <3'
@@ -259,10 +259,6 @@ configuration = dict(
         (
             'git+https://bitbucket.org/ftrack/lowdown/get/0.1.0.zip'
             '#egg=lowdown-0.1.0'
-        ),
-        (
-            'https://gitlab.com/langeli/riffle/repository/archive.zip'
-            '?ref=18-pyside2-compatible#egg=Riffle-0.3.1'
         ),
         (
             'git+https://bitbucket.org/ftrack/qtext/get/0.1.0.zip'
