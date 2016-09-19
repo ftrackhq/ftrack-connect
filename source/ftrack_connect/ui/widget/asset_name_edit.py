@@ -1,7 +1,8 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-from PySide import QtGui
+from QtExt import QtWidgets, QtGui
+
 
 class AssetNameValidator(QtGui.QValidator):
     '''Asset Name Validator.
@@ -36,7 +37,8 @@ class AssetNameValidator(QtGui.QValidator):
         else:
             return QtGui.QValidator.Acceptable
 
-class AssetNameEdit(QtGui.QLineEdit):
+
+class AssetNameEdit(QtWidgets.QLineEdit):
     '''Asset Name line edit
 
     ..note ::

@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
 
-from PySide import QtCore, QtGui
+from QtExt import QtCore, QtWidgets
 
 from stacked_options import StackedOptionsWidget
 from ftrack_connect.connector import FTAssetHandlerInstance
@@ -14,13 +14,13 @@ class Ui_ImportOptions(object):
         '''Setup UI for *ImportOptions*.'''
         ImportOptions.setObjectName("ImportOptions")
         ImportOptions.resize(451, 16)
-        self.verticalLayout = QtGui.QVBoxLayout(ImportOptions)
+        self.verticalLayout = QtWidgets.QVBoxLayout(ImportOptions)
         self.verticalLayout.setSpacing(0)
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout.setObjectName("verticalLayout")
-        self.optionsPlaceHolderLayout = QtGui.QHBoxLayout()
+        self.optionsPlaceHolderLayout = QtWidgets.QHBoxLayout()
         self.optionsPlaceHolderLayout.setSizeConstraint(
-            QtGui.QLayout.SetMinimumSize
+            QtWidgets.QLayout.SetMinimumSize
         )
         self.optionsPlaceHolderLayout.setObjectName("optionsPlaceHolderLayout")
         self.verticalLayout.addLayout(self.optionsPlaceHolderLayout)
@@ -30,14 +30,15 @@ class Ui_ImportOptions(object):
 
     def retranslateUi(self, ImportOptions):
         '''Translate text for *ImportOptions*.'''
-        ImportOptions.setWindowTitle(
-            QtGui.QApplication.translate(
-                "ImportOptions", "Form", None, QtGui.QApplication.UnicodeUTF8
-            )
+        translate = QtWidgets.QApplication.translate(
+            'ImportOptions', 'Form', None,
+            QtWidgets.QApplication.UnicodeUTF8
         )
 
+        ImportOptions.setWindowTitle(translate)
 
-class ImportOptionsWidget(QtGui.QWidget):
+
+class ImportOptionsWidget(QtWidgets.QWidget):
     '''Import options widget.'''
 
     def __init__(self, parent, task=None, connector=None):

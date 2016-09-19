@@ -1,9 +1,9 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
-from PySide import QtCore, QtGui
+from QtExt import QtCore, QtWidgets
 
 
-class FlowLayout(QtGui.QLayout):
+class FlowLayout(QtWidgets.QLayout):
     '''PyQt4 Example modified to work with a scrollable parent.
 
     Based on the implementation: https://github.com/cgdougm/PyQtFlowLayout
@@ -65,8 +65,8 @@ class FlowLayout(QtGui.QLayout):
 
         for item in self.itemList:
             wid = item.widget()
-            spaceX = self.spacing() + wid.style().layoutSpacing(QtGui.QSizePolicy.PushButton, QtGui.QSizePolicy.PushButton, QtCore.Qt.Horizontal)
-            spaceY = self.spacing() + wid.style().layoutSpacing(QtGui.QSizePolicy.PushButton, QtGui.QSizePolicy.PushButton, QtCore.Qt.Vertical)
+            spaceX = self.spacing() + wid.style().layoutSpacing(QtWidgets.QSizePolicy.PushButton, QtWidgets.QSizePolicy.PushButton, QtCore.Qt.Horizontal)
+            spaceY = self.spacing() + wid.style().layoutSpacing(QtWidgets.QSizePolicy.PushButton, QtWidgets.QSizePolicy.PushButton, QtCore.Qt.Vertical)
             nextX = x + item.sizeHint().width() + spaceX
             if nextX - spaceX > rect.right() and lineHeight > 0:
                 x = rect.x()
@@ -83,14 +83,14 @@ class FlowLayout(QtGui.QLayout):
         return y + lineHeight - rect.y()
 
 
-class ResizeScrollArea(QtGui.QScrollArea):
+class ResizeScrollArea(QtWidgets.QScrollArea):
     '''A QScrollArea that propagates the resizing to any FlowLayout children.'''
 
     def __init(self, parent=None):  
-        QtGui.QScrollArea.__init__(self, parent)
+        QtWidgets.QScrollArea.__init__(self, parent)
 
     def resizeEvent(self, event):
-        wrapper = self.findChild(QtGui.QWidget)
+        wrapper = self.findChild(QtWidgets.QWidget)
         flow = wrapper.findChild(FlowLayout)
         
         if wrapper and flow:            
@@ -104,7 +104,7 @@ class ResizeScrollArea(QtGui.QScrollArea):
         super(ResizeScrollArea, self).resizeEvent(event)
 
 
-class ScrollingFlowWidget(QtGui.QWidget):
+class ScrollingFlowWidget(QtWidgets.QWidget):
     '''A resizable and scrollable widget that uses a flow layout.
 
     Use its addWidget() method to flow children into it.
@@ -112,9 +112,9 @@ class ScrollingFlowWidget(QtGui.QWidget):
 
     def __init__(self,parent=None):
         super(ScrollingFlowWidget,self).__init__(parent)
-        grid = QtGui.QGridLayout(self)
+        grid = QtWidgets.QGridLayout(self)
         scroll = ResizeScrollArea(parent)
-        self._wrapper = QtGui.QWidget(scroll)
+        self._wrapper = QtWidgets.QWidget(scroll)
         self.flowLayout = FlowLayout(self._wrapper)
         self._wrapper.setLayout(self.flowLayout)
         scroll.setWidget(self._wrapper)

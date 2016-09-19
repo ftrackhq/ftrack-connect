@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
 
-from PySide import QtNetwork, QtCore
+from QtExt import QtNetwork, QtCore
 
 
 class PersistentCookieJar(QtNetwork.QNetworkCookieJar):

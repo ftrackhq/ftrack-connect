@@ -3,7 +3,7 @@
 import os
 import getpass
 import ftrack
-from PySide import QtCore, QtGui
+from QtExt import QtCore, QtWidgets
 
 from ftrack_connect.connector import PanelComInstance, FTAssetObject
 from ftrack_connect.ui.widget.list_assets_table import ListAssetsTableWidget
@@ -16,7 +16,7 @@ from ftrack_connect.ui.widget.context_selector import ContextSelector
 from ftrack_connect.ui import resource
 
 
-class FtrackImportAssetDialog(QtGui.QDialog):
+class FtrackImportAssetDialog(QtWidgets.QDialog):
     '''Import asset dialog widget.'''
 
     importSignal = QtCore.Signal()
@@ -41,33 +41,33 @@ class FtrackImportAssetDialog(QtGui.QDialog):
         )
 
         self.setSizePolicy(
-            QtGui.QSizePolicy.Expanding,
-            QtGui.QSizePolicy.Expanding
+            QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding
         )
 
         self.setMinimumWidth(600)
 
-        self.mainLayout = QtGui.QVBoxLayout(self)
+        self.mainLayout = QtWidgets.QVBoxLayout(self)
         self.setLayout(self.mainLayout)
 
         self.mainLayout.setContentsMargins(0, 0, 0, 0)
         self.mainLayout.setSpacing(0)
 
-        self.scrollArea = QtGui.QScrollArea(self)
+        self.scrollArea = QtWidgets.QScrollArea(self)
         self.mainLayout.addWidget(self.scrollArea)
 
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
         self.scrollArea.setLineWidth(0)
-        self.scrollArea.setFrameShape(QtGui.QFrame.NoFrame)
+        self.scrollArea.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.scrollArea.setHorizontalScrollBarPolicy(
             QtCore.Qt.ScrollBarAlwaysOff
         )
 
-        self.mainWidget = QtGui.QWidget(self)
+        self.mainWidget = QtWidgets.QWidget(self)
         self.scrollArea.setWidget(self.mainWidget)
 
-        self.verticalLayout = QtGui.QVBoxLayout()
+        self.verticalLayout = QtWidgets.QVBoxLayout()
         self.mainWidget.setLayout(self.verticalLayout)
 
         self.headerWidget = header.Header(getpass.getuser(), self)
@@ -84,9 +84,9 @@ class FtrackImportAssetDialog(QtGui.QDialog):
         self.verticalLayout.addWidget(self.listAssetsTableWidget, stretch=4)
 
         # Horizontal line
-        self.divider = QtGui.QFrame()
-        self.divider.setFrameShape(QtGui.QFrame.HLine)
-        self.divider.setFrameShadow(QtGui.QFrame.Sunken)
+        self.divider = QtWidgets.QFrame()
+        self.divider.setFrameShape(QtWidgets.QFrame.HLine)
+        self.divider.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.divider.setLineWidth(2)
 
         self.verticalLayout.addWidget(self.divider)
@@ -105,14 +105,14 @@ class FtrackImportAssetDialog(QtGui.QDialog):
 
         self.verticalLayout.addWidget(self.componentTableWidget, stretch=3)
 
-        self.horizontalLayout = QtGui.QHBoxLayout()
+        self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.verticalLayout.addLayout(self.horizontalLayout)
 
-        self.importAllButton = QtGui.QPushButton("Import All")
+        self.importAllButton = QtWidgets.QPushButton("Import All")
         self.importAllButton.setFixedWidth(120)
         self.importAllButton.setObjectName('ftrack-import-btn')
 
-        self.importSelectedButton = QtGui.QPushButton("Import Selected")
+        self.importSelectedButton = QtWidgets.QPushButton("Import Selected")
         self.importSelectedButton.setFixedWidth(120)
         self.importAllButton.setObjectName('ftrack-import-btn')
 
@@ -127,7 +127,7 @@ class FtrackImportAssetDialog(QtGui.QDialog):
 
         self.verticalLayout.addWidget(self.importOptionsWidget, stretch=0)
 
-        self.messageLabel = QtGui.QLabel(self)
+        self.messageLabel = QtWidgets.QLabel(self)
         self.messageLabel.setText(' \n ')
         self.verticalLayout.addWidget(self.messageLabel, stretch=0)
 

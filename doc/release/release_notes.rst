@@ -1,3 +1,4 @@
+
 ..
     :copyright: Copyright (c) 2014 ftrack
 
@@ -7,7 +8,16 @@
 Release Notes
 *************
 
-.. release:: Upcoming
+
+.. release:: 0.1.28
+    :date: 2016-09-16
+
+    .. change:: changed
+        :tags: Internal
+
+        Add wrapper for PySide2 / Qt5 to support Maya 2017 and other future
+        applications that rely on later versions of Qt.
+
     .. change:: fix
         :tags: Internal, API
 
@@ -17,8 +27,6 @@ Release Notes
         :tags: Internal
 
         Speedup asset manager.
-
-.. release:: Upcoming
 
     .. change:: fixed
         :tags: Internal

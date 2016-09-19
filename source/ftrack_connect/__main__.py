@@ -8,7 +8,9 @@ import signal
 import os
 import pkg_resources
 
-from PySide import QtGui
+os.environ.setdefault('QT_PREFERRED_BINDING', 'PySide:PySide2')
+
+from QtExt import QtWidgets
 
 import ftrack_connect.config
 
@@ -68,7 +70,8 @@ def main(arguments=None):
     )
 
     # Construct global application.
-    application = QtGui.QApplication('ftrack-connect')
+    application = QtWidgets.QApplication([])
+
     application.setOrganizationName('ftrack')
     application.setOrganizationDomain('ftrack.com')
     application.setQuitOnLastWindowClosed(False)

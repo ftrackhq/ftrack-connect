@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-from PySide import QtGui, QtCore
+from QtExt import QtCore, QtWidgets, QtGui
 
 
 def applyFont(font=':/ftrack/font/main'):
@@ -12,8 +12,8 @@ def applyFont(font=':/ftrack/font/main'):
 def applyTheme(widget, theme='light', baseTheme=None):
     '''Apply *theme* to *widget*.'''
     # Set base style.
-    if baseTheme and QtGui.QApplication.style().objectName() != baseTheme:
-        QtGui.QApplication.setStyle(baseTheme)
+    if baseTheme and QtWidgets.QApplication.style().objectName() != baseTheme:
+        QtWidgets.QApplication.setStyle(baseTheme)
 
     # Load stylesheet from resource file and apply.
     fileObject = QtCore.QFile(':/ftrack/style/{0}'.format(theme))

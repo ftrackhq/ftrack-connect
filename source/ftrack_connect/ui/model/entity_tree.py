@@ -3,7 +3,7 @@
 #             Copyright (c) 2014 Martin Pengelly-Phillips
 # :notice: Derived from Riffle (https://github.com/4degrees/riffle)
 
-from PySide import QtGui, QtCore
+from QtExt import QtWidgets, QtCore, QtGui
 
 import ftrack_api
 
@@ -395,7 +395,7 @@ class EntityTreeModel(QtCore.QAbstractItemModel):
             worker.start()
 
             while worker.isRunning():
-                app = QtGui.QApplication.instance()
+                app = QtWidgets.QApplication.instance()
                 app.processEvents()
 
             if worker.error:
@@ -433,7 +433,7 @@ class EntityTreeModel(QtCore.QAbstractItemModel):
         self.endResetModel()
 
 
-class EntityTreeProxyModel(QtGui.QSortFilterProxyModel):
+class EntityTreeProxyModel(QtCore.QSortFilterProxyModel):
     '''Sort contexts before tasks.'''
 
     def lessThan(self, left, right):

@@ -1,30 +1,30 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
 
-from PySide import QtGui, QtCore
+from QtExt import QtWidgets, QtCore
 
 
 import ftrack_connect.ui.widget.item_list
 
 
-class Message(QtGui.QFrame):
+class Message(QtWidgets.QFrame):
     '''Represent a chat message.'''
 
     def __init__(self, text, name, me=False, parent=None):
         '''Initialise widget with *text* and *name*.'''
         super(Message, self).__init__(parent)
 
-        self.setLayout(QtGui.QVBoxLayout())
+        self.setLayout(QtWidgets.QVBoxLayout())
         self.layout().setContentsMargins(0, 0, 0, 0)
         self.layout().setSpacing(0)
 
         if me:
             name = 'You'
 
-        self.sender = QtGui.QLabel(name)
+        self.sender = QtWidgets.QLabel(name)
         self.layout().addWidget(self.sender, stretch=0)
 
-        self.text = QtGui.QLabel(text)
+        self.text = QtWidgets.QLabel(text)
         self.text.setWordWrap(True)
         self.text.setObjectName('message-text')
 
@@ -62,7 +62,7 @@ class Feed(ftrack_connect.ui.widget.item_list.ItemList):
         )
         self.setObjectName('message-feed')
         self.list.setSelectionMode(
-            QtGui.QAbstractItemView.NoSelection
+            QtWidgets.QAbstractItemView.NoSelection
         )
         self.list.setShowGrid(False)
         self._verticalScrollBar = self.list.verticalScrollBar()
@@ -92,7 +92,7 @@ class Feed(ftrack_connect.ui.widget.item_list.ItemList):
         )
 
 
-class ChatTextEdit(QtGui.QTextEdit):
+class ChatTextEdit(QtWidgets.QTextEdit):
 
     # Signal emitted when return is pressed on it's own.
     returnPressed = QtCore.Signal()
@@ -123,7 +123,7 @@ class ChatTextEdit(QtGui.QTextEdit):
         return False
 
 
-class Chat(QtGui.QFrame):
+class Chat(QtWidgets.QFrame):
     '''Chat widget.'''
 
     chatMessageSubmitted = QtCore.Signal(object)
@@ -132,7 +132,7 @@ class Chat(QtGui.QFrame):
         '''Initiate chat widget with *chatHub*.'''
         super(Chat, self).__init__(parent)
 
-        self.setLayout(QtGui.QVBoxLayout())
+        self.setLayout(QtWidgets.QVBoxLayout())
         self.layout().setContentsMargins(0, 0, 0, 0)
         self.layout().setSpacing(0)
         self.setObjectName('chat-widget')
@@ -146,7 +146,7 @@ class Chat(QtGui.QFrame):
         self._messageArea.returnPressed.connect(self.onReturnPressed)
         self.layout().addWidget(self._messageArea, stretch=0)
 
-        self._sendMessageButton = QtGui.QPushButton('Submit')
+        self._sendMessageButton = QtWidgets.QPushButton('Submit')
         self.layout().addWidget(self._sendMessageButton, stretch=0)
 
         self._sendMessageButton.clicked.connect(self.onReturnPressed)

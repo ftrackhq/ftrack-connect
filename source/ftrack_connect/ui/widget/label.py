@@ -1,10 +1,10 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-from PySide import QtGui, QtCore
+from QtExt import QtWidgets, QtCore
 
 
-class Label(QtGui.QLabel):
+class Label(QtWidgets.QLabel):
     '''Label that can elide displayed text automatically.'''
 
     def __init__(self, elideMode=QtCore.Qt.ElideMiddle, *args, **kwargs):
@@ -24,9 +24,9 @@ class Label(QtGui.QLabel):
 
     def paintEvent(self, event):
         '''Paint *event* with the configured elideMode.'''
-        painter = QtGui.QPainter(self)
+        painter = QtWidgets.QPainter(self)
 
-        metrics = QtGui.QFontMetrics(self.font())
+        metrics = QtWidgets.QFontMetrics(self.font())
         elided = metrics.elidedText(self.text(), self.elideMode, self.width())
 
         painter.drawText(self.rect(), self.alignment(), elided)
