@@ -8,7 +8,8 @@ import signal
 import os
 import pkg_resources
 
-os.environ.setdefault('QT_PREFERRED_BINDING', 'PySide:PySide2')
+bindings = ['PySide', 'PySide2']
+os.environ.setdefault('QT_PREFERRED_BINDING', os.pathsep.join(bindings))
 
 from QtExt import QtWidgets
 
