@@ -2,7 +2,6 @@
 # :copyright: Copyright (c) 2015 ftrack
 
 import getpass
-import functools
 
 from QtExt import QtCore, QtWidgets, QtGui
 
@@ -295,9 +294,6 @@ class AssetManagerWidget(QtWidgets.QWidget):
         self.signalMapperComment = QtCore.QSignalMapper()
         self.signalMapperComment.mapped[str].connect(self.openComments)
 
-        self.signalMapperChangeVersion = QtCore.QSignalMapper()
-        self.signalMapperChangeVersion.mapped[int].connect(self.changeVersion)
-
         extraOptionsMenu = QtWidgets.QMenu(self.ui.menuButton)
         extraOptionsMenu.addAction(
             'Get SceneSelection',
@@ -384,14 +380,7 @@ class AssetManagerWidget(QtWidgets.QWidget):
                 )
 
                 versionNumberComboBox.currentIndexChanged.connect(
-                    functools.partial(
-                        self.changeVersion,
-                        i
-                    )
-                )
-
-                self.signalMapperChangeVersion.setMapping(
-                    versionNumberComboBox, -1
+                    self.changeVersion
                 )
 
                 latestVersionNumber = QtWidgets.QTableWidgetItem(
@@ -626,23 +615,12 @@ class AssetManagerWidget(QtWidgets.QWidget):
             objectNames.append(objectName)
         self.connector.selectObjects(objectNames)
 
-    def getCurrenRow(self):
-        '''Return current row.'''
-        fw = QtWidgets.QApplication.focusWidget()
-        modelindexComboBox = self.ui.AssertManagerTableWidget.indexAt(fw.pos())
-        row = modelindexComboBox.row()
-        return row
-
-    @QtCore.Slot(int, str)
-    def changeVersion(self, row, newVersion=None):
-        '''Change version of asset at *row* to *newVersion*.'''
-        if row == -1:
-            row = self.getCurrenRow()
-
-        if not newVersion:
-            newVersion = self.ui.AssertManagerTableWidget.cellWidget(
-                row, 5
-            ).currentText()
+    @QtCore.Slot(str, int)
+    def changeVersion(self, newVersion=None, row=None):
+        if row is None:
+            sender = self.sender()
+            row = self.ui.AssertManagerTableWidget.indexAt(sender.pos()).row()
+            newVersion = sender.itemText(newVersion)
 
         latestVersion = self.ui.AssertManagerTableWidget.item(row, 6).text()
         objectName = self.ui.AssertManagerTableWidget.item(row, 8).text()
@@ -734,6 +712,3 @@ class AssetManagerWidget(QtWidgets.QWidget):
 
         selectWidget = self.ui.AssertManagerTableWidget.cellWidget(row, 9)
         self.signalMapperSelect.setMapping(selectWidget, unicode(name))
-
-        versionWidget = self.ui.AssertManagerTableWidget.cellWidget(row, 5)
-        self.signalMapperChangeVersion.setMapping(versionWidget, -1)
