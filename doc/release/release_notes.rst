@@ -9,6 +9,13 @@ Release Notes
 *************
 
 
+.. release:: Upcoming
+
+    .. change:: fixed
+        :tags: Asset manager
+
+        Fails to switch versions if an asset is removed without refreshing.
+
 .. release:: 0.1.29
     :date: 2016-09-21
 
