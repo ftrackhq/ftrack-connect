@@ -9,7 +9,8 @@ Release Notes
 *************
 
 
-.. release:: Upcoming
+.. release:: 0.1.30
+    :date: 2016-09-23
 
     .. change:: fixed
         :tags: Asset manager
