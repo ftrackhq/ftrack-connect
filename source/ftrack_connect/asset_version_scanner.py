@@ -4,6 +4,8 @@
 
 # :TODO: Move to ftrack-connect-pipeline.
 
+import logging
+
 import ftrack_connect.asynchronous
 
 
@@ -14,15 +16,40 @@ class Scanner(object):
         '''Instantiate scanner with *session*.'''
         self._session = session
         self.result_handler = result_handler
+        self.logger = logging.getLogger(
+            __name__ + '.' + self.__class__.__name__
+        )
         super(Scanner, self).__init__()
 
     @ftrack_connect.asynchronous.asynchronous
     def scan(self, items):
-        '''Search for new versions of *items*.'''
+        '''Search for new versions of *items* and call handler with result.
+
+        The result is a list of dictionaries containing `scanned` and `latest`
+        dictionaries with the following keys.
+
+        `scanned`:
+
+        *   id - id of the asset version.
+        *   version - version number of the asset version.
+
+        `latest`:
+
+        *   id - id of the asset version.
+        *   version - version number of the asset version.
+
+        The result may contain None instead of a dictionary if the asset
+        version scanned is not found on the server.
+
+        '''
         if not items:
             return []
+
+        self.logger.debug('Scanning for assets on {0!r}.'.format(items))
+
         selects = [
             'asset.versions.components.name',
+            'asset.versions.version',
             'version'
         ]
 
@@ -37,14 +64,25 @@ class Scanner(object):
 
         result = []
         for item in items:
-            component_name = item['component_name']
             asset_version = result_lookup.get(item['asset_version_id'])
+
+            self.logger.debug(
+                'Found asset version {0!r} for {1!r}.'.format(
+                    asset_version,
+                    item['asset_version_id']
+                )
+            )
             if asset_version is None:
                 # No version with the given id was found. This can happen if the
                 # version with the given id has been removed.
                 result.append(None)
+                self.logger.debug(
+                    'Asset version with id {0!r} could not be found.'.format(
+                        item['asset_version_id']
+                    )
+                )
             else:
-
+                component_name = item['component_name']
                 latest_asset_version = asset_version
 
                 for related_asset_version in asset_version['asset']['versions']:
@@ -62,11 +100,31 @@ class Scanner(object):
                     ):
                         latest_asset_version = related_asset_version
 
+                latest = {
+                    'id': latest_asset_version['id'],
+                    'version': latest_asset_version['version']
+                }
+                scanned = {
+                    'id': asset_version['id'],
+                    'version': asset_version['version']
+                }
+                self.logger.debug(
+                    'Scanned {0!r} and found latest version: {1!r} for '
+                    'component with name {2!r}.'.format(
+                        scanned, latest, component_name
+                    )
+                )
+
+                if latest_asset_version['id'] != asset_version['id']:
+                    self.logger.info(
+                        'Found a new asset version of {0!r}: {1!r}'.format(
+                            scanned, latest
+                        )
+                    )
+
                 result.append({
-                    'current_version': asset_version['version'],
-                    'latest_version': latest_asset_version['version'],
-                    'current_asset_version_id': asset_version['id'],
-                    'latest_asset_version_id': latest_asset_version['id']
+                    'scanned': scanned,
+                    'latest': latest
                 })
 
         self.result_handler(result)
