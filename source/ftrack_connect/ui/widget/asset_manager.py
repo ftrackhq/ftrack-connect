@@ -6,6 +6,7 @@ import getpass
 from QtExt import QtCore, QtWidgets, QtGui
 
 import ftrack
+import ftrack_api
 
 from ftrack_connect.connector import FTAssetObject, PanelComInstance
 from ftrack_connect.ui.widget.info import FtrackInfoDialog
@@ -120,7 +121,8 @@ class Ui_AssetManager(object):
         )
         self.latestButton.setText(
             QtWidgets.QApplication.translate(
-                'AssetManager', 'Latest', None, QtWidgets.QApplication.UnicodeUTF8
+                'AssetManager', 'Latest', None,
+                QtWidgets.QApplication.UnicodeUTF8
             )
         )
         self.selectAllButton.setText(
@@ -131,12 +133,14 @@ class Ui_AssetManager(object):
         )
         self.menuButton.setText(
             QtWidgets.QApplication.translate(
-                'AssetManager', 'Extra', None, QtWidgets.QApplication.UnicodeUTF8
+                'AssetManager', 'Extra', None,
+                QtWidgets.QApplication.UnicodeUTF8
             )
         )
         self.refreshButton.setText(
             QtWidgets.QApplication.translate(
-                'AssetManager', 'Refresh', None, QtWidgets.QApplication.UnicodeUTF8
+                'AssetManager', 'Refresh', None,
+                QtWidgets.QApplication.UnicodeUTF8
             )
         )
 
@@ -190,7 +194,7 @@ class FtrackAssetManagerDialog(QtWidgets.QDialog):
 
 
 class AssetManagerWidget(QtWidgets.QWidget):
-    '''Asset manager widget'''
+    '''Asset manager widget.'''
 
     notVersionable = dict()
     notVersionable['maya'] = []
@@ -216,7 +220,8 @@ class AssetManagerWidget(QtWidgets.QWidget):
 
         self.ui.AssertManagerTableWidget.verticalHeader().hide()
         self.ui.AssertManagerTableWidget.setColumnCount(16)
-        self.ui.AssertManagerTableWidget.horizontalHeader().setDefaultSectionSize(65)
+        self.ui.AssertManagerTableWidget.horizontalHeader(
+        ).setDefaultSectionSize(65)
         self.ui.AssertManagerTableWidget.setColumnWidth(0, 20)
         self.ui.AssertManagerTableWidget.setColumnWidth(5, 55)
         self.ui.AssertManagerTableWidget.setColumnWidth(6, 65)
@@ -317,21 +322,75 @@ class AssetManagerWidget(QtWidgets.QWidget):
 
         self.ui.AssertManagerTableWidget.setRowCount(len(assets))
 
+        session = ftrack_api.Session(
+            auto_connect_event_hub=False,
+            plugin_paths=None
+        )
+        component_ids = []
+
+        for component_id, _ in assets:
+            if component_id:
+                component_ids.append(component_id)
+
+        if component_ids:
+            query_string = (
+                'select name, version.asset.type.short, version.asset.name, '
+                'version.asset.type.name, version.asset.versions.version, '
+                'version.id, version.version, version.asset.versions, '
+                'version.date, version.comment, version.asset.name, version, '
+                'version_id, version.user.first_name, version.user.last_name '
+                'from Component where id in ({0})'.format(
+                    ','.join(component_ids)
+                )
+            )
+            components = session.query(query_string).all()
+
+            asset_ids = set()
+            for component in components:
+                asset_ids.add(component['version']['asset']['id'])
+
+            # Because of bug in 3.3.X backend we need to divide the query. The
+            # memory cache will allow using entities without caring about this.
+            preload_string = (
+                'select components.name from AssetVersion where '
+                'asset_id in ({0})'
+            ).format(', '.join(list(asset_ids)))
+            print 'Preload', preload_string
+            session.query(preload_string).all()
+
+            component_map = dict(
+                (component['id'], component)
+                for component in components
+            )
+        else:
+            component_map = {}
+
         for i in range(len(assets)):
             if assets[i][0]:
-                ftrackComponent = ftrack.Component(assets[i][0])
-                assetVersion = ftrackComponent.getVersion()
-                componentNameStr = ftrackComponent.getName()
-                assetVersionNr = assetVersion.getVersion()
-                asset = assetVersion.getAsset()
+                component = component_map[assets[i][0]]
+                asset_version = component['version']
+                componentNameStr = component['name']
+                assetVersionNr = asset_version['version']
+                asset = asset_version['asset']
 
-                assetVersions = asset.getVersions(
-                    componentNames=[componentNameStr]
+                asset_versions_with_same_component_name = []
+                for related_version in asset['versions']:
+                    for other_component in related_version['components']:
+                        if other_component['name'] == componentNameStr:
+                            asset_versions_with_same_component_name.append(
+                                related_version
+                            )
+
+                asset_versions_with_same_component_name = sorted(
+                    asset_versions_with_same_component_name,
+                    key=lambda x: x['version']
                 )
-                latestAssetVersion = assetVersions[-1].getVersion()
+                latest_version_number = (
+                    asset_versions_with_same_component_name[-1]['version']
+                )
 
                 versionIndicatorButton = QtWidgets.QPushButton('')
-                if assetVersionNr == latestAssetVersion:
+                if assetVersionNr == latest_version_number:
                     versionIndicatorButton.setStyleSheet(
                         'background-color: #1CBC90;'
                     )
@@ -352,20 +411,22 @@ class AssetManagerWidget(QtWidgets.QWidget):
                 componentName = QtWidgets.QTableWidgetItem(componentNameStr)
                 self.ui.AssertManagerTableWidget.setItem(i, 1, componentName)
 
-                componentId = QtWidgets.QTableWidgetItem(ftrackComponent.getId())
+                componentId = QtWidgets.QTableWidgetItem(component['id'])
                 self.ui.AssertManagerTableWidget.setItem(i, 2, componentId)
 
-                assetType = QtWidgets.QTableWidgetItem(asset.getType().getShort())
+                assetType = QtWidgets.QTableWidgetItem(asset['type']['short'])
                 self.ui.AssertManagerTableWidget.setItem(i, 3, assetType)
 
                 assetTypeLong = QtWidgets.QTableWidgetItem(
-                    asset.getType().getName()
+                    asset['type']['name']
                 )
                 self.ui.AssertManagerTableWidget.setItem(i, 4, assetTypeLong)
 
                 versionNumberComboBox = QtWidgets.QComboBox()
-                for version in reversed(assetVersions):
-                    versionNumberComboBox.addItem(str(version.getVersion()))
+                for version in reversed(
+                    asset_versions_with_same_component_name
+                ):
+                    versionNumberComboBox.addItem(str(version['version']))
 
                 conName = self.connector.getConnectorName()
                 if conName in self.notVersionable:
@@ -383,15 +444,15 @@ class AssetManagerWidget(QtWidgets.QWidget):
                     self.changeVersion
                 )
 
-                latestVersionNumber = QtWidgets.QTableWidgetItem(
-                    str(latestAssetVersion)
+                latestVersionNumberWidget = QtWidgets.QTableWidgetItem(
+                    str(latest_version_number)
                 )
                 self.ui.AssertManagerTableWidget.setItem(
-                    i, 6, latestVersionNumber
+                    i, 6, latestVersionNumberWidget
                 )
 
-                assetName = QtWidgets.QTableWidgetItem(asset.getName())
-                assetName.setToolTip(asset.getName())
+                assetName = QtWidgets.QTableWidgetItem(asset['name'])
+                assetName.setToolTip(asset['name'])
                 self.ui.AssertManagerTableWidget.setItem(i, 7, assetName)
 
                 assetNameInScene = QtWidgets.QTableWidgetItem(assets[i][1])
@@ -429,11 +490,11 @@ class AssetManagerWidget(QtWidgets.QWidget):
                 removeButton.clicked.connect(self.signalMapperRemove.map)
                 self.signalMapperRemove.setMapping(removeButton, assets[i][1])
 
-                assetId = QtWidgets.QTableWidgetItem(str(asset.getId()))
+                assetId = QtWidgets.QTableWidgetItem(str(asset['id']))
                 self.ui.AssertManagerTableWidget.setItem(i, 12, assetId)
 
                 assetVersionId = QtWidgets.QTableWidgetItem(
-                    str(assetVersion.getId())
+                    str(asset_version['id'])
                 )
                 self.ui.AssertManagerTableWidget.setItem(i, 13, assetVersionId)
 
@@ -450,15 +511,18 @@ class AssetManagerWidget(QtWidgets.QWidget):
                 icon.addPixmap(
                     QtGui.QPixmap(
                         ':ftrack/image/integration/comment'
-                        ),
+                    ),
                     QtGui.QIcon.Normal,
                     QtGui.QIcon.Off
                 )
                 commentButton.setIcon(icon)
 
-                fullUserName = assetVersion.getUser().getName()
-                pubDate = str(assetVersion.getDate())
-                comment = assetVersion.getComment()
+                fullUserName = (
+                    asset_version['user']['first_name'] + ' ' +
+                    asset_version['user']['last_name']
+                )
+                pubDate = str(asset_version['date'])
+                comment = asset_version['comment']
                 tooltipText = '\n'.join([fullUserName, pubDate, comment])
 
                 commentButton.setToolTip(tooltipText)
@@ -469,7 +533,7 @@ class AssetManagerWidget(QtWidgets.QWidget):
                 commentButton.clicked.connect(self.signalMapperComment.map)
 
                 self.signalMapperComment.setMapping(
-                    commentButton, str(assetVersion.getId())
+                    commentButton, str(asset_version['id'])
                 )
 
         self.ui.AssertManagerTableWidget.setHorizontalHeaderLabels(
@@ -481,8 +545,8 @@ class AssetManagerWidget(QtWidgets.QWidget):
         self.comment_dialog = FtrackInfoDialog(connector=self.connector)
         self.comment_dialog.show()
         self.comment_dialog.move(
-            QtWidgets.QApplication.desktop().screen().rect().center()
-            - self.comment_dialog.rect().center()
+            QtWidgets.QApplication.desktop().screen().rect().center() -
+            self.comment_dialog.rect().center()
         )
         panelComInstance = PanelComInstance.instance()
         panelComInstance.infoListeners(taskId)
@@ -617,6 +681,7 @@ class AssetManagerWidget(QtWidgets.QWidget):
 
     @QtCore.Slot(str, int)
     def changeVersion(self, newVersion=None, row=None):
+        '''Change version.'''
         if row is None:
             sender = self.sender()
             row = self.ui.AssertManagerTableWidget.indexAt(sender.pos()).row()
@@ -704,7 +769,7 @@ class AssetManagerWidget(QtWidgets.QWidget):
             cellWidget.setCurrentIndex(fallbackIndex)
 
     def updateSignalMapper(self, row):
-        '''Update signal mapper with updated widgets'''
+        '''Update signal mapper with updated widgets.'''
         name = self.ui.AssertManagerTableWidget.item(row, 8).text()
 
         removeWidget = self.ui.AssertManagerTableWidget.cellWidget(row, 11)
