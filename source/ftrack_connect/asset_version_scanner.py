@@ -25,8 +25,11 @@ class Scanner(object):
     def scan(self, items):
         '''Search for new versions of *items* and call handler with result.
 
-        The result is a list of dictionaries containing `scanned` and `latest`
-        dictionaries with the following keys.
+        *items* should be a list of dictionaries containing `asset_version_id`
+        and `component_name`.
+
+        The result_handler will be called with a list of dictionaries containing
+        `scanned` and `latest` dictionaries with the following keys.
 
         `scanned`:
 
@@ -43,12 +46,12 @@ class Scanner(object):
 
         '''
         if not items:
-            return []
+            self.result_handler([])
+            return
 
         self.logger.debug('Scanning for assets on {0!r}.'.format(items))
 
         selects = [
-            'asset.versions.components.name',
             'asset.versions.version',
             'version'
         ]
@@ -58,9 +61,20 @@ class Scanner(object):
             ', '.join(selects), ', '.join(asset_version_ids)
         )
 
+        all_related_version_ids = []
         result_lookup = dict()
         for asset_version in self._session.query(query_string):
             result_lookup[asset_version['id']] = asset_version
+            for related_asset_version in asset_version['asset']['versions']:
+                all_related_version_ids.append(related_asset_version['id'])
+
+        if all_related_version_ids:
+            # Because of bug in 3.3.X backend we need to divide the query. The
+            # memory cache will allow using entities without caring about this.
+            self._session.query(
+                'select components.name from AssetVersion where id in '
+                '({0})'.format(', '.join(all_related_version_ids))
+            ).all()
 
         result = []
         for item in items:
