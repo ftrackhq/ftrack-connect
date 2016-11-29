@@ -9,8 +9,8 @@ Release Notes
 *************
 
 .. release:: Upcoming
-    .. change:: fix
-        :tags: Api
+    .. change:: fixed
+        :tags: Widget
 
         Entity picker may cause instability on some combinations of 
         platforms and applications.
