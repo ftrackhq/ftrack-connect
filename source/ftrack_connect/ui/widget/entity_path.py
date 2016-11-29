@@ -39,4 +39,5 @@ class EntityPath(QtWidgets.QLineEdit):
         self.path_ready.emit(names)
 
     def on_path_ready(self, names):
+        '''Set current path to *names*'''
         self.setText(' / '.join(names))
