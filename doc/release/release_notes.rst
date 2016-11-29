@@ -9,6 +9,13 @@ Release Notes
 *************
 
 
+.. release:: Upcoming
+
+    .. change:: new
+        :tags: Asset version scanner
+
+        Added new method to scan for new asset versions.
+
 .. release:: 0.1.30
     :date: 2016-09-23
 
