@@ -12,7 +12,8 @@ Release Notes
     .. change:: fix
         :tags: Api
 
-        Entity picker may cause instability on some combinations of platforms and applications.
+        Entity picker may cause instability on some combinations of 
+        platforms and applications.
 
 .. release:: 0.1.30
     :date: 2016-09-23
