@@ -8,7 +8,9 @@
 Release Notes
 *************
 
-.. release:: Upcoming
+.. release:: 0.1.31
+    :date: 2016-12-01
+
     .. change:: fixed
         :tags: Widget
 
