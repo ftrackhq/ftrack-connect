@@ -355,7 +355,6 @@ class AssetManagerWidget(QtWidgets.QWidget):
                 'select components.name from AssetVersion where '
                 'asset_id in ({0})'
             ).format(', '.join(list(asset_ids)))
-            print 'Preload', preload_string
             session.query(preload_string).all()
 
             component_map = dict(
