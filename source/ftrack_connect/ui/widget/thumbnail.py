@@ -4,7 +4,7 @@
 import os
 import urllib2
 
-from PySide import QtGui, QtCore
+from QtExt import QtWidgets, QtCore, QtGui
 import ftrack
 import ftrack_connect.worker
 
@@ -12,14 +12,14 @@ import ftrack_connect.worker
 IMAGE_CACHE = dict()
 
 
-class Base(QtGui.QLabel):
+class Base(QtWidgets.QLabel):
     '''Widget to load thumbnails from ftrack server.'''
 
     def __init__(self, parent=None):
         super(Base, self).__init__(parent)
 
         self.thumbnailCache = {}
-        self.setFrameStyle(QtGui.QFrame.StyledPanel)
+        self.setFrameStyle(QtWidgets.QFrame.StyledPanel)
         self.setAlignment(QtCore.Qt.AlignCenter)
 
         self.placholderThumbnail = (
@@ -37,7 +37,7 @@ class Base(QtGui.QLabel):
 
         if self._worker and self._worker.isRunning():
             while self._worker:
-                app = QtGui.QApplication.instance()
+                app = QtWidgets.QApplication.instance()
                 app.processEvents()
 
         self._worker = ftrack_connect.worker.Worker(
@@ -71,10 +71,26 @@ class Base(QtGui.QLabel):
         )
         self.setPixmap(scaledPixmap)
 
+    def _safeDownload(self, url, opener_callback, timeout=5):
+        '''Check *url* through the given *openener_callback*.
+
+        .. note::
+
+           A placeholder image will be returned if there is not response within the
+           given *timeout*.
+
+        '''
+
+        placeholder = self.placholderThumbnail
+        try:
+            response = opener_callback(url, timeout=timeout)
+        except urllib2.URLError:
+            response = opener_callback(placeholder)
+
+        return response
+
     def _download(self, url):
         '''Return thumbnail file from *url*.'''
-        if url is None:
-            url = self.placholderThumbnail
 
         ftrackProxy = os.getenv('FTRACK_PROXY', '')
         ftrackServer = os.getenv('FTRACK_SERVER', '')
@@ -86,13 +102,14 @@ class Base(QtGui.QLabel):
 
             proxy = urllib2.ProxyHandler({httpHandle: ftrackProxy})
             opener = urllib2.build_opener(proxy)
-            response = opener.open(url)
+            response = self._safeDownload(url, opener.open)
             html = response.read()
         else:
-            response = urllib2.urlopen(url)
+            response = self._safeDownload(url, urllib2.urlopen)
             html = response.read()
 
         return html
+
 
 class EllipseBase(Base):
     '''Thumbnail which is drawn as an ellipse.'''
@@ -148,13 +165,17 @@ class ActionIcon(Base):
         'cinesync': '/application_icons/cinesync.png',
         'photoshop': '/application_icons/photoshop.png',
         'prelude': '/application_icons/prelude.png',
-        'after_effects': '/application_icons/after_effects.png'
+        'after_effects': '/application_icons/after_effects.png',
+        '3ds_max': '/application_icons/3ds_max.png',
+        'cinema_4d': '/application_icons/cinema_4d.png',
+        'indesign': '/application_icons/indesign.png',
+        'illustrator': '/application_icons/illustrator.png'
     }
 
     def __init__(self, parent=None):
         '''Initialize action icon.'''
         super(ActionIcon, self).__init__(parent)
-        self.setFrameStyle(QtGui.QFrame.NoFrame)
+        self.setFrameStyle(QtWidgets.QFrame.NoFrame)
 
     def setIcon(self, icon):
         '''Set *icon* to a supported icon or show the standard icon.
@@ -166,9 +187,11 @@ class ActionIcon(Base):
         '''
         if icon and icon[:4] == 'http':
             self.load(icon)
+
         elif self.AVAILABLE_ICONS.get(icon):
             url = os.environ['FTRACK_SERVER'] + self.AVAILABLE_ICONS[icon]
             self.load(url)
+
         else:
             self.loadResource(':/ftrack/image/light/action')
 
@@ -183,7 +206,7 @@ class ActionIcon(Base):
     def _scaleAndSetPixmap(self, pixmap):
         '''Scale *pixmap* to fit within current bounds'''
         scaledPixmap = pixmap.scaled(
-            self.width(), self.height(), QtCore.Qt.KeepAspectRatio, 
+            self.width(), self.height(), QtCore.Qt.KeepAspectRatio,
             QtCore.Qt.SmoothTransformation
         )
         self.setPixmap(scaledPixmap)

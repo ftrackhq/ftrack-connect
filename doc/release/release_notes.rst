@@ -1,3 +1,4 @@
+
 ..
     :copyright: Copyright (c) 2014 ftrack
 
@@ -7,7 +8,192 @@
 Release Notes
 *************
 
-.. release:: upcoming
+.. release:: Upcoming
+    .. change:: fixed
+        :tags: Widget
+
+        Entity picker may cause instability on some combinations of 
+        platforms and applications.
+
+    .. change:: new
+        :tags: Asset version scanner
+
+        Added new method to scan for new asset versions.
+
+.. release:: 0.1.30
+    :date: 2016-09-23
+
+    .. change:: fixed
+        :tags: Asset manager
+
+        Asset manager fails to switch versions if an asset is removed without
+        refreshing the list.
+
+.. release:: 0.1.29
+    :date: 2016-09-21
+
+    .. change:: fixed
+        :tags: Internal
+
+        Wrapper for PySide2 and Qt5 does not work properly on Windows.
+
+.. release:: 0.1.28
+    :date: 2016-09-16
+
+    .. change:: changed
+        :tags: Internal
+
+        Add wrapper for PySide2 / Qt5 to support Maya 2017 and other future
+        applications that rely on later versions of Qt.
+
+    .. change:: fixed
+        :tags: Internal, API
+
+        Connect break in case of slow connection or missing url icon.
+
+    .. change:: Asset Manager
+        :tags: Internal
+
+        Speedup asset manager.
+
+    .. change:: fixed
+        :tags: Internal
+
+        Connect logs are saved to the wrong directory.
+
+.. release:: 0.1.27
+    :date: 2016-08-08
+
+    .. change:: new
+        :tags: Actions
+
+        Added default action to reveal a Component in the OS default file
+        browser.
+
+.. release:: 0.1.26
+    :date: 2016-07-19
+
+    .. change:: new
+        :tags: Internal
+
+        Logs are now written to file and the logs directory can be accessed
+        via the about menu.
+
+.. release:: 0.1.25
+    :date: 2016-06-07
+
+    .. change:: changed
+        :tags: Internal
+
+        Improve support for debugging tools.
+
+    .. change:: fixed
+        :tags: Asset manager
+
+        Asset versioning change breaks if versions has been deleted.
+
+.. release:: 0.1.24
+    :date: 2016-06-07
+
+    .. change:: fixed
+        :tags: Login
+
+        Error when starting connect with invalid ftrack server URL.
+
+.. release:: 0.1.23
+    :date: 2016-05-06
+
+    .. change:: fixed
+        :tags: Events, API
+
+        The `ftrack.connect.publish-components` event listener does not work
+        correctly when using Windows.
+
+.. release:: 0.1.22
+    :date: 2016-05-02
+
+    .. change:: new
+        :tags: Events, API
+
+        Added new `ftrack.connect.publish-components` event listener which
+        can be used to publish components from applications not supporting
+        the :term:`locations <ftrack:location>` framework.
+
+    .. change:: changed
+        :tags: Login
+
+        Login details and credentials are now stored in a json file in the
+        platform specific user data folder instead of using QSettings.
+
+    .. change:: fixed
+        :tags: Login
+
+        Unable to logout on some platforms.
+
+.. release:: 0.1.21
+    :date: 2016-03-30
+
+    .. change:: fixed
+        :tags: Events, API
+
+        Event listeners using new API may be registered twice.
+
+.. release:: 0.1.20
+    :date: 2016-03-14
+
+    .. change:: new
+        :tags: Plugins
+
+        Added a menu option to open the default plugin directory.
+
+    .. change:: changed
+        :tags: Login
+
+        Improved error handling for invalid server URLs.
+
+    .. change:: new
+        :tags: Login
+
+        Added ability to login using regular users credentials via web interface
+        instead of API key. Username and API key fields are therefore hidden by
+        default in the ftrack connect login screen.
+
+    .. change:: new
+        :tags: Events
+
+        ftrack connect will now respond to the ftrack.connect.discover event
+        which can be used to identify if ftrack connect is running for the
+        current user.
+
+    .. change:: new
+        :tags: Location
+
+        Paths for custom locations that are implemented in the new Python
+        API, :ref:`ftrack-python-api <ftrack-python-api:introduction>`,
+        are now resolved in Connect.
+
+    .. change:: new
+        :tags: Location Scenario
+
+        Added a new hook that can be used to detect problems and present
+        information to the user.
+
+        .. seealso::
+
+            :ref:`Verify startup hook <developing/hooks/verify_startup>`
+
+    .. change:: new
+        :tags: Location Scenario
+
+        Added a configure storage scenario widget that will be shown on startup
+        if a storage scenario has not been configured on the server.
+
+    .. change:: changed
+        :tags: Event plugins
+
+        Event plugins are now loaded for the new Python API, 
+        :ref:`ftrack-python-api <ftrack-python-api:introduction>`.
+        :ref:`Read more <release/migration/0.1.20/developer_notes>`
 
     .. change:: fixed
         :tags: Ui

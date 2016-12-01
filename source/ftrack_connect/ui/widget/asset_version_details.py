@@ -3,13 +3,13 @@
 
 import os
 
-from PySide import QtCore, QtGui
+from QtExt import QtWidgets, QtCore, QtGui
 
 import ftrack
 from ftrack_connect.connector import HelpFunctions
 
 
-class AssetVersionDetailsWidget(QtGui.QWidget):
+class AssetVersionDetailsWidget(QtWidgets.QWidget):
     '''Asset version details widget.'''
 
     def __init__(self, parent=None, connector=None):
@@ -38,21 +38,21 @@ class AssetVersionDetailsWidget(QtGui.QWidget):
 
     def build(self):
         '''Build widgets and layout.'''
-        self.setLayout(QtGui.QHBoxLayout())
+        self.setLayout(QtWidgets.QHBoxLayout())
         self.layout().setContentsMargins(0, 0, 0, 0)
 
-        self.thumbnailWidget = QtGui.QLabel()
-        self.thumbnailWidget.setFrameStyle(QtGui.QFrame.StyledPanel)
+        self.thumbnailWidget = QtWidgets.QLabel()
+        self.thumbnailWidget.setFrameStyle(QtWidgets.QFrame.StyledPanel)
         self.thumbnailWidget.setAlignment(QtCore.Qt.AlignCenter)
         self.thumbnailWidget.setFixedWidth(240)
 
         self.layout().addWidget(self.thumbnailWidget)
 
-        self.propertyTableWidget = QtGui.QTableWidget()
+        self.propertyTableWidget = QtWidgets.QTableWidget()
         self.propertyTableWidget.setEditTriggers(
-            QtGui.QAbstractItemView.NoEditTriggers)
+            QtWidgets.QAbstractItemView.NoEditTriggers)
         self.propertyTableWidget.setSelectionMode(
-            QtGui.QAbstractItemView.NoSelection
+            QtWidgets.QAbstractItemView.NoSelection
         )
 
         self.propertyTableWidget.setRowCount(len(self.headers))
@@ -61,19 +61,19 @@ class AssetVersionDetailsWidget(QtGui.QWidget):
         self.propertyTableWidget.setColumnCount(1)
         horizontalHeader = self.propertyTableWidget.horizontalHeader()
         horizontalHeader.hide()
-        horizontalHeader.setResizeMode(QtGui.QHeaderView.Stretch)
+        horizontalHeader.setResizeMode(QtWidgets.QHeaderView.Stretch)
 
         verticalHeader = self.propertyTableWidget.verticalHeader()
-        verticalHeader.setResizeMode(QtGui.QHeaderView.ResizeToContents)
+        verticalHeader.setResizeMode(QtWidgets.QHeaderView.ResizeToContents)
 
         # Fix missing horizontal scrollbar when only single column
         self.propertyTableWidget.setHorizontalScrollMode(
-            QtGui.QAbstractItemView.ScrollPerPixel
+            QtWidgets.QAbstractItemView.ScrollPerPixel
         )
 
         for index in range(len(self.headers)):
             self.propertyTableWidget.setItem(
-                index, 0, QtGui.QTableWidgetItem('')
+                index, 0, QtWidgets.QTableWidgetItem('')
             )
 
         self.layout().addWidget(self.propertyTableWidget)

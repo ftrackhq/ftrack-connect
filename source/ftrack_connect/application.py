@@ -1,7 +1,6 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-import logging
 import sys
 import pprint
 import re
@@ -10,8 +9,10 @@ import subprocess
 import collections
 import base64
 import json
+import logging
 
 import ftrack
+
 
 #: Default expression to match version component of executable path.
 #: Will match last set of numbers in string where numbers may contain a digit
@@ -315,6 +316,27 @@ class ApplicationLauncher(object):
                 options['creationflags'] = subprocess.CREATE_NEW_CONSOLE
             else:
                 options['preexec_fn'] = os.setsid
+
+            launchData = dict(
+                command=command,
+                options=options,
+                application=application,
+                context=context
+            )
+            ftrack.EVENT_HUB.publish(
+                ftrack.Event(
+                    topic='ftrack.connect.application.launch',
+                    data=launchData
+                ),
+                synchronous=True
+            )
+
+            # Reset variables passed through the hook since they might
+            # have been replaced by a handler.
+            command = launchData['command']
+            options = launchData['options']
+            application = launchData['application']
+            context = launchData['context']
 
             self.logger.debug(
                 'Launching {0} with options {1}'.format(command, options)

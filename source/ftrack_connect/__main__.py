@@ -8,7 +8,12 @@ import signal
 import os
 import pkg_resources
 
-from PySide import QtGui, QtCore
+bindings = ['PySide', 'PySide2']
+os.environ.setdefault('QT_PREFERRED_BINDING', os.pathsep.join(bindings))
+
+from QtExt import QtWidgets, QtCore
+
+import ftrack_connect.config
 
 
 # Hooks use the ftrack event system. Set the FTRACK_EVENT_PLUGIN_PATH
@@ -49,7 +54,7 @@ def main(arguments=None):
         '-v', '--verbosity',
         help='Set the logging output verbosity.',
         choices=loggingLevels.keys(),
-        default='info'
+        default='warning'
     )
 
     parser.add_argument(
@@ -61,13 +66,17 @@ def main(arguments=None):
 
     namespace = parser.parse_args(arguments)
 
-    logging.basicConfig(level=loggingLevels[namespace.verbosity])
+    ftrack_connect.config.configure_logging(
+        'ftrack_connect', level=loggingLevels[namespace.verbosity]
+    )
 
-    #  http://stackoverflow.com/questions/31952711/threading-pyqt-crashes-with-unknown-request-in-queue-while-dequeuing
+    # If under X11 make Xlib calls thread-safe .
+    if os.name == 'posix':
+        QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_X11InitThreads)
 
     # Construct global application.
-    QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_X11InitThreads)
-    application = QtGui.QApplication('ftrack-connect')
+    application = QtWidgets.QApplication([])
+
     application.setOrganizationName('ftrack')
     application.setOrganizationDomain('ftrack.com')
     application.setQuitOnLastWindowClosed(False)

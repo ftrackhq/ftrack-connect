@@ -1,8 +1,8 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-from PySide import QtGui
-from PySide import QtCore
+from QtExt import QtWidgets
+from QtExt import QtCore
 
 import ftrack_connect.ui.widget.item_list
 import ftrack_connect.ui.widget.label
@@ -31,11 +31,11 @@ class TimeLogList(ftrack_connect.ui.widget.item_list.ItemList):
 
         # Disable selection on internal list.
         self.list.setSelectionMode(
-            QtGui.QAbstractItemView.NoSelection
+            QtWidgets.QAbstractItemView.NoSelection
         )
 
-        headerLayout = QtGui.QHBoxLayout()
-        self.titleLabel = QtGui.QLabel(title)
+        headerLayout = QtWidgets.QHBoxLayout()
+        self.titleLabel = QtWidgets.QLabel(title)
         self.titleLabel.setProperty('title', True)
 
         headerLayout.addWidget(self.titleLabel, stretch=1)

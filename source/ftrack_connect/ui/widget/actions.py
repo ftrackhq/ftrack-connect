@@ -1,21 +1,37 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-import logging
 import json
 import time
+import logging
 
-from PySide import QtGui
-from PySide import QtCore
+from QtExt import QtCore
+from QtExt import QtWidgets
 import ftrack
+import ftrack_api.event.base
 
 import ftrack_connect.asynchronous
 import ftrack_connect.error
 import ftrack_connect.session
+import ftrack_connect.usage
 
 from ftrack_connect.ui.widget import (
     action_item, flow_layout, entity_selector, overlay
 )
+
+
+class ActionBase(dict):
+    '''Wrapper for an action dict.'''
+
+    def __init__(self, *args, **kwargs):
+        '''Initialise the action.
+
+        *is_new_api* can be used to specify if the new or old event hub was used
+        to discover this event.
+
+        '''
+        self.is_new_api = kwargs.pop('is_new_api', False)
+        super(ActionBase, self).__init__(*args, **kwargs)
 
 
 class ActionSection(flow_layout.ScrollingFlowWidget):
@@ -49,7 +65,7 @@ class ActionSection(flow_layout.ScrollingFlowWidget):
         '''Forward beforeActionLaunch signal.'''
         self.beforeActionLaunch.emit(action)
 
-class Actions(QtGui.QWidget):
+class Actions(QtWidgets.QWidget):
     '''Actions widget. Displays and runs actions with a selectable context.'''
 
     RECENT_METADATA_KEY = 'ftrack_recent_actions'
@@ -68,7 +84,7 @@ class Actions(QtGui.QWidget):
         )
         self._session = ftrack_connect.session.get_session()
 
-        layout = QtGui.QVBoxLayout()
+        layout = QtWidgets.QVBoxLayout()
         self.setLayout(layout)
 
         self._currentUserId = None
@@ -80,10 +96,10 @@ class Actions(QtGui.QWidget):
         self._entitySelector.entityChanged.connect(
             self._onEntityChanged
         )
-        layout.addWidget(QtGui.QLabel('Select action context'))
+        layout.addWidget(QtWidgets.QLabel('Select action context'))
         layout.addWidget(self._entitySelector)
 
-        self._recentLabel = QtGui.QLabel('Recent')
+        self._recentLabel = QtWidgets.QLabel('Recent')
         layout.addWidget(self._recentLabel)
         self._recentSection = ActionSection(self)
         self._recentSection.setFixedHeight(100)
@@ -91,7 +107,7 @@ class Actions(QtGui.QWidget):
         self._recentSection.actionLaunched.connect(self._onActionLaunched)
         layout.addWidget(self._recentSection)
 
-        self._allLabel = QtGui.QLabel('Discovering actions..')
+        self._allLabel = QtWidgets.QLabel('Discovering actions..')
         self._allLabel.setAlignment(QtCore.Qt.AlignCenter)
         layout.addWidget(self._allLabel)
         self._allSection = ActionSection(self)
@@ -131,6 +147,19 @@ class Actions(QtGui.QWidget):
             self._updateRecentSection()
 
         self._showResultMessage(results)
+
+        validMetadata = [
+            'actionIdentifier',
+            'label',
+            'variant',
+            'applicationIdentifier'
+        ]
+        metadata = {}
+        for key, value in action.items():
+            if key in validMetadata and value is not None:
+                metadata[key] = value
+
+        ftrack_connect.usage.send_event('LAUNCHED-ACTION', metadata)
 
     def _showResultMessage(self, results):
         '''Show *results* message in overlay.'''
@@ -281,6 +310,8 @@ class Actions(QtGui.QWidget):
 
     def _loadActionsForContext(self, context):
         '''Obtain new actions synchronously for *context*.'''
+        discoveredActions = []
+
         results = ftrack.EVENT_HUB.publish(
             ftrack.Event(
                 topic='ftrack.action.discover',
@@ -291,11 +322,30 @@ class Actions(QtGui.QWidget):
             synchronous=True
         )
 
-        # Flatten structure
-        discoveredActions = []
         for result in results:
             if result:
-                discoveredActions.extend(result.get('items', []))
+                for action in result.get('items', []):
+                    discoveredActions.append(
+                        ActionBase(action, is_new_api=False)
+                    )
+
+        session = ftrack_connect.session.get_shared_session()
+        results = session.event_hub.publish(
+            ftrack_api.event.base.Event(
+                topic='ftrack.action.discover',
+                data=dict(
+                    selection=context
+                )
+            ),
+            synchronous=True
+        )
+
+        for result in results:
+            if result:
+                for action in result.get('items', []):
+                    discoveredActions.append(
+                        ActionBase(action, is_new_api=True)
+                    )
 
         # Sort actions by label
         groupedActions = []

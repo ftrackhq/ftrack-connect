@@ -78,15 +78,19 @@ To add an action, add an item in the following format.
 
 The different options are:
 
-``label``
+label
     Used to display the action in the ftrack interface. 
-``actionIdentifier``
+
+actionIdentifier
     Used to target a specific callback for an action.
-``variant``
+
+variant
     A variant of the action, such as application version.
-``description``
+
+description
     A helpful description for the user.
-``icon``
+
+icon
     Icon to display in the ftrack interface. Can be either an URL to a custom
     icon or the name of a predefined icon. Predefined icons are ``hiero``,
     ``hieroplayer``, ``nuke``, ``nukex``, ``maya``, ``premiere`` and 

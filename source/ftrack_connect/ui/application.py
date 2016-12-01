@@ -4,23 +4,37 @@
 import os
 import getpass
 import platform
+import requests
+import requests.exceptions
+import uuid
 import logging
 
-from PySide import QtGui
-from PySide import QtCore
+import appdirs
+
+from QtExt import QtCore, QtWidgets, QtGui
+
+import ftrack_api
+import ftrack_api._centralized_storage_scenario
+import ftrack_api.event.base
 
 import ftrack_connect
-import ftrack_connect.event_hub_thread
+import ftrack_connect.session
+import ftrack_connect.event_hub_thread as _event_hub_thread
 import ftrack_connect.error
+import ftrack_connect.util
 import ftrack_connect.ui.theme
+import ftrack_connect.ui.widget.overlay
 from ftrack_connect.ui.widget import uncaught_error as _uncaught_error
 from ftrack_connect.ui.widget import tab_widget as _tab_widget
 from ftrack_connect.ui.widget import login as _login
 from ftrack_connect.ui.widget import about as _about
 from ftrack_connect.error import NotUniqueError as _NotUniqueError
+from ftrack_connect.ui import login_tools as _login_tools
+from ftrack_connect.ui.widget import configure_scenario as _scenario_widget
+import ftrack_connect.ui.config
 
 
-class ApplicationPlugin(QtGui.QWidget):
+class ApplicationPlugin(QtWidgets.QWidget):
     '''Base widget for ftrack connect application plugin.'''
 
     #: Signal to emit to request focus of this plugin in application.
@@ -38,7 +52,7 @@ class ApplicationPlugin(QtGui.QWidget):
         return self.getName().lower().replace(' ', '.')
 
 
-class Application(QtGui.QMainWindow):
+class Application(QtWidgets.QMainWindow):
     '''Main application window for ftrack connect.'''
 
     #: Signal when login fails.
@@ -46,6 +60,9 @@ class Application(QtGui.QMainWindow):
 
     #: Signal when event received via ftrack's event hub.
     eventHubSignal = QtCore.Signal(object)
+
+    # Login signal.
+    loginSignal = QtCore.Signal(object, object, object)
 
     def __init__(self, *args, **kwargs):
         '''Initialise the main application window.'''
@@ -55,12 +72,38 @@ class Application(QtGui.QMainWindow):
             __name__ + '.' + self.__class__.__name__
         )
 
+        self.defaultPluginDirectory = appdirs.user_data_dir(
+            'ftrack-connect-plugins', 'ftrack'
+        )
+
+        self.pluginHookPaths = set()
+        self.pluginHookPaths.update(
+            self._gatherPluginHooks(
+                self.defaultPluginDirectory
+            )
+        )
+        if 'FTRACK_CONNECT_PLUGIN_PATH' in os.environ:
+            for connectPluginPath in (
+                os.environ['FTRACK_CONNECT_PLUGIN_PATH'].split(os.pathsep)
+            ):
+                self.pluginHookPaths.update(
+                    self._gatherPluginHooks(
+                        connectPluginPath
+                    )
+                )
+
+        self.logger.info(
+            u'Connect plugin hooks directories: {0}'.format(
+                ', '.join(self.pluginHookPaths)
+            )
+        )
+
         # Register widget for error handling.
         self.uncaughtError = _uncaught_error.UncaughtError(
             parent=self
         )
 
-        if not QtGui.QSystemTrayIcon.isSystemTrayAvailable():
+        if not QtWidgets.QSystemTrayIcon.isSystemTrayAvailable():
             raise ftrack_connect.error.ConnectError(
                 'No system tray located.'
             )
@@ -68,6 +111,8 @@ class Application(QtGui.QMainWindow):
         self.logoIcon = QtGui.QIcon(
             QtGui.QPixmap(':/ftrack/image/default/ftrackLogoColor')
         )
+
+        self._login_server_thread = None
 
         self._theme = None
         self.setTheme(theme)
@@ -83,7 +128,9 @@ class Application(QtGui.QMainWindow):
 
         self.setWindowIcon(self.logoIcon)
 
+        self._login_overlay = None
         self.loginWidget = None
+        self.loginSignal.connect(self.loginWithCredentials)
         self.login()
 
     def theme(self):
@@ -96,12 +143,6 @@ class Application(QtGui.QMainWindow):
         ftrack_connect.ui.theme.applyFont()
         ftrack_connect.ui.theme.applyTheme(self, self._theme, 'cleanlooks')
 
-    def toggleTheme(self):
-        '''Toggle active application theme.'''
-        if self.theme() == 'dark':
-            self.setTheme('light')
-        else:
-            self.setTheme('dark')
 
     def _onConnectTopicEvent(self, event):
         '''Generic callback for all ftrack.connect events.
@@ -117,42 +158,146 @@ class Application(QtGui.QMainWindow):
 
     def logout(self):
         '''Clear stored credentials and quit Connect.'''
+        self._clear_qsettings()
+        config = ftrack_connect.ui.config.read_json_config()
+
+        config['accounts'] = []
+        ftrack_connect.ui.config.write_json_config(config)
+
+        QtWidgets.qApp.quit()
+
+    def _clear_qsettings(self):
+        '''Remove credentials from QSettings.'''
         settings = QtCore.QSettings()
         settings.remove('login')
 
-        QtGui.qApp.quit()
+    def _get_credentials(self):
+        '''Return a dict with API credentials from storage.'''
+        credentials = None
+
+        # Read from json config file.
+        json_config = ftrack_connect.ui.config.read_json_config()
+        if json_config:
+            try:
+                data = json_config['accounts'][0]
+                credentials = {
+                    'server_url': data['server_url'],
+                    'api_user': data['api_user'],
+                    'api_key': data['api_key']
+                }
+            except Exception:
+                self.logger.debug(
+                    u'No credentials were found in config: {0}.'.format(
+                        json_config
+                    )
+                )
+
+        # Fallback on old QSettings.
+        if not json_config and not credentials:
+            settings = QtCore.QSettings()
+            server_url = settings.value('login/server', None)
+            api_user = settings.value('login/username', None)
+            api_key = settings.value('login/apikey', None)
+
+            if not None in (server_url, api_user, api_key):
+                credentials = {
+                    'server_url': server_url,
+                    'api_user': api_user,
+                    'api_key': api_key
+                }
+
+        return credentials
+
+    def _save_credentials(self, server_url, api_user, api_key):
+        '''Save API credentials to storage.'''
+        # Clear QSettings since they should not be used any more.
+        self._clear_qsettings()
+
+        # Save the credentials.
+        json_config = ftrack_connect.ui.config.read_json_config()
+
+        if not json_config:
+            json_config = {}
+
+        # Add a unique id to the config that can be used to identify this
+        # machine.
+        if not 'id' in json_config:
+            json_config['id'] = str(uuid.uuid4())
+
+        json_config['accounts'] = [{
+            'server_url': server_url,
+            'api_user': api_user,
+            'api_key': api_key
+        }]
+
+        ftrack_connect.ui.config.write_json_config(json_config)
 
     def login(self):
         '''Login using stored credentials or ask user for them.'''
-
-        # Get settings from store.
-        settings = QtCore.QSettings()
-        server = settings.value('login/server', None)
-        username = settings.value('login/username', None)
-        apiKey = settings.value('login/apikey', None)
+        credentials = self._get_credentials()
 
         # If missing any of the settings bring up login dialog.
-        if None in (server, username, apiKey):
+        if not credentials:
             self.showLoginWidget()
         else:
             # Show login screen on login error.
             self.loginError.connect(self.showLoginWidget)
 
             # Try to login.
-            self.loginWithCredentials(server, username, apiKey)
+            self.loginWithCredentials(
+                credentials['server_url'],
+                credentials['api_user'],
+                credentials['api_key']
+            )
 
     def showLoginWidget(self):
         '''Show the login widget.'''
         if self.loginWidget is None:
             self.loginWidget = _login.Login()
+
+            self._login_overlay = ftrack_connect.ui.widget.overlay.CancelOverlay(
+                self.loginWidget,
+                message='Signing in'
+            )
+
+            self._login_overlay.hide()
             self.setCentralWidget(self.loginWidget)
+            self.loginWidget.login.connect(self._login_overlay.show)
             self.loginWidget.login.connect(self.loginWithCredentials)
             self.loginError.connect(self.loginWidget.loginError.emit)
+            self.loginError.connect(self._login_overlay.hide)
             self.focus()
 
             # Set focus on the login widget to remove any focus from its child
             # widgets.
             self.loginWidget.setFocus()
+            self._login_overlay.hide()
+
+    def _setup_session(self):
+        '''Setup a new python API session.'''
+        if hasattr(self, '_hub_thread'):
+            self._hub_thread.quit()
+
+        plugin_paths = os.environ.get(
+            'FTRACK_EVENT_PLUGIN_PATH', ''
+        ).split(os.pathsep)
+
+        plugin_paths.extend(self.pluginHookPaths)
+
+        session = ftrack_connect.session.get_shared_session(
+            plugin_paths=plugin_paths
+        )
+
+        # Listen to events using the new API event hub. This is required to
+        # allow reconfiguring the storage scenario.
+        self._hub_thread = _event_hub_thread.NewApiEventHubThread()
+        self._hub_thread.start(session)
+
+        ftrack_api._centralized_storage_scenario.register_configuration(
+            session
+        )
+
+        return session
 
     def loginWithCredentials(self, url, username, apiKey):
         '''Connect to *url* with *username* and *apiKey*.
@@ -160,6 +305,55 @@ class Application(QtGui.QMainWindow):
         loginError will be emitted if this fails.
 
         '''
+        # Strip all leading and preceeding occurances of slash and space.
+        url = url.strip('/ ')
+
+        if not url:
+            self.loginError.emit(
+                'You need to specify a valid server URL, '
+                'for example https://server-name.ftrackapp.com'
+            )
+            return
+
+        if not 'http' in url:
+            if url.endswith('ftrackapp.com'):
+                url = 'https://' + url
+            else:
+                url = 'https://{0}.ftrackapp.com'.format(url)
+
+        try:
+            result = requests.get(
+                url,
+                allow_redirects=False  # Old python API will not work with redirect.
+            )
+        except requests.exceptions.RequestException:
+            self.logger.exception('Error reaching server url.')
+            self.loginError.emit(
+                'The server URL you provided could not be reached.'
+            )
+            return
+
+        if (
+            result.status_code != 200 or 'FTRACK_VERSION' not in result.headers
+        ):
+            self.loginError.emit(
+                'The server URL you provided is not a valid ftrack server.'
+            )
+            return
+
+        # If there is an existing server thread running we need to stop it.
+        if self._login_server_thread:
+            self._login_server_thread.quit()
+            self._login_server_thread = None
+
+        # If credentials are not properly set, try to get them using a http
+        # server.
+        if not username or not apiKey:
+            self._login_server_thread = _login_tools.LoginServerThread()
+            self._login_server_thread.loginSignal.connect(self.loginSignal)
+            self._login_server_thread.start(url)
+            return
+
         # Set environment variables supported by the old API.
         os.environ['FTRACK_SERVER'] = url
         os.environ['LOGNAME'] = username
@@ -169,54 +363,85 @@ class Application(QtGui.QMainWindow):
         os.environ['FTRACK_API_USER'] = username
         os.environ['FTRACK_API_KEY'] = apiKey
 
-        # Import ftrack module and catch any errors.
+        # Login using the new ftrack API.
         try:
-            import ftrack
-
-            # Force update the url of the server in case it was already set.
-            ftrack.xmlServer.__init__('{url}/client/'.format(url=url), False)
-
-            # Force update event hub since it will set the url on initialise.
-            ftrack.EVENT_HUB.__init__()
-
+            self._session = self._setup_session()
         except Exception as error:
+            self.logger.exception('Error during login.')
+            self.loginError.emit(error.message)
+            return
 
-            # Catch connection error since ftrack module will connect on load.
-            if str(error).find('Unable to connect on') >= 0:
-                self.loginError.emit(str(error))
+        # Store credentials since login was successful.
+        self._save_credentials(url, username, apiKey)
 
-            # Reraise the error.
-            raise
+        # Verify storage scenario before starting.
+        if 'storage_scenario' in self._session.server_information:
+            storage_scenario = self._session.server_information.get(
+                'storage_scenario'
+            )
+            if storage_scenario is None:
+                # Hide login overlay at this time since it will be deleted
+                self.logger.debug('Storage scenario is not configured.')
+                scenario_widget = _scenario_widget.ConfigureScenario(
+                    self._session
+                )
+                scenario_widget.configuration_completed.connect(
+                    self.location_configuration_finished
+                )
+                self.setCentralWidget(scenario_widget)
+                self.focus()
+                return
 
-        # Access ftrack to validate login details.
+        self.location_configuration_finished(reconfigure_session=False)
+
+    def location_configuration_finished(self, reconfigure_session=True):
+        '''Continue connect setup after location configuration is done.'''
+        if reconfigure_session:
+            ftrack_connect.session.destroy_shared_session()
+            self._session = self._setup_session()
+
         try:
-            ftrack.getUUID()
-        except ftrack.FTrackError as error:
-            self.loginError.emit(str(error))
+            self.configureConnectAndDiscoverPlugins()
+        except Exception as error:
+            self.logger.exception(error)
+            self.loginError.emit(error.message)
         else:
-            # Store login details in settings.
-            settings = QtCore.QSettings()
-            settings.setValue('login/server', url)
-            settings.setValue('login/username', username)
-            settings.setValue('login/apikey', apiKey)
+            self.focus()
 
-            try:
-                self.configureConnectAndDiscoverPlugins()
-            except ftrack.EventHubConnectionError as error:
-                self.logger.exception(error)
-                self.loginError.emit(str(error))
+        # Send verify startup event to verify that storage scenario is
+        # working correctly.
+        event = ftrack_api.event.base.Event(
+            topic='ftrack.connect.verify-startup',
+            data={
+                'storage_scenario': self._session.server_information.get(
+                    'storage_scenario'
+                )
+            }
+        )
+        results = self._session.event_hub.publish(event, synchronous=True)
+        problems = [
+            problem for problem in results if isinstance(problem, basestring)
+        ]
+        if problems:
+            msgBox = QtWidgets.QMessageBox(parent=self)
+            msgBox.setIcon(QtWidgets.QMessageBox.Warning)
+            msgBox.setText('\n\n'.join(problems))
+            msgBox.exec_()
 
     def configureConnectAndDiscoverPlugins(self):
         '''Configure connect and load plugins.'''
 
         # Local import to avoid connection errors.
         import ftrack
+        ftrack.EVENT_HANDLERS.paths.extend(self.pluginHookPaths)
+        ftrack.LOCATION_PLUGINS.paths.extend(self.pluginHookPaths)
+
         ftrack.setup()
         self.tabPanel = _tab_widget.TabWidget()
         self.tabPanel.tabBar().setObjectName('application-tab-bar')
         self.setCentralWidget(self.tabPanel)
 
-        self._discoverPlugins()
+        self._discoverTabPlugins()
 
         ftrack.EVENT_HUB.subscribe(
             'topic=ftrack.connect and source.user.username={0}'.format(
@@ -226,11 +451,38 @@ class Application(QtGui.QMainWindow):
         )
         self.eventHubSignal.connect(self._onConnectTopicEvent)
 
-        import ftrack_connect.event_hub_thread
-        self.eventHubThread = ftrack_connect.event_hub_thread.EventHubThread()
+        self.eventHubThread = _event_hub_thread.EventHubThread()
         self.eventHubThread.start()
 
         self.focus()
+
+        # Listen to discover connect event and respond to let the sender know
+        # that connect is running.
+        ftrack.EVENT_HUB.subscribe(
+            'topic=ftrack.connect.discover and source.user.username={0}'.format(
+                getpass.getuser()
+            ),
+            lambda event : True
+        )
+
+    def _gatherPluginHooks(self, path):
+        '''Return plugin hooks from *path*.'''
+        paths = []
+        self.logger.debug(u'Searching {0!r} for plugin hooks.'.format(path))
+
+        if os.path.isdir(path):
+            for candidate in os.listdir(path):
+                candidatePath = os.path.join(path, candidate)
+                if os.path.isdir(candidatePath):
+                    paths.append(
+                        os.path.join(candidatePath, 'hook')
+                    )
+
+        self.logger.debug(
+            u'Found {0!r} plugin hooks in {1!r}.'.format(paths, path)
+        )
+
+        return paths
 
     def _relayEventHubEvent(self, event):
         '''Relay all ftrack.connect events.'''
@@ -240,7 +492,7 @@ class Application(QtGui.QMainWindow):
         '''Initialise and add application icon to system tray.'''
         self.trayMenu = self._createTrayMenu()
 
-        self.tray = QtGui.QSystemTrayIcon(self)
+        self.tray = QtWidgets.QSystemTrayIcon(self)
 
         self.tray.setContextMenu(
             self.trayMenu
@@ -251,29 +503,29 @@ class Application(QtGui.QMainWindow):
 
     def _createTrayMenu(self):
         '''Return a menu for system tray.'''
-        menu = QtGui.QMenu(self)
+        menu = QtWidgets.QMenu(self)
 
-        logoutAction = QtGui.QAction(
+        logoutAction = QtWidgets.QAction(
             'Log Out && Quit', self,
             triggered=self.logout
         )
 
-        quitAction = QtGui.QAction(
+        quitAction = QtWidgets.QAction(
             'Quit', self,
-            triggered=QtGui.qApp.quit
+            triggered=QtWidgets.qApp.quit
         )
 
-        focusAction = QtGui.QAction(
+        focusAction = QtWidgets.QAction(
             'Open', self,
             triggered=self.focus
         )
 
-        styleAction = QtGui.QAction(
-            'Change Theme', self,
-            triggered=self.toggleTheme
+        openPluginDirectoryAction = QtWidgets.QAction(
+            'Open plugin directory', self,
+            triggered=self.openDefaultPluginDirectory
         )
 
-        aboutAction = QtGui.QAction(
+        aboutAction = QtWidgets.QAction(
             'About', self,
             triggered=self.showAbout
         )
@@ -281,15 +533,17 @@ class Application(QtGui.QMainWindow):
         menu.addAction(aboutAction)
         menu.addAction(focusAction)
         menu.addSeparator()
-        menu.addAction(styleAction)
+
+        menu.addAction(openPluginDirectoryAction)
         menu.addSeparator()
+
         menu.addAction(logoutAction)
         menu.addSeparator()
         menu.addAction(quitAction)
 
         return menu
 
-    def _discoverPlugins(self):
+    def _discoverTabPlugins(self):
         '''Find and load tab plugins in search paths.'''
         #: TODO: Add discover functionality and search paths.
 
@@ -449,3 +703,24 @@ class Application(QtGui.QMainWindow):
         )
 
         aboutDialog.exec_()
+
+    def openDefaultPluginDirectory(self):
+        '''Open default plugin directory in platform default file browser.'''
+
+        directory = self.defaultPluginDirectory
+
+        if not os.path.exists(directory):
+            # Create directory if not existing.
+            try:
+                os.makedirs(directory)
+            except OSError:
+                messageBox = QtWidgets.QMessageBox(parent=self)
+                messageBox.setIcon(QtWidgets.QMessageBox.Warning)
+                messageBox.setText(
+                    u'Could not open or create default plugin '
+                    u'directory: {0}.'.format(directory)
+                )
+                messageBox.exec_()
+                return
+
+        ftrack_connect.util.open_directory(directory)

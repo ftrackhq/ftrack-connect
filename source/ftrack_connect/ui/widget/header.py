@@ -3,7 +3,7 @@
 
 import os
 
-from PySide import QtCore, QtGui
+from QtExt import QtCore, QtWidgets, QtGui
 
 import ftrack
 from ftrack_connect.ui import resource
@@ -14,7 +14,7 @@ import thumbnail
 NAME_CACHE = dict()
 
 
-class Header(QtGui.QFrame):
+class Header(QtWidgets.QFrame):
     '''Header widget with name and thumbnail.'''
 
     def __init__(self, username, parent=None):
@@ -22,7 +22,7 @@ class Header(QtGui.QFrame):
 
         super(Header, self).__init__(parent=parent)
         self.setObjectName('ftrack-header-widget')
-        self.main_layout = QtGui.QVBoxLayout()
+        self.main_layout = QtWidgets.QVBoxLayout()
         self.main_layout.setContentsMargins(0, 0, 0, 0)
         self.main_layout.setAlignment(
             QtCore.Qt.AlignTop
@@ -30,8 +30,8 @@ class Header(QtGui.QFrame):
         self.setLayout(self.main_layout)
 
         # Logo & User ID
-        self.id_container = QtGui.QWidget(self)
-        self.id_container_layout = QtGui.QHBoxLayout()
+        self.id_container = QtWidgets.QWidget(self)
+        self.id_container_layout = QtWidgets.QHBoxLayout()
         self.id_container_layout.setContentsMargins(0, 0, 0, 0)
         self.id_container_layout.setSpacing(0)
         self.id_container_layout.setAlignment(
@@ -39,11 +39,11 @@ class Header(QtGui.QFrame):
         )
         self.id_container.setLayout(self.id_container_layout)
 
-        spacer = QtGui.QSpacerItem(
+        spacer = QtWidgets.QSpacerItem(
             0,
             0,
-            QtGui.QSizePolicy.Expanding,
-            QtGui.QSizePolicy.Minimum
+            QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Minimum
         )
 
         self.logo = Logo(self)
@@ -54,9 +54,9 @@ class Header(QtGui.QFrame):
         self.id_container_layout.addWidget(self.user)
 
         # Message
-        self.message_container = QtGui.QWidget(self)
+        self.message_container = QtWidgets.QWidget(self)
         self.message_container.hide()
-        self.message_container_layout = QtGui.QHBoxLayout()
+        self.message_container_layout = QtWidgets.QHBoxLayout()
         self.message_container_layout.setContentsMargins(0, 0, 0, 0)
         self.message_container_layout.setSpacing(0)
         self.message_container.setLayout(self.message_container_layout)
@@ -79,7 +79,7 @@ class Header(QtGui.QFrame):
         self.message_box.dismissMessage()
 
 
-class Logo(QtGui.QLabel):
+class Logo(QtWidgets.QLabel):
     '''Logo widget.'''
 
     def __init__(self, parent=None):
@@ -87,7 +87,7 @@ class Logo(QtGui.QLabel):
         super(Logo, self).__init__(parent=parent)
 
         self.setObjectName('ftrack-logo-widget')
-        self.main_layout = QtGui.QHBoxLayout()
+        self.main_layout = QtWidgets.QHBoxLayout()
         self.main_layout.setContentsMargins(0, 0, 0, 0)
         self.main_layout.setSpacing(0)
         self.main_layout.setAlignment(
@@ -105,7 +105,7 @@ class Logo(QtGui.QLabel):
         )
 
 
-class User(QtGui.QWidget):
+class User(QtWidgets.QWidget):
     '''User name and logo widget.'''
 
     def __init__(self, username, parent=None):
@@ -113,14 +113,14 @@ class User(QtGui.QWidget):
 
         super(User, self).__init__(parent=parent)
         self.setObjectName('ftrack-userid-widget')
-        self.main_layout = QtGui.QHBoxLayout()
+        self.main_layout = QtWidgets.QHBoxLayout()
         self.main_layout.setContentsMargins(0, 0, 0, 0)
         self.main_layout.setAlignment(
             QtCore.Qt.AlignRight
         )
         self.setLayout(self.main_layout)
 
-        self.label = QtGui.QLabel(self)
+        self.label = QtWidgets.QLabel(self)
         self.image = thumbnail.User(self)
         self.image.setFixedSize(35, 35)
 
@@ -135,7 +135,7 @@ class User(QtGui.QWidget):
         self.label.setText(NAME_CACHE[username])
 
 
-class MessageBox(QtGui.QWidget):
+class MessageBox(QtWidgets.QWidget):
     '''Message widget.'''
 
     def __init__(self, parent=None):
@@ -143,7 +143,7 @@ class MessageBox(QtGui.QWidget):
 
         super(MessageBox, self).__init__(parent=parent)
         self.setObjectName('ftrack-message-box')
-        self.main_layout = QtGui.QHBoxLayout()
+        self.main_layout = QtWidgets.QHBoxLayout()
         self.main_layout.setContentsMargins(0, 0, 0, 0)
         self.main_layout.setSpacing(0)
         self.main_layout.setAlignment(
@@ -151,12 +151,12 @@ class MessageBox(QtGui.QWidget):
         )
         self.setLayout(self.main_layout)
 
-        self.label = QtGui.QLabel(parent=self)
+        self.label = QtWidgets.QLabel(parent=self)
         self.label.resize(QtCore.QSize(900, 80))
 
         self.label.setSizePolicy(
-            QtGui.QSizePolicy.Expanding,
-            QtGui.QSizePolicy.Fixed
+            QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Fixed
         )
         self.label.hide()
         self.label.setObjectName('ftrack-header-message-info')

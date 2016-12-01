@@ -10,6 +10,10 @@ Glossary
     API
         Application programming interface.
 
+    default plugin directory
+        The default :term:`plugin directory` where plugin :term:`hooks <hook>`
+        can be placed. See :ref:`using/plugin_directory` for usage.
+
     ftrack
         Cloud based Creative Project management tool for Production Tracking,
         Asset Management and Team Collaboration.
@@ -30,12 +34,20 @@ Glossary
         (JavaScript Object Notation), a lightweight data-interchange format.
         Visit the website at http://www.json.org/
 
+    location plugin
+        A custom developed location to represent a storage. Used by the
+        :term:`API` to manage files and data.
+
     mp4
         MPEG-4 Part 14 or MP4 is a digital multimedia format most commonly used
         to store video and audio, but can also be used to store other data such
         as subtitles and still images. It's being developed by International
         Organization for Standardization (ISO). Visit the website at
         http://www.iso.org/
+
+    plugin directory
+        A directory that Connect searches for plugin :term:`hooks <hook>`. See
+        :ref:`using/plugin_directory` for usage.
 
     python
         A programming language that lets you work more quickly and integrate

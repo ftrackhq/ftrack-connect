@@ -1,10 +1,10 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
 
-import logging
 import operator
+import logging
 
-from PySide import QtGui
+from QtExt import QtWidgets
 
 import ftrack_connect.ui.widget.label
 import ftrack_connect.ui.widget.user_list
@@ -12,6 +12,7 @@ import ftrack_connect.ui.widget.user
 import ftrack_connect.ui.widget.chat
 import ftrack_connect.error
 import ftrack_connect.ui.widget.overlay
+
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +22,7 @@ def defaultClassifier(userId):
     return 'others'
 
 
-class Crew(QtGui.QWidget):
+class Crew(QtWidgets.QWidget):
     '''User presence widget.'''
 
     def __init__(
@@ -80,12 +81,12 @@ class Crew(QtGui.QWidget):
             groups=self._groups
         )
 
-        self.userContainer = QtGui.QFrame()
+        self.userContainer = QtWidgets.QFrame()
         self.userContainer.setObjectName('user-container')
-        self.userContainer.setLayout(QtGui.QVBoxLayout())
+        self.userContainer.setLayout(QtWidgets.QVBoxLayout())
         self.userContainer.layout().setContentsMargins(0, 0, 0, 0)
 
-        self.setLayout(QtGui.QHBoxLayout())
+        self.setLayout(QtWidgets.QHBoxLayout())
         self.layout().setContentsMargins(0, 0, 0, 0)
         self.layout().setSpacing(0)
 

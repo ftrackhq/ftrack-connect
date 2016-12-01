@@ -1,14 +1,14 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
 
-from PySide import QtGui, QtCore
+from QtExt import QtWidgets, QtCore
 
 import ftrack_connect.ui.widget.item_list
 import ftrack_connect.ui.widget.user
 import ftrack_connect.ui.widget.label
 
 
-class GroupHeader(QtGui.QLabel):
+class GroupHeader(QtWidgets.QLabel):
     '''Group header widget.'''
     def __init__(self, parent=None):
         super(GroupHeader, self).__init__(parent)
@@ -37,7 +37,7 @@ class UserList(ftrack_connect.ui.widget.item_list.ItemList):
         )
         self.setObjectName('presence-list')
         self.list.setSelectionMode(
-            QtGui.QAbstractItemView.NoSelection
+            QtWidgets.QAbstractItemView.NoSelection
         )
         self.list.setShowGrid(False)
 
