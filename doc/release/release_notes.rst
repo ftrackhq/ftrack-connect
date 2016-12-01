@@ -1,4 +1,5 @@
 
+
 ..
     :copyright: Copyright (c) 2014 ftrack
 
@@ -14,6 +15,9 @@ Release Notes
         :tags: Internal
 
         X11 windows system is not thread safe. 
+
+.. release:: 0.1.31
+    :date: 2016-12-01
 
     .. change:: fixed
         :tags: Widget
