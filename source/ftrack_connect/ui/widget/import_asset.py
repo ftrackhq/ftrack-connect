@@ -15,6 +15,8 @@ from ftrack_connect.ui.theme import applyTheme
 from ftrack_connect.ui.widget.context_selector import ContextSelector
 from ftrack_connect.ui import resource
 
+from ftrack_connect import session
+
 
 class FtrackImportAssetDialog(QtWidgets.QDialog):
     '''Import asset dialog widget.'''
@@ -33,7 +35,6 @@ class FtrackImportAssetDialog(QtWidgets.QDialog):
         super(FtrackImportAssetDialog, self).__init__(parent=parent)
         applyTheme(self, 'integration')
         self.connector = connector
-
         self.currentEntity = ftrack.Task(
             os.getenv('FTRACK_TASKID',
                 os.getenv('FTRACK_SHOTID')
@@ -191,10 +192,15 @@ class FtrackImportAssetDialog(QtWidgets.QDialog):
             self.componentTableWidget.COMPONENT_ROLE
         )
 
-        assetVersion = component.getVersion()
+        ftrack_component = self.connector.session.query(
+            'select id, name, version.version, version.id, version.asset.name'
+            ' from Component where id is  {0}'.format(component.id())
+        ).one()
+
+        assetVersion = ftrack_component['version']['id']
 
         self.importSignal.emit()
-        asset_name = component.getParents()[0].getAsset().getName()
+        asset_name = ftrack_component['version']['asset']['name']
 
         accessPath = self.componentTableWidget.item(
             row,
@@ -202,10 +208,10 @@ class FtrackImportAssetDialog(QtWidgets.QDialog):
         ).text()
 
         importObj = FTAssetObject(
-            componentId=component.getId(),
+            componentId=ftrack_component['id'],
             filePath=accessPath,
-            componentName=component.getName(),
-            assetVersionId=assetVersion.getId(),
+            componentName=ftrack_component['name'],
+            assetVersionId=assetVersion,
             options=importOptions
         )
         try:
@@ -218,7 +224,7 @@ class FtrackImportAssetDialog(QtWidgets.QDialog):
 
         self.headerWidget.setMessage(
             u'Imported {0}.{1}:v{2}'.format(
-                asset_name, component.getName(), assetVersion.getVersion()
+                asset_name, component['name'], ftrack_component['version']['version']
             )
         )
 
