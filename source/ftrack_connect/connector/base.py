@@ -496,8 +496,8 @@ class FTAssetObject(object):
                 ' from AssetVersion where id is {0}'.format(assetVersionId)
             ).one()
             self.assetVersionId = assetVersionId
-            self.assetVersionStr = str(assetVersion['version'])
-
+            assetVersionStr = str(assetVersion['version'])
+            self.assetVersion = assetVersionStr
             self.assetName = assetVersion['asset']['name']
             self.assetType = assetVersion['asset']['type']['short']
             self.assetId = assetVersion['asset']['id']
@@ -512,7 +512,7 @@ class FTAssetObject(object):
                 self.metadata.append((k, v))
 
         try:
-            self.zversion = self.assetVersionStr.zfill(3)
+            self.zversion = assetVersionStr.zfill(3)
         except:
             self.zversion = '000'
 
