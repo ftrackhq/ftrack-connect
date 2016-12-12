@@ -37,6 +37,7 @@ class Connector(object):
     def __init__(self):
         '''Instantiate base connector.'''
         super(Connector, self).__init__()
+        self.session = ftrack_shared_session
 
     @staticmethod
     @abc.abstractmethod
