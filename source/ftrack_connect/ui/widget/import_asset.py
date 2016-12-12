@@ -222,7 +222,7 @@ class FtrackImportAssetDialog(QtWidgets.QDialog):
 
         self.headerWidget.setMessage(
             u'Imported {0}.{1}:v{2}'.format(
-                asset_name, component['name'], ftrack_component['version']['version']
+                asset_name, ftrack_component['name'], ftrack_component['version']['version']
             )
         )
 
