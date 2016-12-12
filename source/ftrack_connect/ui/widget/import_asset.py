@@ -15,8 +15,6 @@ from ftrack_connect.ui.theme import applyTheme
 from ftrack_connect.ui.widget.context_selector import ContextSelector
 from ftrack_connect.ui import resource
 
-from ftrack_connect import session
-
 
 class FtrackImportAssetDialog(QtWidgets.QDialog):
     '''Import asset dialog widget.'''
