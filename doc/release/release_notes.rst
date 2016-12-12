@@ -8,6 +8,14 @@
 Release Notes
 *************
 
+
+.. release:: Upcoming
+
+    .. change:: fixed
+        :tags: API
+
+        Import asset is slow due to the use of legacy api.
+
 .. release:: 0.1.32
     :date: 2016-12-01
 
