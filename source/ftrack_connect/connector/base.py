@@ -17,6 +17,11 @@ import sys
 from QtExt import QtWidgets, QtNetwork, QtCore, QtGui
 
 import ftrack
+from ftrack_connect import session
+
+
+ftrack_shared_session = session.get_shared_session()
+
 
 # Append ftrack to urlparse.
 for method in filter(lambda s: s.startswith('uses_'), dir(urlparse)):
@@ -485,17 +490,16 @@ class FTAssetObject(object):
         self.taskId = taskId
 
         if assetVersionId != '':
+            assetVersion = ftrack_shared_session.query(
+                'select id, version, asset, asset.name, asset.id, asset.type.short '
+                ' from AssetVersion where id is {0}'.format(assetVersionId)
+            ).one()
             self.assetVersionId = assetVersionId
-            assetVersion = ftrack.AssetVersion(assetVersionId)
+            self.assetVersionStr = str(assetVersion['version'])
 
-            assetVersionStr = str(assetVersion.getVersion())
-
-            self.assetVersion = assetVersionStr
-
-            asset = assetVersion.getAsset()
-            self.assetName = asset.getName()
-            self.assetType = asset.getType().getShort()
-            self.assetId = asset.getId()
+            self.assetName = assetVersion['asset']['name']
+            self.assetType = assetVersion['asset']['type']['short']
+            self.assetId = assetVersion['asset']['id']
 
         if self.componentId != '':
             metaDict = ftrack.Component(self.componentId).getMeta()
@@ -504,7 +508,7 @@ class FTAssetObject(object):
                 self.metadata.append((k, v))
 
         try:
-            self.zversion = assetVersionStr.zfill(3)
+            self.zversion = self.assetVersionStr.zfill(3)
         except:
             self.zversion = '000'
 
