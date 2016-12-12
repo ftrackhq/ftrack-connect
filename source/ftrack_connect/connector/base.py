@@ -504,11 +504,11 @@ class FTAssetObject(object):
 
         if self.componentId != '':
             component = ftrack_shared_session.query(
-                'select meta, id'
+                'select metadata, id'
                 ' from Component where id is {0}'.format(self.componentId)
             ).one()
             self.metadata = []
-            for k, v in component['meta'].items():
+            for k, v in component['metadata'].items():
                 self.metadata.append((k, v))
 
         try:
