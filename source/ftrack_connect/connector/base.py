@@ -502,9 +502,12 @@ class FTAssetObject(object):
             self.assetId = assetVersion['asset']['id']
 
         if self.componentId != '':
-            metaDict = ftrack.Component(self.componentId).getMeta()
+            component = ftrack_shared_session.query(
+                'select meta, id'
+                ' from Component where id is {0}'.format(self.componentId)
+            ).one()
             self.metadata = []
-            for k, v in metaDict.items():
+            for k, v in component['meta'].items():
                 self.metadata.append((k, v))
 
         try:
