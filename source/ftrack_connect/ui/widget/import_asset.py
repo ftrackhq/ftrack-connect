@@ -186,13 +186,13 @@ class FtrackImportAssetDialog(QtWidgets.QDialog):
             row,
             self.componentTableWidget.columns.index('Component')
         )
-        component = componentItem.data(
+        component_id = componentItem.data(
             self.componentTableWidget.COMPONENT_ROLE
         )
 
         ftrack_component = self.connector.session.query(
             'select id, name, version.version, version.id, version.asset.name'
-            ' from Component where id is  {0}'.format(component.getId())
+            ' from Component where id is  {0}'.format(component_id)
         ).one()
 
         assetVersion = ftrack_component['version']['id']
