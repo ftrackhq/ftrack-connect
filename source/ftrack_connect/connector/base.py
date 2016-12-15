@@ -493,7 +493,7 @@ class FTAssetObject(object):
         if assetVersionId != '':
             assetVersion = ftrack_shared_session.query(
                 'select id, version, asset, asset.name, asset.id, asset.type.short '
-                ' from AssetVersion where id is {0}'.format(assetVersionId)
+                ' from AssetVersion where id is "{0}"'.format(assetVersionId)
             ).one()
             self.assetVersionId = assetVersionId
             assetVersionStr = str(assetVersion['version'])
