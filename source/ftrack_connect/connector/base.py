@@ -17,10 +17,9 @@ import sys
 from QtExt import QtWidgets, QtNetwork, QtCore, QtGui
 
 import ftrack
-from ftrack_connect import session
+from ftrack_api import Session
 
-
-ftrack_shared_session = session.get_shared_session()
+ftrack_shared_session = Session()
 
 
 # Append ftrack to urlparse.

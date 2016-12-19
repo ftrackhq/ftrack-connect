@@ -24,6 +24,7 @@ class AssetVersionDetailsWidget(QtWidgets.QWidget):
             )
 
         self.connector = connector
+        self.session = self.connector.session
 
         self.headers = (
             'Asset', 'Author', 'Version', 'Date', 'Comment'
@@ -91,27 +92,37 @@ class AssetVersionDetailsWidget(QtWidgets.QWidget):
 
     def setAssetVersion(self, assetVersionId):
         '''Set the asset version to display details for.'''
-        assetVersion = ftrack.AssetVersion(assetVersionId)
-        asset = assetVersion.getAsset()
+        print assetVersionId
+        asset_version = self.session.query(
+            'select id, asset, asset.name, user, user.username,'
+            ' version, date, comment'
+            ' from AssetVersion where id is "{0}"'.format(assetVersionId)
+        ).one()
+
+        server_location = self.session.query(
+            'select name from Location where name is "ftrack.server"'
+        ).one()
 
         header = self.headers.index
 
         item = self.propertyTableWidget.item(header('Asset'), 0)
-        item.setText(asset.getName())
+        item.setText(asset_version['asset']['name'])
 
         item = self.propertyTableWidget.item(header('Author'), 0)
-        item.setText(assetVersion.getUser().getName())
+        item.setText(asset_version['user']['username'])
 
         item = self.propertyTableWidget.item(header('Version'), 0)
-        item.setText(str(assetVersion.getVersion()))
+        item.setText(str(asset_version['version']))
 
         item = self.propertyTableWidget.item(header('Date'), 0)
-        item.setText(assetVersion.getDate().strftime('%c'))
+        item.setText(asset_version['date'].strftime('%c'))
 
         item = self.propertyTableWidget.item(header('Comment'), 0)
-        item.setText(assetVersion.getComment())
+        item.setText(asset_version['comment'])
 
-        thumbnail = assetVersion.getThumbnail()
+        # Thumbnail return a FileComponent, so we need the thumbnail of this.
+        thumbnail_component = asset_version['thumbnail']
+        thumbnail = server_location.get_url(thumbnail_component)
         if thumbnail is None:
             thumbnail = self.placholderThumbnail
 
