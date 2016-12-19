@@ -7,10 +7,8 @@ from QtExt import QtWidgets, QtCore
 import ftrack
 
 from ftrack_connect.worker import Worker
-from ftrack_connect import session as fsession
 from ftrack_api import symbol
 from ftrack_api import exception
-import ftrack_api
 
 
 class ComponentTableWidget(QtWidgets.QTableWidget):
@@ -248,9 +246,11 @@ class ComponentTableWidget(QtWidgets.QTableWidget):
             transferProgressItem.setRange(0, 0)
 
             try:
-                worker = Worker(self.transfer,
-                                [ftrack_component, None, location],
-                                parent=self)
+                worker = Worker(
+                    self.transfer,
+                    [ftrack_component, None, location],
+                    parent=self
+                )
                 worker.start()
 
                 while worker.isRunning():
@@ -306,7 +306,7 @@ class ComponentTableWidget(QtWidgets.QTableWidget):
             for locationId, available in availability.items():
                 if available == 100:
                     location = accessibleLocations[locationId]
-                    candidates.append((location['priority'], location))
+                    candidates.append((location.priority, location))
 
             candidates.sort()
             if not candidates:
