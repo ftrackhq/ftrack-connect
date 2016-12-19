@@ -29,8 +29,9 @@ class AssetVersionDetailsWidget(QtWidgets.QWidget):
         self.headers = (
             'Asset', 'Author', 'Version', 'Date', 'Comment'
         )
-        self.placholderThumbnail = (os.environ['FTRACK_SERVER']
-                                    + '/img/thumbnail2.png')
+        self.placholderThumbnail = (
+            os.environ['FTRACK_SERVER'] + '/img/thumbnail2.png'
+        )
         # TODO: Implement better caching system
         self.thumbnailCache = {}
 
@@ -92,7 +93,6 @@ class AssetVersionDetailsWidget(QtWidgets.QWidget):
 
     def setAssetVersion(self, assetVersionId):
         '''Set the asset version to display details for.'''
-        print assetVersionId
         asset_version = self.session.query(
             'select id, asset, asset.name, user, user.username,'
             ' version, date, comment'
@@ -122,9 +122,10 @@ class AssetVersionDetailsWidget(QtWidgets.QWidget):
 
         # Thumbnail return a FileComponent, so we need the thumbnail of this.
         thumbnail_component = asset_version['thumbnail']
-        thumbnail = server_location.get_url(thumbnail_component)
-        if thumbnail is None:
-            thumbnail = self.placholderThumbnail
+        thumbnail = self.placholderThumbnail
+
+        if thumbnail_component:
+            thumbnail = server_location.get_url(thumbnail_component)
 
         self.connector.executeInThread(
             self._updateThumbnail, [self.thumbnailWidget, thumbnail]
