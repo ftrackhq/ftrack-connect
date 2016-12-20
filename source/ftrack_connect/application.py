@@ -12,7 +12,6 @@ import json
 import logging
 
 import ftrack
-import ftrack_location_compatibility
 
 #: Default expression to match version component of executable path.
 #: Will match last set of numbers in string where numbers may contain a digit
