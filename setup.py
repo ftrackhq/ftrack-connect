@@ -236,8 +236,7 @@ configuration = dict(
         'PySide >= 1.2.2, < 2',
         'sphinx >= 1.2.2, < 2',
         'sphinx_rtd_theme >= 0.1.6, < 2',
-        'lowdown >= 0.1.0, < 1',
-        'ftrack-location-compatibility'
+        'lowdown >= 0.1.0, < 1'
     ],
     install_requires=[
         'qtext',
@@ -246,8 +245,7 @@ configuration = dict(
         'Riffle',
         'arrow >= 0.4.6, < 1',
         'appdirs == 1.4.0',
-        'requests >= 2, <3',
-        'ftrack-location-compatibility'
+        'requests >= 2, <3'
     ],
     tests_require=['pytest >= 2.3.5, < 3'],
     cmdclass={
@@ -265,10 +263,6 @@ configuration = dict(
         (
             'git+https://bitbucket.org/ftrack/qtext/get/0.1.0.zip'
             '#egg=QtExt-0.1.0'
-        ),
-        (
-            'git+https://bitbucket.org/ftrack/ftrack-location-compatibility/get/0.1.0.zip'
-            '#egg=ftrack-location-compatibility-0.1.0'
         )
     ],
     options={},

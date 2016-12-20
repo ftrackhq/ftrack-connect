@@ -455,22 +455,6 @@ class ApplicationLauncher(object):
         environment.pop('PYTHONHOME', None)
         environment.pop('FTRACK_EVENT_PLUGIN_PATH', None)
 
-        # Retrive the hook folder of the location compat layer,
-        # based on the installation dir.
-        compat_layer_hook_path = os.path.abspath(
-            os.path.join(
-                os.path.dirname(ftrack_location_compatibility.__file__),
-                '..',
-                '..',
-                'hook'
-            )
-        )
-
-        environment = appendPath(
-            compat_layer_hook_path,
-            'FTRACK_EVENT_PLUGIN_PATH',
-            environment)
-
         # Add FTRACK_EVENT_SERVER variable.
         environment = prependPath(
             ftrack.EVENT_HUB.getServerUrl(),
