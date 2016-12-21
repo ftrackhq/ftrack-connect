@@ -189,10 +189,11 @@ class ComponentTableWidget(QtWidgets.QTableWidget):
         # Update path for location
         pathItem = self.item(row, column('Path'))
         path = None
+
         try:
             path = ftrack_location.get_filesystem_path(ftrack_component)
-        except exception.ComponentNotInLocationError as e:
-            print e
+        except exception.ComponentNotInLocationError:
+            pass
 
         if path is None:
             pathItem.setText('Filesystem path not available.')
