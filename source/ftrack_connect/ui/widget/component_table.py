@@ -300,7 +300,7 @@ class ComponentTableWidget(QtWidgets.QTableWidget):
                     accessibleLocations[location['id']] = location
 
             availability = component.get_availability(
-                accessibleLocations.keys()
+                accessibleLocations.values()
             )
 
             candidates = []
@@ -316,7 +316,11 @@ class ComponentTableWidget(QtWidgets.QTableWidget):
 
             sourceLocation = candidates[0][1]
 
-        targetLocation.add_component(component)
+        ftrack_target_location = self.session.query(
+            'Location where id is "{0}"'.format(targetLocation)
+        ).one()
+
+        ftrack_target_location.add_component(component, sourceLocation, True)
 
     @QtCore.Slot()
     def clear(self):
