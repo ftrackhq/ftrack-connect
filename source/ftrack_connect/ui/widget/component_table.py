@@ -31,7 +31,10 @@ class ComponentTableWidget(QtWidgets.QTableWidget):
             )
         self.connector = connector
         self.session = self.connector.session
-        self.locations = self.session.query('Location').all()
+        self.locations = self.session.query(
+            'select name, id from Location'
+        ).all()
+
         self.workers = []
         self.columns = (
             'Component', 'Location', 'Availability', 'Path', 'Action'
