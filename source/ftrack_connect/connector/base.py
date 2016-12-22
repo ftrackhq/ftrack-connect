@@ -491,7 +491,8 @@ class FTAssetObject(object):
 
         if assetVersionId != '':
             assetVersion = ftrack_shared_session.query(
-                'select id, version, asset, asset.name, asset.id, asset.type.short '
+                'select id, version, version.version, asset, asset.name,'
+                ' asset.id, asset.type.short, version.asset.name '
                 ' from AssetVersion where id is "{0}"'.format(assetVersionId)
             ).one()
             self.assetVersionId = assetVersionId
@@ -503,7 +504,11 @@ class FTAssetObject(object):
 
         if self.componentId != '':
             component = ftrack_shared_session.query(
-                'select metadata, id'
+                'select name, version.asset.type.short, version.asset.name, '
+                'version.asset.type.name, version.asset.versions.version, '
+                'version.id, version.version, version.asset.versions, '
+                'version.date, version.comment, version.asset.name, version, '
+                'version_id, version.user.first_name, version.user.last_name '
                 ' from Component where id is {0}'.format(self.componentId)
             ).one()
             self.metadata = []

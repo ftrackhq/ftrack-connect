@@ -95,7 +95,7 @@ class AssetVersionDetailsWidget(QtWidgets.QWidget):
         '''Set the asset version to display details for.'''
         asset_version = self.session.query(
             'select id, asset, asset.name, user, user.username,'
-            ' version, date, comment'
+            ' version, version.version, date, comment'
             ' from AssetVersion where id is "{0}"'.format(assetVersionId)
         ).one()
 
