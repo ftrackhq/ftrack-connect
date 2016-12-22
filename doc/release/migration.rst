@@ -9,6 +9,23 @@ Migration notes
 
 .. _release/migration/upcoming:
 
+Migrate from 0.1.20 to Upcoming
+===============================
+
+.. _release/migration/upcoming/developer_notes:
+
+Developer notes
+---------------
+
+Due to the optimization in import assets, we are now relying on the locations of the ftrack_api, 
+rather than the legacy api location.
+This means that legacy locations won't be discovered or used unless the 
+:ref:`ftrack-location-compatibility <ftrack-location-compatibility>` is installed.
+
+To install please ensure that *ftrack-location-compatibility/hook* folder is available into the 
+`FTRACK_EVENT_PLUGIN_PATH` environment variable.
+
+
 Migrate from 0.1.19 to 0.1.20
 ===============================
 
