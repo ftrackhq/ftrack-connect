@@ -6,6 +6,7 @@ import os
 from QtExt import QtWidgets, QtCore, QtGui
 
 from ftrack_connect.connector import HelpFunctions
+from ftrack_api import symbol
 
 
 class AssetVersionDetailsWidget(QtWidgets.QWidget):
@@ -98,9 +99,9 @@ class AssetVersionDetailsWidget(QtWidgets.QWidget):
             ' from AssetVersion where id is "{0}"'.format(assetVersionId)
         ).one()
 
-        server_location = self.session.query(
-            'select name from Location where name is "ftrack.server"'
-        ).one()
+        server_location = self.session.get(
+            'Location', symbol.SERVER_LOCATION_ID
+        )
 
         header = self.headers.index
 
