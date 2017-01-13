@@ -5,7 +5,12 @@
 ftrack connect
 ##############
 
-Welcome to the ftrack connect documentation. Follow these steps to get started
+Welcome to the ftrack connect documentation.
+
+Quick start
+===========
+
+Follow these steps to get started
 with Connect and publish or start a supported application with the ftrack
 integration:
 
@@ -17,6 +22,9 @@ integration:
     :ref:`article <using/actions>`.
 #.  Or Publish to ftrack using Connect following these
     :ref:`instructions <using/publishing>`.
+
+Articles
+========
 
 .. toctree::
     :maxdepth: 2
