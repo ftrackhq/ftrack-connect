@@ -9,8 +9,24 @@ Installing
 
 .. highlight:: bash
 
-Pre-built packages are available for download for Windows and Mac at
-https://www.ftrack.com/downloads
+Pre-built packages are available for download for Windows, Linux and Mac at
+https://www.ftrack.com/portfolio/connect
+
+The pre-built packages includes integrations for various applications:
+
+    *   3DS Max
+    *   Hiero
+    *   Maya
+    *   Nuke
+    *   Nuke Studio
+    *   RV
+
+.. note::
+
+    Alternative installation methods require technical knowledge.
+
+Building from git repository
+============================
 
 Alternatively, install using `pip <http://www.pip-installer.org/>`_::
 
