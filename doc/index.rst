@@ -5,7 +5,18 @@
 ftrack connect
 ##############
 
-Welcome to the ftrack connect documentation.
+Welcome to the ftrack connect documentation. Follow these steps to get started
+with Connect and publish or start a supported application with the ftrack
+integration:
+
+#.  Install ftrack connect package by downloading it from
+    https://www.ftrack.com/portfolio/connect
+#.  Launch the ftrack-connect executable. See these
+    :ref:`instructions <using/launching>` if you cannot find it.
+#.  Start your favorite application with the ftrack integration using this
+    :ref:`article <using/actions>`.
+#.  Or Publish to ftrack using Connect following these
+    :ref:`instructions <using/publishing>`.
 
 .. toctree::
     :maxdepth: 2
