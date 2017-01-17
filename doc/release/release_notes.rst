@@ -8,6 +8,14 @@
 Release Notes
 *************
 
+.. release:: Upcoming
+
+    .. change:: fixed
+        :tags: Documentation
+
+        Installation and usage instructions are confusing for users who have
+        downloaded the pre-built package.
+
 .. release:: 0.1.32
     :date: 2016-12-01
 

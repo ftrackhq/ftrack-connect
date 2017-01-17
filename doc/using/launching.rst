@@ -14,20 +14,12 @@ instance of the service.
 If you are using one of the pre-built packages you can just run the executable
 provided.
 
-Otherwise, open a terminal and execute the following:
-
-.. code-block:: bash
-
-    python -m ftrack_connect
-
-.. note::
-
-    To see all available launch options (including changing the theme and
-    logging verbosity) use:
-
-    .. code-block:: bash
-
-        python -m ftrack_connect --help
+    *   Mac users will have ftrack-connect.app executable in the 
+        Applications directory.
+    *   Windows users will have the ftrack connect executable as a
+        shortcut on the Desktop and start menu.
+    *   Linux users will have the executable in the directory where the .tar
+        file was extracted.
 
 Once the service is launched, the main window will appear and you will also
 notice an ftrack icon in your task bar.
@@ -44,3 +36,22 @@ The service will then continue to run in the background even if you close all
 the windows.
 
 To reopen a window or exit the service, use the :term:`service context menu`.
+
+Alternative launching methods
+=============================
+
+If you are using alternative installation methods, such as building from source
+or installing through pip, you should open a terminal and execute the following:
+
+.. code-block:: bash
+
+    python -m ftrack_connect
+
+.. note::
+
+    To see all available launch options (including changing the theme and
+    logging verbosity) use:
+
+    .. code-block:: bash
+
+        python -m ftrack_connect --help
