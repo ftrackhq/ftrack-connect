@@ -7,10 +7,10 @@
 Using integrations and actions
 ******************************
 
-The pre-built packages installed from https://www.ftrack.com/portfolio/connect
-contains a set of integrations into different creative applications. These
-integrations can be launched from Connect or the ftrack Web interface through
-the use of Actions.
+The pre-built packages installed from the `Integrations webpage
+<https://www.ftrack.com/portfolio/connect>`_ contains a set of integrations with
+different creative applications. These integrations can be launched directly
+from Connect or the ftrack web interface through the use of Actions.
 
 Connect provides an interface in the standalone application to run your actions.
 Actions in ftrack provide a standardised way to integrate other tools, either

@@ -13,7 +13,7 @@ Release Notes
     .. change:: fixed
         :tags: Documentation
 
-        Installation and usage instructions are confusing for users who has
+        Installation and usage instructions are confusing for users who have
         downloaded the pre-built package.
 
 .. release:: 0.1.32

@@ -10,18 +10,18 @@ Welcome to the ftrack connect documentation.
 Quick start
 ===========
 
-Follow these steps to get started
-with Connect and publish or start a supported application with the ftrack
+Follow these steps to get started with Connect. With Connect you can
+publish/submit files to ftrack and start supported applications with the ftrack
 integration:
 
-#.  Install ftrack connect package by downloading it from
-    https://www.ftrack.com/portfolio/connect
-#.  Launch the ftrack-connect executable. See these
-    :ref:`instructions <using/launching>` if you cannot find it.
-#.  Start your favorite application with the ftrack integration using this
-    :ref:`article <using/actions>`.
-#.  Or Publish to ftrack using Connect following these
-    :ref:`instructions <using/publishing>`.
+#.  Install ftrack connect package by downloading it from the `Integrations
+    webpage <https://www.ftrack.com/portfolio/connect>`_.
+#.  Launch the ftrack-connect executable. See 
+    :ref:`these instructions <using/launching>` if you cannot find it.
+#.  Start your favorite application with the ftrack integration. You can find
+    instructions in :ref:`this article <using/actions>`
+    or, publish/submit to ftrack following 
+    :ref:`these instructions <using/publishing>`.
 
 Articles
 ========
