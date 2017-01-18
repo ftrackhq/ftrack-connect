@@ -172,6 +172,7 @@ class StackedOptionsWidget(QtWidgets.QStackedWidget):
                 floatBox.setEnabled(enabled)
                 floatBox.setObjectName(optionName)
                 floatBox.setSingleStep(0.1)
+                floatBox.setMaximum(float(optionValue) * 10000)
                 floatBox.setValue(float(optionValue))
                 rowLayout.addWidget(floatBox)
                 optionsCount = 1
