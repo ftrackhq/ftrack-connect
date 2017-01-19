@@ -8,6 +8,13 @@
 Release Notes
 *************
 
+.. release:: Upcoming
+
+    .. change:: fixed
+        :tags: Settings
+
+        Numberic settings cannot be set to higher than 99.
+
 .. release:: 0.1.33
     :date: 2017-01-17
 
