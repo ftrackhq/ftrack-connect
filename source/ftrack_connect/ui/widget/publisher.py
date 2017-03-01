@@ -8,6 +8,7 @@ from QtExt import QtCore
 
 import ftrack
 from ftrack_api import Session
+from ftrack_api import exception
 
 
 from ftrack_connect.ui.widget import data_drop_zone as _data_drop_zone
@@ -217,9 +218,9 @@ class Publisher(QtWidgets.QWidget):
         '''Clean up after a failed publish.'''
         try:
             if version:
-                version.delete()
+                self.session.delete(version)
 
-        except ftrack.FTrackError:
+        except exception.OperationError:
             self.logger.exception(
                 'Failed to delete version, probably due to a permission error.'
             )
