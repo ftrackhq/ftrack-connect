@@ -276,8 +276,8 @@ class Publisher(QtWidgets.QWidget):
                     }
                 )
 
-                self.session.commit()
                 # For compatibily reasons, emit old asset ftrack type.
+                self.session.commit()
                 old_ftrack_asset_type = ftrack.Asset(asset['id'])
                 self.assetCreated.emit(old_ftrack_asset_type)
 
@@ -324,8 +324,6 @@ class Publisher(QtWidgets.QWidget):
 
             if thumbnailFilePath:
                 version.create_thumbnail(thumbnailFilePath)
-
-            # version.publish()
 
             self.publishFinished.emit(True)
 

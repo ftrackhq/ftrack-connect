@@ -8,6 +8,13 @@
 Release Notes
 *************
 
+.. release:: Upcoming
+
+    .. change:: changed
+        :tags: Internal
+
+        Use new api locations for publishing.
+
 .. release:: 0.1.33
     :date: 2017-01-17
 
