@@ -326,6 +326,9 @@ class Publisher(QtWidgets.QWidget):
             if thumbnailFilePath:
                 version.create_thumbnail(thumbnailFilePath)
 
+            version['is_published'] = True
+            self.session.commit()
+
             self.publishFinished.emit(True)
 
         # Catch any errors, emit *publishFinished*, clean up and re-raise.
