@@ -7,6 +7,7 @@ from QtExt import QtWidgets
 from QtExt import QtCore
 
 import ftrack
+from ftrack_api import Session
 
 
 from ftrack_connect.ui.widget import data_drop_zone as _data_drop_zone
@@ -41,6 +42,7 @@ class Publisher(QtWidgets.QWidget):
         '''Initiate a publish view.'''
         super(Publisher, self).__init__(parent)
 
+        self.session = Session()
         self.logger = logging.getLogger(
             __name__ + '.' + self.__class__.__name__
         )
@@ -262,31 +264,58 @@ class Publisher(QtWidgets.QWidget):
                 if assetName is None:
                     assetName = assetType.getName()
 
-                asset = entity.createAsset(
-                    assetName, assetType.getShort(), taskId
-                )
-                self.assetCreated.emit(asset)
+                asset_type = self.session.get('AssetType', assetType.getId())
+                task = self.session.get('Context', taskId)
 
-            version = asset.createVersion(
-                versionDescription, taskId
+                asset = self.session.create(
+                    'Asset',
+                    {
+                        'name': assetName,
+                        'type': asset_type,
+                        'parent': task
+                    }
+                )
+
+                self.session.commit()
+                # For compatibily reasons, emit old asset ftrack type.
+                old_ftrack_asset_type = ftrack.Asset(asset['id'])
+                self.assetCreated.emit(old_ftrack_asset_type)
+
+            version = self.session.create(
+                'AssetVersion',
+                {
+                    'asset': asset,
+                    'comment': versionDescription,
+                    'task': task,
+                }
+
             )
 
             for componentData in components:
-                component = version.createComponent(
-                    componentData.get('name', None),
-                    path=componentData.get('filePath'),
+                component = version.create_component(
+                    componentData.get('filePath'),
+                    {'name': componentData.get('name', None)},
                     location=None
                 )
 
                 for location in componentData.get('locations', []):
-                    location.addComponent(component)
+                    new_location = self.session.get(
+                        'Location', location.getId()
+                    )
+                    origin_location = self.session.query(
+                        'Location where name is "ftrack.origin"'
+                    )
+
+                    new_location.add_component(
+                        component, source=origin_location
+                    )
 
             if previewPath:
                 ftrack.EVENT_HUB.publish(
                     ftrack.Event(
                         'ftrack.connect.publish.make-web-playable',
                         data=dict(
-                            versionId=version.getId(),
+                            versionId=version['id'],
                             path=previewPath
                         )
                     ),
@@ -294,9 +323,9 @@ class Publisher(QtWidgets.QWidget):
                 )
 
             if thumbnailFilePath:
-                version.createThumbnail(thumbnailFilePath)
+                version.create_thumbnail(thumbnailFilePath)
 
-            version.publish()
+            # version.publish()
 
             self.publishFinished.emit(True)
 
