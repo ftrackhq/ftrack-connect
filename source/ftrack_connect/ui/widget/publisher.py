@@ -9,6 +9,7 @@ from QtExt import QtCore
 import ftrack
 from ftrack_api import Session
 from ftrack_api import exception
+from ftrack_api import event
 
 
 from ftrack_connect.ui.widget import data_drop_zone as _data_drop_zone
@@ -312,8 +313,8 @@ class Publisher(QtWidgets.QWidget):
                     )
 
             if previewPath:
-                ftrack.EVENT_HUB.publish(
-                    ftrack.Event(
+                self.session.event_hub.publish(
+                    event.base.Event(
                         'ftrack.connect.publish.make-web-playable',
                         data=dict(
                             versionId=version['id'],
