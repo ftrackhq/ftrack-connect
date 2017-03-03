@@ -221,7 +221,8 @@ class ComponentTableWidget(QtWidgets.QTableWidget):
             # Access path available
 
             if availability < 100:
-                if 'container' in componentInLocation:
+                is_container = 'members' in componentInLocation.keys()
+                if is_container:
                     # Allow import of partial sequence etc
                     actionItem.setEnabled(True)
 
