@@ -142,15 +142,6 @@ class BuildResources(Command):
         self._replace_imports_()
 
 
-class Build(BuildCommand):
-    '''Custom build to pre-build resources.'''
-
-    def run(self):
-        '''Run build ensuring build_resources called first.'''
-        self.run_command('build_resources')
-        BuildCommand.run(self)
-
-
 class Clean(CleanCommand):
     '''Custom clean to remove built resources and distributions.'''
 
@@ -220,7 +211,7 @@ configuration = dict(
         'sphinx_rtd_theme >= 0.1.6, < 2',
         'lowdown >= 0.1.0, < 1'
     ],
-    build_requires=[
+    build_resources_requires=[
         'pyScss >= 1.2.0, < 2',
         'PySide == 1.2.2'
     ],
@@ -235,7 +226,6 @@ configuration = dict(
     ],
     tests_require=['pytest >= 2.3.5, < 3'],
     cmdclass={
-        'build': Build,
         'build_resources': BuildResources,
         'clean': Clean,
         'test': PyTest
