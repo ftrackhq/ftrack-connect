@@ -7,7 +7,6 @@ from QtExt import QtWidgets
 from QtExt import QtCore
 
 import ftrack
-from ftrack_api import Session
 from ftrack_api import exception
 from ftrack_api import event
 
@@ -18,6 +17,7 @@ from ftrack_connect.ui.widget import item_selector as _item_selector
 from ftrack_connect.ui.widget import thumbnail_drop_zone as _thumbnail_drop_zone
 from ftrack_connect.ui.widget import asset_options as _asset_options
 from ftrack_connect.ui.widget import entity_selector
+from ftrack_connect.session import get_shared_session
 
 import ftrack_connect.asynchronous
 import ftrack_connect.error
@@ -44,7 +44,7 @@ class Publisher(QtWidgets.QWidget):
         '''Initiate a publish view.'''
         super(Publisher, self).__init__(parent)
 
-        self.session = Session()
+        self.session = get_shared_session()
         self.logger = logging.getLogger(
             __name__ + '.' + self.__class__.__name__
         )
