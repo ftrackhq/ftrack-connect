@@ -8,13 +8,22 @@
 Release Notes
 *************
 
-
 .. release:: Upcoming
 
-    .. change:: fixed
+    .. change:: changed
         :tags: API
 
         Import asset is slow due to the use of legacy api.
+        :ref:`release/migration/upcoming/developer_notes`
+
+.. release:: 0.1.33
+    :date: 2017-01-17
+
+    .. change:: fixed
+        :tags: Documentation
+
+        Installation and usage instructions are confusing for users who have
+        downloaded the pre-built package.
 
 .. release:: 0.1.32
     :date: 2016-12-01

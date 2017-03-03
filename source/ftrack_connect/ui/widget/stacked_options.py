@@ -1,5 +1,6 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
+import sys
 
 from QtExt import QtWidgets, QtXml
 
@@ -172,6 +173,8 @@ class StackedOptionsWidget(QtWidgets.QStackedWidget):
                 floatBox.setEnabled(enabled)
                 floatBox.setObjectName(optionName)
                 floatBox.setSingleStep(0.1)
+                floatBox.setMaximum(sys.maxint)
+                floatBox.setMinimum(-sys.maxint)
                 floatBox.setValue(float(optionValue))
                 rowLayout.addWidget(floatBox)
                 optionsCount = 1

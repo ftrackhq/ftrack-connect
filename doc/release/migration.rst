@@ -22,6 +22,8 @@ rather than the legacy api location.
 This means that legacy locations won't be discovered or used unless the 
 :ref:`ftrack-location-compatibility <ftrack-location-compatibility>` is installed.
 
+Aternatively you can convert legacy location to new location api.
+
 To install please ensure that *ftrack-location-compatibility/hook* folder is available into the 
 `FTRACK_EVENT_PLUGIN_PATH` environment variable.
 
