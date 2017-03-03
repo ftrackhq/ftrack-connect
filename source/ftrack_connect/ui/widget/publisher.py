@@ -130,26 +130,6 @@ class Publisher(QtWidgets.QWidget):
             'resourceIdentifier': filePath
         })
 
-    def _pickLocation(self, manageData=False):
-        '''Return a location based on *manageData*.'''
-        location = None
-        locations = ftrack.getLocations(excludeInaccessible=True)
-        try:
-            location = next(
-                candidateLocation for candidateLocation in locations
-                if (
-                    manageData == False
-                    or not isinstance(candidateLocation, ftrack.UnmanagedLocation)
-                )
-            )
-
-        except StopIteration:
-            pass
-
-        self.logger.debug('Picked location {0}.'.format(location))
-
-        return location
-
     def clear(self):
         '''Clear the publish view to it's initial state.'''
         self._manageData = False
@@ -191,7 +171,7 @@ class Publisher(QtWidgets.QWidget):
             taskId = entity.getId()
             entity = entity.getParent()
 
-        componentLocation = self._pickLocation(self._manageData)
+        componentLocation = self.session.pick_location()
 
         components = []
         for component in self.componentsList.items():
@@ -302,7 +282,7 @@ class Publisher(QtWidgets.QWidget):
 
                 for location in componentData.get('locations', []):
                     new_location = self.session.get(
-                        'Location', location.getId()
+                        'Location', location['id']
                     )
                     origin_location = self.session.query(
                         'Location where name is "ftrack.origin"'
