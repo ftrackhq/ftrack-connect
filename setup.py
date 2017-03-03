@@ -207,13 +207,11 @@ configuration = dict(
     },
     setup_requires=[
         'qtext',
+        'pyScss >= 1.2.0, < 2',
+        'PySide == 1.2.2',
         'sphinx >= 1.2.2, < 2',
         'sphinx_rtd_theme >= 0.1.6, < 2',
         'lowdown >= 0.1.0, < 1'
-    ],
-    build_resources_requires=[
-        'pyScss >= 1.2.0, < 2',
-        'PySide == 1.2.2'
     ],
     install_requires=[
         'qtext',

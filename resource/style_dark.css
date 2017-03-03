@@ -1,0 +1,361 @@
+QDialog {
+  background-color: #222; }
+
+  QFrame[ftrackDropZone] {
+    border-radius: 2px;
+    border-width: 2px;
+    border-style: dashed;
+    border-color: black; }
+    QFrame[ftrackDropZone] > QLabel {
+      color: #666; }
+
+QFrame[ftrackDropZoneState='active'] {
+  border-color: #1CBC90; }
+
+  QFrame[ftrackDropZoneState='invalid'] {
+    border-color: #E74C3C; }
+
+    QLabel {
+      color: #ccc; }
+
+      QLabel[title] {
+        font-weight: bold; }
+
+        QLineEdit, QTextEdit, QComboBox {
+          border: 1px solid black;
+          border-radius: 2px;
+          padding: 4px;
+          background: #111;
+          selection-background-color: black;
+          color: #ccc; }
+          QLineEdit:hover, QTextEdit:hover, QComboBox:hover {
+            border-color: black; }
+            QLineEdit:focus, QTextEdit:focus, QComboBox:focus {
+              border: 1px solid #1CBC90; }
+
+QComboBox::drop-down {
+  subcontrol-origin: padding;
+  subcontrol-position: top right;
+  width: 8px;
+  padding: 4px;
+  border: 0; }
+
+  QComboBox::down-arrow {
+    image: url(':/ftrack/image/dark/downArrow');
+    width: 8px;
+    height: 8px;
+    margin-right: 4px; }
+
+    QComboBox QAbstractItemView {
+      background: #111;
+      color: #ccc;
+      outline: 0;
+      border: 1px solid black;
+      border-radius: 2px; }
+
+      QComboBox QAbstractItemView::item {
+        padding: 4px 0; }
+
+        QComboBox QAbstractItemView::item:selected {
+          background-color: #111;
+          color: #ccc; }
+
+          QComboBox[ftrackCurrentIndexIsDefault="true"] {
+            color: #666; }
+
+            QPushButton {
+              border: 1px solid #666;
+              border-radius: 2px;
+              background-color: #111;
+              color: #ccc;
+              padding: 4px;
+              min-width: 80px; }
+
+              QPushButton:hover {
+                border-color: #040404;
+                background-color: #111; }
+
+                QPushButton:pressed {
+                  border-color: #040404;
+                  background-color: #666; }
+
+                  QPushButton:disabled {
+                    border-color: black;
+                    background-color: #040404;
+                    color: white; }
+
+                    QPushButton#primary {
+                      border-color: #1CBC90;
+                      color: #1CBC90; }
+
+                      QPushButton#primary:hover {
+                        background-color: #1CBC90;
+                        border-color: #1CBC90;
+                        color: white; }
+
+                        QPushButton#primary:pressed {
+                          background-color: #19a67f;
+                          border-color: #19a67f;
+                          color: white; }
+
+                          QPushButton[flat="true"]:pressed {
+                            background: none;
+                            border: 1px solid #666; }
+
+                            QToolButton {
+                              border: 1px solid #666;
+                              border-radius: 2px;
+                              background-color: #111;
+                              color: #ccc; }
+
+                              QToolButton:hover {
+                                border-color: #040404;
+                                background-color: #111; }
+
+                                QToolButton:pressed {
+                                  border-color: #040404;
+                                  background-color: #666; }
+
+                                  QTabWidget::pane {
+                                    border-top: 2px solid #111;
+                                    background: #222; }
+
+                                    QTabWidget::tab-bar {
+                                      background: #111; }
+
+                                      QTabBar {
+                                        background: #111; }
+
+                                        QTabBar::tab {
+                                          background: #111;
+                                          min-width: 60px;
+                                          padding: 8px 10px;
+                                          color: #aaa; }
+
+                                          QTabBar#application-tab-bar::tab:selected {
+                                            background-image: url(':/ftrack/image/dark/selectedTab');
+                                            background-position: bottom center;
+                                            background-repeat: none;
+                                            color: #ccc; }
+
+                                            QTableView {
+                                              border: 1px solid #dadada;
+                                              outline: 0; }
+
+                                              QTableView::item {
+                                                border: 0px;
+                                                padding: 5px;
+                                                background: #111;
+                                                color: #ccc; }
+
+                                                QTableView::item:selected {
+                                                  background: #111; }
+
+                                                  QHeaderView {
+                                                    background-color: #111; }
+
+                                                    QMenu {
+                                                      background: #111; }
+
+                                                      QMenu::item {
+                                                        background: #111;
+                                                        border: 0px;
+                                                        padding: 5px;
+                                                        color: #ccc; }
+
+                                                        QMenu::item:selected:enabled {
+                                                          background: #040404; }
+
+                                                          QMenu::item:pressed:enabled {
+                                                            background: black; }
+
+                                                            QScrollBar:vertical {
+                                                              border: 0;
+                                                              background: #222;
+                                                              width: 12px;
+                                                              margin: 0; }
+
+                                                              QScrollBar::handle:vertical {
+                                                                border: 0;
+                                                                border-radius: 4px;
+                                                                background: #dadada;
+                                                                margin: 2px; }
+
+                                                                QScrollBar::add-line:vertical {
+                                                                  border: 0;
+                                                                  height: 0;
+                                                                  background: #111;
+                                                                  subcontrol-position: bottom;
+                                                                  subcontrol-origin: margin; }
+
+                                                                  QScrollBar::sub-line:vertical {
+                                                                    border: 0;
+                                                                    height: 0;
+                                                                    background: #111;
+                                                                    subcontrol-position: top;
+                                                                    subcontrol-origin: margin; }
+
+                                                                    ScrollingFlowWidget > QScrollArea, ScrollingFlowWidget > QScrollArea QWidget {
+                                                                      background-color: transparent;
+                                                                      border: none; }
+
+                                                                      QFrame#publisher-componentlist {
+                                                                        border: 0; }
+
+                                                                        QFrame#publisher-componentlist QTableWidget {
+                                                                          background-color: transparent;
+                                                                          border: 0; }
+
+                                                                          QFrame#publisher-componentlist QTableWidget::item {
+                                                                            background-color: transparent;
+                                                                            border: 0;
+                                                                            padding: 0; }
+
+                                                                            QFrame#ftrack-connect-thumbnail-drop-zone {
+                                                                              padding: 4px; }
+
+                                                                              #timer QLabel[title] {
+                                                                                color: #548cd7; }
+
+                                                                                #timer QLineEdit#timeField {
+                                                                                  font-weight: bold;
+                                                                                  padding: 8px;
+                                                                                  width: 80px; }
+
+                                                                                  #timer QPushButton#primary {
+                                                                                    padding: 8px;
+                                                                                    width: 80px; }
+
+                                                                                    #timer QPushButton[mode="start"]#primary {
+                                                                                      background-color: #1CBC90;
+                                                                                      border-color: #19a67f; }
+
+                                                                                      #timer QPushButton[mode="start"]#primary:hover {
+                                                                                        background-color: #19a67f;
+                                                                                        border-color: #15906e; }
+
+                                                                                        #timer QPushButton[mode="start"]#primary:pressed {
+                                                                                          background-color: #15906e;
+                                                                                          border-color: #12795d; }
+
+                                                                                          #timer QPushButton[mode="start"]:disabled#primary {
+                                                                                            background-color: #58e6bf;
+                                                                                            border-color: #42e3b7; }
+
+                                                                                            #timer QPushButton[mode="stop"]#primary {
+                                                                                              background-color: #E74C3C;
+                                                                                              border-color: #ea6153; }
+
+                                                                                              #timer QPushButton[mode="stop"]#primary:hover {
+                                                                                                background-color: #ea6153;
+                                                                                                border-color: #ed7669; }
+
+                                                                                                #timer QPushButton[mode="stop"]#primary:pressed {
+                                                                                                  background-color: #d62c1a;
+                                                                                                  border-color: #bf2718; }
+
+                                                                                                  #timer QPushButton[mode="stop"]:disabled#primary {
+                                                                                                    background-color: #f29f97;
+                                                                                                    border-color: #ef8b80; }
+
+                                                                                                    #time-log QLabel[title] {
+                                                                                                      color: #548cd7; }
+
+                                                                                                      QFrame#time-log-list {
+                                                                                                        border: 0;
+                                                                                                        margin: 20px 0 0 0; }
+
+                                                                                                        QFrame#time-log-list QTableWidget {
+                                                                                                          background-color: transparent;
+                                                                                                          border: 0; }
+
+                                                                                                          QFrame#time-log-list QTableWidget::item {
+                                                                                                            background-color: transparent;
+                                                                                                            border-bottom: 1px solid black;
+                                                                                                            padding: 0; }
+
+                                                                                                            EntityBrowser QTabBar {
+                                                                                                              border: 1px solid #666;
+                                                                                                              background: #111; }
+
+                                                                                                              EntityBrowser QTabBar::tab {
+                                                                                                                background: #1CBC90;
+                                                                                                                min-width: 0px;
+                                                                                                                padding: 2px 8px;
+                                                                                                                color: #111;
+                                                                                                                border-radius: 3px;
+                                                                                                                margin: 3px;
+                                                                                                                margin-right: 0px; }
+
+                                                                                                                EntityBrowser QTabBar::tab:selected {
+                                                                                                                  color: #111; }
+
+                                                                                                                  EntityBrowser QTabBar::tab:hover {
+                                                                                                                    background-color: #19a67f;
+                                                                                                                    border-color: #15906e; }
+
+                                                                                                                    QToolTip {
+                                                                                                                      border: 1px solid #666;
+                                                                                                                      border-radius: 2px;
+                                                                                                                      background-color: #111;
+                                                                                                                      color: #ccc;
+                                                                                                                      padding: 3px; }
+
+                                                                                                                      QRadioButton::indicator {
+                                                                                                                        width: 13px;
+                                                                                                                        height: 13px; }
+
+                                                                                                                        QRadioButton::indicator::unchecked {
+                                                                                                                          image: url(':/ftrack/image/dark/radiobutton_unchecked'); }
+
+                                                                                                                          QRadioButton::indicator:unchecked:hover {
+                                                                                                                            image: url(':/ftrack/image/dark/radiobutton_unchecked_hover'); }
+
+                                                                                                                            QRadioButton::indicator:unchecked:pressed {
+                                                                                                                              image: url(':/ftrack/image/dark/radiobutton_unchecked_pressed'); }
+
+                                                                                                                              QRadioButton::indicator::checked {
+                                                                                                                                image: url(':/ftrack/image/dark/radiobutton_checked'); }
+
+                                                                                                                                QRadioButton::indicator:checked:hover {
+                                                                                                                                  image: url(':/ftrack/image/dark/radiobutton_checked_hover'); }
+
+                                                                                                                                  QRadioButton::indicator:checked:pressed {
+                                                                                                                                    image: url(':/ftrack/image/dark/radiobutton_checked_pressed'); }
+
+                                                                                                                                    QMainWindow#ftrack-connect-window {
+                                                                                                                                      background: #111; }
+
+                                                                                                                                      QLabel#login-label {
+                                                                                                                                        font-size: 22px; }
+
+                                                                                                                                        QLabel#regular-label {
+                                                                                                                                          font-size: 15px;
+                                                                                                                                          font-weight: light; }
+
+                                                                                                                                          QLabel#lead-label {
+                                                                                                                                            font-size: 15px;
+                                                                                                                                            color: #666;
+                                                                                                                                            font-weight: light; }
+
+                                                                                                                                            * {
+                                                                                                                                              font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+
+                                                                                                                                              QLabel#lead-label {
+                                                                                                                                                font-size: 13px;
+                                                                                                                                                color: #666;
+                                                                                                                                                font-weight: light; }
+
+                                                                                                                                                QPushButton#ftrack-connect-publisher-browse-button {
+                                                                                                                                                  margin: 10px; }
+
+                                                                                                                                                  #ftrack-connect-window TimerOverlay {
+                                                                                                                                                    border: 1px dashed black;
+                                                                                                                                                    background-color: #ccc; }
+
+                                                                                                                                                    #ftrack-connect-window TimerOverlay QLabel {
+                                                                                                                                                      background: transparent; }
+
+                                                                                                                                                      QFrame#HarnessGuiController {
+                                                                                                                                                        border: 2px inset #666;
+                                                                                                                                                        background-color: #111; }
