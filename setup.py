@@ -142,22 +142,6 @@ class BuildResources(Command):
         self._replace_imports_()
 
 
-class BuildEgg(BuildEggCommand):
-    '''Custom egg build to ensure resources built.
-
-    .. note::
-
-        Required because when this project is a dependency for another project,
-        only bdist_egg will be called and *not* build.
-
-    '''
-
-    def run(self):
-        '''Run egg build ensuring build_resources called first.'''
-        self.run_command('build_resources')
-        BuildEggCommand.run(self)
-
-
 class Build(BuildCommand):
     '''Custom build to pre-build resources.'''
 
@@ -232,11 +216,13 @@ configuration = dict(
     },
     setup_requires=[
         'qtext',
-        'pyScss >= 1.2.0, < 2',
-        'PySide == 1.2.2',
         'sphinx >= 1.2.2, < 2',
         'sphinx_rtd_theme >= 0.1.6, < 2',
         'lowdown >= 0.1.0, < 1'
+    ],
+    build_requires=[
+        'pyScss >= 1.2.0, < 2',
+        'PySide == 1.2.2'
     ],
     install_requires=[
         'qtext',
@@ -251,7 +237,6 @@ configuration = dict(
     cmdclass={
         'build': Build,
         'build_resources': BuildResources,
-        'bdist_egg': BuildEgg,
         'clean': Clean,
         'test': PyTest
     },
