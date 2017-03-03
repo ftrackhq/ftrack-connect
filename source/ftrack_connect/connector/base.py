@@ -482,15 +482,15 @@ class FTAssetObject(object):
         self.componentId = componentId
         self.filePath = filePath
         self.componentName = componentName
-
+        self.shared_session = connect_session.get_shared_session()
         self.options = options
         self.setTotalSteps = True
         self.taskId = taskId
 
         if assetVersionId != '':
-            assetVersion = ftrack_shared_session.query(
-                'select id, version, version.version, asset, asset.name,'
-                ' asset.id, asset.type.short, version.asset.name '
+            assetVersion = self.shared_session.query(
+                'select id, asset, asset.name,'
+                ' asset.id, asset.type.short '
                 ' from AssetVersion where id is "{0}"'.format(assetVersionId)
             ).one()
             self.assetVersionId = assetVersionId
@@ -501,7 +501,7 @@ class FTAssetObject(object):
             self.assetId = assetVersion['asset']['id']
 
         if self.componentId != '':
-            component = ftrack_shared_session.query(
+            component = self.shared_session.query(
                 'select name, version.asset.type.short, version.asset.name, '
                 'version.asset.type.name, version.asset.versions.version, '
                 'version.id, version.version, version.asset.versions, '

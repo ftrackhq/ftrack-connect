@@ -199,7 +199,7 @@ class ComponentTableWidget(QtWidgets.QTableWidget):
         try:
             path = ftrack_location.get_filesystem_path(ftrack_component)
         except exception.ComponentNotInLocationError:
-            self.logger.error(
+            self.logger.debug(
                 'Component {0} not available in Location {1}'.format(
                     ftrack_component['name'], ftrack_location['name']
                 )
