@@ -2,7 +2,7 @@
 # :copyright: Copyright (c) 2015 ftrack
 
 import traceback
-
+import logging
 from QtExt import QtWidgets, QtCore
 import ftrack
 
@@ -22,6 +22,9 @@ class ComponentTableWidget(QtWidgets.QTableWidget):
     def __init__(self, parent=None, connector=None):
         '''Initialise widget.'''
         super(ComponentTableWidget, self).__init__(parent)
+        self.logger = logging.getLogger(
+            __name__ + '.' + self.__class__.__name__
+        )
 
         if not connector:
             raise ValueError(
@@ -196,7 +199,11 @@ class ComponentTableWidget(QtWidgets.QTableWidget):
         try:
             path = ftrack_location.get_filesystem_path(ftrack_component)
         except exception.ComponentNotInLocationError:
-            pass
+            self.logger.error(
+                'Component {0} not available in Location {1}'.format(
+                    ftrack_component['name'], ftrack_location['name']
+                )
+            )
 
         if path is None:
             pathItem.setText('Filesystem path not available.')
