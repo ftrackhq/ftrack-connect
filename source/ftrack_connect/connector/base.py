@@ -17,9 +17,7 @@ import sys
 from QtExt import QtWidgets, QtNetwork, QtCore, QtGui
 
 import ftrack
-from ftrack_api import Session
-
-ftrack_shared_session = Session()
+import ftrack_connect.session as connect_session
 
 
 # Append ftrack to urlparse.
@@ -33,10 +31,10 @@ class Connector(object):
     __metaclass__ = abc.ABCMeta
 
     @abc.abstractmethod
-    def __init__(self):
+    def __init__(self, session=None):
         '''Instantiate base connector.'''
         super(Connector, self).__init__()
-        self.session = ftrack_shared_session
+        self.session = session or connect_session.get_shared_session()
 
     @staticmethod
     @abc.abstractmethod
