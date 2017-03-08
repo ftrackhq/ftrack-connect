@@ -391,14 +391,14 @@ class AssetManagerWidget(QtWidgets.QWidget):
                 versionIndicatorButton = QtWidgets.QPushButton('')
                 if assetVersionNr == latest_version_number:
                     versionIndicatorButton.setStyleSheet(
-                        'background-color: #1CBC90;'
+                        'QPushButton { background-color: #1CBC90; border: none; };'
                     )
                     self.connector.setNodeColor(
                         applicationObject=assets[i][1], latest=True
                     )
                 else:
                     versionIndicatorButton.setStyleSheet(
-                        'background-color: rgb(227, 99, 22);'
+                        'QPushButton { background-color: #E36316; border: none; }'
                     )
                     self.connector.setNodeColor(
                         applicationObject=assets[i][1], latest=False
