@@ -10,6 +10,11 @@ Release Notes
 
 .. release:: Upcoming
 
+    .. change:: changed
+        :tags: Ui, Asset manager
+
+        Update color on version indicator in asset manager.
+
     .. change:: fixed
         :tags: Settings
 
