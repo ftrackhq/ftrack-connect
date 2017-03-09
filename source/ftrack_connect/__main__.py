@@ -70,7 +70,8 @@ def main(arguments=None):
         'ftrack_connect', level=loggingLevels[namespace.verbosity]
     )
 
-    # If under X11 make Xlib calls thread-safe .
+    # If under X11, make Xlib calls thread-safe.
+    # http://stackoverflow.com/questions/31952711/threading-pyqt-crashes-with-unknown-request-in-queue-while-dequeuing
     if os.name == 'posix':
         QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_X11InitThreads)
 
