@@ -50,7 +50,6 @@ class Publisher(QtWidgets.QWidget):
         )
 
         self._entity = None
-        self._manageData = False
 
         layout = QtWidgets.QVBoxLayout()
 
@@ -132,16 +131,11 @@ class Publisher(QtWidgets.QWidget):
 
     def clear(self):
         '''Clear the publish view to it's initial state.'''
-        self._manageData = False
         self.assetOptions.clear()
         self.versionDescription.clear()
         self.componentsList.clearItems()
         self.thumbnailDropZone.clear()
         self.entitySelector.setEntity(None)
-
-    def setManageData(self, manageData):
-        '''Set *manageData*.'''
-        self._manageData = manageData
 
     def publish(self):
         '''Gather all data in publisher and publish version with components.'''
