@@ -240,7 +240,7 @@ configuration = dict(
     ],
     install_requires=[
         'qtext',
-        'ftrack-python-api >= 0.8.1, < 1',
+        'ftrack-python-api >= 1, < 2',
         'PySide >= 1.2.2, < 2',
         'Riffle',
         'arrow >= 0.4.6, < 1',
