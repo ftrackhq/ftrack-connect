@@ -264,7 +264,11 @@ class Publisher(QtWidgets.QWidget):
                     'comment': versionDescription,
                     'task': task,
                 }
+            )
+            self.session.commit()
 
+            origin_location = self.session.query(
+                'Location where name is "ftrack.origin"'
             )
 
             for componentData in components:
@@ -278,10 +282,6 @@ class Publisher(QtWidgets.QWidget):
                     new_location = self.session.get(
                         'Location', location['id']
                     )
-                    origin_location = self.session.query(
-                        'Location where name is "ftrack.origin"'
-                    )
-
                     new_location.add_component(
                         component, source=origin_location
                     )
