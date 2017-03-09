@@ -11,6 +11,16 @@ Release Notes
 .. release:: Upcoming
 
     .. change:: changed
+        :tags: Ui, Asset manager, Internal
+
+        Update color on version indicator in asset manager.
+
+    .. change:: fixed
+        :tags: Settings
+
+        Numberic settings cannot be set to higher than 99.
+
+    .. change:: changed
         :tags: Internal
 
         Use new api locations for publishing.
