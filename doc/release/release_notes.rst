@@ -9,7 +9,17 @@ Release Notes
 *************
 
 .. release:: Upcoming
-   .. change:: changed
+
+    .. change:: changed
+        :tags: Publish
+
+        The new api and locations are used for publishing.
+
+        .. seealso::
+
+            :ref:`Read more <release/migration/upcoming/developer_notes>`
+
+    .. change:: changed
         :tags: Internal
 
         X11 windows system is not thread safe. 
@@ -23,11 +33,6 @@ Release Notes
         :tags: Settings
 
         Numberic settings cannot be set to higher than 99.
-
-    .. change:: changed
-        :tags: Internal
-
-        Use new api locations for publishing.
 
 .. release:: 0.1.33
     :date: 2017-01-17
@@ -91,7 +96,7 @@ Release Notes
 
         Connect break in case of slow connection or missing url icon.
 
-    .. change:: Asset Manager
+    .. change:: changed
         :tags: Internal
 
         Speedup asset manager.
