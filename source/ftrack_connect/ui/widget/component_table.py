@@ -200,7 +200,7 @@ class ComponentTableWidget(QtWidgets.QTableWidget):
             path = ftrack_location.get_filesystem_path(ftrack_component)
         except exception.ComponentNotInLocationError:
             self.logger.debug(
-                'Component {0} not available in Location {1}'.format(
+                u'Component {0} not available in Location {1}'.format(
                     ftrack_component['name'], ftrack_location['name']
                 )
             )
@@ -221,7 +221,11 @@ class ComponentTableWidget(QtWidgets.QTableWidget):
             # Access path available
 
             if availability < 100:
-                is_container = 'members' in componentInLocation.keys()
+                is_container = isinstance(componentInLocation, (
+                    self.session.types['SequenceComponent'],
+                    self.session.types['ContainerComponent']
+                ))
+
                 if is_container:
                     # Allow import of partial sequence etc
                     actionItem.setEnabled(True)
