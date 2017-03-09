@@ -9,6 +9,10 @@ Release Notes
 *************
 
 .. release:: Upcoming
+   .. change:: changed
+        :tags: Internal
+
+        X11 windows system is not thread safe. 
 
     .. change:: changed
         :tags: Ui, Asset manager
