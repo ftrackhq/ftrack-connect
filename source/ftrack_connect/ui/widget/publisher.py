@@ -239,11 +239,14 @@ class Publisher(QtWidgets.QWidget):
             if components is None:
                 components = []
 
-            asset_type = self.session.get('AssetType', assetType.getId())
             task = self.session.get('Context', taskId)
 
             if not asset:
                 if assetName is None:
+                    asset_type = self.session.get(
+                        'AssetType', assetType.getId()
+                    )
+
                     assetName = asset_type['name']
 
                 asset = self.session.create(
@@ -251,7 +254,7 @@ class Publisher(QtWidgets.QWidget):
                     {
                         'name': assetName,
                         'type': asset_type,
-                        'parent': task
+                        'parent': task['parent']
                     }
                 )
 
@@ -259,6 +262,9 @@ class Publisher(QtWidgets.QWidget):
                 self.session.commit()
                 old_ftrack_asset_type = ftrack.Asset(asset['id'])
                 self.assetCreated.emit(old_ftrack_asset_type)
+
+            else:
+                asset = self.session.get('Asset', asset.getId())
 
             version = self.session.create(
                 'AssetVersion',
