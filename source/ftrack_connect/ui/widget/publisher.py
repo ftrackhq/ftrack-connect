@@ -34,6 +34,7 @@ class EntitySelector(entity_selector.EntitySelector):
 
 class Publisher(QtWidgets.QWidget):
     '''Publish widget for ftrack connect Publisher.'''
+
     publishStarted = QtCore.Signal()
     publishFinished = QtCore.Signal(bool)
 
@@ -284,6 +285,11 @@ class Publisher(QtWidgets.QWidget):
                     )
                     new_location.add_component(
                         component, source=origin_location
+                    )
+                    self.logger.info(
+                        u'Publish {0!r} to location: {1!r}.'.format(
+                            component, new_location['name']
+                        )
                     )
 
             if previewPath:
