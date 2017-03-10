@@ -228,7 +228,9 @@ class Publisher(QtWidgets.QWidget):
         try:
             if not (asset or assetType):
                 self.publishFinished.emit(False)
-                raise ftrack_connect.error.ConnectError('No asset type selected.')
+                raise ftrack_connect.error.ConnectError(
+                    'No asset type selected.'
+                )
 
             if not entity:
                 self.publishFinished.emit(False)
@@ -237,12 +239,12 @@ class Publisher(QtWidgets.QWidget):
             if components is None:
                 components = []
 
+            asset_type = self.session.get('AssetType', assetType.getId())
+            task = self.session.get('Context', taskId)
+
             if not asset:
                 if assetName is None:
-                    assetName = assetType.getName()
-
-                asset_type = self.session.get('AssetType', assetType.getId())
-                task = self.session.get('Context', taskId)
+                    assetName = asset_type['name']
 
                 asset = self.session.create(
                     'Asset',
