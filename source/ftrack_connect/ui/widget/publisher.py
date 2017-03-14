@@ -242,11 +242,10 @@ class Publisher(QtWidgets.QWidget):
             task = self.session.get('Context', taskId)
 
             if not asset:
+                asset_type = self.session.get(
+                    'AssetType', assetType.getId()
+                )
                 if assetName is None:
-                    asset_type = self.session.get(
-                        'AssetType', assetType.getId()
-                    )
-
                     assetName = asset_type['name']
 
                 asset = self.session.create(
