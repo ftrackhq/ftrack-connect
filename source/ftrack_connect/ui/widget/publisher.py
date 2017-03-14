@@ -321,7 +321,7 @@ class Publisher(QtWidgets.QWidget):
 
         # Catch any errors, emit *publishFinished*, clean up and re-raise.
         except Exception as error:
-            self.logger.exception('Failed to publish')
+            self.logger.exception('Failed to publish: {0}'.format(error))
             self.publishFinished.emit(False)
             self._cleanupFailedPublish(version=version)
 
