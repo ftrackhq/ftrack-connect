@@ -390,16 +390,22 @@ class AssetManagerWidget(QtWidgets.QWidget):
 
                 versionIndicatorButton = QtWidgets.QPushButton('')
                 if assetVersionNr == latest_version_number:
-                    versionIndicatorButton.setStyleSheet(
-                        'QPushButton { background-color: #1CBC90; border: none; };'
-                    )
+                    versionIndicatorButton.setStyleSheet('''
+                        QPushButton {
+                            background-color: #1CBC90;
+                            border: none;
+                        }
+                    ''')
                     self.connector.setNodeColor(
                         applicationObject=assets[i][1], latest=True
                     )
                 else:
-                    versionIndicatorButton.setStyleSheet(
-                        'QPushButton { background-color: #E36316; border: none; }'
-                    )
+                    versionIndicatorButton.setStyleSheet('''
+                        QPushButton {
+                            background-color: #E36316;
+                            border: none;
+                        }
+                    ''')
                     self.connector.setNodeColor(
                         applicationObject=assets[i][1], latest=False
                     )
@@ -745,12 +751,22 @@ class AssetManagerWidget(QtWidgets.QWidget):
         if result:
             cellWidget = self.ui.AssertManagerTableWidget.cellWidget(row, 0)
             if newVersion == latestVersion:
-                cellWidget.setStyleSheet('background-color: rgb(20, 161, 74);')
+                cellWidget.setStyleSheet('''
+                        QPushButton {
+                            background-color: #1CBC90;
+                            border: none;
+                        }
+                    ''')
                 self.connector.setNodeColor(
                     applicationObject=objectName, latest=True
                 )
             else:
-                cellWidget.setStyleSheet('background-color: rgb(227, 99, 22);')
+                cellWidget.setStyleSheet('''
+                        QPushButton {
+                            background-color: #E36316;
+                            border: none;
+                        }
+                    ''')
                 self.connector.setNodeColor(
                     applicationObject=objectName, latest=False
                 )
