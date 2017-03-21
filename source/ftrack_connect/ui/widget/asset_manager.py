@@ -563,7 +563,7 @@ class AssetManagerWidget(QtWidgets.QWidget):
         if comboBoxIndex:
             comboItem = self.ui.AssetManagerComboBoxModel.item(comboBoxIndex)
             for i in range(rowCount):
-                tableItem = self.ui.AssertManagerTableWidget.item(i, 2)
+                tableItem = self.ui.AssertManagerTableWidget.item(i, 3)
 
                 if comboItem.type != tableItem.text():
 
