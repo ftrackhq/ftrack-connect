@@ -160,6 +160,7 @@ class FtrackAssetManagerDialog(QtWidgets.QDialog):
             )
 
         self.connector = connector
+
         self.setMinimumWidth(400)
         self.setSizePolicy(
             QtWidgets.QSizePolicy(
@@ -322,10 +323,6 @@ class AssetManagerWidget(QtWidgets.QWidget):
 
         self.ui.AssertManagerTableWidget.setRowCount(len(assets))
 
-        session = ftrack_api.Session(
-            auto_connect_event_hub=False,
-            plugin_paths=None
-        )
         component_ids = []
 
         for component_id, _ in assets:
@@ -343,7 +340,7 @@ class AssetManagerWidget(QtWidgets.QWidget):
                     ','.join(component_ids)
                 )
             )
-            components = session.query(query_string).all()
+            components = self.connector.session.query(query_string).all()
 
             asset_ids = set()
             for component in components:
@@ -355,7 +352,7 @@ class AssetManagerWidget(QtWidgets.QWidget):
                 'select components.name from AssetVersion where '
                 'asset_id in ({0})'
             ).format(', '.join(list(asset_ids)))
-            session.query(preload_string).all()
+            self.connector.session.query(preload_string).all()
 
             component_map = dict(
                 (component['id'], component)
@@ -715,16 +712,22 @@ class AssetManagerWidget(QtWidgets.QWidget):
             componentName = 'sequence'
             newComponent = newftrackAssetVersion.getComponent(componentName)
 
-        location = ftrack.pickLocation(newComponent.getId())
+        # Build a new api component object .
+        ftrack_component = self.connector.session.get(
+            'FileComponent', newComponent.getId()
+        )
+        location = self.connector.session.pick_location(
+            component=ftrack_component
+        )
+
         if location is None:
             raise ftrack.FTrackError(
                 'Cannot load version data as no accessible location '
                 'containing the version is available.'
             )
 
-        newComponent = location.getComponent(newComponent.getId())
+        path = location.get_filesystem_path(ftrack_component)
 
-        path = newComponent.getFilesystemPath()
         importObj = FTAssetObject(
             filePath=path,
             componentName=componentName,

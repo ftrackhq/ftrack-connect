@@ -2,11 +2,13 @@
 # :copyright: Copyright (c) 2015 ftrack
 
 import traceback
-
+import logging
 from QtExt import QtWidgets, QtCore
 import ftrack
 
 from ftrack_connect.worker import Worker
+from ftrack_api import symbol
+from ftrack_api import exception
 
 
 class ComponentTableWidget(QtWidgets.QTableWidget):
@@ -20,6 +22,9 @@ class ComponentTableWidget(QtWidgets.QTableWidget):
     def __init__(self, parent=None, connector=None):
         '''Initialise widget.'''
         super(ComponentTableWidget, self).__init__(parent)
+        self.logger = logging.getLogger(
+            __name__ + '.' + self.__class__.__name__
+        )
 
         if not connector:
             raise ValueError(
@@ -27,8 +32,12 @@ class ComponentTableWidget(QtWidgets.QTableWidget):
                     self.__class__.__name__
                 )
             )
-
         self.connector = connector
+        self.session = self.connector.session
+        self.locations = self.session.query(
+            'select name, id from Location'
+        ).all()
+
         self.workers = []
         self.columns = (
             'Component', 'Location', 'Availability', 'Path', 'Action'
@@ -84,22 +93,22 @@ class ComponentTableWidget(QtWidgets.QTableWidget):
         '''Update list of components for asset version with *assetVersionId*.'''
         self.clear()
 
-        assetVersion = ftrack.AssetVersion(assetVersionId)
-        self.assetType = assetVersion.getAsset().getType().getShort()
-
-        assetVersionComponents = sorted(
-            assetVersion.getComponents(), key=lambda entity: entity.get('name')
+        query = (
+            'select id, asset, asset.type, asset.type.short, components'
+            ' from AssetVersion where id is "{0}"'.format(assetVersionId)
         )
+        asset_version = self.session.query(query).one()
+
+        self.assetType = asset_version['asset']['type']['short']
+
+        asset_version_components = asset_version['components']
 
         connectorName = self.connector.getConnectorName()
-
         # Temporary alias
         column = self.columns.index
 
-        locations = ftrack.getLocations()
-
-        for component in assetVersionComponents:
-            componentName = component.getName()
+        for component in asset_version_components:
+            componentName = component['name']
 
             if (
                 connectorName == 'nuke' and 'proxy' in componentName
@@ -110,7 +119,8 @@ class ComponentTableWidget(QtWidgets.QTableWidget):
                 self.insertRow(rowCount)
 
                 componentItem = QtWidgets.QTableWidgetItem(componentName)
-                componentItem.setData(self.COMPONENT_ROLE, component)
+                componentItem.setData(self.COMPONENT_ROLE, component['id'])
+
                 self.setItem(
                     rowCount, column('Component'), componentItem
                 )
@@ -140,14 +150,14 @@ class ComponentTableWidget(QtWidgets.QTableWidget):
                     locationItem, rowCount
                 )
 
-                for location in locations:
+                for location in self.locations:
+                    accessor = location.accessor
                     # Don't show inaccessible locations
-                    accessor = location.getAccessor()
-                    if accessor is None:
+                    if accessor is symbol.NOT_SET:
                         continue
-
-                    name = location.getName()
-                    locationItem.addItem(name, location)
+                    name = location['name']
+                    location_id = location['id']
+                    locationItem.addItem(name, location_id)
 
     def onLocationSelected(self, row):
         '''Handle location selection.'''
@@ -163,33 +173,38 @@ class ComponentTableWidget(QtWidgets.QTableWidget):
         self._setButtonStyle(actionItem, 'standard')
 
         componentItem = self.item(row, self.columns.index('Component'))
-        component = componentItem.data(self.COMPONENT_ROLE)
+        component_id = componentItem.data(self.COMPONENT_ROLE)
+        ftrack_component = self.session.get('Component', component_id)
 
         locationItem = self.cellWidget(row, column('Location'))
         if not locationItem.count():
             return
 
-        location = locationItem.itemData(locationItem.currentIndex())
+        location_id = locationItem.itemData(locationItem.currentIndex())
+        ftrack_location = self.session.get('Location', location_id)
 
-        try:
-            componentInLocation = location.getComponent(
-                component.getId()
-            )
-        except ftrack.FTrackError:
-            # TODO: Be able to check error type rather than just
-            # assume component not in location.
-            componentInLocation = component
+        componentInLocation = ftrack_component
 
         # Update availability indicator
         availabilityItem = self.item(row, column('Availability'))
-        availability = location.getComponentAvailability(
-            componentInLocation.getId()
+        availability = ftrack_location.get_component_availability(
+            componentInLocation
         )
         availabilityItem .setText('{0:.0f}%'.format(availability))
 
         # Update path for location
         pathItem = self.item(row, column('Path'))
-        path = componentInLocation.getFilesystemPath()
+        path = None
+
+        try:
+            path = ftrack_location.get_filesystem_path(ftrack_component)
+        except exception.ComponentNotInLocationError:
+            self.logger.debug(
+                u'Component {0} not available in Location {1}'.format(
+                    ftrack_component['name'], ftrack_location['name']
+                )
+            )
+
         if path is None:
             pathItem.setText('Filesystem path not available.')
         else:
@@ -206,7 +221,12 @@ class ComponentTableWidget(QtWidgets.QTableWidget):
             # Access path available
 
             if availability < 100:
-                if componentInLocation.isContainer():
+                is_container = isinstance(componentInLocation, (
+                    self.session.types['SequenceComponent'],
+                    self.session.types['ContainerComponent']
+                ))
+
+                if is_container:
                     # Allow import of partial sequence etc
                     actionItem.setEnabled(True)
 
@@ -228,7 +248,8 @@ class ComponentTableWidget(QtWidgets.QTableWidget):
             location = locationItem.itemData(locationItem.currentIndex())
 
             componentItem = self.item(row, column('Component'))
-            component = componentItem.data(self.COMPONENT_ROLE)
+            component_id = componentItem.data(self.COMPONENT_ROLE)
+            ftrack_component = self.session.get('Component', component_id)
 
             # Unfortunately, this will destroy the push button, so have to
             # recreate it afterwards. If Qt adds a takeCellWidget this can be
@@ -241,9 +262,11 @@ class ComponentTableWidget(QtWidgets.QTableWidget):
             transferProgressItem.setRange(0, 0)
 
             try:
-                worker = Worker(self.transfer,
-                                [component, None, location],
-                                parent=self)
+                worker = Worker(
+                    self.transfer,
+                    [ftrack_component, None, location],
+                    parent=self
+                )
                 worker.start()
 
                 while worker.isRunning():
@@ -285,19 +308,21 @@ class ComponentTableWidget(QtWidgets.QTableWidget):
         '''
         if sourceLocation is None:
             # Find a source location if possible.
-            locations = ftrack.getLocations()
+            locations = self.locations
             accessibleLocations = {}
             for location in locations:
-                if location.getAccessor() is not None:
-                    accessibleLocations[location.getId()] = location
+                if location.accessor is not None:
+                    accessibleLocations[location['id']] = location
 
-            availability = component.getAvailability(
-                accessibleLocations.keys())
+            availability = component.get_availability(
+                accessibleLocations.values()
+            )
+
             candidates = []
             for locationId, available in availability.items():
                 if available == 100:
                     location = accessibleLocations[locationId]
-                    candidates.append((location.getPriority(), location))
+                    candidates.append((location.priority, location))
 
             candidates.sort()
             if not candidates:
@@ -306,8 +331,11 @@ class ComponentTableWidget(QtWidgets.QTableWidget):
 
             sourceLocation = candidates[0][1]
 
-        componentInLocation = sourceLocation.getComponent(component)
-        targetLocation.addComponent(componentInLocation)
+        ftrack_target_location = self.session.query(
+            'Location where id is "{0}"'.format(targetLocation)
+        ).one()
+
+        ftrack_target_location.add_component(component, sourceLocation, True)
 
     @QtCore.Slot()
     def clear(self):

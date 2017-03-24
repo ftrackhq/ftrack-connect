@@ -1,16 +1,17 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-import os
+
+import functools
+import os.path
 import logging
 
-import ftrack
+import ftrack_api.session
+
+logger = logging.getLogger('ftrack.connect.publish.make-web-playable')
 
 
-log = logging.getLogger(__name__)
-
-
-def callback(event):
+def callback(event, session):
     '''Default make-web-playable hook.
 
     The hook callback accepts an *event*.
@@ -28,7 +29,7 @@ def callback(event):
     versionId = event['data']['versionId']
     path = event['data']['path']
 
-    version = ftrack.AssetVersion(versionId)
+    version = session.get('AssetVersion', versionId)
 
     # Validate that the path is an accessible file.
     if not os.path.isfile(path):
@@ -36,31 +37,36 @@ def callback(event):
             '"{0}" is not a valid filepath.'.format(path)
         )
 
-    # ftrack.Review.makeReviewable uploads file to cloud storage and triggers
+    # version.encode_media uploads file to cloud storage and triggers
     # encoding of the file to appropirate formats(mp4 and webm).
-    ftrack.Review.makeReviewable(version, path)
+    version.encode_media(path)
+    session.commit()
+    logger.info('make-reviewable hook completed.')
 
-    log.info('make-reviewable hook completed.')
 
-
-def register(registry, **kw):
-    '''Register hook.'''
-
-    logger = logging.getLogger(
-        'ftrack_connect:make_web_playable.register'
+def subscribe(session):
+    '''Subscribe to events.'''
+    topic = 'ftrack.connect.publish.make-web-playable'
+    logger.info('Subscribing to event topic: {0!r}'.format(topic))
+    session.event_hub.subscribe(
+        u'topic="{0}" and source.user.username="{1}"'.format(
+            topic, session.api_user
+        ),
+        functools.partial(callback, session=session)
     )
 
-    # Validate that registry is an instance of ftrack.Registry. If not,
-    # assume that register is being called from a new or incompatible API and
+
+def register(session, **kw):
+    '''Register plugin. Called when used as an plugin.'''
+    # Validate that session is an instance of ftrack_api.Session. If not,
+    # assume that register is being called from an old or incompatible API and
     # return without doing anything.
-    if not isinstance(registry, ftrack.Registry):
+    if not isinstance(session, ftrack_api.session.Session):
         logger.debug(
             'Not subscribing plugin as passed argument {0!r} is not an '
-            'ftrack.Registry instance.'.format(registry)
+            'ftrack_api.Session instance.'.format(session)
         )
         return
 
-    ftrack.EVENT_HUB.subscribe(
-        'topic=ftrack.connect.publish.make-web-playable',
-        callback
-    )
+    subscribe(session)
+    logger.debug('Plugin registered')

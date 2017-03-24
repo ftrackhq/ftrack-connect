@@ -13,7 +13,6 @@ import logging
 
 import ftrack
 
-
 #: Default expression to match version component of executable path.
 #: Will match last set of numbers in string where numbers may contain a digit
 #: followed by zero or more digits, periods, or the letters 'a', 'b', 'c' or 'v'
