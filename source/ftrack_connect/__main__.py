@@ -11,7 +11,7 @@ import pkg_resources
 bindings = ['PySide', 'PySide2']
 os.environ.setdefault('QT_PREFERRED_BINDING', os.pathsep.join(bindings))
 
-from QtExt import QtWidgets
+from QtExt import QtWidgets, QtCore
 
 import ftrack_connect.config
 
@@ -69,6 +69,11 @@ def main(arguments=None):
     ftrack_connect.config.configure_logging(
         'ftrack_connect', level=loggingLevels[namespace.verbosity]
     )
+
+    # If under X11, make Xlib calls thread-safe.
+    # http://stackoverflow.com/questions/31952711/threading-pyqt-crashes-with-unknown-request-in-queue-while-dequeuing
+    if os.name == 'posix':
+        QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_X11InitThreads)
 
     # Construct global application.
     application = QtWidgets.QApplication([])

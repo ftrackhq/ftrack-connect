@@ -9,25 +9,32 @@ Migration notes
 
 .. _release/migration/upcoming:
 
-Migrate from 0.1.20 to Upcoming
-===============================
+Migrate to Upcoming
+===================
 
 .. _release/migration/upcoming/developer_notes:
+
+Users of a downloaded 
+`Connect package <https://www.ftrack.com/portfolio/connect>`_ are
+recommended to test the new version before upgrading all workstations.
+Especially if you have custom locations implemented for the `legacy api`.
 
 Developer notes
 ---------------
 
-Due to the optimization in import assets, we are now relying on the locations of the ftrack_api, 
-rather than the legacy api location.
+The Connect publisher has changed to use the `ftrack-python-api` instead of the
+`legacy api`.
 
-This means that legacy locations won't be discovered or used unless the 
-:ref:`ftrack-location-compatibility <ftrack-location-compatibility>` is installed.
+The Connect import dialog has changed to use the `ftrack-python-api` instead of
+the `legacy api`.
 
-Aternatively you can convert legacy location to new location api.
-:ref:`release/migration/upcoming/developer_notes`
+Since custom locations are not compatible between the different APIs all users
+running from source with custom locations for the `legacy api` must either:
 
-To install please ensure that *ftrack-location-compatibility/hook* folder is available into the 
-`FTRACK_EVENT_PLUGIN_PATH` environment variable.
+#.  Use the
+    `Location compatibility layer <https://bitbucket.org/ftrack/ftrack-location-compatibility/>`_
+    by putting it's resource folder on the `FTRACK_EVENT_PLUGIN_PATH`.
+#.  Or, re-write the location using the `ftrack-python-api`.
 
 
 Migrate from 0.1.19 to 0.1.20

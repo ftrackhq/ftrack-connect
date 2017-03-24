@@ -7,6 +7,8 @@ from QtExt import QtWidgets
 from QtExt import QtCore
 
 import ftrack
+from ftrack_api import exception
+from ftrack_api import event
 
 
 from ftrack_connect.ui.widget import data_drop_zone as _data_drop_zone
@@ -15,6 +17,7 @@ from ftrack_connect.ui.widget import item_selector as _item_selector
 from ftrack_connect.ui.widget import thumbnail_drop_zone as _thumbnail_drop_zone
 from ftrack_connect.ui.widget import asset_options as _asset_options
 from ftrack_connect.ui.widget import entity_selector
+from ftrack_connect.session import get_shared_session
 
 import ftrack_connect.asynchronous
 import ftrack_connect.error
@@ -31,6 +34,7 @@ class EntitySelector(entity_selector.EntitySelector):
 
 class Publisher(QtWidgets.QWidget):
     '''Publish widget for ftrack connect Publisher.'''
+
     publishStarted = QtCore.Signal()
     publishFinished = QtCore.Signal(bool)
 
@@ -41,12 +45,12 @@ class Publisher(QtWidgets.QWidget):
         '''Initiate a publish view.'''
         super(Publisher, self).__init__(parent)
 
+        self.session = get_shared_session()
         self.logger = logging.getLogger(
             __name__ + '.' + self.__class__.__name__
         )
 
         self._entity = None
-        self._manageData = False
 
         layout = QtWidgets.QVBoxLayout()
 
@@ -126,38 +130,13 @@ class Publisher(QtWidgets.QWidget):
             'resourceIdentifier': filePath
         })
 
-    def _pickLocation(self, manageData=False):
-        '''Return a location based on *manageData*.'''
-        location = None
-        locations = ftrack.getLocations(excludeInaccessible=True)
-        try:
-            location = next(
-                candidateLocation for candidateLocation in locations
-                if (
-                    manageData == False
-                    or not isinstance(candidateLocation, ftrack.UnmanagedLocation)
-                )
-            )
-
-        except StopIteration:
-            pass
-
-        self.logger.debug('Picked location {0}.'.format(location))
-
-        return location
-
     def clear(self):
         '''Clear the publish view to it's initial state.'''
-        self._manageData = False
         self.assetOptions.clear()
         self.versionDescription.clear()
         self.componentsList.clearItems()
         self.thumbnailDropZone.clear()
         self.entitySelector.setEntity(None)
-
-    def setManageData(self, manageData):
-        '''Set *manageData*.'''
-        self._manageData = manageData
 
     def publish(self):
         '''Gather all data in publisher and publish version with components.'''
@@ -187,7 +166,7 @@ class Publisher(QtWidgets.QWidget):
             taskId = entity.getId()
             entity = entity.getParent()
 
-        componentLocation = self._pickLocation(self._manageData)
+        componentLocation = self.session.pick_location()
 
         components = []
         for component in self.componentsList.items():
@@ -215,9 +194,9 @@ class Publisher(QtWidgets.QWidget):
         '''Clean up after a failed publish.'''
         try:
             if version:
-                version.delete()
+                self.session.delete(version)
 
-        except ftrack.FTrackError:
+        except exception.OperationError:
             self.logger.exception(
                 'Failed to delete version, probably due to a permission error.'
             )
@@ -249,7 +228,9 @@ class Publisher(QtWidgets.QWidget):
         try:
             if not (asset or assetType):
                 self.publishFinished.emit(False)
-                raise ftrack_connect.error.ConnectError('No asset type selected.')
+                raise ftrack_connect.error.ConnectError(
+                    'No asset type selected.'
+                )
 
             if not entity:
                 self.publishFinished.emit(False)
@@ -258,35 +239,72 @@ class Publisher(QtWidgets.QWidget):
             if components is None:
                 components = []
 
+            task = self.session.get('Context', taskId)
+
             if not asset:
-                if assetName is None:
-                    assetName = assetType.getName()
-
-                asset = entity.createAsset(
-                    assetName, assetType.getShort(), taskId
+                asset_type = self.session.get(
+                    'AssetType', assetType.getId()
                 )
-                self.assetCreated.emit(asset)
+                if assetName is None:
+                    assetName = asset_type['name']
 
-            version = asset.createVersion(
-                versionDescription, taskId
+                asset = self.session.create(
+                    'Asset',
+                    {
+                        'name': assetName,
+                        'type': asset_type,
+                        'parent': task['parent']
+                    }
+                )
+
+                # For compatibily reasons, emit old asset ftrack type.
+                self.session.commit()
+                old_ftrack_asset_type = ftrack.Asset(asset['id'])
+                self.assetCreated.emit(old_ftrack_asset_type)
+
+            else:
+                asset = self.session.get('Asset', asset.getId())
+
+            version = self.session.create(
+                'AssetVersion',
+                {
+                    'asset': asset,
+                    'comment': versionDescription,
+                    'task': task,
+                }
+            )
+            self.session.commit()
+
+            origin_location = self.session.query(
+                'Location where name is "ftrack.origin"'
             )
 
             for componentData in components:
-                component = version.createComponent(
-                    componentData.get('name', None),
-                    path=componentData.get('filePath'),
+                component = version.create_component(
+                    componentData.get('filePath'),
+                    {'name': componentData.get('name', None)},
                     location=None
                 )
 
                 for location in componentData.get('locations', []):
-                    location.addComponent(component)
+                    new_location = self.session.get(
+                        'Location', location['id']
+                    )
+                    new_location.add_component(
+                        component, source=origin_location
+                    )
+                    self.logger.info(
+                        u'Publish {0!r} to location: {1!r}.'.format(
+                            component, new_location['name']
+                        )
+                    )
 
             if previewPath:
-                ftrack.EVENT_HUB.publish(
-                    ftrack.Event(
+                self.session.event_hub.publish(
+                    event.base.Event(
                         'ftrack.connect.publish.make-web-playable',
                         data=dict(
-                            versionId=version.getId(),
+                            versionId=version['id'],
                             path=previewPath
                         )
                     ),
@@ -294,15 +312,16 @@ class Publisher(QtWidgets.QWidget):
                 )
 
             if thumbnailFilePath:
-                version.createThumbnail(thumbnailFilePath)
+                version.create_thumbnail(thumbnailFilePath)
 
-            version.publish()
+            version['is_published'] = True
+            self.session.commit()
 
             self.publishFinished.emit(True)
 
         # Catch any errors, emit *publishFinished*, clean up and re-raise.
         except Exception as error:
-            self.logger.exception('Failed to publish')
+            self.logger.exception(u'Failed to publish: {0}'.format(error))
             self.publishFinished.emit(False)
             self._cleanupFailedPublish(version=version)
 

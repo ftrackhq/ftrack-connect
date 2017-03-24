@@ -11,7 +11,27 @@ Release Notes
 .. release:: Upcoming
 
     .. change:: changed
-        :tags: Ui, Asset manager, API
+        :tags: API
+
+        Import asset is slow due to the use of legacy api.
+        :ref:`release/migration/upcoming/developer_notes`
+
+    .. change:: changed
+        :tags: Publish
+
+        The new api and locations are used for publishing.
+
+        .. seealso::
+
+            :ref:`Read more <release/migration/upcoming/developer_notes>`
+
+    .. change:: changed
+        :tags: Internal
+
+        X11 windows system is not thread safe. 
+
+    .. change:: changed
+        :tags: Ui, Asset manager, Internal
 
         Update color on version indicator in asset manager.
 
@@ -19,12 +39,6 @@ Release Notes
         :tags: Settings
 
         Numberic settings cannot be set to higher than 99.
-
-    .. change:: changed
-        :tags: API
-
-        Import asset is slow due to the use of legacy api.
-        :ref:`release/migration/upcoming/developer_notes`
 
 .. release:: 0.1.33
     :date: 2017-01-17
@@ -88,7 +102,7 @@ Release Notes
 
         Connect break in case of slow connection or missing url icon.
 
-    .. change:: Asset Manager
+    .. change:: changed
         :tags: Internal
 
         Speedup asset manager.
