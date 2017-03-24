@@ -726,7 +726,7 @@ class AssetManagerWidget(QtWidgets.QWidget):
                 'containing the version is available.'
             )
 
-        path = path = location.get_filesystem_path(ftrack_component)
+        path = location.get_filesystem_path(ftrack_component)
 
         importObj = FTAssetObject(
             filePath=path,
