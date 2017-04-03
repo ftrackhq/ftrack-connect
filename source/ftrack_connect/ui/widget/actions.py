@@ -159,7 +159,13 @@ class Actions(QtWidgets.QWidget):
             if key in validMetadata and value is not None:
                 metadata[key] = value
 
-        ftrack_connect.usage.send_event('LAUNCHED-ACTION', metadata)
+        # Send usage event in the main thread to prevent X server threading
+        # related crashes on Linux.
+        ftrack_connect.usage.send_event(
+            'LAUNCHED-ACTION',
+            metadata,
+            asynchronous=False
+        )
 
     def _showResultMessage(self, results):
         '''Show *results* message in overlay.'''
@@ -243,7 +249,7 @@ class Actions(QtWidgets.QWidget):
         '''Return if recent actions is enabled.
 
         Recent actions depends on being able to save metadata on users,
-        which was added in a ftrack server version 3.2.x. Check for the 
+        which was added in a ftrack server version 3.2.x. Check for the
         metadata attribute on the dynamic class.
         '''
         userHasMetadata = any(
