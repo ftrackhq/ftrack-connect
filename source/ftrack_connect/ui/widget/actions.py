@@ -4,6 +4,7 @@
 import json
 import time
 import logging
+import functools
 
 from QtExt import QtCore
 from QtExt import QtWidgets
@@ -160,6 +161,10 @@ class Actions(QtWidgets.QWidget):
                 metadata[key] = value
 
         ftrack_connect.usage.send_event('LAUNCHED-ACTION', metadata)
+        QtCore.QTimer.singleShot(
+            0,
+            functools.partial(ftrack_connect.usage.send_event, 'LAUNCHED-ACTION', metadata)
+        )
 
     def _showResultMessage(self, results):
         '''Show *results* message in overlay.'''
