@@ -160,7 +160,6 @@ class Actions(QtWidgets.QWidget):
             if key in validMetadata and value is not None:
                 metadata[key] = value
 
-        ftrack_connect.usage.send_event('LAUNCHED-ACTION', metadata)
         QtCore.QTimer.singleShot(
             0,
             functools.partial(ftrack_connect.usage.send_event, 'LAUNCHED-ACTION', metadata)
