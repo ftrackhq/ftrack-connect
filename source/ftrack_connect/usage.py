@@ -11,8 +11,7 @@ logger = logging.getLogger('ftrack_connect:usage')
 _log_usage_session = None
 
 
-@ftrack_connect.asynchronous.asynchronous
-def send_event(event_name, metadata=None):
+def _send_event(event_name, metadata=None):
     '''Send usage event with *event_name* and *metadata*.'''
     global _log_usage_session
 
@@ -30,3 +29,20 @@ def send_event(event_name, metadata=None):
         }])
     except Exception:
         logger.exception('Failed to send event.')
+
+@ftrack_connect.asynchronous.asynchronous
+def _send_async_event(event_name, metadata=None):
+    '''Call __send_event in a new thread.'''
+    _send_event(event_name, metadata)
+
+
+def send_event(event_name, metadata=None, asynchronous=True):
+    '''Send usage event with *event_name* and *metadata*.
+
+    If asynchronous is True, the event will be sent in a new thread.
+    '''
+
+    if asynchronous:
+        _send_async_event(event_name, metadata)
+    else:
+        _send_event(event_name, metadata)
