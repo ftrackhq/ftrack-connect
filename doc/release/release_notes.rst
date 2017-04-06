@@ -10,6 +10,11 @@ Release Notes
 
 .. release:: Upcoming
 
+    .. change:: fixed
+        :tags: Internal
+
+        Fixed occasional X11 related crashes when launching actions on Linux.
+
     .. change:: changed
         :tags: API
 
@@ -28,7 +33,7 @@ Release Notes
     .. change:: changed
         :tags: Internal
 
-        X11 windows system is not thread safe. 
+        X11 windows system is not thread safe.
 
     .. change:: changed
         :tags: Ui, Asset manager, Internal
@@ -63,7 +68,7 @@ Release Notes
     .. change:: fixed
         :tags: Widget
 
-        Entity picker may cause instability on some combinations of 
+        Entity picker may cause instability on some combinations of
         platforms and applications.
 
     .. change:: new
@@ -242,7 +247,7 @@ Release Notes
     .. change:: changed
         :tags: Event plugins
 
-        Event plugins are now loaded for the new Python API, 
+        Event plugins are now loaded for the new Python API,
         :ref:`ftrack-python-api <ftrack-python-api:introduction>`.
         :ref:`Read more <release/migration/0.1.20/developer_notes>`
 

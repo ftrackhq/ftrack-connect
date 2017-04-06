@@ -4,6 +4,7 @@
 import json
 import time
 import logging
+import functools
 
 from QtExt import QtCore
 from QtExt import QtWidgets
@@ -159,7 +160,13 @@ class Actions(QtWidgets.QWidget):
             if key in validMetadata and value is not None:
                 metadata[key] = value
 
-        ftrack_connect.usage.send_event('LAUNCHED-ACTION', metadata)
+        # Send usage event in the main thread to prevent X server threading
+        # related crashes on Linux.
+        ftrack_connect.usage.send_event(
+            'LAUNCHED-ACTION',
+            metadata,
+            asynchronous=False
+        )
 
     def _showResultMessage(self, results):
         '''Show *results* message in overlay.'''
@@ -180,11 +187,12 @@ class Actions(QtWidgets.QWidget):
         self._overlay.setMessage(message)
         self._hideOverlayAfterTimeout(self.ACTION_LAUNCH_MESSAGE_TIMEOUT)
 
-    @ftrack_connect.asynchronous.asynchronous
     def _hideOverlayAfterTimeout(self, timeout):
         '''Hide overlay after *timeout* seconds.'''
-        time.sleep(timeout)
-        self._overlay.setVisible(False)
+        QtCore.QTimer.singleShot(
+            timeout * 1000,
+            functools.partial(self._overlay.setVisible, False)
+        )
 
     def _onEntityChanged(self, entity):
         '''Load new actions when the context has changed'''
@@ -243,7 +251,7 @@ class Actions(QtWidgets.QWidget):
         '''Return if recent actions is enabled.
 
         Recent actions depends on being able to save metadata on users,
-        which was added in a ftrack server version 3.2.x. Check for the 
+        which was added in a ftrack server version 3.2.x. Check for the
         metadata attribute on the dynamic class.
         '''
         userHasMetadata = any(
