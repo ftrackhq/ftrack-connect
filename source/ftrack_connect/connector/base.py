@@ -17,6 +17,8 @@ import sys
 from QtExt import QtWidgets, QtNetwork, QtCore, QtGui
 
 import ftrack
+import ftrack_connect.session as connect_session
+
 
 # Append ftrack to urlparse.
 for method in filter(lambda s: s.startswith('uses_'), dir(urlparse)):
@@ -29,9 +31,10 @@ class Connector(object):
     __metaclass__ = abc.ABCMeta
 
     @abc.abstractmethod
-    def __init__(self):
+    def __init__(self, session=None):
         '''Instantiate base connector.'''
         super(Connector, self).__init__()
+        self.session = session or connect_session.get_shared_session()
 
     @staticmethod
     @abc.abstractmethod
@@ -479,28 +482,35 @@ class FTAssetObject(object):
         self.componentId = componentId
         self.filePath = filePath
         self.componentName = componentName
-
+        self.shared_session = connect_session.get_shared_session()
         self.options = options
         self.setTotalSteps = True
         self.taskId = taskId
 
         if assetVersionId != '':
+            assetVersion = self.shared_session.query(
+                'select id, asset, asset.name,'
+                ' asset.id, asset.type.short '
+                ' from AssetVersion where id is "{0}"'.format(assetVersionId)
+            ).one()
             self.assetVersionId = assetVersionId
-            assetVersion = ftrack.AssetVersion(assetVersionId)
-
-            assetVersionStr = str(assetVersion.getVersion())
-
+            assetVersionStr = str(assetVersion['version'])
             self.assetVersion = assetVersionStr
-
-            asset = assetVersion.getAsset()
-            self.assetName = asset.getName()
-            self.assetType = asset.getType().getShort()
-            self.assetId = asset.getId()
+            self.assetName = assetVersion['asset']['name']
+            self.assetType = assetVersion['asset']['type']['short']
+            self.assetId = assetVersion['asset']['id']
 
         if self.componentId != '':
-            metaDict = ftrack.Component(self.componentId).getMeta()
+            component = self.shared_session.query(
+                'select name, version.asset.type.short, version.asset.name, '
+                'version.asset.type.name, version.asset.versions.version, '
+                'version.id, version.version, version.asset.versions, '
+                'version.date, version.comment, version.asset.name, version, '
+                'version_id, version.user.first_name, version.user.last_name '
+                ' from Component where id is {0}'.format(self.componentId)
+            ).one()
             self.metadata = []
-            for k, v in metaDict.items():
+            for k, v in component['metadata'].items():
                 self.metadata.append((k, v))
 
         try:

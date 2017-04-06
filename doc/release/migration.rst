@@ -23,14 +23,19 @@ Developer notes
 ---------------
 
 The Connect publisher has changed to use the `ftrack-python-api` instead of the
-`legacy api`. Since custom locations are not compatible between the different
-APIs all users running from source with custom locations for the `legacy api`
-must either:
+`legacy api`.
+
+The Connect import dialog has changed to use the `ftrack-python-api` instead of
+the `legacy api`.
+
+Since custom locations are not compatible between the different APIs all users
+running from source with custom locations for the `legacy api` must either:
 
 #.  Use the
     `Location compatibility layer <https://bitbucket.org/ftrack/ftrack-location-compatibility/>`_
     by putting it's resource folder on the `FTRACK_EVENT_PLUGIN_PATH`.
 #.  Or, re-write the location using the `ftrack-python-api`.
+
 
 Migrate from 0.1.19 to 0.1.20
 ===============================

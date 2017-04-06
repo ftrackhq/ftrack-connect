@@ -10,6 +10,14 @@ Release Notes
 
 .. release:: Upcoming
 
+    .. change:: changed
+        :tags: API
+
+        Changed from using legacy API locations to using locations from the
+        ftrack-python-api. Make sure to read the migration notes before
+        upgrading:
+        :ref:`release/migration/upcoming/developer_notes`
+
     .. change:: fixed
         :tags: Internal
 

@@ -5,8 +5,8 @@ import os
 
 from QtExt import QtWidgets, QtCore, QtGui
 
-import ftrack
 from ftrack_connect.connector import HelpFunctions
+from ftrack_api import symbol
 
 
 class AssetVersionDetailsWidget(QtWidgets.QWidget):
@@ -24,12 +24,14 @@ class AssetVersionDetailsWidget(QtWidgets.QWidget):
             )
 
         self.connector = connector
+        self.session = self.connector.session
 
         self.headers = (
             'Asset', 'Author', 'Version', 'Date', 'Comment'
         )
-        self.placholderThumbnail = (os.environ['FTRACK_SERVER']
-                                    + '/img/thumbnail2.png')
+        self.placholderThumbnail = (
+            os.environ['FTRACK_SERVER'] + '/img/thumbnail2.png'
+        )
         # TODO: Implement better caching system
         self.thumbnailCache = {}
 
@@ -91,29 +93,39 @@ class AssetVersionDetailsWidget(QtWidgets.QWidget):
 
     def setAssetVersion(self, assetVersionId):
         '''Set the asset version to display details for.'''
-        assetVersion = ftrack.AssetVersion(assetVersionId)
-        asset = assetVersion.getAsset()
+        asset_version = self.session.query(
+            'select id, asset, asset.name, user, user.username,'
+            ' version, date, comment, thumbnail'
+            ' from AssetVersion where id is "{0}"'.format(assetVersionId)
+        ).one()
+
+        server_location = self.session.get(
+            'Location', symbol.SERVER_LOCATION_ID
+        )
 
         header = self.headers.index
 
         item = self.propertyTableWidget.item(header('Asset'), 0)
-        item.setText(asset.getName())
+        item.setText(asset_version['asset']['name'])
 
         item = self.propertyTableWidget.item(header('Author'), 0)
-        item.setText(assetVersion.getUser().getName())
+        item.setText(asset_version['user']['username'])
 
         item = self.propertyTableWidget.item(header('Version'), 0)
-        item.setText(str(assetVersion.getVersion()))
+        item.setText(str(asset_version['version']))
 
         item = self.propertyTableWidget.item(header('Date'), 0)
-        item.setText(assetVersion.getDate().strftime('%c'))
+        item.setText(asset_version['date'].strftime('%c'))
 
         item = self.propertyTableWidget.item(header('Comment'), 0)
-        item.setText(assetVersion.getComment())
+        item.setText(asset_version['comment'])
 
-        thumbnail = assetVersion.getThumbnail()
-        if thumbnail is None:
-            thumbnail = self.placholderThumbnail
+        # Thumbnail return a FileComponent, so we need the thumbnail of this.
+        thumbnail_component = asset_version['thumbnail']
+        thumbnail = self.placholderThumbnail
+
+        if thumbnail_component:
+            thumbnail = server_location.get_url(thumbnail_component)
 
         self.connector.executeInThread(
             self._updateThumbnail, [self.thumbnailWidget, thumbnail]

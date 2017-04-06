@@ -33,7 +33,6 @@ class FtrackImportAssetDialog(QtWidgets.QDialog):
         super(FtrackImportAssetDialog, self).__init__(parent=parent)
         applyTheme(self, 'integration')
         self.connector = connector
-
         self.currentEntity = ftrack.Task(
             os.getenv('FTRACK_TASKID',
                 os.getenv('FTRACK_SHOTID')
@@ -187,14 +186,23 @@ class FtrackImportAssetDialog(QtWidgets.QDialog):
             row,
             self.componentTableWidget.columns.index('Component')
         )
-        component = componentItem.data(
+        component_id = componentItem.data(
             self.componentTableWidget.COMPONENT_ROLE
         )
 
-        assetVersion = component.getVersion()
+        ftrack_component = self.connector.session.query(
+            'select name, version.asset.type.short, version.asset.name, '
+            'version.asset.type.name, version.asset.versions.version, '
+            'version.id, version.version, version.asset.versions, '
+            'version.date, version.comment, version.asset.name, version, '
+            'version_id, version.user.first_name, version.user.last_name '
+            ' from Component where id is {0}'.format(component_id)
+        ).one()
+
+        assetVersion = ftrack_component['version']['id']
 
         self.importSignal.emit()
-        asset_name = component.getParents()[0].getAsset().getName()
+        asset_name = ftrack_component['version']['asset']['name']
 
         accessPath = self.componentTableWidget.item(
             row,
@@ -202,10 +210,10 @@ class FtrackImportAssetDialog(QtWidgets.QDialog):
         ).text()
 
         importObj = FTAssetObject(
-            componentId=component.getId(),
+            componentId=ftrack_component['id'],
             filePath=accessPath,
-            componentName=component.getName(),
-            assetVersionId=assetVersion.getId(),
+            componentName=ftrack_component['name'],
+            assetVersionId=assetVersion,
             options=importOptions
         )
         try:
@@ -218,7 +226,7 @@ class FtrackImportAssetDialog(QtWidgets.QDialog):
 
         self.headerWidget.setMessage(
             u'Imported {0}.{1}:v{2}'.format(
-                asset_name, component.getName(), assetVersion.getVersion()
+                asset_name, ftrack_component['name'], ftrack_component['version']['version']
             )
         )
 
