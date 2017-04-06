@@ -10,16 +10,18 @@ Release Notes
 
 .. release:: Upcoming
 
+    .. change:: changed
+        :tags: API
+
+        Changed from using legacy API locations to using locations from the
+        ftrack-python-api. Make sure to read the migration notes before
+        upgrading:
+        :ref:`release/migration/upcoming/developer_notes`
+
     .. change:: fixed
         :tags: Internal
 
         Fixed occasional X11 related crashes when launching actions on Linux.
-
-    .. change:: changed
-        :tags: API
-
-        Import asset is slow due to the use of legacy api.
-        :ref:`release/migration/upcoming/developer_notes`
 
     .. change:: changed
         :tags: Publish
