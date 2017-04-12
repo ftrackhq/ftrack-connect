@@ -203,7 +203,6 @@ class Connector(object):
                         break
                     except:
                         pass
-
         return obj
 
     @staticmethod
@@ -212,22 +211,28 @@ class Connector(object):
                           progressCallback=None, startProgress=0,
                           endProgress=100):
         '''Publish asset files.'''
+        session = connect_session.get_shared_session()
         if progressCallback:
             progressCallback(startProgress)
 
+        asset_version = session.get('AssetVersion', assetVersion.getId())
         for componentNumber, ftComponent in enumerate(publishedComponents):
             path = HelpFunctions.safeString(ftComponent.path)
 
             if ftComponent.componentname != 'thumbnail':
-                location = Connector.pickLocation(copyFiles=copyFiles)
-                component = assetVersion.createComponent(
-                    name=ftComponent.componentname,
-                    path=path,
-                    location=None
-                )
+
+                location = session.pick_location()
+
                 try:
-                    location.addComponent(component)
-                except ftrack.AccessorError as error:
+                    component = asset_version.create_component(
+                        path=path,
+                        data={'name': ftComponent.componentname},
+                        location=location
+                    )
+
+                    session.commit()
+
+                except Exception as error:
                     errorMessage = (
                         'A problem occurred while writing your files. It is '
                         'possible the disk settings in ftrack are incorrect. If '
@@ -246,54 +251,34 @@ class Connector(object):
                     print error
 
                     return
-
             else:
-                thumb = assetVersion.createThumbnail(path)
+                thumb = asset_version.create_thumbnail(path)
                 try:
-                    currentTask = assetVersion.getTask()
-                    currentTask.setThumbnail(thumb)
+                    currentTask = asset_version['task']
+                    currentTask['thumbnail'] = thumb
                 except:
                     print 'no task'
 
                 try:
-                    shot = assetVersion.getAsset().getParent()
-                    shot.setThumbnail(thumb)
+                    shot = asset_version['asset']['parent']
+                    shot['thumbnail'] = thumb
                 except:
                     print 'no shot for some reason'
 
             if len(ftComponent.metadata) > 0:
                 for k, v in ftComponent.metadata:
-                    component.setMeta(k, v)
+                    component['metadata'][k] = v
 
             if progressCallback:
                 progressStep = (endProgress - startProgress) / len(publishedComponents)
                 progressCallback(startProgress + progressStep * (componentNumber + 1))
 
-        assetVersion.publish()
+        asset_version['is_published'] = True
+        session.commit()
         Connector.postPublish(pubObj, publishedComponents)
 
         if progressCallback:
             progressCallback(endProgress)
-
-    @staticmethod
-    def pickLocation(copyFiles=False):
-        '''Return a location based on *copyFiles*.'''
-        location = None
-        locations = ftrack.getLocations()
-
-        for candidateLocation in locations:
-            if candidateLocation.getAccessor() is not None:
-                # Can't copy files to an unmanaged location.
-                if (
-                    copyFiles and
-                    isinstance(candidateLocation, ftrack.UnmanagedLocation)
-                ):
-                    continue
-
-                location = candidateLocation
-                break
-
-        return location
 
 
 class HelpFunctions(object):
