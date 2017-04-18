@@ -149,9 +149,11 @@ class Connector(object):
     @classmethod
     def prePublish(cls, iAObj):
         '''Make certain scene validations before actualy publishing *iAObj*.'''
-        parent = ftrack.Task(iAObj.taskId).getParent()
-        if parent.get('entityType') == 'show':
-            return None, 'Task parent cant be show'
+        session = connect_session.get_shared_session()
+        parent = session.get('Task', iAObj.taskId)['parent']
+
+        if parent['context_type'] == 'show':
+            return None, 'Task parent cannot be a show'
         else:
             return True, ''
 
