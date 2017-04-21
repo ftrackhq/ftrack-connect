@@ -203,6 +203,7 @@ class Connector(object):
                         break
                     except:
                         pass
+
         return obj
 
     @staticmethod
@@ -232,7 +233,6 @@ class Connector(object):
 
                     session.commit()
 
-                # TODO: Change with correct ftrack exception
                 except Exception as error:
                     errorMessage = (
                         'A problem occurred while writing your files. It is '
@@ -252,6 +252,7 @@ class Connector(object):
                     print error
 
                     return
+
             else:
                 thumb = asset_version.create_thumbnail(path)
                 try:
@@ -280,6 +281,26 @@ class Connector(object):
 
         if progressCallback:
             progressCallback(endProgress)
+
+    @staticmethod
+    def pickLocation(copyFiles=False):
+        '''Return a location based on *copyFiles*.'''
+        location = None
+        locations = ftrack.getLocations()
+
+        for candidateLocation in locations:
+            if candidateLocation.getAccessor() is not None:
+                # Can't copy files to an unmanaged location.
+                if (
+                    copyFiles and
+                    isinstance(candidateLocation, ftrack.UnmanagedLocation)
+                ):
+                    continue
+
+                location = candidateLocation
+                break
+
+        return location
 
 
 class HelpFunctions(object):
