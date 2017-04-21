@@ -224,6 +224,10 @@ class Connector(object):
 
             if ftComponent.componentname != 'thumbnail':
 
+                if '%' in path:  # is a sequence
+                    start, end = HelpFunctions.getFileSequenceStartEnd(path)
+                    path = '{0} [{1}-{2}]'.format(path, start, end)
+
                 location = Connector.pickLocation(copyFiles=copyFiles)
 
                 try:
@@ -256,16 +260,16 @@ class Connector(object):
                     return
 
             else:
-                thumb = asset_version.create_thumbnail(path)
+                thumb = assetVersion.createThumbnail(path)
                 try:
-                    currentTask = asset_version['task']
-                    currentTask['thumbnail'] = thumb
+                    currentTask = assetVersion.getTask()
+                    currentTask.setThumbnail(thumb)
                 except Exception:
                     print 'no task'
 
                 try:
-                    shot = asset_version['asset']['parent']
-                    shot['thumbnail'] = thumb
+                    shot = assetVersion.getAsset().getParent()
+                    shot.setThumbnail(thumb)
                 except Exception:
                     print 'no shot for some reason'
 
