@@ -235,7 +235,7 @@ class Connector(object):
 
                     session.commit()
 
-                except Exception as error:
+                except ftrack_api.exception.LocationError as error:
                     errorMessage = (
                         'A problem occurred while writing your files. It is '
                         'possible the disk settings in ftrack are incorrect. If '
