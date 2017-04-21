@@ -17,6 +17,8 @@ import sys
 from QtExt import QtWidgets, QtNetwork, QtCore, QtGui
 
 import ftrack
+import ftrack_api
+from ftrack_api import symbol
 import ftrack_connect.session as connect_session
 
 
@@ -222,7 +224,7 @@ class Connector(object):
 
             if ftComponent.componentname != 'thumbnail':
 
-                location = session.pick_location()
+                location = Connector.pickLocation(copyFiles=copyFiles)
 
                 try:
                     component = asset_version.create_component(
@@ -258,13 +260,13 @@ class Connector(object):
                 try:
                     currentTask = asset_version['task']
                     currentTask['thumbnail'] = thumb
-                except:
+                except Exception:
                     print 'no task'
 
                 try:
                     shot = asset_version['asset']['parent']
                     shot['thumbnail'] = thumb
-                except:
+                except Exception:
                     print 'no shot for some reason'
 
             if len(ftComponent.metadata) > 0:
@@ -286,14 +288,18 @@ class Connector(object):
     def pickLocation(copyFiles=False):
         '''Return a location based on *copyFiles*.'''
         location = None
-        locations = ftrack.getLocations()
+        session = connect_session.get_shared_session()
+        locations = session.query('select id, name from Location').all()
 
         for candidateLocation in locations:
-            if candidateLocation.getAccessor() is not None:
+            if candidateLocation.accessor is not symbol.NOT_SET:
                 # Can't copy files to an unmanaged location.
                 if (
                     copyFiles and
-                    isinstance(candidateLocation, ftrack.UnmanagedLocation)
+                    isinstance(
+                        candidateLocation,
+                        ftrack_api.entity.location.UnmanagedLocationMixin
+                    )
                 ):
                     continue
 
