@@ -224,7 +224,7 @@ class Connector(object):
 
             if ftComponent.componentname != 'thumbnail':
 
-                if '%' in path:  # is a sequence
+                if '%' in os.path.basename(path):  # is a sequence
                     start, end = HelpFunctions.getFileSequenceStartEnd(path)
                     path = '{0} [{1}-{2}]'.format(path, start, end)
 
