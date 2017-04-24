@@ -218,25 +218,26 @@ class Connector(object):
         if progressCallback:
             progressCallback(startProgress)
 
+        origin_location = session.get('Location where id is {0}'.format(
+            symbol.UNMANAGED_LOCATION_ID)
+        )
+
         asset_version = session.get('AssetVersion', assetVersion.getId())
         for componentNumber, ftComponent in enumerate(publishedComponents):
             path = HelpFunctions.safeString(ftComponent.path)
 
             if ftComponent.componentname != 'thumbnail':
 
-                if '%' in os.path.basename(path):  # is a sequence
-                    start, end = HelpFunctions.getFileSequenceStartEnd(path)
-                    path = '{0} [{1}-{2}]'.format(path, start, end)
-
                 location = Connector.pickLocation(copyFiles=copyFiles)
 
-                try:
-                    component = asset_version.create_component(
-                        path=path,
-                        data={'name': ftComponent.componentname},
-                        location=location
-                    )
+                component = asset_version.create_component(
+                    path=path,
+                    data={'name': ftComponent.componentname},
+                    location=origin_location
+                )
 
+                try:
+                    location.add_component(component, origin_location)
                     session.commit()
 
                 except Exception as error:
