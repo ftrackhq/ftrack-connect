@@ -218,10 +218,6 @@ class Connector(object):
         if progressCallback:
             progressCallback(startProgress)
 
-        origin_location = session.get('Location where id is {0}'.format(
-            symbol.UNMANAGED_LOCATION_ID)
-        )
-
         asset_version = session.get('AssetVersion', assetVersion.getId())
         for componentNumber, ftComponent in enumerate(publishedComponents):
             path = HelpFunctions.safeString(ftComponent.path)
@@ -230,14 +226,13 @@ class Connector(object):
 
                 location = Connector.pickLocation(copyFiles=copyFiles)
 
-                component = asset_version.create_component(
-                    path=path,
-                    data={'name': ftComponent.componentname},
-                    location=origin_location
-                )
-
                 try:
-                    location.add_component(component, origin_location)
+                    component = asset_version.create_component(
+                        path=path,
+                        data={'name': ftComponent.componentname},
+                        location=location
+                    )
+
                     session.commit()
 
                 except Exception as error:
