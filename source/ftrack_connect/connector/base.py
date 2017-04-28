@@ -291,7 +291,16 @@ class Connector(object):
         session = connect_session.get_shared_session()
         locations = session.query('select id, name from Location').all()
 
-        for candidateLocation in locations:
+        sorted_locations = sorted(
+            locations, key=lambda _location: _location.priority
+        )
+
+        visible_locations = filter(
+            lambda _location: _location['name'] not in ('ftrack.origin',),
+            sorted_locations
+        )
+
+        for candidateLocation in visible_locations:
             if candidateLocation.accessor is not symbol.NOT_SET:
                 # Can't copy files to an unmanaged location.
                 if (
