@@ -28,8 +28,12 @@ class HtmlDelegate(QtWidgets.QStyledItemDelegate):
 
     def paint(self, painter, option, index):
         '''Paint delegate using *painter*.'''
-        options = QtGui.QStyleOptionViewItemV4(option)
-        self.initStyleOption(options, index)
+        try:
+            options = QtWidgets.QStyleOptionViewItemV4(option)
+            self.initStyleOption(options, index)
+        except Exception:
+            # pyside2 does not support it yet
+            pass
 
         if options.widget is None:
             style = QtWidgets.QApplication.style()
@@ -76,8 +80,12 @@ class HtmlDelegate(QtWidgets.QStyledItemDelegate):
 
     def sizeHint(self, option, index):
         '''Return preferred size hint.'''
-        options = QtGui.QStyleOptionViewItemV4(option)
-        self.initStyleOption(options, index)
+
+        try:
+            options = QtWidgets.QStyleOptionViewItemV4(option)
+            self.initStyleOption(options, index)
+        except Exception:
+            pass
 
         data = index.data(role=QtCore.Qt.UserRole)
         document = self.getTextDocument(option, data)
