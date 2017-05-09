@@ -48,7 +48,7 @@ class HtmlComboBox(QtWidgets.QComboBox):
             )
 
             style = painter.style()  # QtWidgets.QApplication.style()
-            paint_context = QtWidgets.QAbstractTextDocumentLayout.PaintContext()
+            paint_context = QtGui.QAbstractTextDocumentLayout.PaintContext()
 
             text_rectangle = style.subElementRect(
                 QtWidgets.QStyle.SE_ComboBoxFocusRect, option, self

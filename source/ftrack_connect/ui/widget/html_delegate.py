@@ -28,7 +28,7 @@ class HtmlDelegate(QtWidgets.QStyledItemDelegate):
 
     def paint(self, painter, option, index):
         '''Paint delegate using *painter*.'''
-        options = QtWidgets.QStyleOptionViewItemV4(option)
+        options = QtGui.QStyleOptionViewItemV4(option)
         self.initStyleOption(options, index)
 
         if options.widget is None:
@@ -76,7 +76,7 @@ class HtmlDelegate(QtWidgets.QStyledItemDelegate):
 
     def sizeHint(self, option, index):
         '''Return preferred size hint.'''
-        options = QtWidgets.QStyleOptionViewItemV4(option)
+        options = QtGui.QStyleOptionViewItemV4(option)
         self.initStyleOption(options, index)
 
         data = index.data(role=QtCore.Qt.UserRole)
