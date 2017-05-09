@@ -39,7 +39,7 @@ class HtmlComboBox(QtWidgets.QComboBox):
 
             option = QtWidgets.QStyleOptionComboBox()
             self.initStyleOption(option)
-            painter.drawComplexControl(QtGui.QStyle.CC_ComboBox, option)
+            painter.drawComplexControl(QtWidgets.QStyle.CC_ComboBox, option)
 
             # Get QTextDocument from delegate to use for painting HTML text.
             delegate = self.itemDelegate()

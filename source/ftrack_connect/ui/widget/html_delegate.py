@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
 
-from QtExt import QtWidgets, QtCore
+from QtExt import QtWidgets, QtCore, QtGui
 
 
 class HtmlDelegate(QtWidgets.QStyledItemDelegate):
@@ -20,7 +20,7 @@ class HtmlDelegate(QtWidgets.QStyledItemDelegate):
 
     def getTextDocument(self, option, item_data):
         '''Return QTextDocument based on *option* and *item_data*.'''
-        document = QtWidgets.QTextDocument()
+        document = QtGui.QTextDocument()
         document.setHtml(self.format(item_data))
         document.setTextWidth(option.rect.width())
 
