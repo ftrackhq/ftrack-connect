@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-from QtExt import QtWidgets, QtCore
+from QtExt import QtWidgets, QtCore, QtGui
 
 
 class Label(QtWidgets.QLabel):
@@ -24,9 +24,9 @@ class Label(QtWidgets.QLabel):
 
     def paintEvent(self, event):
         '''Paint *event* with the configured elideMode.'''
-        painter = QtWidgets.QPainter(self)
+        painter = QtGui.QPainter(self)
 
-        metrics = QtWidgets.QFontMetrics(self.font())
+        metrics = QtGui.QFontMetrics(self.font())
         elided = metrics.elidedText(self.text(), self.elideMode, self.width())
 
         painter.drawText(self.rect(), self.alignment(), elided)

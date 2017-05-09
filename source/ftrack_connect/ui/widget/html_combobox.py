@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
 
-from QtExt import QtWidgets, QtCore
+from QtExt import QtWidgets, QtCore, QtGui
 
 import ftrack_connect.ui.widget.html_delegate
 
@@ -35,11 +35,11 @@ class HtmlComboBox(QtWidgets.QComboBox):
         if itemData:
             # Draw main control.
             painter = QtWidgets.QStylePainter(self)
-            painter.setPen(self.palette().color(QtWidgets.QPalette.Text))
+            painter.setPen(self.palette().color(QtGui.QPalette.Text))
 
             option = QtWidgets.QStyleOptionComboBox()
             self.initStyleOption(option)
-            painter.drawComplexControl(QtWidgets.QStyle.CC_ComboBox, option)
+            painter.drawComplexControl(QtGui.QStyle.CC_ComboBox, option)
 
             # Get QTextDocument from delegate to use for painting HTML text.
             delegate = self.itemDelegate()
