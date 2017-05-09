@@ -58,7 +58,8 @@ class HtmlDelegate(QtWidgets.QStyledItemDelegate):
             paint_context.palette.setColor(
                 QtWidgets.QPalette.Text,
                 options.palette.color(
-                    QtWidgets.QPalette.Active, QtWidgets.QPalette.HighlightedText
+                    QtWidgets.QPalette.Active,
+                    QtWidgets.QPalette.HighlightedText
                 )
             )
 
