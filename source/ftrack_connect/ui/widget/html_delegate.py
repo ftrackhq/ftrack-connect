@@ -28,12 +28,8 @@ class HtmlDelegate(QtWidgets.QStyledItemDelegate):
 
     def paint(self, painter, option, index):
         '''Paint delegate using *painter*.'''
-        try:
-            options = QtWidgets.QStyleOptionViewItemV4(option)
-            self.initStyleOption(options, index)
-        except Exception:
-            # pyside2 does not support it yet
-            pass
+        options = QtWidgets.QStyleOptionViewItem(option)
+        self.initStyleOption(options, index)
 
         if options.widget is None:
             style = QtWidgets.QApplication.style()
@@ -51,15 +47,15 @@ class HtmlDelegate(QtWidgets.QStyledItemDelegate):
         # options specified by option
         style.drawControl(QtWidgets.QStyle.CE_ItemViewItem, options, painter)
 
-        paint_context = QtWidgets.QAbstractTextDocumentLayout.PaintContext()
+        paint_context = QtGui.QAbstractTextDocumentLayout.PaintContext()
 
         # If item state is selected by mouse over change the highlight color.
         if options.state & QtWidgets.QStyle.State_Selected:
             paint_context.palette.setColor(
-                QtWidgets.QPalette.Text,
+                QtGui.QPalette.Text,
                 options.palette.color(
-                    QtWidgets.QPalette.Active,
-                    QtWidgets.QPalette.HighlightedText
+                    QtGui.QPalette.Active,
+                    QtGui.QPalette.HighlightedText
                 )
             )
 
@@ -81,12 +77,8 @@ class HtmlDelegate(QtWidgets.QStyledItemDelegate):
 
     def sizeHint(self, option, index):
         '''Return preferred size hint.'''
-
-        try:
-            options = QtWidgets.QStyleOptionViewItemV4(option)
-            self.initStyleOption(options, index)
-        except Exception:
-            pass
+        options = QtWidgets.QStyleOptionViewItem(option)
+        self.initStyleOption(options, index)
 
         data = index.data(role=QtCore.Qt.UserRole)
         document = self.getTextDocument(option, data)
