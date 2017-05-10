@@ -161,7 +161,9 @@ class PropertyNotification(Notification):
     def _load(self):
         '''Internal load of data from event.'''
         data = json.loads(self._event['data'])
-        value = data['value']
+        value = data.get('value', {})
+        if not value:
+            return
 
         self.attributeName = self._event['action'].split('.')[-1]
 
