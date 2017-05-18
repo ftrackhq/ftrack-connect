@@ -20,6 +20,11 @@ Release Notes
 
         Changed Connector based plugins to use the new API to publish assets.
 
+    .. change:: fixed
+        :tags: Ui, Asset manager
+
+        Asset manager fails to open in some rare cases.
+
     .. change:: changed
         :tags: API
 
