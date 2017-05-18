@@ -25,6 +25,11 @@ Release Notes
 
         Asset manager fails to open in some rare cases.
 
+    .. change:: fixed
+        :tags: Ui, Asset manager
+
+        Fixed asset manager failing to open in some rare cases.
+
     .. change:: changed
         :tags: API
 
