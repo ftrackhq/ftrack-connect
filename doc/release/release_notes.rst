@@ -9,6 +9,11 @@ Release Notes
 *************
 
 .. release:: Upcoming
+    
+    .. change:: changed
+        :tags: API
+
+        Changed Connector based plugins to use the new API to publish assets.
 
     .. change:: changed
         :tags: API
