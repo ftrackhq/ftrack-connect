@@ -9,6 +9,12 @@ Release Notes
 *************
 
 .. release:: Upcoming
+    .. change:: changed
+        :tags: Events, API
+
+        The `ftrack.connect.application.launch` event is now also emitted through the new
+        api. The event allows you to modify the command and/or environment of applications
+        before they are launched.
     
     .. change:: changed
         :tags: API
