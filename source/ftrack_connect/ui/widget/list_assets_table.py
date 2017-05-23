@@ -195,7 +195,7 @@ class ListAssetsTableWidget(QtWidgets.QWidget):
 
                     try:
                         authorName = assetVersions[-1].getUser().getName()
-                    except AttributeError:
+                    except ftrack.ftrackerror.FTrackError:
                         # This error can happen if a version does not have an user,
                         # for example if the user has been deleted after publishing
                         # the version.
@@ -250,7 +250,7 @@ class ListAssetsTableWidget(QtWidgets.QWidget):
 
         try:
             authorName = version.getUser().getName()
-        except AttributeError:
+        except ftrack.ftrackerror.FTrackError:
             # This error can happen if a version does not have an user,
             # for example if the user has been deleted after publishing
             # the version.
