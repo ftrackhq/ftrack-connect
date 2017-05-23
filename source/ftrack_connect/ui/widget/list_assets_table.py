@@ -199,7 +199,7 @@ class ListAssetsTableWidget(QtWidgets.QWidget):
                         # This error can happen if a version does not have an user,
                         # for example if the user has been deleted after publishing
                         # the version.
-                        authorName = ''
+                        authorName = 'No User Found'
 
                     author = QtWidgets.QTableWidgetItem(authorName)
                     self.assetTable.setItem(j, column('Author'), author)
@@ -254,7 +254,7 @@ class ListAssetsTableWidget(QtWidgets.QWidget):
             # This error can happen if a version does not have an user,
             # for example if the user has been deleted after publishing
             # the version.
-            authorName = ''
+            authorName = 'No User Found'
 
         authorItem.setText(authorName)
 
