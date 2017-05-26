@@ -4,7 +4,8 @@
 import getpass
 import logging
 
-import ftrack
+import ftrack_api
+
 import ftrack_connect.application
 
 
@@ -154,7 +155,7 @@ class LaunchApplicationHook(object):
         )
 
 
-def register(registry, **kw):
+def register(session, **kw):
     '''Register hooks.'''
 
     logger = logging.getLogger(
@@ -164,23 +165,23 @@ def register(registry, **kw):
     # Validate that registry is an instance of ftrack.Registry. If not,
     # assume that register is being called from a new or incompatible API and
     # return without doing anything.
-    if not isinstance(registry, ftrack.Registry):
+    if not isinstance(session, ftrack_api.Session):
         logger.debug(
             'Not subscribing plugin as passed argument {0!r} is not an '
-            'ftrack.Registry instance.'.format(registry)
+            'ftrack_api.Session instance.'.format(session)
         )
         return
 
     applicationStore = ftrack_connect.application.ApplicationStore()
 
-    ftrack.EVENT_HUB.subscribe(
+    session.event_hub.subscribe(
         'topic=ftrack.action.discover and source.user.username={0}'.format(
             getpass.getuser()
         ),
         DiscoverApplicationsHook(applicationStore)
     )
 
-    ftrack.EVENT_HUB.subscribe(
+    session.event_hub.subscribe(
         'topic=ftrack.action.launch and source.user.username={0} '
         'and data.actionIdentifier={1}'.format(
             getpass.getuser(), ACTION_IDENTIFIER
