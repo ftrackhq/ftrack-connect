@@ -9,6 +9,7 @@ Release Notes
 *************
 
 .. release:: Upcoming
+
     .. change:: changed
         :tags: Events, API
 
