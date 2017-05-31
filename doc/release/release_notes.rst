@@ -10,6 +10,11 @@ Release Notes
 
 .. release:: Upcoming
     
+    .. change:: fixed
+        :tags: API
+
+        Fixed search symlinked applications in filesystem.
+
     .. change:: changed
         :tags: API
 

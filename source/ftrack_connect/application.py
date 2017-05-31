@@ -188,7 +188,7 @@ class ApplicationStore(object):
         expressions = map(re.compile, pieces)
         expressionsCount = len(expressions)
 
-        for location, folders, files in os.walk(start, topdown=True):
+        for location, folders, files in os.walk(start, topdown=True, followlinks=True):
             level = location.rstrip(os.path.sep).count(os.path.sep)
             expression = expressions[level]
 
