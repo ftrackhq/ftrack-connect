@@ -10,6 +10,11 @@ Release Notes
 
 .. release:: Upcoming
     
+    .. change:: fixed
+        :tags: API
+
+        Application search on disk does not follow symlinks.
+
     .. change:: changed
         :tags: API
 
