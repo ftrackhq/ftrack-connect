@@ -13,7 +13,7 @@ Release Notes
     .. change:: fixed
         :tags: API
 
-        Fixed search symlinked applications in filesystem.
+        Application search on disk does not follow symlinks.
 
     .. change:: changed
         :tags: API
