@@ -75,7 +75,7 @@ We will now use the :ref:`developing/hooks/application_launch` hook to make our
 applications aware of our new location.
 
 Let us create a new file, my_application_launch_hook.py, and make sure our
-plugin is on the `FTRACK_CONNECT_PLUGIN_PATH`
+plugin is in the `FTRACK_EVENT_PLUGIN_PATH`
 
     .. code-block:: python
 
@@ -95,7 +95,7 @@ plugin is on the `FTRACK_CONNECT_PLUGIN_PATH`
 
             ftrack_connect.application.appendPath(
                 LOCATION_DIRECTORY,
-                'FTRACK_CONNECT_PLUGIN_PATH',
+                'FTRACK_EVENT_PLUGIN_PATH',
                 environment
             )
 
