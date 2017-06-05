@@ -9,7 +9,7 @@ Release Notes
 *************
 
 .. release:: Upcoming
-    
+
     .. change:: fixed
         :tags: API
 
@@ -19,6 +19,11 @@ Release Notes
         :tags: API
 
         Changed Connector based plugins to use the new API to publish assets.
+
+    .. change:: fixed
+        :tags: Ui, Import asset
+
+        Import asset dialog errors when a version has no user.
 
     .. change:: changed
         :tags: API
