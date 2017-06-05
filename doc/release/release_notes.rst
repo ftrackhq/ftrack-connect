@@ -9,7 +9,12 @@ Release Notes
 *************
 
 .. release:: Upcoming
-    
+
+    .. change:: fixed
+        :tags: Ui, Asset manager
+
+        Asset manager fails to open in some rare cases.
+
     .. change:: fixed
         :tags: API
 
@@ -21,14 +26,9 @@ Release Notes
         Changed Connector based plugins to use the new API to publish assets.
 
     .. change:: fixed
-        :tags: Ui, Asset manager
+        :tags: Ui, Import asset
 
-        Asset manager fails to open in some rare cases.
-
-    .. change:: fixed
-        :tags: Ui, Asset manager
-
-        Fixed asset manager failing to open in some rare cases.
+        Import asset dialog errors when a version has no user.
 
     .. change:: changed
         :tags: API

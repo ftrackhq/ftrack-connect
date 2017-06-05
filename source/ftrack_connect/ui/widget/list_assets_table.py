@@ -193,8 +193,15 @@ class ListAssetsTableWidget(QtWidgets.QWidget):
                             version
                         )
 
-                    author = QtWidgets.QTableWidgetItem(
-                        assetVersions[-1].getUser().getName())
+                    try:
+                        authorName = assetVersions[-1].getUser().getName()
+                    except ftrack.ftrackerror.FTrackError:
+                        # This error can happen if a version does not have an user,
+                        # for example if the user has been deleted after publishing
+                        # the version.
+                        authorName = 'No User Found'
+
+                    author = QtWidgets.QTableWidgetItem(authorName)
                     self.assetTable.setItem(j, column('Author'), author)
 
                     author = QtWidgets.QTableWidgetItem(
@@ -240,7 +247,16 @@ class ListAssetsTableWidget(QtWidgets.QWidget):
 
         # Update version specific fields
         authorItem = self.assetTable.item(row, column('Author'))
-        authorItem.setText(version.getUser().getName())
+
+        try:
+            authorName = version.getUser().getName()
+        except ftrack.ftrackerror.FTrackError:
+            # This error can happen if a version does not have an user,
+            # for example if the user has been deleted after publishing
+            # the version.
+            authorName = 'No User Found'
+
+        authorItem.setText(authorName)
 
         dateItem = self.assetTable.item(row, column('Date'))
         dateItem.setText(version.getDate().strftime('%Y-%m-%d %H:%M'))
