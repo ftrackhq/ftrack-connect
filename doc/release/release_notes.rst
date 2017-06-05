@@ -11,6 +11,11 @@ Release Notes
 .. release:: Upcoming
 
     .. change:: fixed
+        :tags: Ui, Asset manager
+
+        Asset manager fails to open in some rare cases.
+
+    .. change:: fixed
         :tags: API
 
         Application search on disk does not follow symlinks.
