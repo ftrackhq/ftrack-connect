@@ -10,17 +10,32 @@ Release Notes
 
 .. release:: Upcoming
 
+    .. change:: fixed
+        :tags: Ui, Asset manager
+
+        Asset manager fails to open in some rare cases.
+
+    .. change:: fixed
+        :tags: API
+
+        Application search on disk does not follow symlinks.
+
     .. change:: changed
         :tags: Events, API
 
         The `ftrack.connect.application.launch` event is now also emitted through the new
         api. The event allows you to modify the command and/or environment of applications
         before they are launched.
-    
+
     .. change:: changed
         :tags: API
 
         Changed Connector based plugins to use the new API to publish assets.
+
+    .. change:: fixed
+        :tags: Ui, Import asset
+
+        Import asset dialog errors when a version has no user.
 
     .. change:: changed
         :tags: API
