@@ -5,7 +5,7 @@ import logging
 import sys
 import pprint
 
-import ftrack
+import ftrack_api
 import ftrack_connect.application
 
 
@@ -37,14 +37,14 @@ class HoudiniAction(object):
         if self.identifier is None:
             raise ValueError('The action must be given an identifier.')
 
-    def register(self):
+    def register(self, session):
         '''Register action to respond to discover and launch events.'''
-        ftrack.EVENT_HUB.subscribe(
+        session.event_hub.subscribe(
             'topic=ftrack.action.discover',
             self.discover
         )
 
-        ftrack.EVENT_HUB.subscribe(
+        session.event_hub.subscribe(
             'topic=ftrack.action.launch and data.actionIdentifier={0}'.format(
                 self.identifier
             ),
@@ -141,15 +141,23 @@ class ApplicationStore(ftrack_connect.application.ApplicationStore):
         return applications
 
 
-def register(registry, **kw):
+def register(session, **kw):
     '''Register hooks.'''
 
-    # Validate that registry is the correct ftrack.Registry. If not,
-    # assume that register is being called with another purpose or from a
-    # new or incompatible API and return without doing anything.
-    if registry is not ftrack.EVENT_HANDLERS:
-        # Exit to avoid registering this plugin again.
+    logger = logging.getLogger('ftrack_plugin:{0}'.format(
+        __name__
+    ))
+
+    # Validate that session is an instance of ftrack_api.Session. If not, assume
+    # that register is being called from an old or incompatible API and return
+    # without doing anything.
+    if not isinstance(session, ftrack_api.Session):
+        logger.debug(
+            'Not subscribing plugin as passed argument {0} is not an '
+            'ftrack_api.Session instance.'.format(session)
+        )
         return
+
 
     # Create store containing applications.
     applicationStore = ApplicationStore()
@@ -161,4 +169,4 @@ def register(registry, **kw):
 
     # Create action and register to respond to discover and launch actions.
     action = HoudiniAction(applicationStore, launcher)
-    action.register()
+    action.register(session)

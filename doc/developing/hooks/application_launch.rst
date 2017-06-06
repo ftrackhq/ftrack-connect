@@ -40,10 +40,3 @@ context
 Modifications to the launch_data dictionary, either by replacing the content
 or modifying it directly, will be picked up and used by the application
 launcher.
-
-.. seealso::
-
-    See
-    :ref:`developing/tutorial/adding_a_location/modifying_application_launch`
-    for a tutorial example on how this hook can be used to add make a 
-    location plugin available in applications.

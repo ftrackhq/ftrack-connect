@@ -42,7 +42,7 @@ in :term:`ftrack` and launch is run when selecting the :ref:`Action <ftrack:deve
 
     import logging
 
-    import ftrack
+    import ftrack_api
 
 
     class HoudiniAction(object):
@@ -62,14 +62,14 @@ in :term:`ftrack` and launch is run when selecting the :ref:`Action <ftrack:deve
             if self.identifier is None:
                 raise ValueError('The action must be given an identifier.')
 
-        def register(self):
+        def register(self, session):
             '''Register action.'''
-            ftrack.EVENT_HUB.subscribe(
+            session.event_hub.subscribe(
                 'topic=ftrack.action.discover',
                 self.discover
             )
 
-            ftrack.EVENT_HUB.subscribe(
+            session.event_hub.subscribe(
                 'topic=ftrack.action.launch and data.actionIdentifier={0}'.format(
                     self.identifier
                 ),
@@ -97,19 +97,17 @@ in :term:`ftrack` and launch is run when selecting the :ref:`Action <ftrack:deve
             }
 
 
-    def register(registry, **kw):
+    def register(session, **kw):
         '''Register action in Connect.'''
 
-        # Validate that registry is the correct ftrack.Registry. If not,
-        # assume that register is being called with another purpose or from a
-        # new or incompatible API and return without doing anything.
-        if registry is not ftrack.EVENT_HANDLERS:
-            # Exit to avoid registering this plugin again.
+        # Validate that session is an instance of ftrack_api.Session. If not, assume
+        # that register is being called from an old or incompatible API and return
+        # without doing anything.
+        if not isinstance(session, ftrack_api.Session):
             return
 
         action = HoudiniAction()
-        action.register()
-
+        action.register(session)
 
 
 This piece of code can now be used as a :ref:`hook <developing/hooks>` in
@@ -248,22 +246,23 @@ store.
 
     .. code-block:: python
 
-        def register(registry, **kw):
+        def register(session, **kw):
             '''Register action in Connect.'''
 
-            # Validate that registry is the correct ftrack.Registry. If not,
-            # assume that register is being called with another purpose or from a
-            # new or incompatible API and return without doing anything.
-            if registry is not ftrack.EVENT_HANDLERS:
-                # Exit to avoid registering this plugin again.
+            # Validate that session is an instance of ftrack_api.Session. If not, assume
+            # that register is being called from an old or incompatible API and return
+            # without doing anything.
+            if not isinstance(session, ftrack_api.Session):
                 return
-            
+
             # Create store containing applications.
             applicationStore = ApplicationStore()
 
             # Create action and register to respond to discover and launch actions.
             action = HoudiniAction(applicationStore)
-            action.register()
+            action.register(session)
+
+
 
 Now restart :term:`ftrack connect` and open the :ref:`Actions <ftrack:using/actions>`
 window again. It should now display your available :term:`Houdini` applications
@@ -303,14 +302,13 @@ ftrack API loaded and any selected task specified in the environment modify the
 
     .. code-block:: python
 
-        def register(registry, **kw):
+        def register(session, **kw):
             '''Register action in Connect.'''
-            
-            # Validate that registry is the correct ftrack.Registry. If not,
-            # assume that register is being called with another purpose or from a
-            # new or incompatible API and return without doing anything.
-            if registry is not ftrack.EVENT_HANDLERS:
-                # Exit to avoid registering this plugin again.
+
+            # Validate that session is an instance of ftrack_api.Session. If not, assume
+            # that register is being called from an old or incompatible API and return
+            # without doing anything.
+            if not isinstance(session, ftrack_api.Session):
                 return
             
             # Create store containing applications.
@@ -323,7 +321,7 @@ ftrack API loaded and any selected task specified in the environment modify the
 
             # Create action and register to respond to discover and launch actions.
             action = HoudiniAction(applicationStore, launcher)
-            action.register()
+            action.register(session)
 
     .. code-block:: python
 
@@ -353,8 +351,12 @@ by opening the built-in python console and type
     
     .. code-block:: python
 
-        import ftrack
-        print ftrack.getProjects()
+
+        import ftrack_api
+
+        session = ftrack_api.Session()
+        projects = session.query('Project')
+
 
 Modify environment before application start
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -384,14 +386,14 @@ to use the new launcher class.
 
     .. code-block:: python
 
-        def register(registry, **kw):
+
+        def register(session, **kw):
             '''Register hooks.'''
 
-            # Validate that registry is the correct ftrack.Registry. If not,
-            # assume that register is being called with another purpose or from a
-            # new or incompatible API and return without doing anything.
-            if registry is not ftrack.EVENT_HANDLERS:
-                # Exit to avoid registering this plugin again.
+            # Validate that session is an instance of ftrack_api.Session. If not, assume
+            # that register is being called from an old or incompatible API and return
+            # without doing anything.
+            if not isinstance(session, ftrack_api.Session):
                 return
 
             # Create store containing applications.
@@ -404,7 +406,7 @@ to use the new launcher class.
 
             # Create action and register to respond to discover and launch actions.
             action = HoudiniAction(applicationStore, launcher)
-            action.register()
+            action.register(session)
 
     .. code-block:: python
 
@@ -465,4 +467,4 @@ correct by starting the build-in python console and type:
 .. note::
 
     Download complete example hook with modified launcher
-    :download:`example_custom_launcher_houdini_hook.py </resource/example_custom_launcher_houdini_hook.py>`.
+    :download:`example_houdini_hook.py </resource/example_houdini_hook.py>`.

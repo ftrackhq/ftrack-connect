@@ -12,6 +12,9 @@ import json
 import logging
 
 import ftrack
+import ftrack_api
+
+import ftrack_connect.session
 
 #: Default expression to match version component of executable path.
 #: Will match last set of numbers in string where numbers may contain a digit
@@ -324,6 +327,13 @@ class ApplicationLauncher(object):
             )
             ftrack.EVENT_HUB.publish(
                 ftrack.Event(
+                    topic='ftrack.connect.application.launch',
+                    data=launchData
+                ),
+                synchronous=True
+            )
+            ftrack_connect.session.get_shared_session().event_hub.publish(
+                ftrack_api.event.base.Event(
                     topic='ftrack.connect.application.launch',
                     data=launchData
                 ),
