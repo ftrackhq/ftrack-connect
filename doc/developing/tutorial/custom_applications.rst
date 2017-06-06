@@ -467,4 +467,4 @@ correct by starting the build-in python console and type:
 .. note::
 
     Download complete example hook with modified launcher
-    :download:`example_custom_launcher_houdini_hook.py </resource/example_custom_launcher_houdini_hook.py>`.
+    :download:`example_houdini_hook.py </resource/example_houdini_hook.py>`.
