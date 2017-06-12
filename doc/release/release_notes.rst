@@ -11,6 +11,11 @@ Release Notes
 .. release:: Upcoming
 
     .. change:: fixed
+        :tags: API
+
+        Nuke 11 not supported.
+
+    .. change:: fixed
         :tags: Ui, Asset manager
 
         Asset manager fails to open in some rare cases.
