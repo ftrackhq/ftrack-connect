@@ -15,34 +15,43 @@ Making Connect aware of your location plugin
 ============================================
 
 Using the :term:`plugin directory` we can register a location plugin to
-be available in Connect. Since Connect and other integrations are still using
-the legacy api for publishing we will use it as a basis of this example. Let us
-now implement a basic Location plugin::
+be available in Connect. Let us now implement a basic Location plugin
 
-    import ftrack
+    .. code-block:: python
 
-    def register(registry, **kw):
-        '''Register plugin.'''
+        import ftrack_api
 
-        # Validate that registry is the correct ftrack.Registry. If not,
-        # assume that register is being called with another purpose or from a
-        # new or incompatible API and return without doing anything.
-        if registry is not ftrack.LOCATION_PLUGINS:
-            # Exit to avoid registering this plugin again.
-            return
+        def configure_locations(event):
+            session = event['data']['session']
 
-        ftrack.ensureLocation('studio.location')
+            location = session.ensure(
+                'Location', {
+                    'name': 'studio.location'
+                }
+            )
 
-        # Create a location instance
-        location = ftrack.Location(
-            'studio.location',
-            accessor=ftrack.DiskAccessor(
-                prefix='<path-to-directory-where-files-should-go>'
-            ),
-            structure=ftrack.IdStructure(),
-            priority=5
-        )
-        registry.add(location)
+            location.priority = 0
+            location.structure = ftrack_api.structure.standard.StandardStructure()
+
+            location.accessor = ftrack_api.accessor.disk.DiskAccessor(
+                prefix=prefix='<path-to-directory-where-files-should-go>'
+            )
+
+        def register(session, **kw):
+
+            # Validate that session is an instance of ftrack_api.Session. If not,
+            # assume that register is being called from an incompatible API
+            # and return without doing anything.
+            if not isinstance(session, ftrack_api.Session):
+                # Exit to avoid registering this plugin again.
+                return
+
+            session.event_hub.subscribe(
+                'topic=ftrack.api.session.configure-location',
+                configure_locations
+            )
+
+
 
 If we add our new location plugin, ``custom_location_plugin.py``, to the
 plugin directory it will be automatically registered and available in Connect::
@@ -66,40 +75,40 @@ We will now use the :ref:`developing/hooks/application_launch` hook to make our
 applications aware of our new location.
 
 Let us create a new file, my_application_launch_hook.py, and make sure our
-plugin is on the `FTRACK_LOCATION_PLUGIN_PATH`::
+plugin is in the `FTRACK_EVENT_PLUGIN_PATH`
 
-    import os
-
-    import ftrack
-    import ftrack_connect.application
-
-    LOCATION_DIRECTORY = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), 'location')
-    )
+    .. code-block:: python
 
 
-    def modify_application_launch(event):
-        '''Modify the application environment to include  our location plugin.'''
-        environment = event['data']['options']['env']
-        
-        ftrack_connect.application.appendPath(
-            LOCATION_DIRECTORY,
-            'FTRACK_LOCATION_PLUGIN_PATH',   
-            environment
+        import os
+
+        import ftrack_api
+        import ftrack_connect.application
+
+        LOCATION_DIRECTORY = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), 'location')
         )
 
+        def modify_application_launch(event):
+            '''Modify the application environment to include  our location plugin.'''
+            environment = event['data']['options']['env']
 
-    def register(registry, **kw):
-        '''Register location plugin.'''
+            ftrack_connect.application.appendPath(
+                LOCATION_DIRECTORY,
+                'FTRACK_EVENT_PLUGIN_PATH',
+                environment
+            )
 
-        # Validate that registry is the correct ftrack.Registry. If not,
-        # assume that register is being called with another purpose or from a
-        # new or incompatible API and return without doing anything.
-        if registry is not ftrack.EVENT_HANDLERS:
-            # Exit to avoid registering this plugin again.
-            return
+        def register(session, **kw):
 
-        ftrack.EVENT_HUB.subscribe(
-            'topic=ftrack.connect.application.launch',
-            modify_application_launch
-        )
+            # Validate that session is an instance of ftrack_api.Session. If not,
+            # assume that register is being called from an incompatible API
+            # and return without doing anything.
+            if not isinstance(session, ftrack_api.Session):
+                # Exit to avoid registering this plugin again.
+                return
+
+            session.event_hub.subscribe(
+                'topic=ftrack.connect.application.launch',
+                modify_application_launch
+            )

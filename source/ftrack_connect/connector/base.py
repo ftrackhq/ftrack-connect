@@ -17,6 +17,8 @@ import sys
 from QtExt import QtWidgets, QtNetwork, QtCore, QtGui
 
 import ftrack
+import ftrack_api
+from ftrack_api import symbol
 import ftrack_connect.session as connect_session
 
 
@@ -212,22 +214,28 @@ class Connector(object):
                           progressCallback=None, startProgress=0,
                           endProgress=100):
         '''Publish asset files.'''
+        session = connect_session.get_shared_session()
         if progressCallback:
             progressCallback(startProgress)
 
+        asset_version = session.get('AssetVersion', assetVersion.getId())
         for componentNumber, ftComponent in enumerate(publishedComponents):
             path = HelpFunctions.safeString(ftComponent.path)
 
             if ftComponent.componentname != 'thumbnail':
+
                 location = Connector.pickLocation(copyFiles=copyFiles)
-                component = assetVersion.createComponent(
-                    name=ftComponent.componentname,
-                    path=path,
-                    location=None
-                )
+
                 try:
-                    location.addComponent(component)
-                except ftrack.AccessorError as error:
+                    component = asset_version.create_component(
+                        path=path,
+                        data={'name': ftComponent.componentname},
+                        location=location
+                    )
+
+                    session.commit()
+
+                except Exception as error:
                     errorMessage = (
                         'A problem occurred while writing your files. It is '
                         'possible the disk settings in ftrack are incorrect. If '
@@ -252,24 +260,25 @@ class Connector(object):
                 try:
                     currentTask = assetVersion.getTask()
                     currentTask.setThumbnail(thumb)
-                except:
+                except Exception:
                     print 'no task'
 
                 try:
                     shot = assetVersion.getAsset().getParent()
                     shot.setThumbnail(thumb)
-                except:
+                except Exception:
                     print 'no shot for some reason'
 
             if len(ftComponent.metadata) > 0:
                 for k, v in ftComponent.metadata:
-                    component.setMeta(k, v)
+                    component['metadata'][k] = v
 
             if progressCallback:
                 progressStep = (endProgress - startProgress) / len(publishedComponents)
                 progressCallback(startProgress + progressStep * (componentNumber + 1))
 
-        assetVersion.publish()
+        asset_version['is_published'] = True
+        session.commit()
         Connector.postPublish(pubObj, publishedComponents)
 
         if progressCallback:
@@ -279,14 +288,27 @@ class Connector(object):
     def pickLocation(copyFiles=False):
         '''Return a location based on *copyFiles*.'''
         location = None
-        locations = ftrack.getLocations()
+        session = connect_session.get_shared_session()
+        locations = session.query('select id, name from Location').all()
 
-        for candidateLocation in locations:
-            if candidateLocation.getAccessor() is not None:
+        sorted_locations = sorted(
+            locations, key=lambda _location: _location.priority
+        )
+
+        visible_locations = filter(
+            lambda _location: _location['name'] not in ('ftrack.origin',),
+            sorted_locations
+        )
+
+        for candidateLocation in visible_locations:
+            if candidateLocation.accessor is not symbol.NOT_SET:
                 # Can't copy files to an unmanaged location.
                 if (
                     copyFiles and
-                    isinstance(candidateLocation, ftrack.UnmanagedLocation)
+                    isinstance(
+                        candidateLocation,
+                        ftrack_api.entity.location.UnmanagedLocationMixin
+                    )
                 ):
                     continue
 

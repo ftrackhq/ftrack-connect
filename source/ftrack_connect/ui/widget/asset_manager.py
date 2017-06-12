@@ -349,13 +349,14 @@ class AssetManagerWidget(QtWidgets.QWidget):
             for component in components:
                 asset_ids.add(component['version']['asset']['id'])
 
-            # Because of bug in 3.3.X backend we need to divide the query. The
-            # memory cache will allow using entities without caring about this.
-            preload_string = (
-                'select components.name from AssetVersion where '
-                'asset_id in ({0})'
-            ).format(', '.join(list(asset_ids)))
-            self.connector.session.query(preload_string).all()
+            if asset_ids:
+                # Because of bug in 3.3.X backend we need to divide the query. The
+                # memory cache will allow using entities without caring about this.
+                preload_string = (
+                    'select components.name from AssetVersion where '
+                    'asset_id in ({0})'
+                ).format(', '.join(list(asset_ids)))
+                self.connector.session.query(preload_string).all()
 
             component_map = dict(
                 (component['id'], component)
