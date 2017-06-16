@@ -2,6 +2,7 @@
 # :copyright: Copyright (c) 2014 ftrack
 
 import os
+import sys
 import getpass
 import platform
 import requests
@@ -143,7 +144,6 @@ class Application(QtWidgets.QMainWindow):
         ftrack_connect.ui.theme.applyFont()
         ftrack_connect.ui.theme.applyTheme(self, self._theme, 'cleanlooks')
 
-
     def _onConnectTopicEvent(self, event):
         '''Generic callback for all ftrack.connect events.
 
@@ -235,20 +235,13 @@ class Application(QtWidgets.QMainWindow):
     def login(self):
         '''Login using stored credentials or ask user for them.'''
         credentials = self._get_credentials()
-
-        # If missing any of the settings bring up login dialog.
-        if not credentials:
-            self.showLoginWidget()
-        else:
-            # Show login screen on login error.
-            self.loginError.connect(self.showLoginWidget)
-
-            # Try to login.
-            self.loginWithCredentials(
-                credentials['server_url'],
-                credentials['api_user'],
-                credentials['api_key']
-            )
+        self.showLoginWidget()
+        # Try to login.
+        self.loginWithCredentials(
+            credentials['server_url'],
+            credentials['api_user'],
+            credentials['api_key']
+        )
 
     def showLoginWidget(self):
         '''Show the login widget.'''
@@ -367,8 +360,13 @@ class Application(QtWidgets.QMainWindow):
         try:
             self._session = self._setup_session()
         except Exception as error:
-            self.logger.exception('Error during login.')
-            self.loginError.emit(error.message)
+            self.logger.exception('Error during login.:')
+            msg = (
+                '\nAn error occured setting up the session: {0}.'
+                '\nPlease check log file for more informations.'.format(error)
+            )
+
+            self.loginError.emit(msg)
             return
 
         # Store credentials since login was successful.
