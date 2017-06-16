@@ -11,6 +11,11 @@ Release Notes
 .. release:: Upcoming
 
     .. change:: fixed
+        :tags: API
+
+        Errors in hooks are shown as event hub errors.
+
+    .. change:: fixed
         :tags: Ui, Asset manager
 
         Asset manager fails to open in some rare cases.
