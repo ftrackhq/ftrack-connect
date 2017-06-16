@@ -277,9 +277,12 @@ class Application(QtWidgets.QMainWindow):
 
         plugin_paths.extend(self.pluginHookPaths)
 
-        session = ftrack_connect.session.get_shared_session(
-            plugin_paths=plugin_paths
-        )
+        try:
+            session = ftrack_connect.session.get_shared_session(
+                plugin_paths=plugin_paths
+            )
+        except Exception as error:
+            raise ftrack_connect.error.ParseError(error)
 
         # Listen to events using the new API event hub. This is required to
         # allow reconfiguring the storage scenario.
@@ -363,7 +366,10 @@ class Application(QtWidgets.QMainWindow):
             self.logger.exception('Error during login.:')
             msg = (
                 '\nAn error occured setting up the session: {0}.'
-                '\nPlease check log file for more informations.'.format(error)
+                '\nPlease check log file for more informations.'
+                '\nIf the error persists please send the log file to:'
+                ' support@ftrack.com'.format(error)
+
             )
 
             self.loginError.emit(msg)
