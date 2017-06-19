@@ -295,6 +295,17 @@ class Application(QtWidgets.QMainWindow):
 
         return session
 
+    def _report_session_setup_error(self, error):
+        '''Format error message and emit loginError.'''
+        msg = (
+            u'\nAn error occured setting up the session: {0}.'
+            u'\nPlease check log file for more informations.'
+            u'\nIf the error persists please send the log file to:'
+            u' support@ftrack.com'.format(error)
+
+        )
+        self.loginError.emit(msg)
+
     def loginWithCredentials(self, url, username, apiKey):
         '''Connect to *url* with *username* and *apiKey*.
 
@@ -363,16 +374,8 @@ class Application(QtWidgets.QMainWindow):
         try:
             self._session = self._setup_session()
         except Exception as error:
-            self.logger.exception('Error during login.:')
-            msg = (
-                '\nAn error occured setting up the session: {0}.'
-                '\nPlease check log file for more informations.'
-                '\nIf the error persists please send the log file to:'
-                ' support@ftrack.com'.format(error)
-
-            )
-
-            self.loginError.emit(msg)
+            self.logger.exception(u'Error during login.:')
+            self._report_session_setup_error(error)
             return
 
         # Store credentials since login was successful.
@@ -407,8 +410,8 @@ class Application(QtWidgets.QMainWindow):
         try:
             self.configureConnectAndDiscoverPlugins()
         except Exception as error:
-            self.logger.exception(error)
-            self.loginError.emit(error.message)
+            self.logger.exception(u'Error during location configuration.:')
+            self._report_session_setup_error(error)
         else:
             self.focus()
 
