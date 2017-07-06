@@ -130,7 +130,7 @@ class Application(QtWidgets.QMainWindow):
         self.setWindowIcon(self.logoIcon)
 
         self._login_overlay = None
-        self.loginWidget = None
+        self.loginWidget = _login.Login()
         self.loginSignal.connect(self.loginWithCredentials)
         self.login()
 
@@ -236,35 +236,34 @@ class Application(QtWidgets.QMainWindow):
         '''Login using stored credentials or ask user for them.'''
         credentials = self._get_credentials()
         self.showLoginWidget()
-        # Try to login.
-        self.loginWithCredentials(
-            credentials['server_url'],
-            credentials['api_user'],
-            credentials['api_key']
-        )
+
+        if credentials:
+            # Try to login.
+            self.loginWithCredentials(
+                credentials['server_url'],
+                credentials['api_user'],
+                credentials['api_key']
+            )
 
     def showLoginWidget(self):
         '''Show the login widget.'''
-        if self.loginWidget is None:
-            self.loginWidget = _login.Login()
+        self._login_overlay = ftrack_connect.ui.widget.overlay.CancelOverlay(
+            self.loginWidget,
+            message='Signing in'
+        )
 
-            self._login_overlay = ftrack_connect.ui.widget.overlay.CancelOverlay(
-                self.loginWidget,
-                message='Signing in'
-            )
+        self._login_overlay.hide()
+        self.setCentralWidget(self.loginWidget)
+        self.loginWidget.login.connect(self._login_overlay.show)
+        self.loginWidget.login.connect(self.loginWithCredentials)
+        self.loginError.connect(self.loginWidget.loginError.emit)
+        self.loginError.connect(self._login_overlay.hide)
+        self.focus()
 
-            self._login_overlay.hide()
-            self.setCentralWidget(self.loginWidget)
-            self.loginWidget.login.connect(self._login_overlay.show)
-            self.loginWidget.login.connect(self.loginWithCredentials)
-            self.loginError.connect(self.loginWidget.loginError.emit)
-            self.loginError.connect(self._login_overlay.hide)
-            self.focus()
-
-            # Set focus on the login widget to remove any focus from its child
-            # widgets.
-            self.loginWidget.setFocus()
-            self._login_overlay.hide()
+        # Set focus on the login widget to remove any focus from its child
+        # widgets.
+        self.loginWidget.setFocus()
+        self._login_overlay.hide()
 
     def _setup_session(self):
         '''Setup a new python API session.'''
