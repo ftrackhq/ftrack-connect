@@ -297,7 +297,7 @@ class Application(QtWidgets.QMainWindow):
     def _report_session_setup_error(self, error):
         '''Format error message and emit loginError.'''
         msg = (
-            u'\nAn error occured setting up the session: {0}.'
+            u'\nAn error occured setting up the session: <b>{0}</b>.'
             u'\nPlease check log file for more informations.'
             u'\nIf the error persists please send the log file to:'
             u' support@ftrack.com'.format(error)
