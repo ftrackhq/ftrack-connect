@@ -93,7 +93,6 @@ class Login(QtWidgets.QWidget):
 
     def on_set_error(self, error):
         '''Set the error text and disable the login widget.'''
-        self.setDisabled(True)
         self.errorLabel.setText(error)
 
     def handleLogin(self):
