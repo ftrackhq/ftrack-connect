@@ -8,6 +8,13 @@
 Release Notes
 *************
 
+.. release:: Upcoming
+
+    .. change:: fixed
+        :tags: Asset manager
+
+        Cannot change version of versions with a sequence component.
+
 .. release:: 1.0.0
     :date: 2017-07-07
 
