@@ -8,6 +8,12 @@
 Release Notes
 *************
 
+ .. release:: Upcoming
+    .. change:: fixed
+        :tags: Ui
+
+        Info and Tasks dialogs are now compatible with Qt5, PySide2 and QtWebEngine.
+
 .. release:: 1.0.1
     :date: 2017-07-11
 
