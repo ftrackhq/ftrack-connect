@@ -719,9 +719,9 @@ class AssetManagerWidget(QtWidgets.QWidget):
             componentName = 'sequence'
             newComponent = newftrackAssetVersion.getComponent(componentName)
 
-        # Build a new api component object .
+        # Build a new api component object.
         ftrack_component = self.connector.session.get(
-            'FileComponent', newComponent.getId()
+            'Component', newComponent.getId()
         )
         location = self.connector.session.pick_location(
             component=ftrack_component
