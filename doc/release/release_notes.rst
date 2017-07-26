@@ -9,10 +9,17 @@ Release Notes
 *************
 
  .. release:: Upcoming
-    .. change:: fixed
-        :tags: Ui
 
-        Info and Tasks dialogs are now compatible with Qt5, PySide2 and QtWebEngine.
+    .. change:: fixed
+        :tags: Info dialog, Tasks dialog
+
+        Info and Tasks dialogs are now compatible with recent versions of
+        Qt.
+
+    .. change:: fixed
+        :tags: API
+
+        Nuke 11 is not supported.
 
 .. release:: 1.0.1
     :date: 2017-07-11
@@ -24,11 +31,6 @@ Release Notes
 
 .. release:: 1.0.0
     :date: 2017-07-07
-
-    .. change:: fixed
-        :tags: API
-
-        Nuke 11 not supported.
 
     .. change:: fixed
         :tags: Ui, Asset manager
