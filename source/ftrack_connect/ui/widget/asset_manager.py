@@ -10,9 +10,12 @@ import ftrack_api
 
 from ftrack_connect.connector import FTAssetObject, PanelComInstance
 
-# TODO: RE ENABLE ONCE QtWebKitWidgets IS AVAILABLE
+from ftrack_connect.ui.widget import is_webwidget_supported
+has_webwidgets = is_webwidget_supported()
 
-# from ftrack_connect.ui.widget.info import FtrackInfoDialog
+if has_webwidgets:
+    from ftrack_connect.ui.widget.info import FtrackInfoDialog
+
 from ftrack_connect.ui.widget import header
 from ftrack_connect.ui.theme import applyTheme
 from ftrack_connect.ui import resource
@@ -536,23 +539,22 @@ class AssetManagerWidget(QtWidgets.QWidget):
                     commentButton, str(asset_version['id'])
                 )
 
+                commentButton.setEnabled(has_webwidgets)
+
         self.ui.AssertManagerTableWidget.setHorizontalHeaderLabels(
             self.columnHeaders
         )
 
     def openComments(self, taskId):
-        # TODO: RE ENABLE ONCE QtWebKitWidgets IS AVAILABLE
-
         '''Open comments dialog for *taskId*.'''
-        # self.comment_dialog = FtrackInfoDialog(connector=self.connector)
-        # self.comment_dialog.show()
-        # self.comment_dialog.move(
-        #     QtWidgets.QApplication.desktop().screen().rect().center() -
-        #     self.comment_dialog.rect().center()
-        # )
-        # panelComInstance = PanelComInstance.instance()
-        # panelComInstance.infoListeners(taskId)
-        pass
+        self.comment_dialog = FtrackInfoDialog(connector=self.connector)
+        self.comment_dialog.show()
+        self.comment_dialog.move(
+            QtWidgets.QApplication.desktop().screen().rect().center() -
+            self.comment_dialog.rect().center()
+        )
+        panelComInstance = PanelComInstance.instance()
+        panelComInstance.infoListeners(taskId)
 
     @QtCore.Slot(int)
     def filterAssets(self, comboBoxIndex):
