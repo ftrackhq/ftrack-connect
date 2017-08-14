@@ -150,6 +150,8 @@ class ComponentTableWidget(QtWidgets.QTableWidget):
                     locationItem, rowCount
                 )
 
+                index_count = -1
+                default_location_index = 0
                 for location in self.locations:
                     accessor = location.accessor
                     # Don't show inaccessible locations
@@ -158,6 +160,12 @@ class ComponentTableWidget(QtWidgets.QTableWidget):
                     name = location['name']
                     location_id = location['id']
                     locationItem.addItem(name, location_id)
+                    index_count += 1
+                    # Get the default locations index if it exists.
+                    if self.session.pick_location() in self.locations:
+                        default_location_index = index_count
+
+                locationItem.setCurrentIndex(default_location_index)
 
     def onLocationSelected(self, row):
         '''Handle location selection.'''
