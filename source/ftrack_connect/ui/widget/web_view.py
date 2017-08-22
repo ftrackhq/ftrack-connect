@@ -1,17 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
 
-from QtExt import QtGui, QtCore, QtWidgets, QtNetwork
-
-try:
-    from QtExt import QtWebKitWidgets as QtWebWidgets
-    HAS_WEBKIT=True
-except ImportError:
-    from QtExt import QtWebEngineWidgets as QtWebWidgets
-    HAS_WEBKIT=False
-    # Create some aliases for old QtWebKit classes.
-    QtWebWidgets.QWebPage = QtWebWidgets.QWebEnginePage
-    QtWebWidgets.QWebView = QtWebWidgets.QWebEngineView
+from QtExt import QtGui, QtCore, QtWidgets, QtNetwork, QtWebCompat
 
 
 # TODO: Investigate why this import exists and remove it.
@@ -35,7 +25,7 @@ class Ui_WebView(object):
         self.horizontalLayout = QtWidgets.QHBoxLayout(WebView)
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout.setObjectName('horizontalLayout')
-        self.WebViewView = QtWebWidgets.QWebView(WebView)
+        self.WebViewView = QtWebCompat.QWebView(WebView)
         font = QtGui.QFont()
         font.setFamily('Anonymous Pro')
         self.WebViewView.setFont(font)
@@ -65,20 +55,14 @@ class WebViewWidget(QtWidgets.QWidget):
         self.ui = Ui_WebView()
         self.ui.setupUi(self)
 
-        self.webPage = QtWebWidgets.QWebPage()
+        self.webPage = QtWebCompat.QWebPage()
 
         self.persCookieJar = PersistentCookieJar(self)
         self.persCookieJar.load()
 
         proxy = HelpFunctions.getFtrackQNetworkProxy()
         if proxy:
-            if HAS_WEBKIT:
-                self.webPage.networkAccessManager().setProxy(proxy)
-            else:
-                # TODO: This is a global per QApplication setting.
-                # Changing it might not be a good idea?
-                # QtNetwork.QNetworkProxy.setApplicationProxy(proxy)
-                pass
+            self.webPage.setProxy(proxy)
 
         self.ui.WebViewView.setPage(self.webPage)
 
@@ -110,7 +94,7 @@ class WebView(QtWidgets.QFrame):
         layout.setSpacing(0)
         self.setLayout(layout)
 
-        self._webView = QtWebWidgets.QWebView()
+        self._webView = QtWebCompat.QWebView()
         layout.addWidget(self._webView)
 
         self.set_url(url)
@@ -133,7 +117,4 @@ class WebView(QtWidgets.QFrame):
         to the QWebPage class in QtWebEngine.
         We wrap it here for convenience.
         '''
-        if HAS_WEBKIT:
-            self._webView.page().mainFrame().evaluateJavaScript(javascript)
-        else:
-            self._webView.page().evaluateJavaScript(javascript)
+        self._webView.evaluateJavaScript(javascript)

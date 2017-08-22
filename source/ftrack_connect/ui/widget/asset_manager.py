@@ -3,14 +3,13 @@
 
 import getpass
 
-from QtExt import QtCore, QtWidgets, QtGui
+from QtExt import QtCore, QtWidgets, QtGui, is_webwidget_supported
 
 import ftrack
 import ftrack_api
 
 from ftrack_connect.connector import FTAssetObject, PanelComInstance
 
-from ftrack_connect.ui.widget import is_webwidget_supported
 has_webwidgets = is_webwidget_supported()
 
 if has_webwidgets:
