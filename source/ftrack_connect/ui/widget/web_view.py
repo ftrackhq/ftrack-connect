@@ -25,7 +25,7 @@ class Ui_WebView(object):
         self.horizontalLayout = QtWidgets.QHBoxLayout(WebView)
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout.setObjectName('horizontalLayout')
-        self.WebViewView = QtWebCompat.QtWebView(WebView)
+        self.WebViewView = QtWebCompat.QWebView(WebView)
         font = QtGui.QFont()
         font.setFamily('Anonymous Pro')
         self.WebViewView.setFont(font)
@@ -55,7 +55,7 @@ class WebViewWidget(QtWidgets.QWidget):
         self.ui = Ui_WebView()
         self.ui.setupUi(self)
 
-        self.webPage = QtWebCompat.QtWebPage()
+        self.webPage = QtWebCompat.QWebPage()
 
         self.persCookieJar = PersistentCookieJar(self)
         self.persCookieJar.load()
@@ -94,7 +94,7 @@ class WebView(QtWidgets.QFrame):
         layout.setSpacing(0)
         self.setLayout(layout)
 
-        self._webView = QtWebCompat.QtWebView()
+        self._webView = QtWebCompat.QWebView()
         layout.addWidget(self._webView)
 
         self.set_url(url)
