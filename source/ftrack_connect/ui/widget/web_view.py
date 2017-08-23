@@ -111,7 +111,7 @@ class WebView(QtWidgets.QFrame):
 
         return url
 
-    def evaluateJavascript(self, javascript):
+    def evaluateJavaScript(self, javascript):
         '''Evaluate a Javascript script on the webpage's main frame.
         This method was moved from the QWebFrame class in QtWebkit
         to the QWebPage class in QtWebEngine.
