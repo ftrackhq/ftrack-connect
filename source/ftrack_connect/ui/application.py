@@ -2,6 +2,7 @@
 # :copyright: Copyright (c) 2014 ftrack
 
 import os
+import sys
 import getpass
 import platform
 import requests
@@ -129,7 +130,7 @@ class Application(QtWidgets.QMainWindow):
         self.setWindowIcon(self.logoIcon)
 
         self._login_overlay = None
-        self.loginWidget = None
+        self.loginWidget = _login.Login()
         self.loginSignal.connect(self.loginWithCredentials)
         self.login()
 
@@ -142,7 +143,6 @@ class Application(QtWidgets.QMainWindow):
         self._theme = theme
         ftrack_connect.ui.theme.applyFont()
         ftrack_connect.ui.theme.applyTheme(self, self._theme, 'cleanlooks')
-
 
     def _onConnectTopicEvent(self, event):
         '''Generic callback for all ftrack.connect events.
@@ -235,14 +235,9 @@ class Application(QtWidgets.QMainWindow):
     def login(self):
         '''Login using stored credentials or ask user for them.'''
         credentials = self._get_credentials()
+        self.showLoginWidget()
 
-        # If missing any of the settings bring up login dialog.
-        if not credentials:
-            self.showLoginWidget()
-        else:
-            # Show login screen on login error.
-            self.loginError.connect(self.showLoginWidget)
-
+        if credentials:
             # Try to login.
             self.loginWithCredentials(
                 credentials['server_url'],
@@ -252,26 +247,23 @@ class Application(QtWidgets.QMainWindow):
 
     def showLoginWidget(self):
         '''Show the login widget.'''
-        if self.loginWidget is None:
-            self.loginWidget = _login.Login()
+        self._login_overlay = ftrack_connect.ui.widget.overlay.CancelOverlay(
+            self.loginWidget,
+            message='Signing in'
+        )
 
-            self._login_overlay = ftrack_connect.ui.widget.overlay.CancelOverlay(
-                self.loginWidget,
-                message='Signing in'
-            )
+        self._login_overlay.hide()
+        self.setCentralWidget(self.loginWidget)
+        self.loginWidget.login.connect(self._login_overlay.show)
+        self.loginWidget.login.connect(self.loginWithCredentials)
+        self.loginError.connect(self.loginWidget.loginError.emit)
+        self.loginError.connect(self._login_overlay.hide)
+        self.focus()
 
-            self._login_overlay.hide()
-            self.setCentralWidget(self.loginWidget)
-            self.loginWidget.login.connect(self._login_overlay.show)
-            self.loginWidget.login.connect(self.loginWithCredentials)
-            self.loginError.connect(self.loginWidget.loginError.emit)
-            self.loginError.connect(self._login_overlay.hide)
-            self.focus()
-
-            # Set focus on the login widget to remove any focus from its child
-            # widgets.
-            self.loginWidget.setFocus()
-            self._login_overlay.hide()
+        # Set focus on the login widget to remove any focus from its child
+        # widgets.
+        self.loginWidget.setFocus()
+        self._login_overlay.hide()
 
     def _setup_session(self):
         '''Setup a new python API session.'''
@@ -284,9 +276,12 @@ class Application(QtWidgets.QMainWindow):
 
         plugin_paths.extend(self.pluginHookPaths)
 
-        session = ftrack_connect.session.get_shared_session(
-            plugin_paths=plugin_paths
-        )
+        try:
+            session = ftrack_connect.session.get_shared_session(
+                plugin_paths=plugin_paths
+            )
+        except Exception as error:
+            raise ftrack_connect.error.ParseError(error)
 
         # Listen to events using the new API event hub. This is required to
         # allow reconfiguring the storage scenario.
@@ -298,6 +293,17 @@ class Application(QtWidgets.QMainWindow):
         )
 
         return session
+
+    def _report_session_setup_error(self, error):
+        '''Format error message and emit loginError.'''
+        msg = (
+            u'\nAn error occured while starting ftrack-connect: <b>{0}</b>.'
+            u'\nPlease check log file for more informations.'
+            u'\nIf the error persists please send the log file to:'
+            u' support@ftrack.com'.format(error)
+
+        )
+        self.loginError.emit(msg)
 
     def loginWithCredentials(self, url, username, apiKey):
         '''Connect to *url* with *username* and *apiKey*.
@@ -367,8 +373,8 @@ class Application(QtWidgets.QMainWindow):
         try:
             self._session = self._setup_session()
         except Exception as error:
-            self.logger.exception('Error during login.')
-            self.loginError.emit(error.message)
+            self.logger.exception(u'Error during login.:')
+            self._report_session_setup_error(error)
             return
 
         # Store credentials since login was successful.
@@ -403,8 +409,8 @@ class Application(QtWidgets.QMainWindow):
         try:
             self.configureConnectAndDiscoverPlugins()
         except Exception as error:
-            self.logger.exception(error)
-            self.loginError.emit(error.message)
+            self.logger.exception(u'Error during location configuration.:')
+            self._report_session_setup_error(error)
         else:
             self.focus()
 
