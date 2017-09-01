@@ -151,7 +151,7 @@ class ComponentTableWidget(QtWidgets.QTableWidget):
                 )
 
                 available_locations = []
-                for index, location in enumerate(self.locations):
+                for location in self.locations:
                     accessor = location.accessor
                     # Don't show inaccessible locations
                     if accessor is symbol.NOT_SET:
