@@ -13,13 +13,13 @@ Release Notes
     .. change:: fixed
         :tags: Info dialog, Tasks dialog
 
-        Info and Tasks dialogs are now compatible with recent versions of
+        Info and Tasks dialogs are not compatible with recent versions of
         Qt.
 
     .. change:: fixed
         :tags: API
 
-        Nuke 11 is not supported.
+        All widgets are not compatible with recent versions of Qt.
 
 .. release:: 1.0.1
     :date: 2017-07-11
