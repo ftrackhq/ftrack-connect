@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
 
-from QtExt import QtWidgets, QtCore
+from QtExt import QtWidgets, QtCore, QtGui
 
 import ftrack_connect.ui.widget.html_delegate
 
@@ -35,7 +35,7 @@ class HtmlComboBox(QtWidgets.QComboBox):
         if itemData:
             # Draw main control.
             painter = QtWidgets.QStylePainter(self)
-            painter.setPen(self.palette().color(QtWidgets.QPalette.Text))
+            painter.setPen(self.palette().color(QtGui.QPalette.Text))
 
             option = QtWidgets.QStyleOptionComboBox()
             self.initStyleOption(option)
@@ -48,7 +48,7 @@ class HtmlComboBox(QtWidgets.QComboBox):
             )
 
             style = painter.style()  # QtWidgets.QApplication.style()
-            paint_context = QtWidgets.QAbstractTextDocumentLayout.PaintContext()
+            paint_context = QtGui.QAbstractTextDocumentLayout.PaintContext()
 
             text_rectangle = style.subElementRect(
                 QtWidgets.QStyle.SE_ComboBoxFocusRect, option, self

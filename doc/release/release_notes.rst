@@ -8,6 +8,19 @@
 Release Notes
 *************
 
+ .. release:: Upcoming
+
+    .. change:: fixed
+        :tags: Info dialog, Tasks dialog
+
+        Info and Tasks dialogs are not compatible with recent versions of
+        Qt.
+
+    .. change:: fixed
+        :tags: API
+
+        All widgets are not compatible with recent versions of Qt.
+
 .. release:: 1.0.1
     :date: 2017-07-11
 

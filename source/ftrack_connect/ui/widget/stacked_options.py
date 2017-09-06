@@ -2,7 +2,7 @@
 # :copyright: Copyright (c) 2015 ftrack
 import sys
 
-from QtExt import QtWidgets, QtXml
+from QtExt import QtWidgets, QtXml, QtGui
 
 
 class StackedOptionsWidget(QtWidgets.QStackedWidget):
@@ -23,9 +23,9 @@ class StackedOptionsWidget(QtWidgets.QStackedWidget):
 
         if self.connector.getConnectorName() == 'nuke':
             p = self.palette()
-            currentColor = p.color(QtWidgets.QPalette.Window)
+            currentColor = p.color(QtGui.QPalette.Window)
             p.setBrush(
-                QtWidgets.QPalette.Window, QtWidgets.QBrush(currentColor.lighter(175))
+                QtGui.QPalette.Window, QtGui.QBrush(currentColor.lighter(175))
             )
             self.setPalette(p)
 

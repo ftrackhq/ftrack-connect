@@ -3,13 +3,18 @@
 
 import getpass
 
-from QtExt import QtCore, QtWidgets, QtGui
+from QtExt import QtCore, QtWidgets, QtGui, is_webwidget_supported
 
 import ftrack
 import ftrack_api
 
 from ftrack_connect.connector import FTAssetObject, PanelComInstance
-from ftrack_connect.ui.widget.info import FtrackInfoDialog
+
+has_webwidgets = is_webwidget_supported()
+
+if has_webwidgets:
+    from ftrack_connect.ui.widget.info import FtrackInfoDialog
+
 from ftrack_connect.ui.widget import header
 from ftrack_connect.ui.theme import applyTheme
 from ftrack_connect.ui import resource
@@ -538,6 +543,8 @@ class AssetManagerWidget(QtWidgets.QWidget):
                 self.signalMapperComment.setMapping(
                     commentButton, str(asset_version['id'])
                 )
+
+                commentButton.setEnabled(has_webwidgets)
 
         self.ui.AssertManagerTableWidget.setHorizontalHeaderLabels(
             self.columnHeaders
