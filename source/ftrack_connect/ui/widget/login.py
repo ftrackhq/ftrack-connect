@@ -77,7 +77,7 @@ class Login(QtWidgets.QWidget):
         self.errorLabel = QtWidgets.QLabel()
         self.errorLabel.setWordWrap(True)
         layout.addWidget(self.errorLabel)
-        self.loginError.connect(self.errorLabel.setText)
+        self.loginError.connect(self.on_set_error)
 
         layout.addStretch(1)
 
@@ -90,6 +90,10 @@ class Login(QtWidgets.QWidget):
         self.toggle_api_label.clicked.connect(self._toggle_credentials)
         layout.addWidget(self.toggle_api_label, alignment=QtCore.Qt.AlignCenter)
         layout.addSpacing(20)
+
+    def on_set_error(self, error):
+        '''Set the error text and disable the login widget.'''
+        self.errorLabel.setText(error)
 
     def handleLogin(self):
         '''Fetch login data from form fields and emit login event.'''

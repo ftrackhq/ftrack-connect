@@ -3,13 +3,18 @@
 
 import getpass
 
-from QtExt import QtCore, QtWidgets, QtGui
+from QtExt import QtCore, QtWidgets, QtGui, is_webwidget_supported
 
 import ftrack
 import ftrack_api
 
 from ftrack_connect.connector import FTAssetObject, PanelComInstance
-from ftrack_connect.ui.widget.info import FtrackInfoDialog
+
+has_webwidgets = is_webwidget_supported()
+
+if has_webwidgets:
+    from ftrack_connect.ui.widget.info import FtrackInfoDialog
+
 from ftrack_connect.ui.widget import header
 from ftrack_connect.ui.theme import applyTheme
 from ftrack_connect.ui import resource
@@ -388,16 +393,22 @@ class AssetManagerWidget(QtWidgets.QWidget):
 
                 versionIndicatorButton = QtWidgets.QPushButton('')
                 if assetVersionNr == latest_version_number:
-                    versionIndicatorButton.setStyleSheet(
-                        'QPushButton { background-color: #1CBC90; border: none; };'
-                    )
+                    versionIndicatorButton.setStyleSheet('''
+                        QPushButton {
+                            background-color: #1CBC90;
+                            border: none;
+                        }
+                    ''')
                     self.connector.setNodeColor(
                         applicationObject=assets[i][1], latest=True
                     )
                 else:
-                    versionIndicatorButton.setStyleSheet(
-                        'QPushButton { background-color: #E36316; border: none; }'
-                    )
+                    versionIndicatorButton.setStyleSheet('''
+                        QPushButton {
+                            background-color: #E36316;
+                            border: none;
+                        }
+                    ''')
                     self.connector.setNodeColor(
                         applicationObject=assets[i][1], latest=False
                     )
@@ -533,6 +544,8 @@ class AssetManagerWidget(QtWidgets.QWidget):
                     commentButton, str(asset_version['id'])
                 )
 
+                commentButton.setEnabled(has_webwidgets)
+
         self.ui.AssertManagerTableWidget.setHorizontalHeaderLabels(
             self.columnHeaders
         )
@@ -555,7 +568,7 @@ class AssetManagerWidget(QtWidgets.QWidget):
         if comboBoxIndex:
             comboItem = self.ui.AssetManagerComboBoxModel.item(comboBoxIndex)
             for i in range(rowCount):
-                tableItem = self.ui.AssertManagerTableWidget.item(i, 2)
+                tableItem = self.ui.AssertManagerTableWidget.item(i, 3)
 
                 if comboItem.type != tableItem.text():
 
@@ -749,12 +762,22 @@ class AssetManagerWidget(QtWidgets.QWidget):
         if result:
             cellWidget = self.ui.AssertManagerTableWidget.cellWidget(row, 0)
             if newVersion == latestVersion:
-                cellWidget.setStyleSheet('background-color: rgb(20, 161, 74);')
+                cellWidget.setStyleSheet('''
+                        QPushButton {
+                            background-color: #1CBC90;
+                            border: none;
+                        }
+                    ''')
                 self.connector.setNodeColor(
                     applicationObject=objectName, latest=True
                 )
             else:
-                cellWidget.setStyleSheet('background-color: rgb(227, 99, 22);')
+                cellWidget.setStyleSheet('''
+                        QPushButton {
+                            background-color: #E36316;
+                            border: none;
+                        }
+                    ''')
                 self.connector.setNodeColor(
                     applicationObject=objectName, latest=False
                 )

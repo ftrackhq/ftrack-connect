@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
 
-from QtExt import QtWidgets, QtCore
+from QtExt import QtWidgets, QtCore, QtGui
 
 
 class HtmlDelegate(QtWidgets.QStyledItemDelegate):
@@ -20,7 +20,7 @@ class HtmlDelegate(QtWidgets.QStyledItemDelegate):
 
     def getTextDocument(self, option, item_data):
         '''Return QTextDocument based on *option* and *item_data*.'''
-        document = QtWidgets.QTextDocument()
+        document = QtGui.QTextDocument()
         document.setHtml(self.format(item_data))
         document.setTextWidth(option.rect.width())
 
@@ -28,7 +28,7 @@ class HtmlDelegate(QtWidgets.QStyledItemDelegate):
 
     def paint(self, painter, option, index):
         '''Paint delegate using *painter*.'''
-        options = QtWidgets.QStyleOptionViewItemV4(option)
+        options = QtWidgets.QStyleOptionViewItem(option)
         self.initStyleOption(options, index)
 
         if options.widget is None:
@@ -47,14 +47,15 @@ class HtmlDelegate(QtWidgets.QStyledItemDelegate):
         # options specified by option
         style.drawControl(QtWidgets.QStyle.CE_ItemViewItem, options, painter)
 
-        paint_context = QtWidgets.QAbstractTextDocumentLayout.PaintContext()
+        paint_context = QtGui.QAbstractTextDocumentLayout.PaintContext()
 
         # If item state is selected by mouse over change the highlight color.
         if options.state & QtWidgets.QStyle.State_Selected:
             paint_context.palette.setColor(
-                QtWidgets.QPalette.Text,
+                QtGui.QPalette.Text,
                 options.palette.color(
-                    QtWidgets.QPalette.Active, QtWidgets.QPalette.HighlightedText
+                    QtGui.QPalette.Active,
+                    QtGui.QPalette.HighlightedText
                 )
             )
 
@@ -76,7 +77,7 @@ class HtmlDelegate(QtWidgets.QStyledItemDelegate):
 
     def sizeHint(self, option, index):
         '''Return preferred size hint.'''
-        options = QtWidgets.QStyleOptionViewItemV4(option)
+        options = QtWidgets.QStyleOptionViewItem(option)
         self.initStyleOption(options, index)
 
         data = index.data(role=QtCore.Qt.UserRole)

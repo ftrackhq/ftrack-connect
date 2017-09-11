@@ -70,7 +70,7 @@ class NotificationList(ftrack_connect.ui.widget.item_list.ItemList):
         super(NotificationList, self).addItem(item, row=row)
 
 
-class Notification(QtGui.QWidget):
+class Notification(QtWidgets.QWidget):
     '''In-App Notification widget.'''
 
     #: Signal that a loading operation has started.

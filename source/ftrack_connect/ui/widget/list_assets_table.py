@@ -230,6 +230,9 @@ class ListAssetsTableWidget(QtWidgets.QWidget):
         versionComboBox = self.assetTable.cellWidget(
             row, self.assetTableColumns.index('Version')
         )
+        if not versionComboBox:
+            return
+
         version = versionComboBox.itemData(versionComboBox.currentIndex())
 
         self.assetVersionSelectedSignal.emit(version.getId())

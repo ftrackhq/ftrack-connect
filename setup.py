@@ -261,8 +261,8 @@ configuration = dict(
             '#egg=lowdown-0.1.0'
         ),
         (
-            'git+https://bitbucket.org/ftrack/qtext/get/0.1.0.zip'
-            '#egg=QtExt-0.1.0'
+            'git+https://bitbucket.org/ftrack/qtext/get/0.2.0.zip'
+            '#egg=QtExt-0.2.0'
         )
     ],
     options={},
