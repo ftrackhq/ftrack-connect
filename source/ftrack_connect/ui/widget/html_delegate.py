@@ -28,10 +28,14 @@ class HtmlDelegate(QtWidgets.QStyledItemDelegate):
 
     def paint(self, painter, option, index):
         '''Paint delegate using *painter*.'''
-        options = QtWidgets.QStyleOptionViewItem(option)
+        try:
+            options = QtWidgets.QStyleOptionViewItemV4(option)
+        except Exception:
+            options = QtWidgets.QStyleOptionViewItem(option)
+
         self.initStyleOption(options, index)
 
-        if options.widget is None:
+        if not getattr(options, 'widget', None):
             style = QtWidgets.QApplication.style()
         else:
             style = options.widget.style()
@@ -42,7 +46,8 @@ class HtmlDelegate(QtWidgets.QStyledItemDelegate):
 
         # Ensure no text label rendered.
         options.text = ''
-
+        print 'options:', options
+        print 'style:', style
         # Draw the element with the provided painter with the style
         # options specified by option
         style.drawControl(QtWidgets.QStyle.CE_ItemViewItem, options, painter)
