@@ -30,7 +30,7 @@ class HtmlDelegate(QtWidgets.QStyledItemDelegate):
         '''Paint delegate using *painter*.'''
         try:
             options = QtWidgets.QStyleOptionViewItemV4(option)
-        except Exception:
+        except AttributeError:
             options = QtWidgets.QStyleOptionViewItem(option)
 
         self.initStyleOption(options, index)
@@ -46,8 +46,6 @@ class HtmlDelegate(QtWidgets.QStyledItemDelegate):
 
         # Ensure no text label rendered.
         options.text = ''
-        print 'options:', options
-        print 'style:', style
         # Draw the element with the provided painter with the style
         # options specified by option
         style.drawControl(QtWidgets.QStyle.CE_ItemViewItem, options, painter)
