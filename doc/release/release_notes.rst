@@ -8,6 +8,14 @@
 Release Notes
 *************
 
+.. release:: Upcoming
+
+    .. change:: changed
+        :tags: Ui
+
+        Added feature to hide the ftrack-connect UI on startup. This is done
+        with the flag "--silent" or "-s".
+
  .. release:: 1.1.0
     :date: 2017-09-12
 
