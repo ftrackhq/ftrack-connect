@@ -1,7 +1,8 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
 
-from QtExt import QtGui, QtWebKitWidgets, QtCore, QtWidgets
+from QtExt import QtGui, QtCore, QtWidgets, QtNetwork, QtWebCompat
+
 
 # TODO: Investigate why this import exists and remove it.
 try:
@@ -24,7 +25,7 @@ class Ui_WebView(object):
         self.horizontalLayout = QtWidgets.QHBoxLayout(WebView)
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout.setObjectName('horizontalLayout')
-        self.WebViewView = QtWebKitWidgets.QWebView(WebView)
+        self.WebViewView = QtWebCompat.QWebView(WebView)
         font = QtGui.QFont()
         font.setFamily('Anonymous Pro')
         self.WebViewView.setFont(font)
@@ -44,14 +45,6 @@ class Ui_WebView(object):
         )
 
 
-class WebPage(QtWebKitWidgets.QWebPage):
-    '''WebPage widget.'''
-
-    def javaScriptConsoleMessage(self, msg, line, source):
-        '''Print javascript console message.'''
-        print '%s line %d: %s' % (source, line, msg)
-
-
 # TODO: Remove this widget and refactor Maya plugin to use WebView.
 class WebViewWidget(QtWidgets.QWidget):
     '''Webview widget class.'''
@@ -62,13 +55,14 @@ class WebViewWidget(QtWidgets.QWidget):
         self.ui = Ui_WebView()
         self.ui.setupUi(self)
 
-        self.webPage = WebPage()
+        self.webPage = QtWebCompat.QWebPage()
+
         self.persCookieJar = PersistentCookieJar(self)
         self.persCookieJar.load()
 
         proxy = HelpFunctions.getFtrackQNetworkProxy()
         if proxy:
-            self.webPage.networkAccessManager().setProxy(proxy)
+            self.webPage.setProxy(proxy)
 
         self.ui.WebViewView.setPage(self.webPage)
 
@@ -89,9 +83,9 @@ class WebView(QtWidgets.QFrame):
         super(WebView, self).__init__(parent)
         self.setMinimumHeight(400)
         self.setSizePolicy(
-            QtGui.QSizePolicy(
-                QtGui.QSizePolicy.Expanding,
-                QtGui.QSizePolicy.Expanding
+            QtWidgets.QSizePolicy(
+                QtWidgets.QSizePolicy.Expanding,
+                QtWidgets.QSizePolicy.Expanding
             )
         )
 
@@ -100,7 +94,7 @@ class WebView(QtWidgets.QFrame):
         layout.setSpacing(0)
         self.setLayout(layout)
 
-        self._webView = QtWebKitWidgets.QWebView()
+        self._webView = QtWebCompat.QWebView()
         layout.addWidget(self._webView)
 
         self.set_url(url)
@@ -116,3 +110,7 @@ class WebView(QtWidgets.QFrame):
             return None
 
         return url
+
+    def evaluateJavaScript(self, javascript):
+        '''Evaluate *javascript* script on the webpage's main frame.'''
+        self._webView.evaluateJavaScript(javascript)

@@ -8,6 +8,27 @@
 Release Notes
 *************
 
+ .. release:: 1.1.0
+    :date: 2017-09-12
+
+    .. change:: changed
+       :tags: Import asset
+
+       Component location picker now defaults to location where the component
+       exists. If a component exists in more than one location, the priority
+       order determines the default location.
+
+    .. change:: fixed
+        :tags: Info dialog, Tasks dialog
+
+        Info and Tasks dialogs are not compatible with recent versions of
+        Qt.
+
+    .. change:: fixed
+        :tags: API
+
+        All widgets are not compatible with recent versions of Qt.
+
 .. release:: 1.0.1
     :date: 2017-07-11
 
@@ -18,6 +39,11 @@ Release Notes
 
 .. release:: 1.0.0
     :date: 2017-07-07
+
+    .. change:: fixed
+        :tags: API
+
+        Errors in hooks are shown as event hub errors.
 
     .. change:: fixed
         :tags: Ui, Asset manager
