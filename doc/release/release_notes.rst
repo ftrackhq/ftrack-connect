@@ -8,6 +8,14 @@
 Release Notes
 *************
 
+ .. release:: Upcoming
+
+    .. change:: fixed
+        :tags: API, Ui
+
+        Template selection in nuke studio are not rendered correctly.
+
+
  .. release:: 1.1.0
     :date: 2017-09-12
 
