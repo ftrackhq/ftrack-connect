@@ -147,7 +147,7 @@ class Publisher(QtWidgets.QWidget):
                 'No linked entity selected to publish against!'
             )
 
-        taskId = None
+        taskId = entity.getId()
 
         asset = self.assetOptions.getAsset()
         assetType = self.assetOptions.getAssetType()
