@@ -147,7 +147,7 @@ class Publisher(QtWidgets.QWidget):
                 'No linked entity selected to publish against!'
             )
 
-        taskId = entity.getId()
+        taskId = None
 
         asset = self.assetOptions.getAsset()
         assetType = self.assetOptions.getAssetType()
@@ -239,7 +239,9 @@ class Publisher(QtWidgets.QWidget):
             if components is None:
                 components = []
 
-            task = self.session.get('Context', taskId)
+            task = None
+            if taskId:
+                task = self.session.get('Context', taskId)
 
             if not asset:
                 asset_type = self.session.get(
@@ -253,7 +255,7 @@ class Publisher(QtWidgets.QWidget):
                     {
                         'name': assetName,
                         'type': asset_type,
-                        'parent': task['parent']
+                        'parent': entity
                     }
                 )
 
