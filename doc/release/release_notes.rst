@@ -8,6 +8,13 @@
 Release Notes
 *************
 
+ .. release:: Upcoming
+
+    ..change:: fixed
+        :tags: API
+        
+        Error when publishing in connect with non-task context
+
  .. release:: 1.1.0
     :date: 2017-09-12
 
