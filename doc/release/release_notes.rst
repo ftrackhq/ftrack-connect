@@ -8,7 +8,8 @@
 Release Notes
 *************
 
- .. release:: Upcoming
+ .. release:: 1.1.1
+    :date: 2017-11-16
 
     ..change:: fixed
         :tags: API
