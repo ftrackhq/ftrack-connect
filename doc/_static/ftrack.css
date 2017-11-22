@@ -1,6 +1,40 @@
 
 @import "css/theme.css";
 
+.ftrack-banner {
+    position: fixed;
+    box-sizing: border-box;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+    line-height: 20px;
+    padding: 10px;
+    text-align: center;
+    color: white;
+}
+
+.ftrack-warning {
+    background-color: #ff5c33;
+}
+
+.ftrack-info {
+    background-color: #935ba2;
+}
+
+.ftrack-banner a {
+    color: white;
+    text-decoration: underline;
+}
+
+body {
+    padding-top: 40px;
+}
+
+.wy-nav-side {
+    top: 40px;
+}
+
 .domain-summary li {
     float: left;
     min-width: 12em;

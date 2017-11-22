@@ -1,0 +1,13 @@
+{% extends "!layout.html" %}
+{% block body %}
+    {% if pagename.startswith('release/') %}
+        <div class="ftrack-banner ftrack-info">
+            Visit <a href="https://www.ftrack.com/help">help center</a> for the latest documentation.
+        </div>
+    {% else %}
+        <div class="ftrack-banner ftrack-warning">
+            <strong>Warning!</strong> This documentation is outdated. Visit <a href="https://www.ftrack.com/help">help center</a> for the latest documentation.
+        </div>
+    {% endif %}
+    {{ body }}
+{% endblock %}
