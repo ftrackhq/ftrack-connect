@@ -8,15 +8,23 @@
 Release Notes
 *************
 
- .. release:: 1.1.1
+.. release:: 1.1.2
+    :date: 2017-12-01
+
+    .. change:: fixed
+        :tags: Documentation
+
+        Release notes page is not formatted correct.
+
+.. release:: 1.1.1
     :date: 2017-11-16
 
-    ..change:: fixed
+    .. change:: fixed
         :tags: API
         
-        Error when publishing in connect with non-task context
+        Error when publishing in connect with non-task context.
 
- .. release:: 1.1.0
+.. release:: 1.1.0
     :date: 2017-09-12
 
     .. change:: changed
