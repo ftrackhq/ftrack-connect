@@ -702,6 +702,22 @@ class Application(QtWidgets.QMainWindow):
         except Exception:
             pass
 
+        # Collect the same debug information on the new API event hub
+        try:
+            event = ftrack_api.event.base.Event(
+                topic='ftrack.connect.plugin.debug-information'
+            )
+            responses = self._session.event_hub.publish(event, synchronous=True)
+
+            for response in responses:
+                if isinstance(response, dict):
+                    versionData.append(response)
+                elif isinstance(response, list):
+                    versionData = versionData + response
+
+        except Exception:
+            pass
+
         aboutDialog.setInformation(
             versionData=versionData,
             server=os.environ.get('FTRACK_SERVER', 'Not set'),
