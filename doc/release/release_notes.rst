@@ -8,6 +8,12 @@
 Release Notes
 *************
 
+.. release:: upcoming
+    .. change:: fixed
+
+    `ftrack.connect.plugin.debug-information` only published for the legacy
+    api.
+
 .. release:: 1.1.2
     :date: 2017-12-01
 
