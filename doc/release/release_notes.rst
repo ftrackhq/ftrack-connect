@@ -8,7 +8,7 @@
 Release Notes
 *************
 
-.. release:: 1.1.2
+.. release:: 1.1.3
     :date: 2018-02-02
     .. change:: fixed
 
