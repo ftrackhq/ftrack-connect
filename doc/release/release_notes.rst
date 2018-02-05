@@ -10,7 +10,9 @@ Release Notes
 
 .. release:: 1.1.3
     :date: 2018-02-02
+
     .. change:: fixed
+       :tags: Plugins
 
     `ftrack.connect.plugin.debug-information` only published for the legacy
     api.
