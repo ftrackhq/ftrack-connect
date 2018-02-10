@@ -239,7 +239,11 @@ class Publisher(QtWidgets.QWidget):
             if components is None:
                 components = []
 
-            task = self.session.get('Context', taskId)
+            task = None
+            if taskId:
+                task = self.session.get('Context', taskId)
+
+            new_entity = self.session.get('Context', entity.getId())
 
             if not asset:
                 asset_type = self.session.get(
@@ -253,7 +257,7 @@ class Publisher(QtWidgets.QWidget):
                     {
                         'name': assetName,
                         'type': asset_type,
-                        'parent': task['parent']
+                        'parent': new_entity
                     }
                 )
 
