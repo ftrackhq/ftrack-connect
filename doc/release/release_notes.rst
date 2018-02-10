@@ -8,13 +8,14 @@
 Release Notes
 *************
 
-.. release:: Upcoming
+.. release:: 1.1.3
+    :date: 2018-02-02
 
-    .. change:: changed
-        :tags: Ui
+    .. change:: fixed
+       :tags: Plugins
 
-        Added feature to hide the ftrack-connect UI on startup. This is done
-        with the flag "--silent" or "-s".
+        `ftrack.connect.plugin.debug-information` only published for the legacy
+        api.
 
 .. release:: 1.1.2
     :date: 2017-12-01
