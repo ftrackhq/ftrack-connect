@@ -2,6 +2,7 @@
 # :copyright: Copyright (c) 2015 ftrack
 
 import getpass
+import logging
 
 from QtExt import QtCore, QtWidgets, QtGui, is_webwidget_supported
 
@@ -208,6 +209,10 @@ class AssetManagerWidget(QtWidgets.QWidget):
     def __init__(self, parent, task=None, connector=None):
         '''Instantiate asset manager with *connector*.'''
         QtWidgets.QWidget.__init__(self, parent)
+        
+        self.logger = logging.getLogger(
+            __name__ + '.' + self.__class__.__name__
+        )
 
         if not connector:
             raise ValueError(
@@ -374,9 +379,14 @@ class AssetManagerWidget(QtWidgets.QWidget):
                 componentNameStr = component['name']
                 assetVersionNr = asset_version['version']
                 asset = asset_version['asset']
+                asset_versions = self.connector.session.query(
+                    'select versions from Asset where id is "{}"'.format(asset['id'])
+                ).all()
+    
 
                 asset_versions_with_same_component_name = []
-                for related_version in asset['versions']:
+
+                for related_version in asset_versions:
                     for other_component in related_version['components']:
                         if other_component['name'] == componentNameStr:
                             asset_versions_with_same_component_name.append(
