@@ -8,6 +8,14 @@
 Release Notes
 *************
 
+.. release:: Upcoming
+
+    .. change:: fixed
+       :tags: Asset manager
+
+        Asset manager does not show last published asset version in same session.
+
+
 .. release:: 1.1.3
     :date: 2018-02-02
 
