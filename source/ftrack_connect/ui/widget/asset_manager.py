@@ -378,15 +378,17 @@ class AssetManagerWidget(QtWidgets.QWidget):
                 asset_version = component['version']
                 componentNameStr = component['name']
                 assetVersionNr = asset_version['version']
-                asset = asset_version['asset']
-                asset_versions = self.connector.session.query(
-                    'select versions from Asset where id is "{}"'.format(asset['id'])
-                ).all()
-    
+
+                # Force refreshing cached data.
+                asset = self.connector.session.query(
+                    'select versions from Asset where id is "{}"'.format(
+                        asset_version['asset']['id']
+                    )
+                ).one()
 
                 asset_versions_with_same_component_name = []
 
-                for related_version in asset_versions:
+                for related_version in asset['versions']:
                     for other_component in related_version['components']:
                         if other_component['name'] == componentNameStr:
                             asset_versions_with_same_component_name.append(
