@@ -13,7 +13,7 @@ Release Notes
     .. change:: fixed
        :tags: Asset manager
 
-        Asset manager does not show last published asset version in same session.
+        Asset manager does not refresh last published asset version.
 
 
 .. release:: 1.1.3
