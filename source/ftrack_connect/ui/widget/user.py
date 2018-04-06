@@ -210,11 +210,6 @@ class User(QtWidgets.QFrame):
     def updateSession(self, data):
         '''Update a session with *sessionId*.'''
 
-        if not data['session_id'] in self._applications:
-            raise ftrack_connect.error.CrewSessionError(
-                '"session_id" not present in user sessions.'
-            )
-
         self.addSession(data)
 
     def removeSession(self, sessionId):
