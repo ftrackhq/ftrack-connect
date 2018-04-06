@@ -11,6 +11,11 @@ Release Notes
 .. release:: Upcoming
 
     .. change:: changed
+        :tags: Crew
+
+        Remove Crew widget chat and notifications.
+
+    .. change:: changed
         :tags: Ui
 
         Added feature to hide the ftrack-connect UI on startup. This is done
