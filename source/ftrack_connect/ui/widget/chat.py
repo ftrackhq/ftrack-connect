@@ -102,8 +102,8 @@ class ChatTextEdit(QtWidgets.QTextEdit):
 
         # Install event filter at application level in order to handle
         # return pressed events
-        application = QtCore.QCoreApplication.instance()
-        application.installEventFilter(self)
+        # application = QtCore.QCoreApplication.instance()
+        # application.installEventFilter(self)
 
     def eventFilter(self, obj, event):
         '''Filter *event* sent to *obj*.'''
@@ -131,7 +131,7 @@ class Chat(QtWidgets.QFrame):
     def __init__(self, parent=None):
         '''Initiate chat widget with *chatHub*.'''
         super(Chat, self).__init__(parent)
-
+    
         self.setLayout(QtWidgets.QVBoxLayout())
         self.layout().setContentsMargins(0, 0, 0, 0)
         self.layout().setSpacing(0)
