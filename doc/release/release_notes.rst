@@ -11,9 +11,9 @@ Release Notes
 .. release:: Upcoming
 
     .. change:: fixed
-        :tags: Asset manager
+        :tags: Import asset
 
-        Asset manager does not refresh last published asset version.
+        Import Asset breaks checking for asset in remote locations.
 
     .. change:: changed
         :tags: Ui
