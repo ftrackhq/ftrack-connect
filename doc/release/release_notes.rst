@@ -10,6 +10,11 @@ Release Notes
 
 .. release:: Upcoming
 
+    .. change:: fixed
+        :tags: Import asset
+
+        Import Asset breaks checking for asset in remote locations.
+
     .. change:: changed
         :tags: Crew
 
@@ -43,7 +48,7 @@ Release Notes
 
     .. change:: fixed
         :tags: API
-
+        
         Error when publishing in connect with non-task context.
 
 .. release:: 1.1.0
