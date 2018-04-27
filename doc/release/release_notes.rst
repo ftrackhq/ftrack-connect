@@ -8,7 +8,8 @@
 Release Notes
 *************
 
-.. release:: Upcoming
+.. release:: 1.1.4
+    :date: 2018-04-27
 
     .. change:: fixed
         :tags: Import asset
