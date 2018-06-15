@@ -11,7 +11,7 @@ import base64
 import json
 import logging
 from operator import itemgetter
-
+from distutils.version import LooseVersion
 import ftrack
 import ftrack_api
 
@@ -219,7 +219,7 @@ class ApplicationStore(object):
                                 ),
                                 'path': path,
                                 'launchArguments': launchArguments,
-                                'version': version,
+                                'version': LooseVersion(version),
                                 'label': label.format(version=version),
                                 'icon': icon,
                                 'variant': variant.format(version=version),
