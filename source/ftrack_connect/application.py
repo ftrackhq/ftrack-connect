@@ -10,6 +10,7 @@ import collections
 import base64
 import json
 import logging
+from operator import itemgetter
 
 import ftrack
 import ftrack_api
@@ -234,7 +235,7 @@ class ApplicationStore(object):
                 # Don't descend any further as out of patterns to match.
                 del folders[:]
 
-        return applications
+        return sorted(applications, key=itemgetter('version'))
 
 
 class ApplicationLauncher(object):
