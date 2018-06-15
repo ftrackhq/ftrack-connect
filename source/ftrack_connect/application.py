@@ -235,7 +235,7 @@ class ApplicationStore(object):
                 # Don't descend any further as out of patterns to match.
                 del folders[:]
 
-        return sorted(applications, key=itemgetter('version'))
+        return sorted(applications, key=itemgetter('version'), reverse=True)
 
 
 class ApplicationLauncher(object):
