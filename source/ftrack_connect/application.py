@@ -213,6 +213,9 @@ class ApplicationStore(object):
                         if versionMatch:
                             version = versionMatch.group('version')
 
+                            # If no version is found, let's set it to a default.
+                            version = version or '0.0.0'
+
                             applications.append({
                                 'identifier': applicationIdentifier.format(
                                     version=version
