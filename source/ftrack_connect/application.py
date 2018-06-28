@@ -213,8 +213,15 @@ class ApplicationStore(object):
                         if versionMatch:
                             version = versionMatch.group('version')
 
-                            # If no version is found, let's set it to a default.
-                            version = version or '0.0.0'
+                            try:
+                                loose_version = LooseVersion(version)
+                            except AttributeError:
+                                self.logger.warning(
+                                    'Could not parse version {0} from {1}'.format(
+                                        version, path
+                                    )
+                                )
+                                loose_version = LooseVersion('0.0.0')
 
                             applications.append({
                                 'identifier': applicationIdentifier.format(
@@ -222,7 +229,7 @@ class ApplicationStore(object):
                                 ),
                                 'path': path,
                                 'launchArguments': launchArguments,
-                                'version': LooseVersion(version),
+                                'version': loose_version,
                                 'label': label.format(version=version),
                                 'icon': icon,
                                 'variant': variant.format(version=version),
