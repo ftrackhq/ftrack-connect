@@ -212,15 +212,17 @@ class ApplicationStore(object):
                         versionMatch = versionExpression.search(path)
                         if versionMatch:
                             version = versionMatch.group('version')
-
+                            
                             try:
                                 loose_version = LooseVersion(version)
                             except AttributeError:
                                 self.logger.warning(
-                                    'Could not parse version {0} from {1}'.format(
+                                    'Could not parse version'
+                                    ' {0} from {1}'.format(
                                         version, path
                                     )
                                 )
+                                # If no version is found, let's set it to a default.
                                 loose_version = LooseVersion('0.0.0')
 
                             applications.append({
