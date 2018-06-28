@@ -8,6 +8,13 @@
 Release Notes
 *************
 
+
+.. release:: Upcoming
+  .. change:: fixed
+        :tags: Ui
+
+        Application versions are not correctly sorted.
+
 .. release:: 1.1.4
     :date: 2018-04-27
 

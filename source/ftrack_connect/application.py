@@ -10,7 +10,8 @@ import collections
 import base64
 import json
 import logging
-
+from operator import itemgetter
+from distutils.version import LooseVersion
 import ftrack
 import ftrack_api
 
@@ -211,6 +212,18 @@ class ApplicationStore(object):
                         versionMatch = versionExpression.search(path)
                         if versionMatch:
                             version = versionMatch.group('version')
+                            
+                            try:
+                                loose_version = LooseVersion(version)
+                            except AttributeError:
+                                self.logger.warning(
+                                    'Could not parse version'
+                                    ' {0} from {1}'.format(
+                                        version, path
+                                    )
+                                )
+                                # If no version is found, let's set it to a default.
+                                loose_version = LooseVersion('0.0.0')
 
                             applications.append({
                                 'identifier': applicationIdentifier.format(
@@ -218,7 +231,7 @@ class ApplicationStore(object):
                                 ),
                                 'path': path,
                                 'launchArguments': launchArguments,
-                                'version': version,
+                                'version': loose_version,
                                 'label': label.format(version=version),
                                 'icon': icon,
                                 'variant': variant.format(version=version),
@@ -234,7 +247,7 @@ class ApplicationStore(object):
                 # Don't descend any further as out of patterns to match.
                 del folders[:]
 
-        return applications
+        return sorted(applications, key=itemgetter('version'), reverse=True)
 
 
 class ApplicationLauncher(object):
