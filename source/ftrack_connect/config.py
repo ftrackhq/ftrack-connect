@@ -29,7 +29,7 @@ def get_log_directory():
     return log_directory
 
 
-def configure_logging(logger_name, level=None, format=None):
+def configure_logging(logger_name, level=None, format=None, extra_modules=None):
     '''Configure `loggerName` loggers with console and file handler.
 
     Optionally specify log *level* (default WARNING)
@@ -44,6 +44,8 @@ def configure_logging(logger_name, level=None, format=None):
 
     log_directory = get_log_directory()
     logfile = os.path.join(log_directory, '{0}.log'.format(logger_name))
+    extra_modules = extra_modules or []
+    modules = ['ftrack_api', 'FTrackCore', 'urllib3'] + extra_modules
 
     logging_settings = {
         'version': 1,
@@ -75,15 +77,12 @@ def configure_logging(logger_name, level=None, format=None):
             '': {
                 'level': 'DEBUG',
                 'handlers': ['console', 'file']
-            },
-            'ftrack_api': {
-                'level': 'INFO',
-            },
-            'FTrackCore': {
-                'level': 'INFO',
             }
         }
     }
+
+    for module in modules:
+        logging_settings['loggers'].setdefault(module, {'level': logging.INFO})
 
     # Set default logging settings.
     logging.config.dictConfig(logging_settings)
