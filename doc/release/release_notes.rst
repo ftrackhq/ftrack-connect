@@ -15,7 +15,6 @@ Release Notes
 
         Improve logging configuration.
 
-.. release:: Upcoming
   .. change:: fixed
         :tags: Ui
 
