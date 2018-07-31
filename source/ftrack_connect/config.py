@@ -38,25 +38,26 @@ def configure_logging(logger_name, level=None, format=None, extra_modules=None):
     `%(asctime)s - %(name)s - %(levelname)s - %(message)s`.
     '''
 
-    # provide default values for level and format
+    # Provide default values for level and format.
     format = format or '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
     level = level or logging.WARNING
 
     log_directory = get_log_directory()
     logfile = os.path.join(log_directory, '{0}.log'.format(logger_name))
 
-    # sanitise the variable, checking the type
-    if not isinstance(extra_modules, (list, tuple)):
-        logging.warning(
-            'Skipping extra modules: {0} as are not of the correct type.'
-            'Expected list or tuple, got {1}'.format(
+    # Sanitise the variable, checking the type.
+    if not isinstance(extra_modules, (list, tuple, None)):
+        msg = (
+            'Extra modules: {0} as are not of the correct type.'
+            'Expected list or tuple or None, got {1}'.format(
                 extra_modules, type(extra_modules)
             )
         )
-        extra_modules = None
+        raise ValueError(msg)
 
     extra_modules = extra_modules or []
-    # cast to list in case is a tuple
+
+    # Cast to list in case is a tuple.
     modules = ['ftrack_api', 'FTrackCore', 'urllib3'] + list(extra_modules)
 
     logging_settings = {
