@@ -46,7 +46,7 @@ def configure_logging(logger_name, level=None, format=None, extra_modules=None):
     logfile = os.path.join(log_directory, '{0}.log'.format(logger_name))
 
     # Sanitise the variable, checking the type.
-    if not isinstance(extra_modules, (list, tuple, None)):
+    if not isinstance(extra_modules, (list, tuple, type(None))):
         msg = (
             'Extra modules: {0} as are not of the correct type.'
             'Expected list or tuple or None, got {1}'.format(
