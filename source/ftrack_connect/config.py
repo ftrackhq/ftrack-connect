@@ -29,21 +29,39 @@ def get_log_directory():
     return log_directory
 
 
-def configure_logging(logger_name, level=None, format=None):
+def configure_logging(logger_name, level=None, format=None, extra_modules=None):
     '''Configure `loggerName` loggers with console and file handler.
 
     Optionally specify log *level* (default WARNING)
 
     Optionally set *format*, default:
     `%(asctime)s - %(name)s - %(levelname)s - %(message)s`.
+
+    Optional *extra_modules* to extend the modules to be set to *level*. 
     '''
 
-    # provide default values for level and format
+    # Provide default values for level and format.
     format = format or '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
     level = level or logging.WARNING
 
     log_directory = get_log_directory()
     logfile = os.path.join(log_directory, '{0}.log'.format(logger_name))
+
+    # Sanitise the variable, checking the type.
+    if not isinstance(extra_modules, (list, tuple, type(None))):
+        error_message = (
+            'Extra modules: {0} as are not of the correct type.'
+            'Expected list or tuple or None, got {1}'.format(
+                extra_modules, type(extra_modules)
+            )
+        )
+        raise ValueError(error_message)
+
+    extra_modules = extra_modules or []
+
+    # Cast to list in case is a tuple.
+    modules = ['ftrack_api', 'FTrackCore', 'urllib3', 'requests']
+    modules.extend(list(extra_modules))
 
     logging_settings = {
         'version': 1,
@@ -75,15 +93,15 @@ def configure_logging(logger_name, level=None, format=None):
             '': {
                 'level': 'DEBUG',
                 'handlers': ['console', 'file']
-            },
-            'ftrack_api': {
-                'level': 'INFO',
-            },
-            'FTrackCore': {
-                'level': 'INFO',
             }
         }
     }
+
+    for module in modules:
+        current_level = logging._levelNames[level]
+        logging_settings['loggers'].setdefault(
+            module, {'level': current_level}
+        )
 
     # Set default logging settings.
     logging.config.dictConfig(logging_settings)

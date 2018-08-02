@@ -10,6 +10,11 @@ Release Notes
 
 
 .. release:: Upcoming
+  .. change:: changed
+        :tags: Logging
+
+        Improve logging configuration.
+
   .. change:: fixed
         :tags: Ui
 
