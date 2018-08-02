@@ -37,7 +37,7 @@ def configure_logging(logger_name, level=None, format=None, extra_modules=None):
     Optionally set *format*, default:
     `%(asctime)s - %(name)s - %(levelname)s - %(message)s`.
 
-    Optional *extra_module* to extend the modules to be set to *level*. 
+    Optional *extra_modules* to extend the modules to be set to *level*. 
     '''
 
     # Provide default values for level and format.
