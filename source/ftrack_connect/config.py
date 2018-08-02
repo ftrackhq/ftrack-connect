@@ -36,6 +36,8 @@ def configure_logging(logger_name, level=None, format=None, extra_modules=None):
 
     Optionally set *format*, default:
     `%(asctime)s - %(name)s - %(levelname)s - %(message)s`.
+
+    Optional *extra_module* to extend the modules to be set to *level*. 
     '''
 
     # Provide default values for level and format.
@@ -95,7 +97,9 @@ def configure_logging(logger_name, level=None, format=None, extra_modules=None):
     }
 
     for module in modules:
-        logging_settings['loggers'].setdefault(module, {'level': logging.INFO})
+        logging_settings['loggers'].setdefault(
+            module, {'level': logging._levelNames[level]}
+        )
 
     # Set default logging settings.
     logging.config.dictConfig(logging_settings)
