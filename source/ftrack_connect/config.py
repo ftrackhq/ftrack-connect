@@ -60,7 +60,8 @@ def configure_logging(logger_name, level=None, format=None, extra_modules=None):
     extra_modules = extra_modules or []
 
     # Cast to list in case is a tuple.
-    modules = ['ftrack_api', 'FTrackCore', 'urllib3'] + list(extra_modules)
+    modules = ['ftrack_api', 'FTrackCore', 'urllib3', 'requests']
+    modules.extend(list(extra_modules))
 
     logging_settings = {
         'version': 1,
@@ -97,8 +98,9 @@ def configure_logging(logger_name, level=None, format=None, extra_modules=None):
     }
 
     for module in modules:
+        current_level = logging._levelNames[level]
         logging_settings['loggers'].setdefault(
-            module, {'level': logging._levelNames[level]}
+            module, {'level': current_level}
         )
 
     # Set default logging settings.
