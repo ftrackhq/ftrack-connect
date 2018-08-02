@@ -47,13 +47,13 @@ def configure_logging(logger_name, level=None, format=None, extra_modules=None):
 
     # Sanitise the variable, checking the type.
     if not isinstance(extra_modules, (list, tuple, type(None))):
-        msg = (
+        error_message = (
             'Extra modules: {0} as are not of the correct type.'
             'Expected list or tuple or None, got {1}'.format(
                 extra_modules, type(extra_modules)
             )
         )
-        raise ValueError(msg)
+        raise ValueError(error_message)
 
     extra_modules = extra_modules or []
 
