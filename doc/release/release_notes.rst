@@ -8,8 +8,13 @@
 Release Notes
 *************
 
-
 .. release:: Upcoming
+
+  .. change:: fixed
+        :tags: Logging
+
+        logger breaks with non ascii path.
+
   .. change:: changed
         :tags: Logging
 
