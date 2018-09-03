@@ -15,7 +15,7 @@ def get_log_directory():
     Raise if the directory can not be created.
     '''
     user_data_dir = appdirs.user_data_dir('ftrack-connect', 'ftrack')
-    log_directory = os.path.join(user_data_dir, 'log')
+    log_directory = os.path.join(user_data_dir, 'log').encode('utf8')
 
     if not os.path.exists(log_directory):
         try:
@@ -45,7 +45,9 @@ def configure_logging(logger_name, level=None, format=None, extra_modules=None):
     level = level or logging.WARNING
 
     log_directory = get_log_directory()
-    logfile = os.path.join(log_directory, '{0}.log'.format(logger_name))
+    logfile = os.path.join(
+        log_directory, '{0}.log'.format(logger_name)
+    ).encode('utf8')
 
     # Sanitise the variable, checking the type.
     if not isinstance(extra_modules, (list, tuple, type(None))):
