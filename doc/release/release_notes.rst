@@ -8,7 +8,8 @@
 Release Notes
 *************
 
-.. release:: Upcoming
+.. release:: 1.1.5
+    :date: 2018-10-13
 
   .. change:: fixed
         :tags: Logging
