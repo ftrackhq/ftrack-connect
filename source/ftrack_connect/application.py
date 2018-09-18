@@ -285,6 +285,22 @@ class ApplicationLauncher(object):
             message - Any additional information (such as a failure message).
 
         '''
+
+        selection = context.get('selection', [])
+        component_path = None
+
+        if (
+                selection and
+                len(selection) == 1 and
+                selection[0].get('entityType') == 'Component'
+        ):
+            session = ftrack_connect.session.get_shared_session()
+            current_location = session.pick_location()
+            component = session.get(
+                'Component', selection[0].get('entityId')
+            )
+            component_path = current_location.get_filesystem_path(component)
+
         # Look up application.
         applicationIdentifierPattern = applicationIdentifier
         if applicationIdentifierPattern == 'hieroplayer':
@@ -309,6 +325,10 @@ class ApplicationLauncher(object):
 
         # Environment must contain only strings.
         self._conformEnvironment(environment)
+
+        # If we are dealing with a component, we add it at the end of the command.
+        if component_path:
+            command.append(component_path)
 
         success = True
         message = '{0} application started.'.format(application['label'])
