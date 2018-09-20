@@ -12,6 +12,9 @@ import json
 import logging
 from operator import itemgetter
 from distutils.version import LooseVersion
+import tempfile
+import shutil
+
 import ftrack
 import ftrack_api
 
@@ -274,6 +277,21 @@ class ApplicationLauncher(object):
         self.session = ftrack_connect.session.get_session()
         self.current_location = self.session.pick_location()
 
+    def _getTemporaryCopy(self, filePath):
+        '''Copy file at *filePath* to a temporary directory and return path.
+
+        .. note::
+
+            The copied file does not retain the original files meta data or
+            permissions.
+        '''
+        temporaryDirectory = tempfile.mkdtemp(prefix='ftrack_connect')
+        targetPath = os.path.join(
+            temporaryDirectory, os.path.basename(filePath)
+        )
+        shutil.copyfile(filePath, targetPath)
+        return targetPath
+
     def launch(self, applicationIdentifier, context=None):
         '''Launch application matching *applicationIdentifier*.
 
@@ -328,9 +346,11 @@ class ApplicationLauncher(object):
         # Environment must contain only strings.
         self._conformEnvironment(environment)
 
-        # If we are dealing with a component, we add it at the end of the command.
+        # If we are dealing with a component we copy the component in temp and
+        # we inject it as last argument of the command.
         if component_path:
-            command.append(component_path)
+            temporary_component_path = self._getTemporaryCopy(component_path)
+            command.append(temporary_component_path)
 
         success = True
         message = '{0} application started.'.format(application['label'])
