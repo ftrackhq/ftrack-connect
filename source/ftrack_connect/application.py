@@ -271,6 +271,8 @@ class ApplicationLauncher(object):
         )
 
         self.applicationStore = applicationStore
+        self.session = ftrack_connect.session.get_session()
+        self.current_location = self.session.pick_location()
 
     def launch(self, applicationIdentifier, context=None):
         '''Launch application matching *applicationIdentifier*.
@@ -294,12 +296,12 @@ class ApplicationLauncher(object):
                 len(selection) == 1 and
                 selection[0].get('entityType') == 'Component'
         ):
-            session = ftrack_connect.session.get_shared_session()
-            current_location = session.pick_location()
-            component = session.get(
+
+            component = self.session.get(
                 'Component', selection[0].get('entityId')
             )
-            component_path = current_location.get_filesystem_path(component)
+            component_path = self.current_location.get_filesystem_path(component)
+
 
         # Look up application.
         applicationIdentifierPattern = applicationIdentifier
