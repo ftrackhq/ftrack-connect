@@ -277,7 +277,7 @@ class ApplicationLauncher(object):
         self.session = ftrack_connect.session.get_session()
         self.current_location = self.session.pick_location()
 
-    def _getTemporaryCopy(self, filePath):
+    def _getTemporaryCopy(self, filePath, event):
         '''Copy file at *filePath* to a temporary directory and return path.
 
         .. note::
@@ -285,12 +285,49 @@ class ApplicationLauncher(object):
             The copied file does not retain the original files meta data or
             permissions.
         '''
-        temporaryDirectory = tempfile.mkdtemp(prefix='ftrack_connect')
-        targetPath = os.path.join(
-            temporaryDirectory, os.path.basename(filePath)
-        )
-        shutil.copyfile(filePath, targetPath)
+        job = self._createJob(event, 'Copying component to local machine.')
+        try:
+            temporaryDirectory = tempfile.mkdtemp(prefix='ftrack_connect')
+            targetPath = os.path.join(
+                temporaryDirectory, os.path.basename(filePath)
+            )
+            shutil.copyfile(filePath, targetPath)
+        except Exception as error:
+            job['status'] = 'failed'
+            job['data'] = json.dumps({
+                'description': unicode(error)
+            })
+            self.session.commit()
+
+        job['status'] = 'done'
+        self.session.commit()
+
         return targetPath
+
+    def _createJob(self, event, description):
+        '''Return new job from *event* with given *description*.
+
+        ..note::
+
+            This function will auto-commit the session.
+
+        '''
+
+        user_id = event['source']['user']['id']
+        job = self.session.create(
+            'Job',
+            {
+                'user': self.session.get('User', user_id),
+                'status': 'running',
+                'data': json.dumps({
+                    'description': unicode(
+                        description
+                    )}
+                )
+            }
+        )
+        self.session.commit()
+        return job
 
     def launch(self, applicationIdentifier, context=None):
         '''Launch application matching *applicationIdentifier*.
@@ -391,7 +428,7 @@ class ApplicationLauncher(object):
         message = '{0} application started'.format(application['label'])
 
         if can_copy_component and componentPath:
-            temporary_component_path = self._getTemporaryCopy(componentPath)
+            temporary_component_path = self._getTemporaryCopy(componentPath, context)
             command.append(temporary_component_path)
             message += ' with component {}'.format(componentName)
 
