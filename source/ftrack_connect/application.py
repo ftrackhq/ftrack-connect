@@ -305,9 +305,16 @@ class ApplicationLauncher(object):
             message - Any additional information (such as a failure message).
 
         '''
+        context = context or {}
+        can_copy_component = context.get(
+            'values', {}).get('copy_component', False
+        )
+
 
         selection = context.get('selection', [])
-        component_path = None
+        componentPath = None
+        componentSize = 0
+        componentName = None
 
         if (
                 selection and
@@ -318,8 +325,34 @@ class ApplicationLauncher(object):
             component = self.session.get(
                 'Component', selection[0].get('entityId')
             )
-            component_path = self.current_location.get_filesystem_path(component)
+            componentPath = self.current_location.get_filesystem_path(component)
+            componentSize = component['size']
+            componentName = component['name']
 
+        if not can_copy_component and componentPath:
+
+            message = (
+                'In order to open the component **{0}**, **{1}** bytes '
+                'will have to be copied to your local disk.'.format(
+                    componentName, componentSize
+                )
+            )
+
+            widget = {
+                'items': [
+                    {
+                        'value': message,
+                        'type': 'label'
+                    },
+                    {
+                        'label': 'Continue ?',
+                        'value': False,
+                        'name': 'copy_component',
+                        'type': 'boolean'
+                    }
+                ]
+            }
+            return widget
 
         # Look up application.
         applicationIdentifierPattern = applicationIdentifier
@@ -348,12 +381,16 @@ class ApplicationLauncher(object):
 
         # If we are dealing with a component we copy the component in temp and
         # we inject it as last argument of the command.
-        if component_path:
-            temporary_component_path = self._getTemporaryCopy(component_path)
-            command.append(temporary_component_path)
 
         success = True
-        message = '{0} application started.'.format(application['label'])
+        message = '{0} application started'.format(application['label'])
+
+        if can_copy_component and componentPath:
+            temporary_component_path = self._getTemporaryCopy(componentPath)
+            command.append(temporary_component_path)
+            message += ' with component {}'.format(componentName)
+
+        message += '.'
 
         try:
             options = dict(
