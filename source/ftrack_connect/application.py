@@ -310,7 +310,6 @@ class ApplicationLauncher(object):
             'values', {}).get('copy_component', False
         )
 
-
         selection = context.get('selection', [])
         componentPath = None
         componentSize = 0
@@ -325,12 +324,18 @@ class ApplicationLauncher(object):
             component = self.session.get(
                 'Component', selection[0].get('entityId')
             )
-            componentPath = self.current_location.get_filesystem_path(component)
-            componentSize = component['size']
-            componentName = component['name']
+            try:
+                componentPath = self.current_location.get_filesystem_path(component)
+                componentSize = component['size']
+                componentName = component['name']
+            except Exception as error:
+                return {
+                    'success': False,
+                    'message': str(error),
+                    'type': 'message'
+                }
 
         if not can_copy_component and componentPath:
-
             message = (
                 'In order to open the component **{0}**, **{1}** bytes '
                 'will have to be copied to your local disk.'.format(
