@@ -421,12 +421,11 @@ class ApplicationLauncher(object):
         # Environment must contain only strings.
         self._conformEnvironment(environment)
 
-        # If we are dealing with a component we copy the component in temp and
-        # we inject it as last argument of the command.
-
         success = True
         message = '{0} application started'.format(application['label'])
 
+        # If we are dealing with a component,and the user agreed to,
+        # we copy the component in temp and we inject it as last argument of the command.
         if can_copy_component and componentPath:
             temporary_component_path = self._getTemporaryCopy(componentPath, context)
             command.append(temporary_component_path)
