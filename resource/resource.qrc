@@ -1,8 +1,8 @@
 <RCC>
     <qresource prefix='ftrack/image/default'>
-        <file alias='ftrackLogoGrey'>image/logo_grey.svg</file>
-        <file alias='ftrackLogoGreyDark'>image/logo_grey.svg</file>
-        <file alias='ftrackLogoColor'>image/logo_grey.svg</file>
+        <file alias='ftrackLogoGrey'>image/ftrack_icon_circle_faded.svg</file>
+        <file alias='ftrackLogoGreyDark'>image/ftrack_icon_circle_dark.svg</file>
+        <file alias='ftrackLogoColor'>image/ftrack_icon_circle_light.svg</file>
         <file alias='boxShadow'>image/box_shadow.png</file>
         <file alias='ftrackLogoLabel'>image/ftrack_logo_gray.svg</file>
         <file alias='cloud-done'>image/cloud_done.svg</file>
@@ -50,8 +50,8 @@
         <file alias='project'>image/light/project.svg</file>
         <file alias='remove'>image/light/remove.svg</file>
         <file alias='reload'>image/light/refresh.svg</file>
-        <file alias='ftrackLogoColor'>image/logo_grey.svg</file>
-        <file alias='ftrackLogoGrey'>image/logo_grey.svg</file>
+        <file alias='ftrackLogoColor'>image/ftrack_icon_circle_light.svg</file>
+        <file alias='ftrackLogoGrey'>image/ftrack_icon_circle_dark.svg</file>
         <file alias='radiobutton_unchecked'>image/light/radiobutton/radiobutton_unchecked.png</file>
         <file alias='radiobutton_unchecked_hover'>image/light/radiobutton/radiobutton_unchecked_hover.png</file>
         <file alias='radiobutton_unchecked_pressed'>image/light/radiobutton/radiobutton_unchecked_pressed.png</file>
@@ -296,8 +296,9 @@
         <file alias='remove'>image/light/remove.svg</file>
         <file alias='reload'>image/dark/refresh.svg</file>
         <file alias='project'>image/dark/project.svg</file>
-        <file alias='ftrackLogoColor'>image/logo_grey.svg</file>
-        <file alias='ftrackLogoGrey'>image/logo_grey.svg</file>
+        <file alias='ftrackLogoColor'>image/ftrack_icon_circle_light.svg</file>
+        <file alias='ftrackLogoGrey'>image/ftrack_icon_circle_faded.svg</file>
+        <file alias='ftrackLogoGrey'>image/ftrack_icon_circle_dark.svg</file>
         <file alias='radiobutton_unchecked'>image/dark/radiobutton/radiobutton_unchecked.png</file>
         <file alias='radiobutton_unchecked_hover'>image/dark/radiobutton/radiobutton_unchecked_hover.png</file>
         <file alias='radiobutton_unchecked_pressed'>image/dark/radiobutton/radiobutton_unchecked_pressed.png</file>
