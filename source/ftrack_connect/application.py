@@ -343,7 +343,7 @@ class ApplicationLauncher(object):
 
         '''
         context = context or {}
-        can_copy_component = context.get(
+        canCopyComponent = context.get(
             'values', {}).get('copy_component', False
         )
 
@@ -372,7 +372,7 @@ class ApplicationLauncher(object):
                     'type': 'message'
                 }
 
-        if not can_copy_component and componentPath:
+        if not canCopyComponent and componentPath:
             message = (
                 'In order to open the component **{0}**, **{1}** bytes '
                 'will have to be copied to your local disk.'.format(
@@ -426,7 +426,7 @@ class ApplicationLauncher(object):
 
         # If we are dealing with a component,and the user agreed to,
         # we copy the component in temp and we inject it as last argument of the command.
-        if can_copy_component and componentPath:
+        if canCopyComponent and componentPath:
             temporary_component_path = self._getTemporaryCopy(componentPath, context)
             command.append(temporary_component_path)
             message += ' with component {}'.format(componentName)
