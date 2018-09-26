@@ -8,6 +8,14 @@
 Release Notes
 *************
 
+
+.. release:: Upcoming
+
+  .. change:: changed
+        :tags: Ui
+
+        Update icons.
+
 .. release:: 1.1.5
     :date: 2018-10-13
 
