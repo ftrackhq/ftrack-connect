@@ -16,7 +16,7 @@ $color-dark-3: #30363C;
 
 
 // Grays
-$gray-darker:           darken($color-dark-1, 10%); // #222
+$gray-darker:           $color-dark-1; // #222
 $gray-dark:             $color-dark-1;   // #333
 $gray:                  $color-purple-light-1; // #555
 $gray-light:            $color-dark-2;   // #999

@@ -167,23 +167,18 @@ class BlockingOverlay(Overlay):
         self.messageLabel.setAlignment(QtCore.Qt.AlignCenter)
         self.contentLayout.addWidget(self.messageLabel)
 
-        self.setStyleSheet('''
-            BlockingOverlay {
-                background-color: rgba(250, 250, 250, 200);
-                border: none;
-            }
-
-            BlockingOverlay QFrame#content {
-                padding: 0px;
-                border: 80px solid transparent;
-                background-color: transparent;
-                border-image: url(:ftrack/image/default/boxShadow) 140 stretch;
-            }
-
-            BlockingOverlay QLabel {
-                background: transparent;
-            }
-        ''')
+        # self.setStyleSheet('''
+        #     BlockingOverlay QFrame#content {
+        #         padding: 0px;
+        #         border: 80px solid transparent;
+        #         background-color: transparent;
+        #         border-image: url(:ftrack/image/default/boxShadow) 140 stretch;
+        #     }
+        #
+        #     BlockingOverlay QLabel {
+        #         background: transparent;
+        #     }
+        # ''')
 
         self.setMessage(message)
 
