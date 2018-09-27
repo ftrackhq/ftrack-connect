@@ -14,7 +14,7 @@ Release Notes
   .. change:: changed
         :tags: Ui
 
-        Update icons.
+        Update icons and style.
 
 .. release:: 1.1.5
     :date: 2018-10-13
