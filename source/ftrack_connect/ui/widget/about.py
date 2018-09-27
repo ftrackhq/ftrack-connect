@@ -18,7 +18,7 @@ class AboutDialog(QtWidgets.QDialog):
         icon=':ftrack/image/default/ftrackLogoColor'
     ):
         super(AboutDialog, self).__init__(parent)
-
+        self.setWindowTitle('about connect')
         layout = QtWidgets.QVBoxLayout()
         layout.setContentsMargins(20, 20, 20, 20)
         layout.setSizeConstraint(QtWidgets.QLayout.SetFixedSize)
