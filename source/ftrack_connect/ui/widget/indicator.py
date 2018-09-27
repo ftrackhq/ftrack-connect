@@ -68,24 +68,12 @@ class BusyIndicator(QtWidgets.QWidget):
                 shortestSide / normalisedEdge
             )
 
-
             # Draw spinner at current spin angle.
             pen = QtGui.QPen()
             penWidth = 8.0
             pen.setWidth(penWidth)
             pen.setColor(self._spinnerColor)
             pen.setCapStyle(QtCore.Qt.RoundCap)
-
-            # gradient = QtGui.QConicalGradient(
-            #     QtCore.QPoint(0, 0),
-            #     -self._spinnerAngle
-            # )
-            #
-            # gradient.setColorAt(0.95, QtCore.Qt.transparent)
-            # gradient.setColorAt(0, self._spinnerColor)
-            #
-            # brush = QtGui.QBrush(gradient)
-            # pen.setBrush(brush)
 
             painter.setPen(pen)
 
