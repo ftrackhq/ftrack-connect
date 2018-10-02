@@ -277,6 +277,15 @@ class ApplicationLauncher(object):
         self.session = ftrack_connect.session.get_session()
         self.current_location = self.session.pick_location()
 
+    def _formatComponentBytes(self, size):
+        power = 2 ** 10
+        n = 0
+        powerDict = {0: '', 1: 'Kilo', 2: 'Mega', 3: 'Giga', 4: 'Tera'}
+        while size > power:
+            size /= power
+            n += 1
+        return '{} {}bytes'.format(size, powerDict[n])
+
     def _getTemporaryCopy(self, filePath, event):
         '''Copy file at *filePath* to a temporary directory and return path.
 
@@ -367,7 +376,7 @@ class ApplicationLauncher(object):
             )
             try:
                 componentPath = self.current_location.get_filesystem_path(component)
-                componentSize = component['size']
+                componentSize = self._formatComponentBytes(component['size'])
                 componentName = component['name']
             except Exception as error:
                 return {
@@ -378,7 +387,7 @@ class ApplicationLauncher(object):
 
         if not canCopyComponent and componentPath:
             message = (
-                'In order to open the component **{0}**, **{1}** bytes '
+                'In order to open the component **{0}**, **{1}** '
                 'will have to be copied to your local disk.'.format(
                     componentName, componentSize
                 )
