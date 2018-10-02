@@ -275,7 +275,7 @@ class ApplicationLauncher(object):
 
         self.applicationStore = applicationStore
         self.session = ftrack_connect.session.get_session()
-        self.current_location = self.session.pick_location()
+        self.currentLocation = self.session.pick_location()
 
     def _formatComponentBytes(self, size):
         '''Convert given byte *size* to human readable format.'''
@@ -302,17 +302,15 @@ class ApplicationLauncher(object):
         '''
 
         job = self._createJob(event, 'Copying component to local machine.')
-        currentLocation = self.session.pick_location()
-
         componentAvailableInLocation = self.session.pick_location(
             component=component
         )
 
-        if componentAvailableInLocation != currentLocation:
+        if componentAvailableInLocation != self.currentLocation:
             self.logger.debug(
                 'Component {0} is not available in'
                 ' current location {1}, looking in other locations.'.format(
-                    component['name'], currentLocation['name']
+                    component['name'], self.currentLocation['name']
                 )
             )
 
@@ -327,11 +325,11 @@ class ApplicationLauncher(object):
 
             self.logger.info('Transfering component from {} to {}'.format(
                 componentAvailableInLocation['name'],
-                currentLocation['name']
+                self.currentLocation['name']
             ))
-            currentLocation.add_component(component, componentAvailableInLocation)
+            self.currentLocation.add_component(component, componentAvailableInLocation)
 
-        filePath = currentLocation.get_filesystem_path(component)
+        filePath = self.currentLocation.get_filesystem_path(component)
         temporaryDirectory = tempfile.mkdtemp(prefix='ftrack_connect')
         targetPath = os.path.join(
             temporaryDirectory, os.path.basename(filePath)
