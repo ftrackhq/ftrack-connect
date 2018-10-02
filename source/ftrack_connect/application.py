@@ -306,28 +306,23 @@ class ApplicationLauncher(object):
             component=component
         )
 
-        if componentAvailableInLocation != self.currentLocation:
-            self.logger.debug(
-                'Component {0} is not available in'
-                ' current location {1}, looking in other locations.'.format(
-                    component['name'], self.currentLocation['name']
-                )
+        if not componentAvailableInLocation:
+            message = 'Component {0} is not available any location'.format(
+                component['name']
             )
 
-            if not componentAvailableInLocation:
-                message = 'Component {0} is not available any location'.format(
-                        component['name']
-                    )
+            self._markJobAsFailed(job, message)
+            return
 
-                self.logger.warning(message)
-                self._markJobAsFailed(job, message)
-                return
-
-            self.logger.info('Transfering component from {} to {}'.format(
+        # Transfer the component to the current location
+        if componentAvailableInLocation != self.currentLocation:
+            self.logger.info(r'Transfering component from {} to {}'.format(
                 componentAvailableInLocation['name'],
                 self.currentLocation['name']
             ))
-            self.currentLocation.add_component(component, componentAvailableInLocation)
+            self.currentLocation.add_component(
+                component, componentAvailableInLocation
+            )
 
         filePath = self.currentLocation.get_filesystem_path(component)
         temporaryDirectory = tempfile.mkdtemp(prefix='ftrack_connect')
@@ -354,7 +349,7 @@ class ApplicationLauncher(object):
             This function will auto-commit the session.
 
         '''
-
+        self.logger.error(description)
         job['status'] = 'failed'
         job['data'] = json.dumps({
             'description': unicode(description)
