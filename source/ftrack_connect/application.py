@@ -314,11 +314,14 @@ class ApplicationLauncher(object):
 
         '''
 
-        user_id = event['source']['user']['id']
+        userObject = self.session.query(
+            'User where username is "{}"'.format(self.session.api_user)
+        ).first()
+
         job = self.session.create(
             'Job',
             {
-                'user': self.session.get('User', user_id),
+                'user': userObject,
                 'status': 'running',
                 'data': json.dumps({
                     'description': unicode(
