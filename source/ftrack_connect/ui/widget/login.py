@@ -41,6 +41,7 @@ class Login(QtWidgets.QWidget):
                 QtCore.Qt.SmoothTransformation
             )
         )
+        layout.setSpacing(15)
 
         layout.addWidget(logo, alignment=QtCore.Qt.AlignCenter)
 
