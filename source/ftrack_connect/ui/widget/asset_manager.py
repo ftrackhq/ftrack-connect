@@ -401,7 +401,7 @@ class AssetManagerWidget(QtWidgets.QWidget):
                 if assetVersionNr == latest_version_number:
                     versionIndicatorButton.setStyleSheet('''
                         QPushButton {
-                            background-color: #1CBC90;
+                            background-color: #935BA2;
                             border: none;
                         }
                     ''')
@@ -770,7 +770,7 @@ class AssetManagerWidget(QtWidgets.QWidget):
             if newVersion == latestVersion:
                 cellWidget.setStyleSheet('''
                         QPushButton {
-                            background-color: #1CBC90;
+                            background-color: #935BA2;
                             border: none;
                         }
                     ''')

@@ -123,7 +123,7 @@ class ConfigureScenario(QtWidgets.QWidget):
         label = QtWidgets.QLabel()
         label.setObjectName('green-link')
         label.setText(
-            '<a style="color: #1CBC90;" '
+            '<a style="color: #935BA2;" '
             'href="{0}/doc/using/managing_versions/storage_scenario.html"> '
             'Learn more about storage scenarios.'.format(session.server_url)
         )
