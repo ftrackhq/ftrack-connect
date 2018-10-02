@@ -288,7 +288,7 @@ class ApplicationLauncher(object):
         return '{} {}bytes'.format(size, powerDict[n])
 
     def _getTemporaryCopy(self, component, event):
-        '''Copy file at *filePath* to a temporary directory and return path.
+        '''Copy *component* to a temporary directory and return path.
 
         .. note::
 
