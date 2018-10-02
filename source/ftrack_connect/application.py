@@ -278,6 +278,7 @@ class ApplicationLauncher(object):
         self.current_location = self.session.pick_location()
 
     def _formatComponentBytes(self, size):
+        '''Convert given byte *size* to human readable format.'''
         power = 2 ** 10
         n = 0
         powerDict = {0: '', 1: 'Kilo', 2: 'Mega', 3: 'Giga', 4: 'Tera'}
