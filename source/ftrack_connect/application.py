@@ -298,6 +298,7 @@ class ApplicationLauncher(object):
                 'description': unicode(error)
             })
             self.session.commit()
+            return
 
         job['status'] = 'done'
         self.session.commit()
