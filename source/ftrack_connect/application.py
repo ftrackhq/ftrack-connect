@@ -301,7 +301,7 @@ class ApplicationLauncher(object):
 
         '''
 
-        job = self._createJob(event, 'Copying component to local machine.')
+        job = self._createJob(event, 'Copying component...')
         componentAvailableInLocation = self.session.pick_location(
             component=component
         )
@@ -349,10 +349,11 @@ class ApplicationLauncher(object):
             This function will auto-commit the session.
 
         '''
+        description = unicode(description)
         self.logger.error(description)
         job['status'] = 'failed'
         job['data'] = json.dumps({
-            'description': unicode(description)
+            'description': description
         })
         self.session.commit()
 
