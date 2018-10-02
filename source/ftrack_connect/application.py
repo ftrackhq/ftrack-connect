@@ -17,7 +17,6 @@ import shutil
 
 import ftrack
 import ftrack_api
-from ftrack_api.exception import ComponentNotInLocationError
 
 import ftrack_connect.session
 
@@ -333,14 +332,12 @@ class ApplicationLauncher(object):
             currentLocation.add_component(component, componentAvailableInLocation)
 
         filePath = currentLocation.get_filesystem_path(component)
-
         temporaryDirectory = tempfile.mkdtemp(prefix='ftrack_connect')
         targetPath = os.path.join(
             temporaryDirectory, os.path.basename(filePath)
         )
 
         try:
-
             shutil.copyfile(filePath, targetPath)
         except IOError as error:
             self._markJobAsFailed(job, str(error))
