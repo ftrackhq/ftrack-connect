@@ -17,6 +17,7 @@ import shutil
 
 import ftrack
 import ftrack_api
+from ftrack_api.exception import ComponentNotInLocationError
 
 import ftrack_connect.session
 
@@ -287,33 +288,83 @@ class ApplicationLauncher(object):
             n += 1
         return '{} {}bytes'.format(size, powerDict[n])
 
-    def _getTemporaryCopy(self, filePath, event):
+    def _getTemporaryCopy(self, component, event):
         '''Copy file at *filePath* to a temporary directory and return path.
 
         .. note::
 
             The copied file does not retain the original files meta data or
             permissions.
+
+        ..note::
+
+            This function will auto-commit the session.
+
         '''
+
         job = self._createJob(event, 'Copying component to local machine.')
-        try:
-            temporaryDirectory = tempfile.mkdtemp(prefix='ftrack_connect')
-            targetPath = os.path.join(
-                temporaryDirectory, os.path.basename(filePath)
+        currentLocation = self.session.pick_location()
+
+        componentAvailableInLocation = self.session.pick_location(
+            component=component
+        )
+
+        if componentAvailableInLocation != currentLocation:
+            self.logger.debug(
+                'Component {0} is not available in'
+                ' current location {1}, looking in other locations.'.format(
+                    component['name'], currentLocation['name']
+                )
             )
+
+            if not componentAvailableInLocation:
+                message = 'Component {0} is not available any location'.format(
+                        component['name']
+                    )
+
+                self.logger.warning(message)
+                self._markJobAsFailed(job, message)
+                return
+
+            self.logger.info('Transfering component from {} to {}'.format(
+                componentAvailableInLocation['name'],
+                currentLocation['name']
+            ))
+            currentLocation.add_component(component, componentAvailableInLocation)
+
+        filePath = currentLocation.get_filesystem_path(component)
+
+        temporaryDirectory = tempfile.mkdtemp(prefix='ftrack_connect')
+        targetPath = os.path.join(
+            temporaryDirectory, os.path.basename(filePath)
+        )
+
+        try:
+
             shutil.copyfile(filePath, targetPath)
-        except Exception as error:
-            job['status'] = 'failed'
-            job['data'] = json.dumps({
-                'description': unicode(error)
-            })
-            self.session.commit()
+        except IOError as error:
+            self._markJobAsFailed(job, str(error))
             return
 
         job['status'] = 'done'
         self.session.commit()
 
         return targetPath
+
+    def _markJobAsFailed(self, job, description):
+        '''Set the given *job* as failed with *description*.
+
+        ..note::
+
+            This function will auto-commit the session.
+
+        '''
+
+        job['status'] = 'failed'
+        job['data'] = json.dumps({
+            'description': unicode(description)
+        })
+        self.session.commit()
 
     def _createJob(self, event, description):
         '''Return new job from *event* with given *description*.
@@ -362,9 +413,9 @@ class ApplicationLauncher(object):
         )
 
         selection = context.get('selection', [])
-        componentPath = None
         componentSize = 0
         componentName = None
+        component = None
 
         if (
                 selection and
@@ -376,7 +427,6 @@ class ApplicationLauncher(object):
                 'Component', selection[0].get('entityId')
             )
             try:
-                componentPath = self.current_location.get_filesystem_path(component)
                 componentSize = self._formatComponentBytes(component['size'])
                 componentName = component['name']
             except Exception as error:
@@ -386,7 +436,7 @@ class ApplicationLauncher(object):
                     'type': 'message'
                 }
 
-        if not canCopyComponent and componentPath:
+        if not canCopyComponent and component:
             message = (
                 'In order to open the component **{0}**, **{1}** '
                 'will have to be copied to your local disk.'.format(
@@ -440,8 +490,8 @@ class ApplicationLauncher(object):
 
         # If we are dealing with a component,and the user agreed to,
         # we copy the component in temp and we inject it as last argument of the command.
-        if canCopyComponent and componentPath:
-            temporary_component_path = self._getTemporaryCopy(componentPath, context)
+        if canCopyComponent and component:
+            temporary_component_path = self._getTemporaryCopy(component, context)
             command.append(temporary_component_path)
             message += ' with component {}'.format(componentName)
 
