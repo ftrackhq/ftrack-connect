@@ -325,6 +325,12 @@ class ApplicationLauncher(object):
             )
 
         filePath = self.currentLocation.get_filesystem_path(component)
+        if not os.path.exists(filePath):
+            self._markJobAsFailed(
+                job, str('File path {} does not exist.'.format(filePath))
+            )
+            return
+
         temporaryDirectory = tempfile.mkdtemp(prefix='ftrack_connect')
         targetPath = os.path.join(
             temporaryDirectory, os.path.basename(filePath)
@@ -335,6 +341,7 @@ class ApplicationLauncher(object):
         except IOError as error:
             self._markJobAsFailed(job, str(error))
             return
+
 
         job['status'] = 'done'
         self.session.commit()
@@ -483,8 +490,9 @@ class ApplicationLauncher(object):
         # we copy the component in temp and we inject it as last argument of the command.
         if canCopyComponent and component:
             temporary_component_path = self._getTemporaryCopy(component, context)
-            command.append(temporary_component_path)
-            message += ' with component {}'.format(componentName)
+            if temporary_component_path:
+                command.append(temporary_component_path)
+                message += ' with component {}'.format(componentName)
 
         message += '.'
 
