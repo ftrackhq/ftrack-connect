@@ -424,15 +424,8 @@ class ApplicationLauncher(object):
             component = self.session.get(
                 'Component', selection[0].get('entityId')
             )
-            try:
-                componentSize = self._formatComponentBytes(component['size'])
-                componentName = component['name']
-            except Exception as error:
-                return {
-                    'success': False,
-                    'message': str(error),
-                    'type': 'message'
-                }
+            componentSize = self._formatComponentBytes(component['size'])
+            componentName = component['name']
 
         if not canCopyComponent and component:
             message = (
@@ -488,11 +481,20 @@ class ApplicationLauncher(object):
 
         # If we are dealing with a component,and the user agreed to,
         # we copy the component in temp and we inject it as last argument of the command.
+
         if canCopyComponent and component:
             temporary_component_path = self._getTemporaryCopy(component, context)
-            if temporary_component_path:
-                command.append(temporary_component_path)
-                message += ' with component {}'.format(componentName)
+            if not temporary_component_path:
+                return {
+                    'success': False,
+                    'message': unicode('No file path found for {} in location {}.'.format(
+                        component['name'], self.currentLocation['name']
+                    )),
+                    'type': 'message'
+                }
+
+            command.append(temporary_component_path)
+            message += ' with component {}'.format(componentName)
 
         message += '.'
 
