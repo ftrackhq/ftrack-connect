@@ -33,7 +33,7 @@ class Login(QtWidgets.QWidget):
         self.setLayout(layout)
 
         logo = QtWidgets.QLabel()
-        logoPixmap = QtGui.QPixmap(':ftrack/image/default/ftrackLogoColor')
+        logoPixmap = QtGui.QPixmap(':ftrack/image/default/ftrackLogoLabelDark')
         logo.setPixmap(
             logoPixmap.scaled(
                 QtCore.QSize(100, 100),
@@ -47,7 +47,7 @@ class Login(QtWidgets.QWidget):
         label.setText('Sign in')
         label.setObjectName('login-label')
         layout.addWidget(label, alignment=QtCore.Qt.AlignCenter)
-        layout.addSpacing(25)
+        layout.addSpacing(35)
 
         self.server = QtWidgets.QLineEdit()
         self.server.setPlaceholderText('Site name or custom domain URL')
