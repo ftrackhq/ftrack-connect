@@ -281,11 +281,11 @@ class ApplicationLauncher(object):
         '''Convert given byte *size* to human readable format.'''
         power = 2 ** 10
         n = 0
-        powerDict = {0: '', 1: 'Kilo', 2: 'Mega', 3: 'Giga', 4: 'Tera'}
+        powerDict = {0: '', 1: 'k', 2: 'M', 3: 'G', 4: 'T'}
         while size > power:
             size /= power
             n += 1
-        return '{} {}bytes'.format(size, powerDict[n])
+        return '{} {}B'.format(size, powerDict[n])
 
     def _getTemporaryCopy(self, component, event):
         '''Copy *component* to a temporary directory and return path.
@@ -302,29 +302,13 @@ class ApplicationLauncher(object):
         '''
 
         job = self._createJob(event, 'Copying component...')
-        componentAvailableInLocation = self.session.pick_location(
-            component=component
-        )
+        sourceLocation = self.session.pick_location(component)
+        try:
+            filePath = sourceLocation.get_filesystem_path(component)
+        except ftrack_api.exception.AccessorUnsupportedOperationError:
+            self.currentLocation.add_component(component, source=sourceLocation)
+            filePath = self.currentLocation.get_filesystem_path(component)
 
-        if not componentAvailableInLocation:
-            message = 'Component {0} is not available any location'.format(
-                component['name']
-            )
-
-            self._markJobAsFailed(job, message)
-            return
-
-        # Transfer the component to the current location
-        if componentAvailableInLocation != self.currentLocation:
-            self.logger.info(r'Transfering component from {} to {}'.format(
-                componentAvailableInLocation['name'],
-                self.currentLocation['name']
-            ))
-            self.currentLocation.add_component(
-                component, componentAvailableInLocation
-            )
-
-        filePath = self.currentLocation.get_filesystem_path(component)
         if not os.path.exists(filePath):
             self._markJobAsFailed(
                 job, str('File path {} does not exist.'.format(filePath))
@@ -341,7 +325,6 @@ class ApplicationLauncher(object):
         except IOError as error:
             self._markJobAsFailed(job, str(error))
             return
-
 
         job['status'] = 'done'
         self.session.commit()
@@ -428,11 +411,13 @@ class ApplicationLauncher(object):
             componentName = component['name']
 
         if not canCopyComponent and component:
+
             message = (
-                'In order to open the component **{0}**, **{1}** '
-                'will have to be copied to your local disk.'.format(
-                    componentName, componentSize
-                )
+                '**Attention !**<br />'
+                'The file will be copied (**{0}**) to a temporary location'
+                ' before it can be opened.<br />'
+                'Make sure to save any changes elsewhere'
+                ' to not loose your work.'.format(componentSize)
             )
 
             widget = {
