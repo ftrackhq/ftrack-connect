@@ -8,6 +8,52 @@
 Release Notes
 *************
 
+.. release:: 1.1.5
+    :date: 2018-10-13
+
+  .. change:: fixed
+        :tags: Logging
+
+        logger breaks with non ascii path.
+
+  .. change:: changed
+        :tags: Logging
+
+        Improve logging configuration.
+
+  .. change:: fixed
+        :tags: Ui
+
+        Application versions are not correctly sorted.
+
+.. release:: 1.1.4
+    :date: 2018-04-27
+
+    .. change:: fixed
+        :tags: Import asset
+
+        Import Asset breaks checking for asset in remote locations.
+
+    .. change:: changed
+        :tags: Crew
+
+        Remove Crew widget chat and notifications.
+
+    .. change:: changed
+        :tags: Ui
+
+        Added feature to hide the ftrack-connect UI on startup. This is done
+        with the flag "--silent" or "-s".
+
+.. release:: 1.1.3
+    :date: 2018-02-02
+
+    .. change:: fixed
+       :tags: Plugins
+
+        `ftrack.connect.plugin.debug-information` only published for the legacy
+        api.
+
 .. release:: 1.1.2
     :date: 2017-12-01
 

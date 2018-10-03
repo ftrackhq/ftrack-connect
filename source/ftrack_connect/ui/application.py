@@ -679,28 +679,46 @@ class Application(QtWidgets.QMainWindow):
             'debug_information': environmentData
         }]
 
-        # Import ftrack module and and try to get API version and
-        # to load information from other plugins using hook.
-        try:
-            import ftrack
-            apiVersion = ftrack.api.version_data.ftrackVersion
-            environmentData['FTRACK_API_VERSION'] = apiVersion
+        # Gather information about API versions and other
+        # plugin hooks.
 
-            responses = ftrack.EVENT_HUB.publish(
+        import ftrack
+
+        environmentData['FTRACK_API_VERSION'] = ftrack_api.__version__
+        environmentData['FTRACK_API_LEGACY_VERSION'] = ftrack.api.version_data.ftrackVersion
+
+        api_versions = (
+            (
+                ftrack.EVENT_HUB.publish,
                 ftrack.Event(
                     'ftrack.connect.plugin.debug-information'
-                ),
-                synchronous=True
+                )
+            ),
+            (
+                self._session.event_hub.publish,
+                ftrack_api.event.base.Event(
+                    topic = 'ftrack.connect.plugin.debug-information'
+                )
             )
+        )
 
-            for response in responses:
-                if isinstance(response, dict):
-                    versionData.append(response)
-                elif isinstance(response, list):
-                    versionData = versionData + response
+        for publish_fn, event in api_versions:
+            # For each api version.
+            try:
+                responses = publish_fn(
+                    event, synchronous=True
+                )
 
-        except Exception:
-            pass
+                for response in responses:
+                    if isinstance(response, dict):
+                        versionData.append(response)
+                    elif isinstance(response, list):
+                        versionData = versionData + response
+
+            except Exception as error:
+                self.logger.error(
+                    error
+                )
 
         aboutDialog.setInformation(
             versionData=versionData,

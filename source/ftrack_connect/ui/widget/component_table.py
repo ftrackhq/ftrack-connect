@@ -215,6 +215,12 @@ class ComponentTableWidget(QtWidgets.QTableWidget):
                     ftrack_component['name'], ftrack_location['name']
                 )
             )
+        except exception.AccessorUnsupportedOperationError:
+            self.logger.debug(
+                u'Component {0} not accessible from Location {1}'.format(
+                    ftrack_component['name'], ftrack_location['name']
+                )
+            )
 
         if path is None:
             pathItem.setText('Filesystem path not available.')

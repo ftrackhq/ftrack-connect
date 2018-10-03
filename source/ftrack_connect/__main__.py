@@ -64,6 +64,12 @@ def main(arguments=None):
         default='light'
     )
 
+    parser.add_argument(
+        '-s', '--silent',
+        help='Set the initial visibility of the connect window.',
+        action='store_true'
+    )
+
     namespace = parser.parse_args(arguments)
 
     ftrack_connect.config.configure_logging(
@@ -89,6 +95,9 @@ def main(arguments=None):
     connectWindow = ftrack_connect.ui.application.Application(
         theme=namespace.theme
     )
+
+    if namespace.silent:
+        connectWindow.hide()
 
     # Fix for Windows where font size is incorrect for some widgets. For some
     # reason, resetting the font here solves the sizing issue.
