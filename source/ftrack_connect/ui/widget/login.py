@@ -42,12 +42,12 @@ class Login(QtWidgets.QWidget):
             )
         )
         layout.addWidget(logo, alignment=QtCore.Qt.AlignCenter)
+        layout.addSpacing(25)
 
         label = QtWidgets.QLabel()
         label.setText('Sign in')
         label.setObjectName('login-label')
         layout.addWidget(label, alignment=QtCore.Qt.AlignCenter)
-        layout.addSpacing(35)
 
         self.server = QtWidgets.QLineEdit()
         self.server.setPlaceholderText('Site name or custom domain URL')
