@@ -33,7 +33,7 @@ def open_directory(path):
         # here avoids the auto-escaping that python introduces, which
         # seems to fail... KB
         subprocess.Popen('start "" "{0}"'.format(directory), shell=True)
-
+        
     elif sys.platform == 'darwin':
         if os.path.isfile(path):
             # File exists and can be opened with a selection.
