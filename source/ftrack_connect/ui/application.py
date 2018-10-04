@@ -110,7 +110,7 @@ class Application(QtWidgets.QMainWindow):
             )
 
         self.logoIcon = QtGui.QIcon(
-            QtGui.QPixmap(':/ftrack/image/default/ftrackLogoColor')
+            QtGui.QPixmap(':/ftrack/image/default/ftrackLogoGreyDark')
         )
 
         self._login_server_thread = None

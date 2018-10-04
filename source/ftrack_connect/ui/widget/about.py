@@ -15,7 +15,7 @@ class AboutDialog(QtWidgets.QDialog):
 
     def __init__(
         self, parent,
-        icon=':ftrack/image/default/ftrackLogoColor'
+        icon=':ftrack/image/default/ftrackLogoLabelDark'
     ):
         super(AboutDialog, self).__init__(parent)
         self.setWindowTitle('About connect')
@@ -27,10 +27,11 @@ class AboutDialog(QtWidgets.QDialog):
         self.icon = QtWidgets.QLabel()
         pixmap = QtGui.QPixmap(icon)
         self.icon.setPixmap(
-            pixmap.scaledToHeight(36, mode=QtCore.Qt.SmoothTransformation)
+            pixmap.scaledToHeight(25, mode=QtCore.Qt.SmoothTransformation)
         )
         self.icon.setAlignment(QtCore.Qt.AlignCenter)
         layout.addWidget(self.icon)
+        layout.addSpacing(10)
 
         self.messageLabel = QtWidgets.QLabel()
         self.messageLabel.setWordWrap(True)
