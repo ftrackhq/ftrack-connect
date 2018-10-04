@@ -25,6 +25,11 @@ Release Notes
         :tags: Ui
 
         Application versions are not correctly sorted.
+    
+  .. change:: fixed
+        :tags: Internal
+        
+        util.open_directory fails on Windows when path includes spaces.
 
 .. release:: 1.1.4
     :date: 2018-04-27
