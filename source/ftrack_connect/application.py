@@ -311,7 +311,7 @@ class ApplicationLauncher(object):
 
         if not os.path.exists(filePath):
             self._markJobAsFailed(
-                job, str('File path {} does not exist.'.format(filePath))
+                job, 'File path {} does not exist.'.format(filePath)
             )
             return
 
@@ -323,7 +323,7 @@ class ApplicationLauncher(object):
         try:
             shutil.copyfile(filePath, targetPath)
         except IOError as error:
-            self._markJobAsFailed(job, str(error))
+            self._markJobAsFailed(job, error)
             return
 
         job['status'] = 'done'
