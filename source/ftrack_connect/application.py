@@ -413,11 +413,11 @@ class ApplicationLauncher(object):
         if not canCopyComponent and component:
 
             message = (
-                '**Attention !**<br />'
-                'The file will be copied (**{0}**) to a temporary location'
+                'Opening **{0}** component. <br /><br />'
+                'The file will be copied (**{1}**) to a temporary location'
                 ' before it can be opened.<br />'
                 'Make sure to save any changes elsewhere'
-                ' to not loose your work.'.format(componentSize)
+                ' to not loose your work.'.format(component['name'], componentSize)
             )
 
             widget = {
@@ -427,7 +427,7 @@ class ApplicationLauncher(object):
                         'type': 'label'
                     },
                     {
-                        'label': 'Continue ?',
+                        'label': 'Continue?',
                         'value': False,
                         'name': 'copy_component',
                         'type': 'boolean'
