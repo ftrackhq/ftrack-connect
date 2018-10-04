@@ -61,12 +61,12 @@ QToolButton {
 
 QToolButton:hover {
     border-color: darken($border-color, 5%);
-    background-color: $brand-primary;
+    background-color:  $gray-lighter;
     color: white
 }
 
 QToolButton:pressed {
     border-color: darken($border-color, 5%);
-    background-color: $brand-primary;
+    background-color:  $gray-lighter;
     color: white
 }
