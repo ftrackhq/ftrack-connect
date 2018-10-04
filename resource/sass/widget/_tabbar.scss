@@ -18,6 +18,8 @@ QTabBar::tab {
     min-width: 60px;
     padding: 8px 10px;
     color: $gray;
+    border-bottom: 2px solid $white;
+
 }
 
 QTabBar#application-tab-bar::tab:selected {
