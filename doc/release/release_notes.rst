@@ -15,6 +15,11 @@ Release Notes
 
         Applications can now open and run components paths.
 
+  .. change:: fixed
+        :tags: Internal
+
+        util.open_directory fails on Windows when path includes spaces.
+
 .. release:: 1.1.5
     :date: 2018-10-13
 
