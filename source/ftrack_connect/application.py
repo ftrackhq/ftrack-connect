@@ -428,9 +428,9 @@ class ApplicationLauncher(object):
                     },
                     {
                         'label': 'Continue?',
-                        'value': False,
+                        'value': True,
                         'name': 'copy_component',
-                        'type': 'boolean'
+                        'type': 'hidden'
                     }
                 ]
             }
