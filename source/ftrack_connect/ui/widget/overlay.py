@@ -132,7 +132,7 @@ class BlockingOverlay(Overlay):
 
     def __init__(
         self, parent, message='Processing',
-        icon=':ftrack/image/default/ftrackLogoColor'
+        icon=':ftrack/image/default/ftrackLogoGreyDark'
     ):
         '''Initialise with *parent*.
 
