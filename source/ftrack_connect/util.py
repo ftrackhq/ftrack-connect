@@ -27,8 +27,13 @@ def open_directory(path):
         directory = path
 
     if sys.platform == 'win32':
-        subprocess.Popen(['start', directory], shell=True)
-
+        # In order to support directories with spaces, the start command
+        # requires two quoted args, the first is the shell title, and
+        # the second is the directory to open in. Using string formatting
+        # here avoids the auto-escaping that python introduces, which
+        # seems to fail...
+        subprocess.Popen('start "" "{0}"'.format(directory), shell=True)
+        
     elif sys.platform == 'darwin':
         if os.path.isfile(path):
             # File exists and can be opened with a selection.

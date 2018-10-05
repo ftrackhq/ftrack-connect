@@ -8,13 +8,17 @@
 Release Notes
 *************
 
-
 .. release:: Upcoming
 
   .. change:: changed
         :tags: Ui
 
         Update icons and style.
+
+  .. change:: fixed
+        :tags: Internal
+
+        util.open_directory fails on Windows when path includes spaces.
 
 .. release:: 1.1.5
     :date: 2018-10-13
