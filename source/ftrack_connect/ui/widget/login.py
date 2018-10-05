@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-from QtExt import QtWidgets, QtCore
+from QtExt import QtWidgets, QtCore, QtGui
 
 
 class ClickableLabel(QtWidgets.QLabel):
@@ -27,10 +27,22 @@ class Login(QtWidgets.QWidget):
         super(Login, self).__init__(*args, **kwargs)
 
         layout = QtWidgets.QVBoxLayout()
-        layout.addSpacing(100)
+        layout.addSpacing(50)
         layout.setContentsMargins(50, 0, 50, 0)
         layout.setSpacing(15)
         self.setLayout(layout)
+
+        logo = QtWidgets.QLabel()
+        logoPixmap = QtGui.QPixmap(':ftrack/image/default/ftrackLogoLabelDark')
+        logo.setPixmap(
+            logoPixmap.scaled(
+                QtCore.QSize(100, 100),
+                QtCore.Qt.KeepAspectRatio,
+                QtCore.Qt.SmoothTransformation
+            )
+        )
+        layout.addWidget(logo, alignment=QtCore.Qt.AlignCenter)
+        layout.addSpacing(25)
 
         label = QtWidgets.QLabel()
         label.setText('Sign in')
@@ -85,7 +97,7 @@ class Login(QtWidgets.QWidget):
         self.toggle_api_label.setObjectName('lead-label')
         self.toggle_api_label.setText(
             'Trouble signing in? '
-            '<a href="#" style="color: #1CBC90;">Sign in with username and API key</a>'
+            '<a href="#" style="color: #935BA2;">Sign in with username and API key</a>'
         )
         self.toggle_api_label.clicked.connect(self._toggle_credentials)
         layout.addWidget(self.toggle_api_label, alignment=QtCore.Qt.AlignCenter)

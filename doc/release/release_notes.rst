@@ -15,6 +15,11 @@ Release Notes
 
         Applications can now open and run components paths.
 
+  .. change:: changed
+        :tags: Ui
+
+        Update icons and style.
+
   .. change:: fixed
         :tags: Internal
 

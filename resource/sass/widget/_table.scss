@@ -2,6 +2,8 @@
 QTableView {
     border: 1px solid #dadada;
     outline: 0;
+    background: $white;
+
 }
 QTableView::item
 {
