@@ -18,7 +18,9 @@ import shutil
 import ftrack
 import ftrack_api
 
-import ftrack_connect.session
+import ftrack_connect
+
+shared_session = ftrack_connect.session.get_shared_session()
 
 #: Default expression to match version component of executable path.
 #: Will match last set of numbers in string where numbers may contain a digit
@@ -274,7 +276,7 @@ class ApplicationLauncher(object):
         )
 
         self.applicationStore = applicationStore
-        self.session = ftrack_connect.session.get_session()
+        self.session = shared_session
         self.currentLocation = self.session.pick_location()
 
     def _formatComponentBytes(self, size):
