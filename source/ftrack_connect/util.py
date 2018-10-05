@@ -31,7 +31,7 @@ def open_directory(path):
         # requires two quoted args, the first is the shell title, and
         # the second is the directory to open in. Using string formatting
         # here avoids the auto-escaping that python introduces, which
-        # seems to fail... KB
+        # seems to fail...
         subprocess.Popen('start "" "{0}"'.format(directory), shell=True)
         
     elif sys.platform == 'darwin':
