@@ -22,7 +22,7 @@ Release Notes
         util.open_directory fails on Windows when path includes spaces.
 
 .. release:: 1.1.5
-    :date: 2018-10-13
+    :date: 2018-9-13
 
   .. change:: fixed
         :tags: Logging
