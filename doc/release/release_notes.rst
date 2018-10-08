@@ -8,7 +8,7 @@
 Release Notes
 *************
 
-.. release:: Upcoming
+.. release:: 1.1.6
 
   .. change:: changed
         :tags: Ui
