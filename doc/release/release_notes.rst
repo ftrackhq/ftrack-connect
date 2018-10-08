@@ -9,6 +9,7 @@ Release Notes
 *************
 
 .. release:: 1.1.6
+    :date: 2018-10-8
 
   .. change:: changed
         :tags: Ui
