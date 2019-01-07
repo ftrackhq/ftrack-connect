@@ -2,6 +2,8 @@
 # :copyright: Copyright (c) 2015 ftrack
 import os
 import json
+import sys
+import textwrap
 
 from QtExt import QtCore, QtWidgets, QtGui
 
@@ -50,6 +52,15 @@ class AboutDialog(QtWidgets.QDialog):
 
         layout.addWidget(self.loggingButton)
 
+        if sys.platform == 'linux2':
+            self.createApplicationShortcutButton = QtWidgets.QPushButton(
+                'Create application shortcut'
+            )
+            self.createApplicationShortcutButton.clicked.connect(
+                self._onCreateApplicationShortcutClicked
+            )
+            layout.addWidget(self.createApplicationShortcutButton)
+
         self.debugTextEdit = QtWidgets.QTextEdit()
         self.debugTextEdit.setReadOnly(True)
         self.debugTextEdit.setFontPointSize(10)
@@ -81,6 +92,43 @@ class AboutDialog(QtWidgets.QDialog):
                 return
 
         ftrack_connect.util.open_directory(directory)
+
+    def _onCreateApplicationShortcutClicked(self):
+        '''Create a user-level .desktop file so Connect shows up in menus.'''
+        if sys.platform != 'linux2':
+            return
+
+        system_directory = '/usr/share/applications'
+        # Requires GNOME 2.10
+        user_directory = '~/.local/share/applications'
+        if os.path.realpath(__file__).startswith(os.path.expanduser('~')):
+            directory = os.path.expanduser(user_directory)
+        else:
+            directory = system_directory
+        filepath = os.path.join(directory, 'ftrack-connect-package.desktop')
+        application_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
+
+        content = textwrap.dedent('''\
+        #!/usr/bin/env xdg-open
+
+        [Desktop Entry]
+        Type=Application
+        Icon={0}/logo.icns
+        Name=ftrack connect package
+        Comment=ftrack connect package
+        Exec={0}/ftrack_connect_package
+        StartupNotify=true
+        Terminal=false
+        '''.format(application_dir))
+
+        with open(filepath, 'w+') as f:
+            f.write(content)
+
+        messageBox = QtWidgets.QMessageBox(parent=self)
+        messageBox.setText(
+            u'Wrote shortcut file to: {0}.'.format(filepath)
+        )
+        messageBox.exec_()
 
     def setInformation(self, versionData, user, server):
         '''Set displayed *versionData*, *user*, *server*.'''
