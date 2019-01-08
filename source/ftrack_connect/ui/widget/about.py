@@ -94,18 +94,29 @@ class AboutDialog(QtWidgets.QDialog):
         ftrack_connect.util.open_directory(directory)
 
     def _onCreateApplicationShortcutClicked(self):
-        '''Create a user-level .desktop file so Connect shows up in menus.'''
+        '''Create a desktop entry for Connect.'''
         if sys.platform != 'linux2':
             return
 
-        system_directory = '/usr/share/applications'
-        # Requires GNOME 2.10
-        user_directory = '~/.local/share/applications'
         if os.path.realpath(__file__).startswith(os.path.expanduser('~')):
-            directory = os.path.expanduser(user_directory)
+            directory = os.path.expanduser('~/.local/share/applications')
         else:
-            directory = system_directory
+            directory = '/usr/share/applications'
         filepath = os.path.join(directory, 'ftrack-connect-package.desktop')
+
+        if os.path.exists(filepath):
+            msgBox = QtWidgets.QMessageBox()
+            msgBox.setWindowTitle('Overwrite file')
+            msgBox.setText('{0} already exists.'.format(filepath))
+            msgBox.setInformativeText('Do you want to overwrite it?')
+            msgBox.setStandardButtons(
+                QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No
+            )
+            msgBox.setDefaultButton(QtWidgets.QMessageBox.Yes)
+            ret = msgBox.exec_()
+            if ret == QtWidgets.QMessageBox.No:
+                return
+
         application_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
 
         content = textwrap.dedent('''\
