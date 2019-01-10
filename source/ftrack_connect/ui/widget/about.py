@@ -124,7 +124,7 @@ class AboutDialog(QtWidgets.QDialog):
 
         [Desktop Entry]
         Type=Application
-        Icon={0}/logo.icns
+        Icon={0}/logo.svg
         Name=ftrack connect package
         Comment=ftrack connect package
         Exec={0}/ftrack_connect_package
