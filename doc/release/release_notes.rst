@@ -8,6 +8,14 @@
 Release Notes
 *************
 
+.. release:: Upcoming
+
+    .. change:: Ui
+
+        Added button in About dialog to create a Linux desktop entry file to
+        make Connect appear in the applications menu.
+
+
 .. release:: 1.1.6
     :date: 2018-10-8
 
@@ -80,7 +88,7 @@ Release Notes
 
     .. change:: fixed
         :tags: API
-        
+
         Error when publishing in connect with non-task context.
 
 .. release:: 1.1.0
