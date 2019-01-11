@@ -10,7 +10,8 @@ Release Notes
 
 .. release:: Upcoming
 
-    .. change:: Ui
+    .. change:: new
+        .. tags:: Ui
 
         Added button in About dialog to create a Linux desktop entry file to
         make Connect appear in the applications menu.
