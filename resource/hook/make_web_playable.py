@@ -3,8 +3,9 @@
 
 
 import functools
-import os.path
+import json
 import logging
+import os.path
 
 import ftrack_api.session
 
@@ -39,7 +40,16 @@ def callback(event, session):
 
     # version.encode_media uploads file to cloud storage and triggers
     # encoding of the file to appropirate formats(mp4 and webm).
-    version.encode_media(path)
+    file_type = os.path.splitext(path)[-1]
+    keep_original = 'auto'
+    if file_type == '.pdf':
+        keep_original = True
+    job = version.encode_media(path, keep_original=keep_original)
+    if file_type == '.pdf':
+        source_component_id = json.loads(job['data'])['source_component_id']
+        source_component = session.get('Component', source_component_id)
+        source_component['metadata']['ftr_meta'] = u'{"format": "pdf"}'
+        source_component['name'] = 'ftrackreview-pdf'
     session.commit()
     logger.info('make-reviewable hook completed.')
 
