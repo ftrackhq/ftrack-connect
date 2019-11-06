@@ -6,7 +6,10 @@ import os
 import subprocess
 import re
 import glob
+import pip
 
+if not pip.__version__.split('.') >= ['19', '3', '0']:
+    raise ValueError('Pip should be version 19.3.0 or higher')
 
 from setuptools import setup, find_packages, Command
 from distutils.command.build import build as BuildCommand
@@ -239,7 +242,7 @@ configuration = dict(
         'lowdown >= 0.1.0, < 1'
     ],
     install_requires=[
-        'qtext',
+        'qtext @ git+https://bitbucket.org/ftrack/qtext/get/0.2.2.zip#egg=QtExt-0.2.2',
         'ftrack-python-api >= 1, < 2',
         'PySide >= 1.2.2, < 2',
         'Riffle',
@@ -255,6 +258,7 @@ configuration = dict(
         'clean': Clean,
         'test': PyTest
     },
+
     dependency_links=[
         (
             'git+https://bitbucket.org/ftrack/lowdown/get/0.1.0.zip'
