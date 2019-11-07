@@ -8,6 +8,15 @@
 Release Notes
 *************
 
+.. release:: upcoming
+
+    .. change:: new
+        .. tags:: Internal
+
+        Added a lockfile mechanism so Connect will exit if another
+        instance is already running. Users can pass a command-line
+        flag, -a or --allow-multiple, to skip this check.
+
 .. release::  1.1.7
     :date: 2019-03-08
 
@@ -16,7 +25,6 @@ Release Notes
 
         Added button in About dialog to create a Linux desktop entry file to
         make Connect appear in the applications menu.
-
 
 .. release:: 1.1.6
     :date: 2018-10-8

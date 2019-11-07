@@ -1,6 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
+import appdirs
 import argparse
 import logging
 import sys
@@ -14,7 +15,7 @@ os.environ.setdefault('QT_PREFERRED_BINDING', os.pathsep.join(bindings))
 from QtExt import QtWidgets, QtCore
 
 import ftrack_connect.config
-
+import ftrack_connect.singleton
 
 # Hooks use the ftrack event system. Set the FTRACK_EVENT_PLUGIN_PATH
 # to pick up the default hooks if it has not already been set.
@@ -70,11 +71,36 @@ def main(arguments=None):
         action='store_true'
     )
 
+    parser.add_argument(
+        '-a', '--allow-multiple',
+        help='Skip lockfile to allow new instance of connect.',
+        action='store_true'
+    )
+
     namespace = parser.parse_args(arguments)
 
     ftrack_connect.config.configure_logging(
         'ftrack_connect', level=loggingLevels[namespace.verbosity]
     )
+
+    if not namespace.allow_multiple:
+        lockfile = os.path.join(
+            appdirs.user_data_dir(
+                'ftrack-connect', 'ftrack'
+            ),
+            'lock'
+        )
+        logger = logging.getLogger('ftrack_connect')
+        try:
+            si = ftrack_connect.singleton.SingleInstance('', lockfile)
+        except ftrack_connect.singleton.SingleInstanceException:
+            logger.error(
+                'Lockfile found: {}\nIs Connect already running?\nClose Connect,'
+                ' remove lockfile or pass --allow-multiple and retry.'.format(
+                    lockfile
+                )
+            )
+            raise SystemExit(1)
 
     # If under X11, make Xlib calls thread-safe.
     # http://stackoverflow.com/questions/31952711/threading-pyqt-crashes-with-unknown-request-in-queue-while-dequeuing
