@@ -8,7 +8,8 @@
 Release Notes
 *************
 
-.. release:: upcoming
+.. release:: 1.1.8
+    :date: 2020-01-21
 
     .. change:: new
         .. tags:: Internal
