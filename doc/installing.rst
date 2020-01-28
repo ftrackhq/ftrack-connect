@@ -19,7 +19,16 @@ The pre-built packages includes integrations for various applications:
     *   Maya
     *   Nuke
     *   Nuke Studio
+    *   Hiero
+    *   Hiero Player
     *   RV
+    *   Houdini
+    *   Adobe Creative Cloud
+    *   Adobe Photoshop
+    *   Adobe Illustrator
+    *   Adobe AfterEffects
+    *   Adobe Premier Pro
+    *   Cinema 4D
 
 .. note::
 
