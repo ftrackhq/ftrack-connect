@@ -239,13 +239,15 @@ configuration = dict(
         'lowdown >= 0.1.0, < 1'
     ],
     install_requires=[
-        'qtext',
+        'ftrack-python-legacy-api >=3, <4',
         'ftrack-python-api >= 1, < 2',
         'PySide >= 1.2.2, < 2',
         'Riffle',
         'arrow >= 0.4.6, < 1',
         'appdirs == 1.4.0',
-        'requests >= 2, <3'
+        'requests >= 2, <3',
+        'lowdown@git+https://bitbucket.org/ftrack/lowdown/get/0.1.0.zip#egg=lowdown-0.1.0',
+        'qtext@git+https://bitbucket.org/ftrack/qtext/get/0.2.2.zip#egg=QtExt-0.2.2'
     ],
     tests_require=['pytest >= 2.3.5, < 3'],
     cmdclass={
@@ -255,16 +257,11 @@ configuration = dict(
         'clean': Clean,
         'test': PyTest
     },
-    dependency_links=[
-        (
-            'git+https://bitbucket.org/ftrack/lowdown/get/0.1.0.zip'
-            '#egg=lowdown-0.1.0'
-        ),
-        (
-            'git+https://bitbucket.org/ftrack/qtext/get/0.2.1.zip'
-            '#egg=QtExt-0.2.1'
-        )
-    ],
+    entry_points={
+        'console_scripts': [
+            'ftrack-connect = ftrack_connect.__main__:main',
+        ],
+    },
     options={},
     data_files=[
         (
