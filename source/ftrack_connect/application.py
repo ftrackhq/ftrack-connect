@@ -272,11 +272,13 @@ class ApplicationLauncher(object):
 
         self.applicationStore = applicationStore
 
-    def launch(self, applicationIdentifier, context=None):
+    def launch(self, applicationIdentifier, context=None, target=None):
         '''Launch application matching *applicationIdentifier*.
 
         *context* should provide information that can guide how to launch the
         application.
+
+        *target* should provide a unique target to filter against subscribers.
 
         Return a dictionary of information containing:
 
@@ -313,6 +315,9 @@ class ApplicationLauncher(object):
         success = True
         message = '{0} application started.'.format(application['label'])
 
+        # Construct taget if available
+        target = 'id={}'.format(target) if target else None
+
         try:
             options = dict(
                 env=environment,
@@ -341,14 +346,16 @@ class ApplicationLauncher(object):
             ftrack.EVENT_HUB.publish(
                 ftrack.Event(
                     topic='ftrack.connect.application.launch',
-                    data=launchData
+                    data=launchData,
+                    target=target
                 ),
                 synchronous=True
             )
             ftrack_connect.session.get_shared_session().event_hub.publish(
                 ftrack_api.event.base.Event(
                     topic='ftrack.connect.application.launch',
-                    data=launchData
+                    data=launchData,
+                    target=target
                 ),
                 synchronous=True
             )
