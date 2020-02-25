@@ -72,7 +72,7 @@ site-packages folder:
 
     When installing it, the default hooks will be avalable under:
     
-    <python installation>/site-packages/track_connect-<version>-py2.7.egg/ftrack_connect_resource/hook/
+    <python installation>/site-packages/ftrack_connect-<version>-py2.7.egg/ftrack_connect_resource/hook/
 
     Before starting connect please ensure the path is added to your 
     
