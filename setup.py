@@ -231,7 +231,7 @@ configuration = dict(
         '': 'source'
     },
     setup_requires=[
-        'qtext @ git+https://bitbucket.org/ftrack/qtext/get/0.2.2.zip#egg=QtExt-0.2.2',
+        'qtext @ git+https://bitbucket.org/ftrack/qtext/get/0.2.2.zip#egg=qtext',
         'pyScss >= 1.2.0, < 2',
         'PySide >= 1.2.2, < 2',
         'sphinx >= 1.2.2, < 2',
@@ -246,8 +246,8 @@ configuration = dict(
         'arrow >= 0.4.6, < 1',
         'appdirs == 1.4.0',
         'requests >= 2, <3',
-        'lowdown @ git+https://bitbucket.org/ftrack/lowdown/get/0.1.0.zip#egg=lowdown-0.1.0',
-        'qtext @ git+https://bitbucket.org/ftrack/qtext/get/0.2.2.zip#egg=QtExt-0.2.2'
+        'lowdown >= 0.1.0, < 1',
+        'qtext @ git+https://bitbucket.org/ftrack/qtext/get/0.2.2.zip#egg=qtext'
     ],
     tests_require=['pytest >= 2.3.5, < 3'],
     cmdclass={
