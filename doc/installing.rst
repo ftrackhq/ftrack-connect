@@ -51,39 +51,58 @@ Building from source
 You can also build manually from the source for more control. First obtain a
 copy of the source by either downloading the
 `zipball <https://bitbucket.org/ftrack/ftrack-connect/get/master.zip>`_ or
-cloning the public repository::
+cloning the public repository:
 
-.. code::
+
+.. code-block:: none
 
     $ git clone git@bitbucket.org:ftrack/ftrack-connect.git
 
-Then you can build and install the package into your current Python
-site-packages folder::
 
-.. code::
+Then you can build and install the package into your current Python
+site-packages folder:
+
+
+.. code-block:: none
 
     $ python setup.py install
 
-Alternatively, just build locally and manage yourself::
 
-.. code::
+.. note:: 
 
-    python setup.py build
+    When installing it, the default hooks will be avalable under:
+    
+    <python installation>/site-packages/track_connect-<version>-py2.7.egg/ftrack_connect_resource/hook/
+
+    Before starting connect please ensure the path is added to your 
+    
+    * **FTRACK_EVENT_PLUGIN_PATH**
+
+    environment variable.
+
+Alternatively, just build locally and manage yourself:
+
+.. code-block:: none
+
+    $ python setup.py build
+
 
 Is also possible to build live developmnet version using either:
 
-.. code::
+.. code-block:: none
 
-   python setup.py build_ext --inplace
+    $ python setup.py build_ext --inplace
+
 
 Building documentation from source
 ----------------------------------
 
-To build the documentation from source::
+To build the documentation from source:
 
-.. code::
+.. code-block:: none
 
-    python setup.py build_sphinx
+    $ python setup.py build_sphinx
+
 
 Then view in your browser::
 
@@ -92,19 +111,22 @@ Then view in your browser::
 Running tests against the source
 --------------------------------
 
-With a copy of the source it is also possible to run the unit tests::
+With a copy of the source it is also possible to run the unit tests:
 
-.. code::
+.. code-block:: none
 
-    python setup.py test
+    $ python setup.py test
+
 
 There are also interactive tests for many of the widgets that can be run
 directly once you have configured your environment to include the built
-package::
+package:
 
-.. code::
 
-    python test/interactive/timer.py
+.. code-block:: none
+
+    $ python test/interactive/timer.py
+
 
 Dependencies
 ============
