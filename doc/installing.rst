@@ -142,9 +142,8 @@ Dependencies
 
       $ set "PATH=C:\Python27\Lib\site-packages\PySide\;%PATH%"
 
-* `Riffle <https://github.com/4degrees/riffle>`_ >= 0.1.0, < 2
-* ftrack Python API (Download from your ftrack server and make available on
-  ``PYTHONPATH``)
+* `Riffle <https://github.com/4degrees/riffle>`_ >= 0.1.0, < 2W
+* `QtExt <https://bitbucket.org/ftrack/qtext>`_ >= 0.2.2
 
 Additional For building
 -----------------------
