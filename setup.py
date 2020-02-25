@@ -7,7 +7,7 @@ import subprocess
 import re
 import glob
 
-
+from pkg_resources import parse_version
 from setuptools import setup, find_packages, Command
 from distutils.command.build import build as BuildCommand
 from setuptools.command.bdist_egg import bdist_egg as BuildEggCommand
@@ -16,6 +16,13 @@ from setuptools.command.test import test as TestCommand
 import distutils.dir_util
 import distutils
 import fileinput
+
+import pip
+
+if parse_version(pip.__version__) < parse_version('19.3.0'):
+    raise ValueError('Pip should be version 19.3.0 or higher')
+
+from pip._internal import main as pip_main
 
 
 ROOT_PATH = os.path.dirname(
