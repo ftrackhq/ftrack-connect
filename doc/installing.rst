@@ -53,21 +53,35 @@ copy of the source by either downloading the
 `zipball <https://bitbucket.org/ftrack/ftrack-connect/get/master.zip>`_ or
 cloning the public repository::
 
-    git clone git@bitbucket.org:ftrack/ftrack-connect.git
+.. code::
+
+    $ git clone git@bitbucket.org:ftrack/ftrack-connect.git
 
 Then you can build and install the package into your current Python
 site-packages folder::
 
-    python setup.py install
+.. code::
+
+    $ python setup.py install
 
 Alternatively, just build locally and manage yourself::
 
+.. code::
+
     python setup.py build
+
+Is also possible to build live developmnet version using either:
+
+.. code::
+
+   python setup.py build_ext --inplace
 
 Building documentation from source
 ----------------------------------
 
 To build the documentation from source::
+
+.. code::
 
     python setup.py build_sphinx
 
@@ -80,11 +94,15 @@ Running tests against the source
 
 With a copy of the source it is also possible to run the unit tests::
 
+.. code::
+
     python setup.py test
 
 There are also interactive tests for many of the widgets that can be run
 directly once you have configured your environment to include the built
 package::
+
+.. code::
 
     python test/interactive/timer.py
 
@@ -96,7 +114,7 @@ Dependencies
 
   .. note::
 
-      On Windows, PySide does not always put the required ``pyside-rcc``
+      On Windows and Osx, PySide does not always put the required ``pyside-rcc``
       runtime in an accessible place. If you encounter build errors when
       installing, try adding the location of ``pyside-rcc`` to your ``PATH``::
 

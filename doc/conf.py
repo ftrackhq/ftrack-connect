@@ -49,8 +49,11 @@ exclude_patterns = ['_template']
 
 # A list of prefixes to ignore for module listings.
 modindex_common_prefix = [
-    'ftrack_connect.', 'ftrack_connect.ui.', 'ftrack_connect.ui.widget.'
+    'ftrack_connect',
+    'ftrack_connect.', 'ftrack_connect.ui.', 'ftrack_connect.ui.widget.',
+    'ftrack_connect.application'
 ]
+autodoc_mock_imports=modindex_common_prefix
 
 # -- HTML output --------------------------------------------------------------
 
