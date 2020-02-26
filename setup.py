@@ -259,6 +259,7 @@ configuration = dict(
     tests_require=['pytest >= 2.3.5, < 3'],
     cmdclass={
         'build': Build,
+        'build_ext': Build,
         'build_resources': BuildResources,
         'bdist_egg': BuildEgg,
         'clean': Clean,
