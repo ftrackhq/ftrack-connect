@@ -37,13 +37,26 @@ The pre-built packages includes integrations for various applications:
 Building from git repository
 ============================
 
-Alternatively, install using `pip <http://www.pip-installer.org/>`_::
+Alternatively, install using `pip <http://www.pip-installer.org/>`_:
 
-    pip install git+https://bitbucket.org/ftrack/ftrack-connect.git
+.. code-block::
 
-.. note::
+    $ pip install git+https://bitbucket.org/ftrack/ftrack-connect.git
 
-    This project is not yet available on PyPi.
+
+.. warning::
+
+    When installing through pip, the default hooks will not be properly installed as part of the package,
+    but they'll instead be installed on the root of the interpreter eg:
+
+    C:\Python27\ftrack_connect_resource\hook
+
+    Before starting connect please ensure the path is added to your
+
+    * **FTRACK_EVENT_PLUGIN_PATH**
+
+    environment variable.
+
 
 Building from source
 ====================
@@ -67,18 +80,6 @@ site-packages folder:
 
     $ python setup.py install
 
-
-.. note:: 
-
-    When installing it, the default hooks will be avalable under:
-    
-    <python installation>/site-packages/ftrack_connect-<version>-py2.7.egg/ftrack_connect_resource/hook/
-
-    Before starting connect please ensure the path is added to your 
-    
-    * **FTRACK_EVENT_PLUGIN_PATH**
-
-    environment variable.
 
 Alternatively, just build locally and manage yourself:
 
