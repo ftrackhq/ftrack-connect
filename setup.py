@@ -7,7 +7,7 @@ import subprocess
 import re
 import glob
 
-
+from pkg_resources import parse_version
 from setuptools import setup, find_packages, Command
 from distutils.command.build import build as BuildCommand
 from setuptools.command.bdist_egg import bdist_egg as BuildEggCommand
@@ -16,6 +16,13 @@ from setuptools.command.test import test as TestCommand
 import distutils.dir_util
 import distutils
 import fileinput
+
+import pip
+
+if parse_version(pip.__version__) < parse_version('19.3.0'):
+    raise ValueError('Pip should be version 19.3.0 or higher')
+
+from pip._internal import main as pip_main
 
 
 ROOT_PATH = os.path.dirname(
@@ -231,7 +238,7 @@ configuration = dict(
         '': 'source'
     },
     setup_requires=[
-        'qtext',
+        'qtext @ git+https://bitbucket.org/ftrack/qtext/get/0.2.2.zip#egg=qtext',
         'pyScss >= 1.2.0, < 2',
         'PySide >= 1.2.2, < 2',
         'sphinx >= 1.2.2, < 2',
@@ -239,32 +246,30 @@ configuration = dict(
         'lowdown >= 0.1.0, < 1'
     ],
     install_requires=[
-        'qtext',
+        'ftrack-python-legacy-api >=3, <4',
         'ftrack-python-api >= 1, < 2',
         'PySide >= 1.2.2, < 2',
         'Riffle',
         'arrow >= 0.4.6, < 1',
         'appdirs == 1.4.0',
-        'requests >= 2, <3'
+        'requests >= 2, <3',
+        'lowdown >= 0.1.0, < 1',
+        'qtext @ git+https://bitbucket.org/ftrack/qtext/get/0.2.2.zip#egg=qtext'
     ],
     tests_require=['pytest >= 2.3.5, < 3'],
     cmdclass={
         'build': Build,
+        'build_ext': Build,
         'build_resources': BuildResources,
         'bdist_egg': BuildEgg,
         'clean': Clean,
         'test': PyTest
     },
-    dependency_links=[
-        (
-            'git+https://bitbucket.org/ftrack/lowdown/get/0.1.0.zip'
-            '#egg=lowdown-0.1.0'
-        ),
-        (
-            'git+https://bitbucket.org/ftrack/qtext/get/0.2.1.zip'
-            '#egg=QtExt-0.2.1'
-        )
-    ],
+    entry_points={
+        'console_scripts': [
+            'ftrack-connect = ftrack_connect.__main__:main',
+        ],
+    },
     options={},
     data_files=[
         (

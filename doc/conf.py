@@ -5,7 +5,17 @@
 
 import os
 import re
+import sys
 
+
+
+sys.path.append(
+    os.path.join(
+        os.path.dirname(__file__),
+        '..',
+        'source'
+    )
+)
 # -- General ------------------------------------------------------------------
 
 # Extensions.
@@ -49,7 +59,9 @@ exclude_patterns = ['_template']
 
 # A list of prefixes to ignore for module listings.
 modindex_common_prefix = [
-    'ftrack_connect.', 'ftrack_connect.ui.', 'ftrack_connect.ui.widget.'
+    'ftrack_connect',
+    'ftrack_connect.', 'ftrack_connect.ui.', 'ftrack_connect.ui.widget.',
+    'ftrack_connect.application'
 ]
 
 # -- HTML output --------------------------------------------------------------

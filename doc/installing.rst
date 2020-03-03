@@ -37,13 +37,26 @@ The pre-built packages includes integrations for various applications:
 Building from git repository
 ============================
 
-Alternatively, install using `pip <http://www.pip-installer.org/>`_::
+Alternatively, install using `pip <http://www.pip-installer.org/>`_:
 
-    pip install git+https://bitbucket.org/ftrack/ftrack-connect.git
+.. code-block::
 
-.. note::
+    $ pip install git+https://bitbucket.org/ftrack/ftrack-connect.git
 
-    This project is not yet available on PyPi.
+
+.. warning::
+
+    When installing through pip, the default hooks will not be properly installed as part of the package,
+    but they'll instead be installed on the root of the interpreter eg:
+
+    C:\Python27\ftrack_connect_resource\hook
+
+    Before starting connect please ensure the path is added to your
+
+    * **FTRACK_EVENT_PLUGIN_PATH**
+
+    environment variable.
+
 
 Building from source
 ====================
@@ -51,25 +64,46 @@ Building from source
 You can also build manually from the source for more control. First obtain a
 copy of the source by either downloading the
 `zipball <https://bitbucket.org/ftrack/ftrack-connect/get/master.zip>`_ or
-cloning the public repository::
+cloning the public repository:
 
-    git clone git@bitbucket.org:ftrack/ftrack-connect.git
+
+.. code-block:: none
+
+    $ git clone git@bitbucket.org:ftrack/ftrack-connect.git
+
 
 Then you can build and install the package into your current Python
-site-packages folder::
+site-packages folder:
 
-    python setup.py install
 
-Alternatively, just build locally and manage yourself::
+.. code-block:: none
 
-    python setup.py build
+    $ python setup.py install
+
+
+Alternatively, just build locally and manage yourself:
+
+.. code-block:: none
+
+    $ python setup.py build
+
+
+Is also possible to build live developmnet version using either:
+
+.. code-block:: none
+
+    $ python setup.py build_ext --inplace
+
 
 Building documentation from source
 ----------------------------------
 
-To build the documentation from source::
+To build the documentation from source:
 
-    python setup.py build_sphinx
+.. code-block:: none
+
+    $ python setup.py build_sphinx
+
 
 Then view in your browser::
 
@@ -78,15 +112,22 @@ Then view in your browser::
 Running tests against the source
 --------------------------------
 
-With a copy of the source it is also possible to run the unit tests::
+With a copy of the source it is also possible to run the unit tests:
 
-    python setup.py test
+.. code-block:: none
+
+    $ python setup.py test
+
 
 There are also interactive tests for many of the widgets that can be run
 directly once you have configured your environment to include the built
-package::
+package:
 
-    python test/interactive/timer.py
+
+.. code-block:: none
+
+    $ python test/interactive/timer.py
+
 
 Dependencies
 ============
@@ -96,15 +137,14 @@ Dependencies
 
   .. note::
 
-      On Windows, PySide does not always put the required ``pyside-rcc``
+      On Windows and Osx, PySide does not always put the required ``pyside-rcc``
       runtime in an accessible place. If you encounter build errors when
       installing, try adding the location of ``pyside-rcc`` to your ``PATH``::
 
       $ set "PATH=C:\Python27\Lib\site-packages\PySide\;%PATH%"
 
-* `Riffle <https://github.com/4degrees/riffle>`_ >= 0.1.0, < 2
-* ftrack Python API (Download from your ftrack server and make available on
-  ``PYTHONPATH``)
+* `Riffle <https://github.com/4degrees/riffle>`_ >= 0.1.0, < 2W
+* `QtExt <https://bitbucket.org/ftrack/qtext>`_ >= 0.2.2
 
 Additional For building
 -----------------------
