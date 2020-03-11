@@ -87,10 +87,10 @@ class BuildResources(Command):
         for line in fileinput.input(self.resource_target_path, inplace=True):
             if 'import QtCore' in line:
                 # Calling print will yield a new line in the resource file.
-                print line.replace(line, replace)
+                yield line.replace(line, replace)
             else:
                 # Calling print will yield a new line in the resource file.
-                print line
+                yield line
 
     def run(self):
         '''Run build.'''
@@ -117,12 +117,12 @@ class BuildResources(Command):
             compiled = compiler.compile(
                 scss_file=scss_source
             )
-            with open(css_target, 'w') as file_handle:
+            with open(css_target, 'wb') as file_handle:
                 file_handle.write(compiled)
                 print('Compiled {0}'.format(css_target))
 
         try:
-            pyside_rcc_command = 'pyside-rcc'
+            pyside_rcc_command = 'pyside2-rcc'
 
             # On Windows, pyside-rcc is not automatically available on the
             # PATH so try to find it manually.
@@ -130,7 +130,7 @@ class BuildResources(Command):
                 import PySide
                 pyside_rcc_command = os.path.join(
                     os.path.dirname(PySide.__file__),
-                    'pyside-rcc.exe'
+                    'pyside2-rcc.exe'
                 )
 
             subprocess.check_call([
@@ -240,7 +240,7 @@ configuration = dict(
     setup_requires=[
         'qtext @ git+https://bitbucket.org/ftrack/qtext/get/0.2.2.zip#egg=qtext',
         'pyScss >= 1.2.0, < 2',
-        'PySide >= 1.2.2, < 2',
+        'PySide2',
         'sphinx >= 1.2.2, < 2',
         'sphinx_rtd_theme >= 0.1.6, < 2',
         'lowdown >= 0.1.0, < 1'
@@ -248,7 +248,7 @@ configuration = dict(
     install_requires=[
         'ftrack-python-legacy-api >=3, <4',
         'ftrack-python-api >= 1, < 2',
-        'PySide >= 1.2.2, < 2',
+        'PySide2',
         'Riffle',
         'arrow >= 0.4.6, < 1',
         'appdirs == 1.4.0',
