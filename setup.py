@@ -87,10 +87,9 @@ class BuildResources(Command):
         for line in fileinput.input(self.resource_target_path, inplace=True):
             if 'import QtCore' in line:
                 # Calling print will yield a new line in the resource file.
-                yield line.replace(line, replace)
+                sys.stdout.write(line.replace(line, replace))
             else:
-                # Calling print will yield a new line in the resource file.
-                yield line
+                sys.stdout.write(line)
 
     def run(self):
         '''Run build.'''
