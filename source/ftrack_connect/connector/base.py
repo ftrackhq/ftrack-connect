@@ -14,7 +14,7 @@ import urllib2
 import re
 import sys
 
-from QtExt import QtWidgets, QtNetwork, QtCore, QtGui
+from Qt import QtWidgets, QtNetwork, QtCore, QtGui
 
 import ftrack
 import ftrack_api

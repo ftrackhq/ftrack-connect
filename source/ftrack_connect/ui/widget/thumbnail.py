@@ -4,7 +4,7 @@
 import os
 import urllib2
 
-from QtExt import QtWidgets, QtCore, QtGui
+from Qt import QtWidgets, QtCore, QtGui
 import ftrack
 import ftrack_connect.worker
 

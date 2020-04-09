@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-from QtExt import QtCore, QtWidgets
+from Qt import QtCore, QtWidgets
 import ftrack
 
 import ftrack_connect.ui.application

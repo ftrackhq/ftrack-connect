@@ -6,8 +6,8 @@ import time
 import logging
 import functools
 
-from QtExt import QtCore
-from QtExt import QtWidgets
+from Qt import QtCore
+from Qt import QtWidgets
 import ftrack
 import ftrack_api.event.base
 

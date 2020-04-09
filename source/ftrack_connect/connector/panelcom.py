@@ -2,7 +2,7 @@
 # :copyright: Copyright (c) 2015 ftrack
 
 # Class for handling communication between panels
-from QtExt import QtCore, QtGui
+from Qt import QtCore, QtGui
 
 #: TODO: Rewrite this to use ftrack events instead.
 

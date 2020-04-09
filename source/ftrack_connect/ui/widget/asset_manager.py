@@ -4,7 +4,7 @@
 import getpass
 import logging
 
-from QtExt import QtCore, QtWidgets, QtGui, is_webwidget_supported
+from Qt import QtCore, QtWidgets, QtGui, is_webwidget_supported
 
 import ftrack
 import ftrack_api

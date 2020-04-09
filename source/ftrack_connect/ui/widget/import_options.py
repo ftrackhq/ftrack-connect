@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
 
-from QtExt import QtCore, QtWidgets, QtGui
+from Qt import QtCore, QtWidgets, QtGui
 
 from stacked_options import StackedOptionsWidget
 from ftrack_connect.connector import FTAssetHandlerInstance

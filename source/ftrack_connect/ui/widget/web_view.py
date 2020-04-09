@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
 
-from QtExt import QtGui, QtCore, QtWidgets, QtNetwork, QtWebCompat
+from Qt import QtGui, QtCore, QtWidgets, QtNetwork, QtWebCompat
 
 
 # TODO: Investigate why this import exists and remove it.
