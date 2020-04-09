@@ -248,7 +248,7 @@ configuration = dict(
         'ftrack-python-legacy-api >=3, <4',
         'ftrack-python-api >= 1, < 2',
         'PySide2',
-        'Riffle @ git+https://https://gitlab.com/lorenzo.angeli/riffle/-/archive/backlog/pyside-2/riffle-backlog-pyside-2.zip#egg=riffle',
+        'Riffle @ git+https://gitlab.com/lorenzo.angeli/riffle/-/archive/backlog/support-pyside2/riffle-backlog-support-pyside2.zip#egg=riffle',
         'arrow >= 0.4.6, < 1',
         'appdirs == 1.4.0',
         'requests >= 2, <3',
