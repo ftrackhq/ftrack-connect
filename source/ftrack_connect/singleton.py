@@ -67,7 +67,6 @@ class SingleInstance(object):
                 if e.errno == 13:
                     logger.error('Another instance is already running, quitting.')
                     raise SingleInstanceException()
-                print e.errno
                 raise
         else:  # non Windows
             self.fp = open(self.lockfile, 'w')

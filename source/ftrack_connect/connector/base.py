@@ -13,7 +13,6 @@ import imp
 import urllib2
 import re
 import sys
-
 from QtExt import QtWidgets, QtNetwork, QtCore, QtGui
 
 import ftrack
@@ -250,8 +249,6 @@ class Connector(object):
                         'ftrack: Failed to publish.',
                         errorMessage
                     )
-                    print traceback.format_exc()
-                    print error
 
                     return
 
