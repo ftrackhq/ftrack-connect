@@ -107,7 +107,7 @@ class ListAssetsTableWidget(QtWidgets.QWidget):
             try:
                 assetType = ftrack.AssetType(assetTypeStr)
             except:
-                print assetTypeStr + ' not available in ftrack'
+                print(assetTypeStr + ' not available in ftrack')
                 continue
 
             assetTypeItem = QtGui.QStandardItem(assetType.getName())

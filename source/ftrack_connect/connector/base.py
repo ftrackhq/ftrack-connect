@@ -261,13 +261,13 @@ class Connector(object):
                     currentTask = assetVersion.getTask()
                     currentTask.setThumbnail(thumb)
                 except Exception:
-                    print 'no task'
+                    pass
 
                 try:
                     shot = assetVersion.getAsset().getParent()
                     shot.setThumbnail(thumb)
                 except Exception:
-                    print 'no shot for some reason'
+                    pass
 
             if len(ftComponent.metadata) > 0:
                 for k, v in ftComponent.metadata:

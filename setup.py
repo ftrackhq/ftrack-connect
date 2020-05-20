@@ -247,7 +247,7 @@ configuration = dict(
     ],
     install_requires=[
         'ftrack-python-legacy-api >=3, <4',
-        'ftrack-python-api >= 1, < 2',
+        'ftrack-python-api >= 1, < 3',
         'PySide >= 1.2.2, < 2',
         'Riffle',
         'arrow >= 0.4.6, < 1',

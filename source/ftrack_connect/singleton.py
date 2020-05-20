@@ -95,5 +95,5 @@ class SingleInstance(object):
             if logger:
                 logger.error(e)
             else:
-                print 'Unloggable error: {0}'.format(e)
+                print('Unloggable error: {0}'.format(e))
             sys.exit(-1)
