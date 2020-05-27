@@ -483,10 +483,17 @@ class ApplicationLauncher(object):
             'FTRACK_EVENT_SERVER', environment
         )
 
-        # Prepend discovered ftrack API to PYTHONPATH.
-        environment = prependPath(
-            os.path.dirname(ftrack.__file__), 'PYTHONPATH', environment
-        )
+        local_dependencies = [
+            os.path.dirname(ftrack.__file__),
+            os.path.dirname(os.path.dirname(ftrack_api.__file__)),
+            os.path.dirname(os.path.dirname(ftrack_connect.__file__))
+        ]
+
+        for dependency in local_dependencies:
+            self.logger.info('Adding {} to PYTHOPATH'.format(dependency))
+            environment = prependPath(
+                dependency, 'PYTHONPATH', environment
+            )
 
         # Add ftrack connect event to environment.
         if context is not None:
