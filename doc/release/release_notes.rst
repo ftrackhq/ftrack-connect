@@ -13,7 +13,7 @@ Release Notes
     .. change:: fixed
         :tags: Application launcher
 
-        Standalone module does not correctly inject dependencies at application startup.
+        Standalone installation does not correctly inject dependencies at application startup.
 
 
 .. release:: 1.1.8
