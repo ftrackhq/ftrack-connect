@@ -483,13 +483,10 @@ class ApplicationLauncher(object):
             'FTRACK_EVENT_SERVER', environment
         )
 
-        local_dependencies = [
-            os.path.dirname(ftrack.__file__),
-            os.path.dirname(os.path.dirname(ftrack_api.__file__)),
-            os.path.dirname(os.path.dirname(ftrack_connect.__file__))
-        ]
 
-        for dependency in local_dependencies:
+        egg_dependencies = [egg_path for egg_path in sys.path if egg_path.endswith('.egg')]
+
+        for dependency in egg_dependencies:
             self.logger.info('Adding {} to PYTHOPATH'.format(dependency))
             environment = prependPath(
                 dependency, 'PYTHONPATH', environment
