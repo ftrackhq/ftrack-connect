@@ -483,11 +483,10 @@ class ApplicationLauncher(object):
             'FTRACK_EVENT_SERVER', environment
         )
 
-
         egg_dependencies = [egg_path for egg_path in sys.path if egg_path.endswith('.egg')]
 
         for dependency in egg_dependencies:
-            self.logger.info('Adding {} to PYTHOPATH'.format(dependency))
+            self.logger.debug('Adding {} to PYTHOPATH'.format(dependency))
             environment = prependPath(
                 dependency, 'PYTHONPATH', environment
             )
