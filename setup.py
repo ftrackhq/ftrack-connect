@@ -1,6 +1,8 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
+from __future__ import absolute_import
+from __future__ import print_function
 import sys
 import os
 import subprocess
@@ -87,10 +89,10 @@ class BuildResources(Command):
         for line in fileinput.input(self.resource_target_path, inplace=True):
             if 'import QtCore' in line:
                 # Calling print will yield a new line in the resource file.
-                print line.replace(line, replace)
+                print(line.replace(line, replace))
             else:
                 # Calling print will yield a new line in the resource file.
-                print line
+                print(line)
 
     def run(self):
         '''Run build.'''
