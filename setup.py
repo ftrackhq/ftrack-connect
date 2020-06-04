@@ -16,13 +16,7 @@ from setuptools.command.test import test as TestCommand
 import distutils.dir_util
 import distutils
 import fileinput
-
-import pip
-
-if parse_version(pip.__version__) < parse_version('19.3.0'):
-    raise ValueError('Pip should be version 19.3.0 or higher')
-
-from pip._internal import main as pip_main
+from distutils.spawn import find_executable
 
 
 ROOT_PATH = os.path.dirname(
@@ -77,14 +71,14 @@ class BuildResources(Command):
         self.resource_target_path = RESOURCE_TARGET_PATH
 
     def _replace_imports_(self):
-        '''Replace imports in resource files to QtExt instead of QtCore.
+        '''Replace imports in resource files to Qt instead of QtCore.
 
         This allows the resource file to work with many different versions of
         Qt.
 
         '''
-        replace = 'from QtExt import QtCore'
-        for line in fileinput.input(self.resource_target_path, inplace=True):
+        replace = 'from Qt import QtCore'
+        for line in fileinput.input(self.resource_target_path, inplace=True, mode='rb'):
             if 'import QtCore' in line:
                 # Calling print will yield a new line in the resource file.
                 sys.stdout.write(line.replace(line, replace))
@@ -121,24 +115,37 @@ class BuildResources(Command):
                 print('Compiled {0}'.format(css_target))
 
         try:
-            pyside_rcc_command = 'pyside2-rcc'
+            pyside_rcc_commands = ['pyside2-rcc', 'pyside-rcc']
+            valid_commands = []
+    
+            for pyside_rcc_command in pyside_rcc_commands:
+                # On Windows, pyside-rcc is not automatically available on the
+                # PATH so try to find it manually.
+                if sys.platform == 'win32':
+                    import Qt
+                    pyside_rcc_command = os.path.join(
+                        os.path.dirname(Qt.__file__),
+                        '{}.exe'.format(pyside_rcc_command)
+                    )
 
-            # On Windows, pyside-rcc is not automatically available on the
-            # PATH so try to find it manually.
-            if sys.platform == 'win32':
-                import PySide
-                pyside_rcc_command = os.path.join(
-                    os.path.dirname(PySide.__file__),
-                    'pyside2-rcc.exe'
-                )
+                # Check if the command for pyside*-rcc is in executable paths.
+                if find_executable(pyside_rcc_command):
+                    valid_commands.append(pyside_rcc_command)
 
-            subprocess.check_call([
-                pyside_rcc_command,
+            if not valid_commands:
+                raise IOError('Not executable found for pyside*-rcc ')
+
+            # Use the first occurrence if more than one is found.
+            cmd = [
+                valid_commands[0],
                 '-o',
                 self.resource_target_path,
                 self.resource_source_path
-            ])
-        except (subprocess.CalledProcessError, OSError) as error:
+            ]
+            print('running : {}'.format(cmd))
+            subprocess.check_call(cmd)
+
+        except (subprocess.CalledProcessError, OSError):
             raise RuntimeError(
                 'Error compiling resource.py using pyside-rcc. Possibly '
                 'pyside-rcc could not be found. You might need to manually add '
