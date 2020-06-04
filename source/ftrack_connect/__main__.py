@@ -9,7 +9,7 @@ import signal
 import os
 import pkg_resources
 
-bindings = ['PySide', 'PySide2']
+bindings = ['PySide2', 'PySide']
 os.environ.setdefault('QT_PREFERRED_BINDING', os.pathsep.join(bindings))
 
 from Qt import QtWidgets, QtCore

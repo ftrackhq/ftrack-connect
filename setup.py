@@ -40,8 +40,9 @@ RESOURCE_TARGET_PATH = os.path.join(
 )
 
 README_PATH = os.path.join(os.path.dirname(__file__), 'README.rst')
-
 PACKAGES_PATH = os.path.join(os.path.dirname(__file__), 'source')
+
+
 
 # Read version from source.
 with open(os.path.join(
@@ -77,9 +78,9 @@ class BuildResources(Command):
         Qt.
 
         '''
-        replace = 'from Qt import QtCore'
+        replace = r'from Qt import QtCore'
         for line in fileinput.input(self.resource_target_path, inplace=True, mode='rb'):
-            if 'import QtCore' in line:
+            if r'import QtCore' in line:
                 # Calling print will yield a new line in the resource file.
                 sys.stdout.write(line.replace(line, replace))
             else:
