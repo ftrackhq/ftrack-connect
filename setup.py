@@ -254,7 +254,7 @@ configuration = dict(
     install_requires=[
         'ftrack-python-legacy-api >=3, <4',
         'ftrack-python-api >= 1, < 2',
-        'riffle @ git+https://gitlab.com/lorenzo.angeli/riffle.git@backlog/support-pyside2/riffle-backlog-support-pyside2#egg=riffle-0.4.0',
+        'riffle @ git+https://gitlab.com/lorenzo.angeli/riffle.git@backlog/support-pyside2#egg=riffle-0.4.0',
         'arrow >= 0.4.6, < 1',
         'appdirs == 1.4.0',
         'requests >= 2, <3',
