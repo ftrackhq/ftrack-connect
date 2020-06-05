@@ -245,9 +245,8 @@ configuration = dict(
         '': 'source'
     },
     setup_requires=[
-        'qt.py >=1.0.0, < 2',
+        'Qt.py >=1.0.0, < 2',
         'pyScss >= 1.2.0, < 2',
-        'PySide2',
         'sphinx >= 1.2.2, < 2',
         'sphinx_rtd_theme >= 0.1.6, < 2',
         'lowdown >= 0.1.0, < 1'
@@ -255,13 +254,12 @@ configuration = dict(
     install_requires=[
         'ftrack-python-legacy-api >=3, <4',
         'ftrack-python-api >= 1, < 2',
-        'PySide2',
-        'Riffle @ git+https://gitlab.com/lorenzo.angeli/riffle/-/archive/backlog/support-pyside2/riffle-backlog-support-pyside2.zip#egg=riffle',
+        'riffle @ git+https://gitlab.com/lorenzo.angeli/riffle.git@backlog/support-pyside2/riffle-backlog-support-pyside2#egg=riffle-0.4.0',
         'arrow >= 0.4.6, < 1',
         'appdirs == 1.4.0',
         'requests >= 2, <3',
         'lowdown >= 0.1.0, < 1',
-        'qt.py >=1.0.0, < 2'
+        'Qt.py >=1.0.0, < 2'
     ],
     tests_require=['pytest >= 2.3.5, < 3'],
     cmdclass={
@@ -276,6 +274,10 @@ configuration = dict(
         'console_scripts': [
             'ftrack-connect = ftrack_connect.__main__:main',
         ],
+    },
+    extras_require={
+        'PySide': ['PySide >= 1.2.2, < 2'],
+        'PySide2': ['PySide2 >=5, <6']
     },
     options={},
     data_files=[
