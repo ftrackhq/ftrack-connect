@@ -10,6 +10,11 @@ Release Notes
 
 .. release:: Upcoming
 
+    .. change:: new
+        :tags: Setup
+
+        Use setuptool_scm to infer version the tool.
+
     .. change:: fixed
         :tags: Application launcher
 
