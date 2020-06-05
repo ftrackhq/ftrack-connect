@@ -284,7 +284,8 @@ configuration = dict(
             glob.glob(os.path.join(RESOURCE_PATH, 'hook', '*.py'))
         )
     ],
-    zip_safe=False
+    zip_safe=False,
+    python_requires=">=2.7.9, <3.0"
 )
 
 
