@@ -249,7 +249,8 @@ configuration = dict(
         'pyScss >= 1.2.0, < 2',
         'sphinx >= 1.2.2, < 2',
         'sphinx_rtd_theme >= 0.1.6, < 2',
-        'lowdown >= 0.1.0, < 1'
+        'lowdown >= 0.1.0, < 1',
+        'PySide2 >=5, <6'
     ],
     install_requires=[
         'ftrack-python-legacy-api >=3, <4',
@@ -259,7 +260,8 @@ configuration = dict(
         'appdirs == 1.4.0',
         'requests >= 2, <3',
         'lowdown >= 0.1.0, < 1',
-        'Qt.py >=1.0.0, < 2'
+        'Qt.py >=1.0.0, < 2',
+        'PySide2 >=5, <6'
     ],
     tests_require=['pytest >= 2.3.5, < 3'],
     cmdclass={
@@ -274,10 +276,6 @@ configuration = dict(
         'console_scripts': [
             'ftrack-connect = ftrack_connect.__main__:main',
         ],
-    },
-    extras_require={
-        'PySide': ['PySide >= 1.2.2, < 2'],
-        'PySide2': ['PySide2 >=5, <6']
     },
     options={},
     data_files=[
