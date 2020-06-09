@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
 
-from Qt import QtGui, QtCore, QtWidgets, QtNetwork, QtWebCompat
+from Qt import QtGui, QtCore, QtWidgets, QtWebEngineWidgets,QtNetwork
 
 
 # TODO: Investigate why this import exists and remove it.
@@ -25,7 +25,7 @@ class Ui_WebView(object):
         self.horizontalLayout = QtWidgets.QHBoxLayout(WebView)
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout.setObjectName('horizontalLayout')
-        self.WebViewView = QtWebCompat.QWebView(WebView)
+        self.WebViewView = QtWebEngineWidgets.QWebEngineView(WebView)
         font = QtGui.QFont()
         font.setFamily('Anonymous Pro')
         self.WebViewView.setFont(font)
@@ -55,7 +55,7 @@ class WebViewWidget(QtWidgets.QWidget):
         self.ui = Ui_WebView()
         self.ui.setupUi(self)
 
-        self.webPage = QtWebCompat.QWebPage()
+        self.webPage = QtWebEngineWidgets.QWebEnginePage()
 
         self.persCookieJar = PersistentCookieJar(self)
         self.persCookieJar.load()

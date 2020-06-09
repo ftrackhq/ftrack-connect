@@ -4,17 +4,14 @@
 import getpass
 import logging
 
-from Qt import QtCore, QtWidgets, QtGui, is_webwidget_supported
+from Qt import QtCore, QtWidgets, QtGui
 
 import ftrack
 import ftrack_api
 
 from ftrack_connect.connector import FTAssetObject, PanelComInstance
 
-has_webwidgets = is_webwidget_supported()
-
-if has_webwidgets:
-    from ftrack_connect.ui.widget.info import FtrackInfoDialog
+from ftrack_connect.ui.widget.info import FtrackInfoDialog
 
 from ftrack_connect.ui.widget import header
 from ftrack_connect.ui.theme import applyTheme
