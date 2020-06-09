@@ -13,7 +13,7 @@ Release Notes
     .. change:: new
         :tags: Setup
 
-        Use setuptool_scm to infer version the tool.
+        Use setuptool_scm to infer version.
 
     .. change:: fixed
         :tags: Application launcher
