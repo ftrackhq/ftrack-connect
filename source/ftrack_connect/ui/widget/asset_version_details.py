@@ -3,7 +3,7 @@
 
 import os
 
-from Qt import QtWidgets, QtCore, QtGui
+from Qt import QtWidgets, QtCore, QtGui, QtCompat
 
 from ftrack_connect.connector import HelpFunctions
 from ftrack_api import symbol
@@ -63,10 +63,19 @@ class AssetVersionDetailsWidget(QtWidgets.QWidget):
         self.propertyTableWidget.setColumnCount(1)
         horizontalHeader = self.propertyTableWidget.horizontalHeader()
         horizontalHeader.hide()
-        horizontalHeader.setResizeMode(QtWidgets.QHeaderView.Stretch)
+
+
+        QtCompat.setSectionResizeMode(
+            horizontalHeader,
+            QtWidgets.QHeaderView.Stretch
+        )
 
         verticalHeader = self.propertyTableWidget.verticalHeader()
-        verticalHeader.setResizeMode(QtWidgets.QHeaderView.ResizeToContents)
+
+        QtCompat.setSectionResizeMode(
+            verticalHeader,
+            QtWidgets.QHeaderView.ResizeToContents
+        )
 
         # Fix missing horizontal scrollbar when only single column
         self.propertyTableWidget.setHorizontalScrollMode(

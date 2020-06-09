@@ -4,7 +4,7 @@
 import getpass
 import logging
 
-from Qt import QtCore, QtWidgets, QtGui
+from Qt import QtCore, QtWidgets, QtGui, QtCompat
 
 import ftrack
 import ftrack_api
@@ -237,30 +237,55 @@ class AssetManagerWidget(QtWidgets.QWidget):
         self.ui.AssertManagerTableWidget.setColumnWidth(10, 20)
         self.ui.AssertManagerTableWidget.setColumnWidth(11, 20)
         self.ui.AssertManagerTableWidget.setColumnWidth(15, 20)
-        self.ui.AssertManagerTableWidget.horizontalHeader().setResizeMode(
+
+
+        QtCompat.setSectionResizeMode(
+            self.ui.AssertManagerTableWidget.horizontalHeader(),
             QtWidgets.QHeaderView.Stretch
         )
-        self.ui.AssertManagerTableWidget.horizontalHeader().setResizeMode(
-            0, QtWidgets.QHeaderView.Fixed
+
+        QtCompat.setSectionResizeMode(
+            self.ui.AssertManagerTableWidget.horizontalHeader(),
+            0,
+            QtWidgets.QHeaderView.Fixed
         )
-        self.ui.AssertManagerTableWidget.horizontalHeader().setResizeMode(
-            5, QtWidgets.QHeaderView.Fixed
+
+        QtCompat.setSectionResizeMode(
+            self.ui.AssertManagerTableWidget.horizontalHeader(),
+            5,
+            QtWidgets.QHeaderView.Fixed
         )
-        self.ui.AssertManagerTableWidget.horizontalHeader().setResizeMode(
-            6, QtWidgets.QHeaderView.Fixed
+
+        QtCompat.setSectionResizeMode(
+            self.ui.AssertManagerTableWidget.horizontalHeader(),
+            6,
+            QtWidgets.QHeaderView.Fixed
         )
-        self.ui.AssertManagerTableWidget.horizontalHeader().setResizeMode(
-            9, QtWidgets.QHeaderView.Fixed
+
+        QtCompat.setSectionResizeMode(
+            self.ui.AssertManagerTableWidget.horizontalHeader(),
+            9,
+            QtWidgets.QHeaderView.Fixed
         )
-        self.ui.AssertManagerTableWidget.horizontalHeader().setResizeMode(
-            10, QtWidgets.QHeaderView.Fixed
+
+        QtCompat.setSectionResizeMode(
+            self.ui.AssertManagerTableWidget.horizontalHeader(),
+            10,
+            QtWidgets.QHeaderView.Fixed
         )
-        self.ui.AssertManagerTableWidget.horizontalHeader().setResizeMode(
-            11, QtWidgets.QHeaderView.Fixed
+
+        QtCompat.setSectionResizeMode(
+            self.ui.AssertManagerTableWidget.horizontalHeader(),
+            11,
+            QtWidgets.QHeaderView.Fixed
         )
-        self.ui.AssertManagerTableWidget.horizontalHeader().setResizeMode(
-            15, QtWidgets.QHeaderView.Fixed
+
+        QtCompat.setSectionResizeMode(
+            self.ui.AssertManagerTableWidget.horizontalHeader(),
+            15,
+            QtWidgets.QHeaderView.Fixed
         )
+
 
         self.ui.AssertManagerTableWidget.setColumnHidden(2, True)
         self.ui.AssertManagerTableWidget.setColumnHidden(3, True)

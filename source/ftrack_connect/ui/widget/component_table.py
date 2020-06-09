@@ -3,7 +3,7 @@
 
 import traceback
 import logging
-from Qt import QtWidgets, QtCore
+from Qt import QtWidgets, QtCore, QtCompat
 import ftrack
 
 from ftrack_connect.worker import Worker
@@ -62,16 +62,26 @@ class ComponentTableWidget(QtWidgets.QTableWidget):
         self.setHorizontalHeaderLabels(self.columns)
 
         horizontalHeader = self.horizontalHeader()
-        horizontalHeader.setResizeMode(QtWidgets.QHeaderView.ResizeToContents)
-        horizontalHeader.setResizeMode(
+
+        QtCompat.setSectionResizeMode(
+            horizontalHeader,
+            QtWidgets.QHeaderView.ResizeToContents
+        )
+
+        QtCompat.setSectionResizeMode(
+            horizontalHeader,
             self.columns.index('Path'),
             QtWidgets.QHeaderView.Stretch
         )
-        horizontalHeader.setResizeMode(
+
+        QtCompat.setSectionResizeMode(
+            horizontalHeader,
             self.columns.index('Action'),
             QtWidgets.QHeaderView.Fixed
         )
-        horizontalHeader.resizeSection(
+
+        QtCompat.setSectionResizeMode(
+            horizontalHeader,
             self.columns.index('Action'),
             100
         )

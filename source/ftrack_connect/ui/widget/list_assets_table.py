@@ -4,7 +4,7 @@
 import sys
 import traceback
 
-from Qt import QtCore, QtWidgets, QtGui
+from Qt import QtCore, QtWidgets, QtGui, QtCompat
 import ftrack
 
 from ftrack_connect.connector import FTAssetHandlerInstance
@@ -59,13 +59,21 @@ class ListAssetsTableWidget(QtWidgets.QWidget):
         self.assetTable.setHorizontalHeaderLabels(self.assetTableColumns)
 
         horizontalHeader = self.assetTable.horizontalHeader()
-        horizontalHeader.setResizeMode(QtWidgets.QHeaderView.Fixed)
+
+        QtCompat.setSectionResizeMode(
+            horizontalHeader,
+            QtWidgets.QHeaderView.Fixed
+        )
+
+        QtCompat.setSectionResizeMode(
+            horizontalHeader,
+            0,
+            QtWidgets.QHeaderView.Stretch
+        )
 
         self.assetTable.horizontalHeader().setDefaultSectionSize(100)
         self.assetTable.setColumnWidth(1, 63)
-        self.assetTable.horizontalHeader().setResizeMode(
-            0, QtWidgets.QHeaderView.Stretch
-        )
+
 
         self.layout().addWidget(self.assetTable)
 
