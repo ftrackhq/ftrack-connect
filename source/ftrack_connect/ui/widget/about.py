@@ -5,7 +5,7 @@ import json
 import sys
 import textwrap
 
-from QtExt import QtCore, QtWidgets, QtGui
+from Qt import QtCore, QtWidgets, QtGui
 
 
 from ftrack_connect.config import get_log_directory
@@ -61,7 +61,7 @@ class AboutDialog(QtWidgets.QDialog):
             )
             layout.addWidget(self.createApplicationShortcutButton)
 
-        self.debugTextEdit = QtWidgets.QTextEdit()
+        self.debugTextEdit = QtWidgets.QtEdit()
         self.debugTextEdit.setReadOnly(True)
         self.debugTextEdit.setFontPointSize(10)
         self.debugTextEdit.hide()

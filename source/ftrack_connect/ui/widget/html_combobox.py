@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
 
-from QtExt import QtWidgets, QtCore, QtGui
+from Qt import QtWidgets, QtCore, QtGui
 
 import ftrack_connect.ui.widget.html_delegate
 
@@ -41,7 +41,7 @@ class HtmlComboBox(QtWidgets.QComboBox):
             self.initStyleOption(option)
             painter.drawComplexControl(QtWidgets.QStyle.CC_ComboBox, option)
 
-            # Get QTextDocument from delegate to use for painting HTML text.
+            # Get QtDocument from delegate to use for painting HTML text.
             delegate = self.itemDelegate()
             document = delegate.getTextDocument(
                 option, self.itemData(self.currentIndex())
@@ -96,7 +96,7 @@ class HtmlComboBox(QtWidgets.QComboBox):
 
         data = self.itemData(self.currentIndex())
 
-        # Get QTextDocument from delegate to use for calculating size hint.
+        # Get QtDocument from delegate to use for calculating size hint.
         delegate = self.itemDelegate()
         document = delegate.getTextDocument(option, data)
 

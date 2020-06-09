@@ -6,7 +6,7 @@ import urlparse
 import webbrowser
 import functools
 
-from QtExt import QtCore
+from Qt import QtCore
 
 
 class LoginServerHandler(BaseHTTPServer.BaseHTTPRequestHandler):

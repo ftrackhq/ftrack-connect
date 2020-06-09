@@ -5,8 +5,8 @@ import os
 import re
 import logging
 
-from QtExt import QtCore
-from QtExt import QtWidgets
+from Qt import QtCore
+from Qt import QtWidgets
 
 import riffle.browser
 import riffle.model

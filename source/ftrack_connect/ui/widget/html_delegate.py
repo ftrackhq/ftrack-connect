@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
 
-from QtExt import QtWidgets, QtCore, QtGui
+from Qt import QtWidgets, QtCore, QtGui
 
 
 class HtmlDelegate(QtWidgets.QStyledItemDelegate):
@@ -19,8 +19,8 @@ class HtmlDelegate(QtWidgets.QStyledItemDelegate):
         super(HtmlDelegate, self).__init__(*args, **kwargs)
 
     def getTextDocument(self, option, item_data):
-        '''Return QTextDocument based on *option* and *item_data*.'''
-        document = QtGui.QTextDocument()
+        '''Return QtDocument based on *option* and *item_data*.'''
+        document = QtGui.QtDocument()
         document.setHtml(self.format(item_data))
         document.setTextWidth(option.rect.width())
 
@@ -36,7 +36,7 @@ class HtmlDelegate(QtWidgets.QStyledItemDelegate):
         else:
             style = options.widget.style()
 
-        # Get QTextDocument to use for painting HTML text.
+        # Get QtDocument to use for painting HTML text.
         data = index.data(role=QtCore.Qt.UserRole)
         document = self.getTextDocument(option, data)
 

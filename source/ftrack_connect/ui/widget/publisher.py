@@ -3,8 +3,8 @@
 
 import logging
 
-from QtExt import QtWidgets
-from QtExt import QtCore
+from Qt import QtWidgets
+from Qt import QtCore
 
 import ftrack
 from ftrack_api import exception
@@ -101,7 +101,7 @@ class Publisher(QtWidgets.QWidget):
         formLayout.addRow('Thumbnail', self.thumbnailDropZone)
 
         # Add version description component.
-        self.versionDescription = QtWidgets.QTextEdit()
+        self.versionDescription = QtWidgets.QLineEdit()
         formLayout.addRow('Description', self.versionDescription)
 
         publishButton = QtWidgets.QPushButton(text='Publish')

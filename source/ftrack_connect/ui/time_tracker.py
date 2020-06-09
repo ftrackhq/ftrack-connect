@@ -4,7 +4,7 @@
 import os
 import operator
 
-from QtExt import QtWidgets, QtCore, QtGui
+from Qt import QtWidgets, QtCore, QtGui
 
 import ftrack_connect.error
 import ftrack_connect.ui.application

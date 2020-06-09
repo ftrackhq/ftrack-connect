@@ -2,7 +2,7 @@
 # :copyright: Copyright (c) 2015 ftrack
 import sys
 
-from QtExt import QtWidgets, QtXml, QtGui
+from Qt import QtWidgets, QtXml, QtGui
 
 
 class StackedOptionsWidget(QtWidgets.QStackedWidget):

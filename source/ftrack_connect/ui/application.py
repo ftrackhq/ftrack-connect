@@ -12,7 +12,7 @@ import logging
 
 import appdirs
 
-from QtExt import QtCore, QtWidgets, QtGui
+from Qt import QtCore, QtWidgets, QtGui
 
 import ftrack_api
 import ftrack_api._centralized_storage_scenario
@@ -164,7 +164,7 @@ class Application(QtWidgets.QMainWindow):
         config['accounts'] = []
         ftrack_connect.ui.config.write_json_config(config)
 
-        QtWidgets.qApp.quit()
+        QtWidgets.QApplication.quit()
 
     def _clear_qsettings(self):
         '''Remove credentials from QSettings.'''
@@ -518,7 +518,7 @@ class Application(QtWidgets.QMainWindow):
 
         quitAction = QtWidgets.QAction(
             'Quit', self,
-            triggered=QtWidgets.qApp.quit
+            triggered=QtWidgets.QApplication.quit
         )
 
         focusAction = QtWidgets.QAction(

@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-from QtExt import QtWidgets, QtGui
+from Qt import QtWidgets, QtGui
 
 
 class AssetNameValidator(QtGui.QValidator):
