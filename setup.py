@@ -17,6 +17,7 @@ import distutils.dir_util
 import distutils
 import fileinput
 from distutils.spawn import find_executable
+from pkg_resources import get_distribution, DistributionNotFound
 
 
 ROOT_PATH = os.path.dirname(
@@ -45,12 +46,13 @@ PACKAGES_PATH = os.path.join(os.path.dirname(__file__), 'source')
 
 
 # Read version from source.
-with open(os.path.join(
-    SOURCE_PATH, 'ftrack_connect', '_version.py'
-)) as _version_file:
-    VERSION = re.match(
-        r'.*__version__ = \'(.*?)\'', _version_file.read(), re.DOTALL
-    ).group(1)
+try:
+    release = get_distribution('ftrack-connect').version
+    # take major/minor/patch
+    VERSION = '.'.join(release.split('.')[:3])
+except DistributionNotFound:
+     # package is not installed
+    VERSION = 'Unknown version'
 
 
 # Custom commands.
@@ -229,6 +231,14 @@ class PyTest(TestCommand):
         raise SystemExit(pytest.main(self.test_args))
 
 
+version_template = '''
+# :coding: utf-8
+# :copyright: Copyright (c) 2014-2020 ftrack
+
+__version__ = {version!r}
+'''
+
+
 # General configuration.
 configuration = dict(
     name='ftrack-connect',
@@ -241,6 +251,10 @@ configuration = dict(
     author_email='support@ftrack.com',
     license='Apache License (2.0)',
     packages=find_packages(PACKAGES_PATH),
+    use_scm_version={
+        'write_to': 'source/ftrack_connect/_version.py',
+        'write_to_template': version_template,
+    },
     package_dir={
         '': 'source'
     },
@@ -251,6 +265,8 @@ configuration = dict(
         'sphinx_rtd_theme >= 0.1.6, < 2',
         'lowdown >= 0.1.0, < 1',
         'PySide2 >=5, <6'
+        'setuptools>=30.3.0',
+        'setuptools_scm'
     ],
     install_requires=[
         'ftrack-python-legacy-api >=3, <4',
