@@ -11,6 +11,11 @@ Release Notes
 .. release:: Upcoming
 
     .. change:: new
+        :tags: Ui
+
+        Replace QtExt with Qt.py module.
+
+    .. change:: new
         :tags: Setup
 
         Use setuptool_scm to infer version.
