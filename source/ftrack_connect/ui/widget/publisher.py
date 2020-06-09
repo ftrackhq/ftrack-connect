@@ -101,7 +101,7 @@ class Publisher(QtWidgets.QWidget):
         formLayout.addRow('Thumbnail', self.thumbnailDropZone)
 
         # Add version description component.
-        self.versionDescription = QtWidgets.QLineEdit()
+        self.versionDescription = QtWidgets.QTextEdit()
         formLayout.addRow('Description', self.versionDescription)
 
         publishButton = QtWidgets.QPushButton(text='Publish')
