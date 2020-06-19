@@ -11,6 +11,11 @@ Release Notes
 .. release:: Upcoming
 
     .. change:: fixed
+        :tags: open_directory
+
+        Opening component breaks on cloud paths.
+
+    .. change:: fixed
         :tags: Application launcher
 
         Standalone installation does not correctly inject dependencies at application startup.
