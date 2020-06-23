@@ -294,7 +294,7 @@ configuration = dict(
     options={},
     extras_require = {
         'PySide': ['PySide >= 1.2.2, < 2'],
-        'PySide2': ['PySide2 >=5, <6']
+        'PySide2':['PySide2 >=5, <6']
     },
     data_files=[
         (
