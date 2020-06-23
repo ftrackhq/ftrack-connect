@@ -61,7 +61,7 @@ class AboutDialog(QtWidgets.QDialog):
             )
             layout.addWidget(self.createApplicationShortcutButton)
 
-        self.debugTextEdit = QtWidgets.QtEdit()
+        self.debugTextEdit = QtWidgets.QTextEdit()
         self.debugTextEdit.setReadOnly(True)
         self.debugTextEdit.setFontPointSize(10)
         self.debugTextEdit.hide()
