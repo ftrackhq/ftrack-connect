@@ -10,15 +10,15 @@ Release Notes
 
 .. release:: Upcoming
 
-    .. change:: changed
-        :tags: Internal
-
-        Move connector integration codebase to separate repository.
-
     .. change:: new
         :tags: Ui
 
         Replace QtExt with Qt.py module.
+
+    .. change:: changed
+        :tags: Internal
+
+        Move connector integration codebase to separate repository.
 
     .. change:: new
         :tags: Setup
