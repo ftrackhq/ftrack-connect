@@ -18,7 +18,7 @@ class LineEditIconButton(QtWidgets.QToolButton):
 
     def paintEvent(self, event):
         '''Handle paint *event*.'''
-        painter = QtWidgets.QPainter(self)
+        painter = QtGui.QPainter(self)
 
         # Note: isDown should ideally use the 'active' state, but in most styles
         # this has no proper feedback.

@@ -55,7 +55,7 @@ class UncaughtError(QtWidgets.QMessageBox):
         '''Hook into the resize *event* and force width of detailed text.'''
         result = super(UncaughtError, self).resizeEvent(event)
 
-        detailsBox = self.findChild(QtWidgets.QTextEdit)
+        detailsBox = self.findChild(QtWidgets.QLineEdit)
         if detailsBox is not None:
             detailsBox.setFixedSize(500, 200)
 
