@@ -13,7 +13,7 @@ Release Notes
     .. change:: changed
         :tags: Internal
 
-        Remove connector integration codebase.
+        Move connector integration codebase to separate repository.
 
     .. change:: new
         :tags: Setup
