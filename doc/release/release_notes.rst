@@ -10,6 +10,11 @@ Release Notes
 
 .. release:: Upcoming
 
+    .. change:: changed
+        :tags: Internal
+
+        Remove connector integration codebase.
+
     .. change:: new
         :tags: Setup
 
