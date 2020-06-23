@@ -264,7 +264,6 @@ configuration = dict(
         'sphinx >= 1.2.2, < 2',
         'sphinx_rtd_theme >= 0.1.6, < 2',
         'lowdown >= 0.1.0, < 1',
-        'PySide2 >=5, <6'
         'setuptools>=30.3.0',
         'setuptools_scm'
     ],
@@ -277,7 +276,6 @@ configuration = dict(
         'requests >= 2, <3',
         'lowdown >= 0.1.0, < 1',
         'Qt.py >=1.0.0, < 2',
-        'PySide2 >=5, <6'
     ],
     tests_require=['pytest >= 2.3.5, < 3'],
     cmdclass={
@@ -294,6 +292,10 @@ configuration = dict(
         ],
     },
     options={},
+    extras_require = {
+        'PySide': ['PySide >= 1.2.2, < 2'],
+        'PySide2': ['PySide2 >=5, <6']
+    },
     data_files=[
         (
             'ftrack_connect_resource/hook',
