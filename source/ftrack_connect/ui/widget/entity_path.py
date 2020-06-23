@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-from QtExt import QtWidgets, QtCore
+from Qt import QtWidgets, QtCore
 import ftrack
 
 import ftrack_connect.asynchronous

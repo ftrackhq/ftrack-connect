@@ -3,8 +3,8 @@
 
 import logging
 
-from QtExt import QtWidgets
-from QtExt import QtCore
+from Qt import QtWidgets
+from Qt import QtCore
 
 import ftrack
 from ftrack_api import exception

@@ -10,6 +10,11 @@ Release Notes
 
 .. release:: Upcoming
 
+    .. change:: new
+        :tags: Ui
+
+        Replace QtExt with Qt.py module.
+
     .. change:: changed
         :tags: Internal
 

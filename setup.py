@@ -76,9 +76,9 @@ class BuildResources(Command):
         Qt.
 
         '''
-        replace = 'from QtExt import QtCore'
+        replace = 'from Qt import QtCore'
         for line in fileinput.input(self.resource_target_path, inplace=True):
-            if 'import QtCore' in line:
+            if 'import Qt' in line:
                 # Calling print will yield a new line in the resource file.
                 print line.replace(line, replace)
             else:
@@ -243,7 +243,7 @@ configuration = dict(
         '': 'source'
     },
     setup_requires=[
-        'qtext @ git+https://bitbucket.org/ftrack/qtext/get/0.2.2.zip#egg=qtext',
+        'qt.py >=1.0.0, < 2',
         'pyScss >= 1.2.0, < 2',
         'PySide >= 1.2.2, < 2',
         'sphinx >= 1.2.2, < 2',
@@ -261,7 +261,7 @@ configuration = dict(
         'appdirs == 1.4.0',
         'requests >= 2, <3',
         'lowdown >= 0.1.0, < 1',
-        'qtext @ git+https://bitbucket.org/ftrack/qtext/get/0.2.2.zip#egg=qtext'
+        'qt.py >=1.0.0, < 2',
     ],
     tests_require=['pytest >= 2.3.5, < 3'],
     cmdclass={

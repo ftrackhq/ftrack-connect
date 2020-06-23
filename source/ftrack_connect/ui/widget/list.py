@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-from QtExt import QtWidgets
+from Qt import QtWidgets, QtCompat
 
 
 class List(QtWidgets.QTableWidget):
@@ -25,17 +25,11 @@ class List(QtWidgets.QTableWidget):
         )
         self.verticalHeader().hide()
 
-        # Compatibility layer for PySide2/Qt5.
-        # Please see: https://github.com/mottosso/Qt.py/issues/72
-        # for more information.
-        try:
-            self.verticalHeader().setResizeMode(
-                QtWidgets.QHeaderView.ResizeToContents
-            )
-        except Exception:
-            self.verticalHeader().setSectionResizeMode(
-                QtWidgets.QHeaderView.ResizeToContents
-            )
+        QtCompat.setSectionResizeMode(
+            self.verticalHeader(),
+            QtWidgets.QHeaderView.ResizeToContents
+
+        )
 
         self.horizontalHeader().setStretchLastSection(True)
         self.horizontalHeader().hide()

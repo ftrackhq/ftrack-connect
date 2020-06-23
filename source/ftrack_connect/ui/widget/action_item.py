@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
 
-from QtExt import QtCore, QtWidgets
+from Qt import QtCore, QtWidgets, QtGui
 
 import logging
 
@@ -109,7 +109,7 @@ class ActionItem(QtWidgets.QWidget):
                 action.setData(index)
                 menu.addAction(action)
 
-            result = menu.exec_(QtWidgets.QCursor.pos())
+            result = menu.exec_(QtGui.QCursor.pos())
             if result is None:
                 return
 

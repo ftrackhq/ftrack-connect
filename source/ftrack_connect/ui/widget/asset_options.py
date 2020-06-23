@@ -3,7 +3,7 @@
 
 import logging
 
-from QtExt import QtWidgets
+from Qt import QtWidgets
 
 from ftrack_connect.error import NotUniqueError
 from ftrack_connect.ui.widget import asset_name_edit as _asset_name_edit

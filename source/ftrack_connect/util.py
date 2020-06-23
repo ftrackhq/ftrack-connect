@@ -5,7 +5,7 @@ import os
 import subprocess
 import sys
 
-from QtExt import QtCore
+from Qt import QtCore
 
 
 def open_directory(path):
