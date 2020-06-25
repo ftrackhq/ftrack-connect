@@ -5,6 +5,7 @@ import json
 import sys
 import textwrap
 
+import Qt
 from Qt import QtCore, QtWidgets, QtGui
 
 
@@ -151,6 +152,8 @@ class AboutDialog(QtWidgets.QDialog):
         coreTemplate = '''
         <h4>Version:</h4>
         <p>{core_versions}</p>
+        <h4>Ui Framework</h4>
+        <p>{ui_framework}</p>
         <h4>Server and user:</h4>
         <p>{server}<br>
         {user}<br></p>
@@ -168,7 +171,8 @@ class AboutDialog(QtWidgets.QDialog):
         content = coreTemplate.format(
             core_versions=coreVersions,
             server=server,
-            user=user
+            user=user,
+            ui_framework=Qt.__binding__
         )
 
         if plugins:
