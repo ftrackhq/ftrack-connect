@@ -82,7 +82,7 @@ class Actions(QtWidgets.QWidget):
         self.logger = logging.getLogger(
             __name__ + '.' + self.__class__.__name__
         )
-        self._session = ftrack_connect.session.get_shared_session()
+        self._session = ftrack_connect.session.get_session()
 
         layout = QtWidgets.QVBoxLayout()
         self.setLayout(layout)
