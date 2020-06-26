@@ -5,13 +5,11 @@ from Qt import QtCore, QtWidgets, QtGui
 
 import logging
 
-import ftrack
 import ftrack_api.event.base
 
 import ftrack_connect.asynchronous
 from ftrack_connect.ui.widget.thumbnail import ActionIcon
 import ftrack_connect.session
-
 
 
 class ActionItem(QtWidgets.QWidget):
@@ -22,6 +20,10 @@ class ActionItem(QtWidgets.QWidget):
 
     #: Emitted after an action has been launched with action and results
     actionLaunched = QtCore.Signal(dict, list)
+
+    @property
+    def session(self):
+        return self._session
 
     def __init__(self, actions, parent=None):
         '''Initialize action item with *actions*
@@ -43,6 +45,7 @@ class ActionItem(QtWidgets.QWidget):
         multiple actions are specified.
         '''
         super(ActionItem, self).__init__(parent=parent)
+        self._session = ftrack_connect.session.get_shared_session()
         self.logger = logging.getLogger(
             __name__ + '.' + self.__class__.__name__
         )
@@ -146,24 +149,15 @@ class ActionItem(QtWidgets.QWidget):
     @ftrack_connect.asynchronous.asynchronous
     def _publishLaunchActionEvent(self, action):
         '''Launch *action* asynchronously and emit *actionLaunched* when completed.'''
+
         try:
-            if action.is_new_api:
-                session = ftrack_connect.session.get_shared_session()
-                results = session.event_hub.publish(
-                    ftrack_api.event.base.Event(
-                        topic='ftrack.action.launch',
-                        data=action
-                    ),
-                    synchronous=True
-                )
-            else:
-                results = ftrack.EVENT_HUB.publish(
-                    ftrack.Event(
-                        topic='ftrack.action.launch',
-                        data=action
-                    ),
-                    synchronous=True
-                )
+            results = self.session.event_hub.publish(
+                ftrack_api.event.base.Event(
+                    topic='ftrack.action.launch',
+                    data=action
+                ),
+                synchronous=True
+            )
 
         except Exception as error:
             results = [{'success': False, 'message': 'Failed to launch action'}]

@@ -2,7 +2,6 @@
 # :copyright: Copyright (c) 2014 ftrack
 
 from Qt import QtWidgets, QtCore
-import ftrack
 
 import ftrack_connect.ui.application
 import ftrack_connect.ui.widget.overlay

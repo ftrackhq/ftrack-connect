@@ -2,7 +2,6 @@
 # :copyright: Copyright (c) 2014 ftrack
 
 from Qt import QtCore, QtWidgets
-import ftrack
 
 import ftrack_connect.ui.application
 import ftrack_connect.ui.widget.overlay
@@ -38,9 +37,14 @@ class Publisher(ftrack_connect.ui.application.ApplicationPlugin):
     #: Signal to emit when the entity is changed.
     entityChanged = QtCore.Signal(object)
 
+    @property
+    def session(self):
+        return self._session
+
     def __init__(self, *args, **kwargs):
         '''Instantiate the publisher widget.'''
         super(Publisher, self).__init__(*args, **kwargs)
+        self._session = ftrack_connect.session.get_shared_session()
         layout = QtWidgets.QVBoxLayout()
         self.setLayout(layout)
 
@@ -152,13 +156,11 @@ class Publisher(ftrack_connect.ui.application.ApplicationPlugin):
         if manageData:
             self.publishView.setManageData(True)
 
-        entity = ftrack.Task(
-            entity.get('entityId')
-        )
+        entity = self.session.get('Task', entity.get('entityId'))
         self.setEntity(entity)
         self.requestApplicationFocus.emit(self)
 
-        ftrack.EVENT_HUB.publishReply(
-            sourceEvent=event,
+        self.session.event_hub.publish_reply(
+            source_event=event,
             data={'message': 'Publisher started.'}
         )

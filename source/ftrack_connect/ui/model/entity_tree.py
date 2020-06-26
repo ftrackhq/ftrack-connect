@@ -19,6 +19,7 @@ def ItemFactory(session, entity):
 
     return Context(session, entity)
 
+
 class Item(object):
     '''Represent ftrack entity with consistent interface.'''
 
