@@ -270,29 +270,6 @@ class Application(QtWidgets.QMainWindow):
         self.loginWidget.setFocus()
         self._login_overlay.hide()
 
-    def _setup_session(self):
-        '''Setup a new python API session.'''
-        if hasattr(self, '_hub_thread'):
-            self._hub_thread.quit()
-
-        plugin_paths = os.environ.get(
-            'FTRACK_EVENT_PLUGIN_PATH', ''
-        ).split(os.pathsep)
-
-        plugin_paths.extend(self.pluginHookPaths)
-
-        self.session._discover_plugins(plugin_arguments=plugin_paths)
-
-        # Listen to events using the new API event hub. This is required to
-        # allow reconfiguring the storage scenario.
-        self._hub_thread = _event_hub_thread.NewApiEventHubThread()
-        self._hub_thread.start(self.session)
-
-        ftrack_api._centralized_storage_scenario.register_configuration(
-            self.session
-        )
-
-        return self.session
 
     def _report_session_setup_error(self, error):
         '''Format error message and emit loginError.'''
@@ -368,14 +345,6 @@ class Application(QtWidgets.QMainWindow):
         os.environ['FTRACK_API_USER'] = username
         os.environ['FTRACK_API_KEY'] = apiKey
 
-        # Login using the new ftrack API.
-        try:
-            self._session = self._setup_session()
-        except Exception as error:
-            self.logger.exception(u'Error during login.:')
-            self._report_session_setup_error(error)
-            return
-
         # Store credentials since login was successful.
         self._save_credentials(url, username, apiKey)
 
@@ -397,13 +366,10 @@ class Application(QtWidgets.QMainWindow):
                 self.focus()
                 return
 
-        self.location_configuration_finished(reconfigure_session=False)
+        self.location_configuration_finished()
 
-    def location_configuration_finished(self, reconfigure_session=True):
+    def location_configuration_finished(self):
         '''Continue connect setup after location configuration is done.'''
-        if reconfigure_session:
-            ftrack_connect.session.destroy_shared_session()
-            self._session = self._setup_session()
 
         try:
             self.configureConnectAndDiscoverPlugins()
@@ -418,12 +384,12 @@ class Application(QtWidgets.QMainWindow):
         event = ftrack_api.event.base.Event(
             topic='ftrack.connect.verify-startup',
             data={
-                'storage_scenario': self._session.server_information.get(
+                'storage_scenario': self.session.server_information.get(
                     'storage_scenario'
                 )
             }
         )
-        results = self._session.event_hub.publish(event, synchronous=True)
+        results = self.session.event_hub.publish(event, synchronous=True)
         problems = [
             problem for problem in results if isinstance(problem, basestring)
         ]
@@ -435,8 +401,16 @@ class Application(QtWidgets.QMainWindow):
 
     def configureConnectAndDiscoverPlugins(self):
         '''Configure connect and load plugins.'''
+        if hasattr(self, '_hub_thread'):
+            self._hub_thread.quit()
 
-        self.session._discover_plugins(self.pluginHookPaths)
+        plugin_paths = os.environ.get(
+            'FTRACK_EVENT_PLUGIN_PATH', ''
+        ).split(os.pathsep)
+
+        plugin_paths.extend(self.pluginHookPaths)
+
+        self.session._discover_plugins(plugin_arguments=plugin_paths)
 
         self.tabPanel = _tab_widget.TabWidget()
         self.tabPanel.tabBar().setObjectName('application-tab-bar')
@@ -452,8 +426,14 @@ class Application(QtWidgets.QMainWindow):
         )
         self.eventHubSignal.connect(self._onConnectTopicEvent)
 
-        self.eventHubThread = _event_hub_thread.EventHubThread()
-        self.eventHubThread.start()
+        # Listen to events using the new API event hub. This is required to
+        # allow reconfiguring the storage scenario.
+        self._hub_thread = _event_hub_thread.NewApiEventHubThread()
+        self._hub_thread.start(self.session)
+
+        ftrack_api._centralized_storage_scenario.register_configuration(
+            self.session
+        )
 
         self.focus()
 
