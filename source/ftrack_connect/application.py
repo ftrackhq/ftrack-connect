@@ -12,7 +12,6 @@ import json
 import logging
 from operator import itemgetter
 from distutils.version import LooseVersion
-import ftrack
 import ftrack_api
 
 import ftrack_connect.session
@@ -258,6 +257,14 @@ class ApplicationLauncher(object):
 
     '''
 
+    @property
+    def location(self):
+        return self._session.pick_location()
+
+    @property
+    def session(self):
+        return self._session
+
     def __init__(self, applicationStore):
         '''Instantiate launcher with *applicationStore* of applications.
 
@@ -269,7 +276,7 @@ class ApplicationLauncher(object):
         self.logger = logging.getLogger(
             __name__ + '.' + self.__class__.__name__
         )
-
+        self._session = ftrack_connect.session.get_shared_session()
         self.applicationStore = applicationStore
 
     def launch(self, applicationIdentifier, context=None):
@@ -338,14 +345,8 @@ class ApplicationLauncher(object):
                 application=application,
                 context=context
             )
-            ftrack.EVENT_HUB.publish(
-                ftrack.Event(
-                    topic='ftrack.connect.application.launch',
-                    data=launchData
-                ),
-                synchronous=True
-            )
-            ftrack_connect.session.get_shared_session().event_hub.publish(
+
+            self.session.event_hub.publish(
                 ftrack_api.event.base.Event(
                     topic='ftrack.connect.application.launch',
                     data=launchData
@@ -427,10 +428,19 @@ class ApplicationLauncher(object):
 
         '''
         if entityType == 'task':
-            task = ftrack.Task(entityId)
-            versions = task.getAssetVersions()
+            versions = self.session.query(
+                'select components from AssetVersion where task.id is {}'.format(
+                    entityId
+                )
+            ).all()
         elif entityType == 'assetversion':
-            versions = [ftrack.AssetVersion(entityId)]
+            versions = [
+                self.session.query(
+                    'select components from AssetVersion where id is {}'.format(
+                        entityId
+                    )
+                )
+            ]
         else:
             self.logger.debug(
                 (
@@ -446,8 +456,8 @@ class ApplicationLauncher(object):
         lastDate = None
         latestComponent = None
         for version in versions:
-            for component in version.getComponents():
-                fileSystemPath = component.getFilesystemPath()
+            for component in version['components']:
+                fileSystemPath = self.location.get_filesystem_path(component)
                 if fileSystemPath and fileSystemPath.endswith(extension):
                     if (
                         lastDate is None or
@@ -479,7 +489,7 @@ class ApplicationLauncher(object):
 
         # Add FTRACK_EVENT_SERVER variable.
         environment = prependPath(
-            ftrack.EVENT_HUB.getServerUrl(),
+            self.session.event_hub.get_server_url(),
             'FTRACK_EVENT_SERVER', environment
         )
 

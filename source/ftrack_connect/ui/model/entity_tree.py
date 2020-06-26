@@ -5,8 +5,6 @@
 
 from Qt import QtWidgets, QtCore, QtGui
 
-import ftrack_api
-
 import ftrack_connect.worker
 
 
