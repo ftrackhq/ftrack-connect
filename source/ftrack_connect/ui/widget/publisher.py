@@ -6,7 +6,6 @@ import logging
 from Qt import QtWidgets
 from Qt import QtCore
 
-import ftrack
 from ftrack_api import exception
 from ftrack_api import event
 
@@ -41,11 +40,15 @@ class Publisher(QtWidgets.QWidget):
     #: Signal to emit when an asset is created.
     assetCreated = QtCore.Signal(object)
 
+    @property
+    def session(self):
+        return self._session
+
     def __init__(self, parent=None):
         '''Initiate a publish view.'''
         super(Publisher, self).__init__(parent)
 
-        self.session = get_shared_session()
+        self._session = get_shared_session()
         self.logger = logging.getLogger(
             __name__ + '.' + self.__class__.__name__
         )
@@ -261,10 +264,8 @@ class Publisher(QtWidgets.QWidget):
                     }
                 )
 
-                # For compatibily reasons, emit old asset ftrack type.
                 self.session.commit()
-                old_ftrack_asset_type = ftrack.Asset(asset['id'])
-                self.assetCreated.emit(old_ftrack_asset_type)
+                self.assetCreated.emit(asset)
 
             else:
                 asset = self.session.get('Asset', asset.getId())
@@ -318,7 +319,8 @@ class Publisher(QtWidgets.QWidget):
             if thumbnailFilePath:
                 version.create_thumbnail(thumbnailFilePath)
 
-            version['is_published'] = True
+            # TODO: check this does not apply anymore.
+            # version['is_published'] = True
             self.session.commit()
 
             self.publishFinished.emit(True)
