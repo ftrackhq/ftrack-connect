@@ -4,9 +4,11 @@
 import os
 import urllib2
 
+import ftrack_api
 from Qt import QtWidgets, QtCore, QtGui
-import ftrack
 import ftrack_connect.worker
+import ftrack_connect.session
+
 
 # Cache of thumbnail images.
 IMAGE_CACHE = dict()
@@ -17,7 +19,7 @@ class Base(QtWidgets.QLabel):
 
     def __init__(self, parent=None):
         super(Base, self).__init__(parent)
-
+        self._session = ftrack_connect.session.get_shared_session()
         self.thumbnailCache = {}
         self.setFrameStyle(QtWidgets.QFrame.StyledPanel)
         self.setAlignment(QtCore.Qt.AlignCenter)
@@ -109,45 +111,6 @@ class Base(QtWidgets.QLabel):
             html = response.read()
 
         return html
-
-
-class EllipseBase(Base):
-    '''Thumbnail which is drawn as an ellipse.'''
-
-    def paintEvent(self, event):
-        '''Override paint event to make round thumbnails.'''
-        painter = QtGui.QPainter(self)
-        painter.setRenderHints(
-            QtGui.QPainter.Antialiasing,
-            True
-        )
-
-        brush = QtGui.QBrush(
-            self.pixmap()
-        )
-
-        painter.setBrush(brush)
-
-        painter.setPen(
-            QtGui.QPen(
-                QtGui.QColor(0, 0, 0, 0)
-            )
-        )
-
-        painter.drawEllipse(
-            QtCore.QRectF(
-                0, 0,
-                self.width(), self.height()
-            )
-        )
-
-
-class User(EllipseBase):
-
-    def _download(self, reference):
-        '''Return thumbnail from *reference*.'''
-        url = ftrack.User(reference).getThumbnail()
-        return super(User, self)._download(url)
 
 
 class ActionIcon(Base):
