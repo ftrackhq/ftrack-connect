@@ -2,7 +2,6 @@
 # :copyright: Copyright (c) 2015 ftrack
 
 from Qt import QtWidgets, QtCore, QtGui
-import ftrack
 
 from ftrack_connect.ui.widget import entity_path as _entity_path
 from ftrack_connect.ui.widget import entity_browser as _entity_browser
@@ -85,12 +84,12 @@ class EntitySelector(QtWidgets.QStackedWidget):
         if self._entity is not None:
             location = []
             try:
-                parents = self._entity.getParents()
+                parents = self._entity['ancestors']
             except AttributeError:
                 pass
             else:
                 for parent in parents:
-                    location.append(parent.getId())
+                    location.append(parent['id'])
 
             location.reverse()
             self.entityBrowser.setLocation(location)
@@ -99,15 +98,7 @@ class EntitySelector(QtWidgets.QStackedWidget):
         if self.entityBrowser.exec_():
             selected = self.entityBrowser.selected()
             if selected:
-                # Translate new api entity to instance of ftrack.Task
-                # TODO: this should not be necessary once connect has been
-                # updated to use the new api.
-                if selected[0].entity_type == 'Project':
-                    entity = ftrack.Project(selected[0]['id'])
-                else:
-                    entity = ftrack.Task(selected[0]['id'])
-
-                self.setEntity(entity)
+                self.setEntity(selected[0])
             else:
                 self.setEntity(None)
 
