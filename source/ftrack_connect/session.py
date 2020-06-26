@@ -39,8 +39,8 @@ def get_shared_session(plugin_paths=None):
         # when logging in.
         _shared_session = ftrack_api.Session(
             server_url=os.environ['FTRACK_SERVER'],
-            api_key=os.environ['FTRACK_APIKEY'],
-            api_user=os.environ['LOGNAME'],
+            api_key=os.environ['FTRACK_API_KEY'],
+            api_user=os.environ['FTRACK_API_USER'],
             plugin_paths=plugin_paths
         )
 
@@ -54,8 +54,8 @@ def get_session():
     # TODO: Once API is thread-safe, consider switching to a shared session.
     return ftrack_api.Session(
         server_url=os.environ['FTRACK_SERVER'],
-        api_key=os.environ['FTRACK_APIKEY'],
-        api_user=os.environ['LOGNAME'],
+        api_key=os.environ['FTRACK_API_KEY'],
+        api_user=os.environ['FTRACK_API_USER'],
         auto_connect_event_hub=False,
         plugin_paths=[]
     )

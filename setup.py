@@ -253,7 +253,6 @@ configuration = dict(
         'setuptools_scm'
     ],
     install_requires=[
-        'ftrack-python-legacy-api >=3, <4',
         'ftrack-python-api >= 1, < 2',
         'PySide >= 1.2.2, < 2',
         'Riffle',

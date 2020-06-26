@@ -65,13 +65,18 @@ class Application(QtWidgets.QMainWindow):
     # Login signal.
     loginSignal = QtCore.Signal(object, object, object)
 
-    def __init__(self, *args, **kwargs):
+    @property
+    def session(self):
+        return self._session
+
+    def __init__(self, session, theme='light'):
         '''Initialise the main application window.'''
-        theme = kwargs.pop('theme', 'light')
-        super(Application, self).__init__(*args, **kwargs)
+        super(Application, self).__init__()
         self.logger = logging.getLogger(
             __name__ + '.' + self.__class__.__name__
         )
+
+        self._session = session
 
         self.defaultPluginDirectory = appdirs.user_data_dir(
             'ftrack-connect-plugins', 'ftrack'
@@ -276,23 +281,18 @@ class Application(QtWidgets.QMainWindow):
 
         plugin_paths.extend(self.pluginHookPaths)
 
-        try:
-            session = ftrack_connect.session.get_shared_session(
-                plugin_paths=plugin_paths
-            )
-        except Exception as error:
-            raise ftrack_connect.error.ParseError(error)
+        self.session._discover_plugins(plugin_arguments=plugin_paths)
 
         # Listen to events using the new API event hub. This is required to
         # allow reconfiguring the storage scenario.
         self._hub_thread = _event_hub_thread.NewApiEventHubThread()
-        self._hub_thread.start(session)
+        self._hub_thread.start(self.session)
 
         ftrack_api._centralized_storage_scenario.register_configuration(
-            session
+            self.session
         )
 
-        return session
+        return self.session
 
     def _report_session_setup_error(self, error):
         '''Format error message and emit loginError.'''
@@ -330,7 +330,6 @@ class Application(QtWidgets.QMainWindow):
         try:
             result = requests.get(
                 url,
-                allow_redirects=False  # Old python API will not work with redirect.
             )
         except requests.exceptions.RequestException:
             self.logger.exception('Error reaching server url.')
@@ -437,19 +436,15 @@ class Application(QtWidgets.QMainWindow):
     def configureConnectAndDiscoverPlugins(self):
         '''Configure connect and load plugins.'''
 
-        # Local import to avoid connection errors.
-        import ftrack
-        ftrack.EVENT_HANDLERS.paths.extend(self.pluginHookPaths)
-        ftrack.LOCATION_PLUGINS.paths.extend(self.pluginHookPaths)
+        self.session._discover_plugins(self.pluginHookPaths)
 
-        ftrack.setup()
         self.tabPanel = _tab_widget.TabWidget()
         self.tabPanel.tabBar().setObjectName('application-tab-bar')
         self.setCentralWidget(self.tabPanel)
 
         self._discoverTabPlugins()
 
-        ftrack.EVENT_HUB.subscribe(
+        self.session.event_hub.subscribe(
             'topic=ftrack.connect and source.user.username={0}'.format(
                 getpass.getuser()
             ),
@@ -464,7 +459,7 @@ class Application(QtWidgets.QMainWindow):
 
         # Listen to discover connect event and respond to let the sender know
         # that connect is running.
-        ftrack.EVENT_HUB.subscribe(
+        self.session.event_hub.subscribe(
             'topic=ftrack.connect.discover and source.user.username={0}'.format(
                 getpass.getuser()
             ),
@@ -682,43 +677,25 @@ class Application(QtWidgets.QMainWindow):
         # Gather information about API versions and other
         # plugin hooks.
 
-        import ftrack
-
-        environmentData['FTRACK_API_VERSION'] = ftrack_api.__version__
-        environmentData['FTRACK_API_LEGACY_VERSION'] = ftrack.api.version_data.ftrackVersion
-
-        api_versions = (
-            (
-                ftrack.EVENT_HUB.publish,
-                ftrack.Event(
-                    'ftrack.connect.plugin.debug-information'
-                )
-            ),
-            (
-                self._session.event_hub.publish,
-                ftrack_api.event.base.Event(
-                    topic = 'ftrack.connect.plugin.debug-information'
-                )
+        try:
+            event = ftrack_api.event.base.Event(
+                topic = 'ftrack.connect.plugin.debug-information'
             )
-        )
 
-        for publish_fn, event in api_versions:
-            # For each api version.
-            try:
-                responses = publish_fn(
-                    event, synchronous=True
-                )
+            responses = self._session.event_hub.publish(
+                event, synchronous=True
+            )
 
-                for response in responses:
-                    if isinstance(response, dict):
-                        versionData.append(response)
-                    elif isinstance(response, list):
-                        versionData = versionData + response
+            for response in responses:
+                if isinstance(response, dict):
+                    versionData.append(response)
+                elif isinstance(response, list):
+                    versionData = versionData + response
 
-            except Exception as error:
-                self.logger.error(
-                    error
-                )
+        except Exception as error:
+            self.logger.error(
+                error
+            )
 
         aboutDialog.setInformation(
             versionData=versionData,

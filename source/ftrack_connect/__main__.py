@@ -34,6 +34,7 @@ except pkg_resources.DistributionNotFound:
 
 import ftrack_connect.ui.application
 import ftrack_connect.ui.theme
+import ftrack_connect.session
 
 
 def main(arguments=None):
@@ -117,8 +118,11 @@ def main(arguments=None):
     # Enable ctrl+c to quit application when started from command line.
     signal.signal(signal.SIGINT, signal.SIG_DFL)
 
+    session = ftrack_connect.session.get_shared_session()
+
     # Construct main connect window and apply theme.
     connectWindow = ftrack_connect.ui.application.Application(
+        session=session,
         theme=namespace.theme
     )
 
