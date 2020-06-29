@@ -10,19 +10,19 @@ import ftrack_connect.ui.widget.actions
 
 def register(connect):
     '''Register actions plugin to ftrack connect.'''
-    actions = Actions()
+    actions = Actions(connect.session)
     connect.addPlugin(actions, actions.getName())
 
 
 class Actions(ftrack_connect.ui.application.ApplicationPlugin):
     '''Base widget for ftrack connect actions plugin.'''
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, session, parent=None):
         '''Instantiate the actions widget.'''
-        super(Actions, self).__init__(*args, **kwargs)
+        super(Actions, self).__init__(session, parent=parent)
         layout = QtWidgets.QVBoxLayout()
         self.setLayout(layout)
 
-        self.actionsView = ftrack_connect.ui.widget.actions.Actions()
+        self.actionsView = ftrack_connect.ui.widget.actions.Actions(self.session)
         layout.addWidget(self.actionsView)
 

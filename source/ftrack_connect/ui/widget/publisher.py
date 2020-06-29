@@ -44,11 +44,11 @@ class Publisher(QtWidgets.QWidget):
     def session(self):
         return self._session
 
-    def __init__(self, parent=None):
+    def __init__(self, session, parent=None):
         '''Initiate a publish view.'''
         super(Publisher, self).__init__(parent)
 
-        self._session = get_shared_session()
+        self._session = session
         self.logger = logging.getLogger(
             __name__ + '.' + self.__class__.__name__
         )

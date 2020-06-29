@@ -2,7 +2,6 @@
 # :copyright: Copyright (c) 2014 ftrack
 
 import os
-import sys
 import getpass
 import platform
 import requests
@@ -43,6 +42,14 @@ class ApplicationPlugin(QtWidgets.QWidget):
 
     #: Signal to emit to request closing application.
     requestApplicationClose = QtCore.Signal(object)
+
+    @property
+    def session(self):
+        return self._session
+
+    def __init__(self, session, parent=None):
+        super(ApplicationPlugin, self).__init__(parent=parent)
+        self._session = session
 
     def getName(self):
         '''Return name of widget.'''
@@ -349,15 +356,15 @@ class Application(QtWidgets.QMainWindow):
         self._save_credentials(url, username, apiKey)
 
         # Verify storage scenario before starting.
-        if 'storage_scenario' in self._session.server_information:
-            storage_scenario = self._session.server_information.get(
+        if 'storage_scenario' in self.session.server_information:
+            storage_scenario = self.session.server_information.get(
                 'storage_scenario'
             )
             if storage_scenario is None:
                 # Hide login overlay at this time since it will be deleted
                 self.logger.debug('Storage scenario is not configured.')
                 scenario_widget = _scenario_widget.ConfigureScenario(
-                    self._session
+                    self.session
                 )
                 scenario_widget.configuration_completed.connect(
                     self.location_configuration_finished
@@ -528,7 +535,8 @@ class Application(QtWidgets.QMainWindow):
         '''Find and load tab plugins in search paths.'''
         #: TODO: Add discover functionality and search paths.
 
-        from . import (publisher, actions)
+        from ftrack_connect.ui.plugins import publisher
+        from ftrack_connect.ui.plugins import actions
         actions.register(self)
         publisher.register(self)
 
@@ -662,7 +670,7 @@ class Application(QtWidgets.QMainWindow):
                 topic = 'ftrack.connect.plugin.debug-information'
             )
 
-            responses = self._session.event_hub.publish(
+            responses = self.session.event_hub.publish(
                 event, synchronous=True
             )
 

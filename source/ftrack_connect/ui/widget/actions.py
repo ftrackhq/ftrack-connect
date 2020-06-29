@@ -75,14 +75,14 @@ class Actions(QtWidgets.QWidget):
     def session(self):
         return self._session
 
-    def __init__(self, parent=None):
+    def __init__(self, session, parent=None):
         '''Initiate a actions view.'''
         super(Actions, self).__init__(parent)
 
         self.logger = logging.getLogger(
             __name__ + '.' + self.__class__.__name__
         )
-        self._session = ftrack_connect.session.get_session()
+        self._session = session
 
         layout = QtWidgets.QVBoxLayout()
         self.setLayout(layout)
