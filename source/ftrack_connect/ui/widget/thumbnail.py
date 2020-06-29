@@ -152,7 +152,7 @@ class ActionIcon(Base):
             self.load(icon)
 
         elif self.AVAILABLE_ICONS.get(icon):
-            url = os.environ['FTRACK_SERVER'] + self.AVAILABLE_ICONS[icon]
+            url = unicode(os.environ['FTRACK_SERVER'] + self.AVAILABLE_ICONS[icon], 'utf-8')
             self.load(url)
 
         else:
