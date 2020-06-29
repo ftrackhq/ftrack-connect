@@ -7,8 +7,12 @@ from Qt import QtWidgets
 class ItemSelector(QtWidgets.QComboBox):
     '''Item selector widget.'''
 
+    @property
+    def session(self):
+        return self._session
+
     def __init__(
-        self, idField='id', labelField='label', defaultLabel='Unnamed Item',
+        self, session=None, idField='id', labelField='label', defaultLabel='Unnamed Item',
         emptyLabel='Select an item', *args, **kwargs
     ):
         '''Initialise item selector widget.
@@ -20,7 +24,7 @@ class ItemSelector(QtWidgets.QComboBox):
 
         '''
         super(ItemSelector, self).__init__(*args, **kwargs)
-
+        self._session = session
         # Set style delegate to allow styling of combobox menu via Qt Stylesheet
         itemDelegate = QtWidgets.QStyledItemDelegate()
         self.setItemDelegate(itemDelegate)

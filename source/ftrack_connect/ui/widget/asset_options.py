@@ -51,7 +51,7 @@ class AssetOptions(object):
         self.existingAssetButton.toggled.connect(self._onExistingAssetToggled)
         self.radioButtonFrame.layout().addWidget(self.existingAssetButton)
 
-        self.existingAssetSelector = _asset_selector.AssetSelector()
+        self.existingAssetSelector = _asset_selector.AssetSelector(session=self.session)
         self.assetTypeSelector = _asset_type_selector.AssetTypeSelector()
         self.assetNameLineEdit = _asset_name_edit.AssetNameEdit(
             self.session, self.existingAssetSelector, self.assetTypeSelector

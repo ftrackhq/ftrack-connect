@@ -94,6 +94,7 @@ class Publisher(QtWidgets.QWidget):
 
         # Add preview selector.
         self.previewSelector = _item_selector.ItemSelector(
+            session=self.session,
             labelField='componentName',
             defaultLabel='Unnamed component',
             emptyLabel='Select component to use'
