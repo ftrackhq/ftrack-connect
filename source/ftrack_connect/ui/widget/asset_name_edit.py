@@ -11,7 +11,7 @@ class AssetNameValidator(QtGui.QValidator):
     *assetTypeSelector*.
     '''
 
-    def __init__(self, assetSelector, assetTypeSelector, **kwargs):
+    def __init__(self, session, assetSelector, assetTypeSelector, **kwargs):
         self.assetSelector = assetSelector
         self.assetTypeSelector = assetTypeSelector
         super(AssetNameValidator, self).__init__(**kwargs)
@@ -20,11 +20,10 @@ class AssetNameValidator(QtGui.QValidator):
         return value
 
     def validate(self, value, position):
-        assetType = self.assetTypeSelector.currentItem()
-        assetTypeId = assetType and assetType.getId()
-
+        assetTypeId = self.assetTypeSelector.currentItem()
         isValid = True
         for asset in self.assetSelector.items():
+            print 'ASSET', asset
             if (
                 asset.get('typeid') == assetTypeId
                 and asset.get('name').lower() == value.lower()
@@ -47,8 +46,8 @@ class AssetNameEdit(QtWidgets.QLineEdit):
         *assetTypeSelector*.
     '''
 
-    def __init__(self, assetSelector, assetTypeSelector, **kwargs):
+    def __init__(self, session, assetSelector, assetTypeSelector, **kwargs):
         super(AssetNameEdit, self).__init__(**kwargs)
         self.setValidator(
-            AssetNameValidator(assetSelector, assetTypeSelector)
+            AssetNameValidator(session, assetSelector, assetTypeSelector)
         )

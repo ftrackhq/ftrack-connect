@@ -83,7 +83,7 @@ class Publisher(QtWidgets.QWidget):
         formLayout.addRow('Linked to', self.entitySelector)
 
         # Add asset options.
-        self.assetOptions = _asset_options.AssetOptions()
+        self.assetOptions = _asset_options.AssetOptions(session=self.session)
         self.entitySelector.entityChanged.connect(self.assetOptions.setEntity)
         self.assetCreated.connect(self.assetOptions.setAsset)
         formLayout.addRow('Asset', self.assetOptions.radioButtonFrame)

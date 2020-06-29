@@ -98,11 +98,11 @@ class ItemSelector(QtWidgets.QComboBox):
         self.clear()
 
         # Add default empty item
-        self.addItem(self._emptyLabel, None)
+        self.addItem(str(self._emptyLabel), None)
 
         for item in items:
             label = item.get(self._labelField) or self._defaultLabel
-            self.addItem(label, item)
+            self.addItem(str(label), item['id'])
 
         # Re-select previously selected item
         self.selectItem(currentItem)
