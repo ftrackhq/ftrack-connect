@@ -334,12 +334,8 @@ class Application(QtWidgets.QMainWindow):
             self._login_server_thread.start(url)
             return
 
-        # Set environment variables supported by the old API.
-        os.environ['FTRACK_SERVER'] = url
-        os.environ['LOGNAME'] = username
-        os.environ['FTRACK_APIKEY'] = apiKey
-
         # Set environment variables supported by the new API.
+        os.environ['FTRACK_SERVER'] = url
         os.environ['FTRACK_API_USER'] = username
         os.environ['FTRACK_API_KEY'] = apiKey
 

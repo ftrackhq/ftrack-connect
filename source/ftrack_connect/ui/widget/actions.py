@@ -47,7 +47,7 @@ class ActionSection(flow_layout.ScrollingFlowWidget):
     def addActions(self, actions):
         '''Add *actions* to section'''
         for item in actions:
-            actionItem = action_item.ActionItem(item, parent=self)
+            actionItem = action_item.ActionItem(self.session, item, parent=self)
             actionItem.actionLaunched.connect(self._onActionLaunched)
             actionItem.beforeActionLaunch.connect(self._onBeforeActionLaunched)
             self.addWidget(actionItem)
@@ -101,7 +101,7 @@ class Actions(QtWidgets.QWidget):
 
         self._recentLabel = QtWidgets.QLabel('Recent')
         layout.addWidget(self._recentLabel)
-        self._recentSection = ActionSection(self)
+        self._recentSection = ActionSection(self.session, self)
         self._recentSection.setFixedHeight(100)
         self._recentSection.beforeActionLaunch.connect(self._onBeforeActionLaunched)
         self._recentSection.actionLaunched.connect(self._onActionLaunched)
@@ -110,7 +110,7 @@ class Actions(QtWidgets.QWidget):
         self._allLabel = QtWidgets.QLabel('Discovering actions..')
         self._allLabel.setAlignment(QtCore.Qt.AlignCenter)
         layout.addWidget(self._allLabel)
-        self._allSection = ActionSection(self)
+        self._allSection = ActionSection(self.session, self)
         self._allSection.beforeActionLaunch.connect(self._onBeforeActionLaunched)
         self._allSection.actionLaunched.connect(self._onActionLaunched)
         layout.addWidget(self._allSection)

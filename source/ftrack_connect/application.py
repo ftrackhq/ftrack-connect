@@ -55,12 +55,18 @@ def appendPath(path, key, environment):
 class ApplicationStore(object):
     '''Discover and store available applications on this host.'''
 
-    def __init__(self):
+    @property
+    def session(self):
+        return self._session
+
+    def __init__(self, session):
         '''Instantiate store and discover applications.'''
         super(ApplicationStore, self).__init__()
         self.logger = logging.getLogger(
             __name__ + '.' + self.__class__.__name__
         )
+
+        self._session = session
 
         # Discover applications and store.
         self.applications = self._discoverApplications()
@@ -275,8 +281,8 @@ class ApplicationLauncher(object):
         self.logger = logging.getLogger(
             __name__ + '.' + self.__class__.__name__
         )
-        self._session = ftrack_connect.session.get_shared_session()
         self.applicationStore = applicationStore
+        self._session = applicationStore.session
 
     def launch(self, applicationIdentifier, context=None):
         '''Launch application matching *applicationIdentifier*.
@@ -293,8 +299,8 @@ class ApplicationLauncher(object):
         '''
         # Look up application.
         applicationIdentifierPattern = applicationIdentifier
-        if applicationIdentifierPattern == 'hieroplayer':
-            applicationIdentifierPattern += '*'
+        # if applicationIdentifierPattern == 'hieroplayer':
+        #     applicationIdentifierPattern += '*'
 
         application = self.applicationStore.getApplication(
             applicationIdentifierPattern

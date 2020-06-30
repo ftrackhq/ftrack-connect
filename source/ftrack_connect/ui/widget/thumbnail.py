@@ -7,7 +7,6 @@ import urllib2
 import ftrack_api
 from Qt import QtWidgets, QtCore, QtGui
 import ftrack_connect.worker
-import ftrack_connect.session
 
 
 # Cache of thumbnail images.
@@ -19,7 +18,6 @@ class Base(QtWidgets.QLabel):
 
     def __init__(self, parent=None):
         super(Base, self).__init__(parent)
-        self._session = ftrack_connect.session.get_shared_session()
         self.thumbnailCache = {}
         self.setFrameStyle(QtWidgets.QFrame.StyledPanel)
         self.setAlignment(QtCore.Qt.AlignCenter)

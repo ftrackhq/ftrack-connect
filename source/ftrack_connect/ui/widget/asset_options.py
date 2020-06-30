@@ -52,7 +52,7 @@ class AssetOptions(object):
         self.radioButtonFrame.layout().addWidget(self.existingAssetButton)
 
         self.existingAssetSelector = _asset_selector.AssetSelector(session=self.session)
-        self.assetTypeSelector = _asset_type_selector.AssetTypeSelector()
+        self.assetTypeSelector = _asset_type_selector.AssetTypeSelector(session=self.session)
         self.assetNameLineEdit = _asset_name_edit.AssetNameEdit(
             self.session, self.existingAssetSelector, self.assetTypeSelector
         )

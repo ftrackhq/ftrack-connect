@@ -16,7 +16,6 @@ class EntityPath(QtWidgets.QLineEdit):
         super(EntityPath, self).__init__(*args, **kwargs)
         self.setReadOnly(True)
         self.path_ready.connect(self.on_path_ready)
-        self._session = ftrack_connect.session.get_shared_session()
 
     @ftrack_connect.asynchronous.asynchronous
     def setEntity(self, entity):

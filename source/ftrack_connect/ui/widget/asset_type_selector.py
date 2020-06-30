@@ -19,14 +19,13 @@ class AssetTypeSelector(_item_selector.ItemSelector):
             emptyLabel='Select asset type',
             **kwargs
         )
-        self._session = ftrack_connect.session.get_shared_session()
         self.loadAssetTypes()
 
 
     @ftrack_connect.asynchronous.asynchronous
     def loadAssetTypes(self):
         '''Load asset types and add to selector.'''
-        assetTypes = self._session.query('AssetType').all()
+        assetTypes = self.session.query('AssetType').all()
         assetTypes = sorted(
             assetTypes,
             key=lambda assetType: assetType['name']

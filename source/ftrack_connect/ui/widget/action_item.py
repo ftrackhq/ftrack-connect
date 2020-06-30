@@ -25,7 +25,7 @@ class ActionItem(QtWidgets.QWidget):
     def session(self):
         return self._session
 
-    def __init__(self, actions, parent=None):
+    def __init__(self, session, actions, parent=None):
         '''Initialize action item with *actions*
 
         *actions* should be a list of action dictionaries with the same label.
@@ -45,7 +45,7 @@ class ActionItem(QtWidgets.QWidget):
         multiple actions are specified.
         '''
         super(ActionItem, self).__init__(parent=parent)
-        self._session = ftrack_connect.session.get_shared_session()
+        self._session = session
         self.logger = logging.getLogger(
             __name__ + '.' + self.__class__.__name__
         )
