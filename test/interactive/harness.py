@@ -6,7 +6,7 @@ import logging
 import argparse
 import signal
 
-from Qt import QtGui, QtWidgets
+from Qt import QtGui, QtWidgets, QtCore
 import ftrack_api
 import ftrack_connect.ui.theme
 
@@ -40,7 +40,7 @@ class HarnessGui(QtWidgets.QDialog):
             controlGroupLayout.addWidget(self.controller, stretch=0)
 
             self.controlGroup.setSizePolicy(
-                QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Maximum
+                QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Maximum
             )
 
         self.layout().setSizeConstraint(QtWidgets.QLayout.SetMinAndMaxSize)
