@@ -41,6 +41,7 @@ def get_shared_session(plugin_paths=None):
             server_url=os.environ['FTRACK_SERVER'],
             api_key=os.environ['FTRACK_API_KEY'],
             api_user=os.environ['FTRACK_API_USER'],
+            auto_connect_event_hub=True,
             plugin_paths=plugin_paths
         )
 
