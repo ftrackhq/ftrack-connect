@@ -257,7 +257,7 @@ configuration = dict(
         'PySide >= 1.2.2, < 2',
         'Riffle',
         'arrow >= 0.4.6, < 1',
-        'appdirs == 1.4.0',
+        'appdirs >= 1.4, < 1.5',
         'requests >= 2, <3',
         'lowdown >= 0.1.0, < 1',
         'qt.py >=1.0.0, < 2',
