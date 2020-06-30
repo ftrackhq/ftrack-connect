@@ -262,7 +262,9 @@ configuration = dict(
         'lowdown >= 0.1.0, < 1',
         'qt.py >=1.0.0, < 2',
     ],
-    tests_require=['pytest >= 2.3.5, < 3'],
+    tests_require=[
+        'pytest >= 2.3.5, < 3'
+    ],
     cmdclass={
         'build': Build,
         'build_ext': Build,
