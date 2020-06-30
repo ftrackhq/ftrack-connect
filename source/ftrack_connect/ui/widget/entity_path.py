@@ -21,21 +21,11 @@ class EntityPath(QtWidgets.QLineEdit):
     @ftrack_connect.asynchronous.asynchronous
     def setEntity(self, entity):
         '''Set the *entity* for this widget.'''
-        names = []
-        entities=[]
-        if entity:
-            entities.insert(0, entity)
-            entities.extend(entity.get('ancestors', []))
+        if not entity:
+            return
 
-        for entity in entities:
-            if entity:
-                if isinstance(entity, self._session.types['Project']):
-                    names.append(entity['full_name'])
-                else:
-                    names.append(entity['name'])
+        names = [e['name'] for e in entity.get('link', [])]
 
-        # Reverse names since project should be first.
-        names.reverse()
         self.path_ready.emit(names)
 
     def on_path_ready(self, names):
