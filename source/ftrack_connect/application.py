@@ -299,8 +299,6 @@ class ApplicationLauncher(object):
         '''
         # Look up application.
         applicationIdentifierPattern = applicationIdentifier
-        # if applicationIdentifierPattern == 'hieroplayer':
-        #     applicationIdentifierPattern += '*'
 
         application = self.applicationStore.getApplication(
             applicationIdentifierPattern
