@@ -17,8 +17,9 @@ import ftrack_api
 import ftrack_api._centralized_storage_scenario
 import ftrack_api.event.base
 
+
+
 import ftrack_connect
-import ftrack_connect.session
 import ftrack_connect.event_hub_thread as _event_hub_thread
 import ftrack_connect.error
 import ftrack_connect.util
@@ -95,15 +96,6 @@ class Application(QtWidgets.QMainWindow):
                 self.defaultPluginDirectory
             )
         )
-        if 'FTRACK_CONNECT_PLUGIN_PATH' in os.environ:
-            for connectPluginPath in (
-                os.environ['FTRACK_CONNECT_PLUGIN_PATH'].split(os.pathsep)
-            ):
-                self.pluginHookPaths.update(
-                    self._gatherPluginHooks(
-                        connectPluginPath
-                    )
-                )
 
         self.logger.info(
             u'Connect plugin hooks directories: {0}'.format(
@@ -277,7 +269,6 @@ class Application(QtWidgets.QMainWindow):
         self.loginWidget.setFocus()
         self._login_overlay.hide()
 
-
     def _report_session_setup_error(self, error):
         '''Format error message and emit loginError.'''
         msg = (
@@ -411,13 +402,23 @@ class Application(QtWidgets.QMainWindow):
         if hasattr(self, '_hub_thread'):
             self._hub_thread.quit()
 
-        plugin_paths = os.environ.get(
+        plugin_paths = []
+
+        event_plugin_paths = os.environ.get(
             'FTRACK_EVENT_PLUGIN_PATH', ''
         ).split(os.pathsep)
 
+        connect_plugin_paths = os.environ.get(
+            'FTRACK_CONNECT_PLUGIN_PATH', ''
+        ).split(os.pathsep)
+
+        plugin_paths.extend(event_plugin_paths)
+        plugin_paths.extend(connect_plugin_paths)
         plugin_paths.extend(self.pluginHookPaths)
 
-        self.session._discover_plugins(plugin_arguments=plugin_paths)
+        self.logger.info('Discovering plugins in : {}'.format(plugin_paths))
+
+        ftrack_api.plugin.discover(plugin_paths, [self.session], {})
 
         self.tabPanel = _tab_widget.TabWidget()
         self.tabPanel.tabBar().setObjectName('application-tab-bar')

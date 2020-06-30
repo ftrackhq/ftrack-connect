@@ -14,7 +14,6 @@ from operator import itemgetter
 from distutils.version import LooseVersion
 import ftrack_api
 
-import ftrack_connect.session
 
 #: Default expression to match version component of executable path.
 #: Will match last set of numbers in string where numbers may contain a digit
