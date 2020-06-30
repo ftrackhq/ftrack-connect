@@ -12,7 +12,7 @@ Release Notes
 
 
     .. change:: changed
-        :tags: changed
+        :tags: API
 
         Remove `ftrack-python-legacy-api <https://bitbucket.org/ftrack/ftrack-python-legacy-api/src/master/>`_
         dependency and dependent code.
