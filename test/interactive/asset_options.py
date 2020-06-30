@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-from PySide import QtGui, QtCore
+from Qt import QtGui, QtCore, QtWidgets
 
 import ftrack
 
@@ -48,7 +48,9 @@ class WidgetHarness(Harness):
         '''Set the *entity* for the view.'''
         self.assetOptions.setEntity(entity)
 
+
 if __name__ == '__main__':
+
     raise SystemExit(
         WidgetHarness().run()
     )
