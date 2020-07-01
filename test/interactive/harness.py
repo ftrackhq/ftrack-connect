@@ -55,7 +55,6 @@ class Harness(object):
     def __init__(self):
         self.session = ftrack_api.Session()
 
-
     def constructWidget(self):
         '''Return widget instance to test.'''
         raise NotImplementedError()

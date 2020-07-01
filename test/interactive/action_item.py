@@ -61,6 +61,9 @@ class WidgetHarness(Harness):
 
 
 if __name__ == '__main__':
-    WidgetHarness().run()
+
+    raise SystemExit(
+        WidgetHarness().run()
+    )
 
 
