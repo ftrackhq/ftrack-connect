@@ -59,7 +59,7 @@ class ItemSelector(QtWidgets.QComboBox):
         foundIndex = -1
         for index in xrange(1, self.count()):
             item = self.itemData(index)
-            if item.get(self._idField) == itemId:
+            if item == itemId:
                 foundIndex = index
                 break
 
@@ -73,8 +73,7 @@ class ItemSelector(QtWidgets.QComboBox):
         '''
         index = 0
         if item is not None:
-            itemId = item.get(self._idField)
-            index = self.findData(itemId)
+            index = self.findData(item)
             if index == -1:
                 index = 0
 

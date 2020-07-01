@@ -67,7 +67,7 @@ class ContextSelector(QtWidgets.QWidget):
                 pass
             else:
                 for parent in parents:
-                    location.append(parent.getId())
+                    location.append(parent['id'])
 
             location.reverse()
             self.entityBrowser.setLocation(location)

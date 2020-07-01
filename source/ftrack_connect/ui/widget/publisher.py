@@ -159,15 +159,18 @@ class Publisher(QtWidgets.QWidget):
         versionDescription = self.versionDescription.toPlainText()
 
         previewPath = None
-        previewComponent = self.previewSelector.currentItem()
+        previewComponentId = self.previewSelector.currentItem()
+
+        previewComponent = self.session.get('Component', previewComponentId)
+
         if previewComponent:
             previewPath = previewComponent['resourceIdentifier']
 
         # ftrack does not support having Tasks as parent for Assets.
         # Therefore get parent shot/sequence etc.
-        if entity.getObjectType() == 'Task':
-            taskId = entity.getId()
-            entity = entity.getParent()
+        if entity.entity_type == 'Task':
+            taskId = entity['id']
+            entity = entity['parent']
 
         componentLocation = self.session.pick_location()
 
@@ -246,11 +249,11 @@ class Publisher(QtWidgets.QWidget):
             if taskId:
                 task = self.session.get('Context', taskId)
 
-            new_entity = self.session.get('Context', entity.getId())
+            new_entity = self.session.get('Context', entity['id'])
 
             if not asset:
                 asset_type = self.session.get(
-                    'AssetType', assetType.getId()
+                    'AssetType', assetType
                 )
                 if assetName is None:
                     assetName = asset_type['name']
@@ -268,7 +271,7 @@ class Publisher(QtWidgets.QWidget):
                 self.assetCreated.emit(asset)
 
             else:
-                asset = self.session.get('Asset', asset.getId())
+                asset = self.session.get('Asset', asset)
 
             version = self.session.create(
                 'AssetVersion',
