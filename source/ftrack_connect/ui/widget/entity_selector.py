@@ -12,18 +12,23 @@ class EntitySelector(QtWidgets.QStackedWidget):
 
     entityChanged = QtCore.Signal(object)
 
-    def __init__(self, *args, **kwargs):
+    @property
+    def session(self):
+        return self._session
+
+    def __init__(self, session, parent=None):
         '''Instantiate the entity selector widget.'''
-        super(EntitySelector, self).__init__(*args, **kwargs)
+        super(EntitySelector, self).__init__(parent=parent)
         self._entity = None
 
+        self._session = session
         # Create widget used to select an entity.
         selectionWidget = QtWidgets.QFrame()
         selectionWidget.setLayout(QtWidgets.QHBoxLayout())
         selectionWidget.layout().setContentsMargins(0, 0, 0, 0)
         self.insertWidget(0, selectionWidget)
 
-        self.entityBrowser = _entity_browser.EntityBrowser(parent=self)
+        self.entityBrowser = _entity_browser.EntityBrowser(self.session, parent=self)
         self.entityBrowser.setMinimumSize(600, 400)
         self.entityBrowser.selectionChanged.connect(
             self._onEntityBrowserSelectionChanged

@@ -12,7 +12,7 @@ class WidgetHarness(Harness):
 
     def constructWidget(self):
         '''Return widget instance to test.'''
-        widget = ftrack_connect.ui.widget.entity_browser.EntityBrowser()
+        widget = ftrack_connect.ui.widget.entity_browser.EntityBrowser(self.session)
         widget.setMinimumSize(600, 400)
         self._browser = widget
 

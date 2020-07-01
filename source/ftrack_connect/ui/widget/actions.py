@@ -91,7 +91,7 @@ class Actions(QtWidgets.QWidget):
         self._recentActions = []
         self._actions = []
 
-        self._entitySelector = entity_selector.EntitySelector()
+        self._entitySelector = entity_selector.EntitySelector(self.session)
         self._entitySelector.setFixedHeight(50)
         self._entitySelector.entityChanged.connect(
             self._onEntityChanged

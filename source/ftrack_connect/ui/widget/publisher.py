@@ -78,7 +78,7 @@ class Publisher(QtWidgets.QWidget):
         layout.addLayout(formLayout, stretch=0)
 
         # Add entity selector.
-        self.entitySelector = EntitySelector()
+        self.entitySelector = EntitySelector(self.session)
         formLayout.addRow('Linked to', self.entitySelector)
 
         # Add asset options.

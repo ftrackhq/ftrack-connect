@@ -24,7 +24,7 @@ class ContextSelector(QtWidgets.QWidget):
         super(ContextSelector, self).__init__(parent=parent)
         self._entity = currentEntity
 
-        self.entityBrowser = entityBrowser.EntityBrowser()
+        self.entityBrowser = entityBrowser.EntityBrowser(self.session)
         self.entityBrowser.setMinimumWidth(600)
         self.entityPath = entityPath.EntityPath()
         self.entityBrowseButton = QtWidgets.QPushButton('Browse')
