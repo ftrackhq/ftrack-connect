@@ -17,6 +17,7 @@ class ContextSelector(QtWidgets.QWidget):
 
     @property
     def session(self):
+        '''Return current session.'''
         return self._entity.session
 
     def __init__(self, currentEntity, parent=None):

@@ -46,6 +46,7 @@ class ApplicationPlugin(QtWidgets.QWidget):
 
     @property
     def session(self):
+        '''Return current session.'''
         return self._session
 
     def __init__(self, session, parent=None):
@@ -75,6 +76,7 @@ class Application(QtWidgets.QMainWindow):
 
     @property
     def session(self):
+        '''Return current session.'''
         return self._session
 
     def __init__(self, session, theme='light'):

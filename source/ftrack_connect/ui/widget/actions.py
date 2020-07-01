@@ -73,6 +73,7 @@ class Actions(QtWidgets.QWidget):
 
     @property
     def session(self):
+        '''Return current session.'''
         return self._session
 
     def __init__(self, session, parent=None):

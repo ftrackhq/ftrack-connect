@@ -57,6 +57,7 @@ class ApplicationStore(object):
 
     @property
     def session(self):
+        '''Return current session.'''
         return self._session
 
     def __init__(self, session):
@@ -264,10 +265,12 @@ class ApplicationLauncher(object):
 
     @property
     def location(self):
+        '''Return current location.'''
         return self._session.pick_location()
 
     @property
     def session(self):
+        '''Return current session.'''
         return self._session
 
     def __init__(self, applicationStore):
