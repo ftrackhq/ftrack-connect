@@ -118,29 +118,28 @@ class BuildResources(Command):
                 print('Compiled {0}'.format(css_target))
 
         try:
-            pyside_rcc_commands = ['pyside2-rcc', 'pyside-rcc']
-            valid_commands = []
-    
-            for pyside_rcc_command in pyside_rcc_commands:
-                # On Windows, pyside-rcc is not automatically available on the
-                # PATH so try to find it manually.
-                if sys.platform == 'win32':
-                    import Qt
-                    pyside_rcc_command = os.path.join(
-                        os.path.dirname(Qt.__file__),
-                        '{}.exe'.format(pyside_rcc_command)
-                    )
+            pyside_rcc_command = 'pyside2-rcc'
+            executable = None
 
-                # Check if the command for pyside*-rcc is in executable paths.
-                if find_executable(pyside_rcc_command):
-                    valid_commands.append(pyside_rcc_command)
+            # On Windows, pyside-rcc is not automatically available on the
+            # PATH so try to find it manually.
+            if sys.platform == 'win32':
+                import Qt
+                pyside_rcc_command = os.path.join(
+                    os.path.dirname(Qt.__file__),
+                    '{}.exe'.format(pyside_rcc_command)
+                )
 
-            if not valid_commands:
-                raise IOError('Not executable found for pyside*-rcc ')
+            # Check if the command for pyside*-rcc is in executable paths.
+            if find_executable(pyside_rcc_command):
+                executable = pyside_rcc_command
+
+            if not executable:
+                raise IOError('Not executable found for pyside2-rcc ')
 
             # Use the first occurrence if more than one is found.
             cmd = [
-                valid_commands[0],
+                executable,
                 '-o',
                 self.resource_target_path,
                 self.resource_source_path
@@ -259,6 +258,7 @@ configuration = dict(
         '': 'source'
     },
     setup_requires=[
+        'PySide2 >=5, <6',
         'Qt.py >=1.0.0, < 2',
         'pyScss >= 1.2.0, < 2',
         'sphinx >= 1.2.2, < 2',
@@ -268,6 +268,7 @@ configuration = dict(
         'setuptools_scm'
     ],
     install_requires=[
+        'PySide2 >=5, <6',
         'ftrack-python-legacy-api >=3, <4',
         'ftrack-python-api >= 1, < 2',
         'riffle @ git+https://gitlab.com/lorenzo.angeli/riffle.git@backlog/support-pyside2#egg=riffle-0.4.0',
@@ -292,10 +293,6 @@ configuration = dict(
         ],
     },
     options={},
-    extras_require = {
-        'PySide': ['PySide >= 1.2.2, < 2'],
-        'PySide2': ['PySide2 >=5, <6']
-    },
     data_files=[
         (
             'ftrack_connect_resource/hook',
