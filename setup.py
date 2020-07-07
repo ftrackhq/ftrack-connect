@@ -253,7 +253,7 @@ configuration = dict(
         'setuptools_scm'
     ],
     install_requires=[
-        'ftrack-python-api >= 1, < 3',
+        'ftrack-python-api @ git+https://bitbucket.org/ftrack/ftrack-python-api.git@experimental/thread-safe-warnings#egg=ftrack-python-api-2.0.1',
         'PySide >= 1.2.2, < 2',
         'Riffle',
         'arrow >= 0.4.6, < 1',
