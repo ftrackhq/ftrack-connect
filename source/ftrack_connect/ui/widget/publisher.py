@@ -313,7 +313,7 @@ class Publisher(QtWidgets.QWidget):
                     )
 
             if previewPath:
-                self.session.event_hub.publish(
+                self.scoped_session.event_hub.publish(
                     event.base.Event(
                         'ftrack.connect.publish.make-web-playable',
                         data=dict(
