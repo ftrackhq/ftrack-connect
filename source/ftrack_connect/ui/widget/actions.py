@@ -241,7 +241,6 @@ class Actions(QtWidgets.QWidget):
                 '<p>Try another selection or add some actions.</p>'
             )
 
-    @ftrack_connect.asynchronous.asynchronous
     def _updateRecentActions(self):
         '''Retrieve and update recent actions.'''
         self._recentActions = self._getRecentActions()
@@ -301,7 +300,6 @@ class Actions(QtWidgets.QWidget):
             pass
         itemList.insert(0, item)
 
-    @ftrack_connect.asynchronous.asynchronous
     def _addRecentAction(self, actionLabel):
         '''Add *actionLabel* to recent actions, persisting the change.'''
         recentActions = self._getRecentActions()

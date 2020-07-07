@@ -212,7 +212,6 @@ class Publisher(QtWidgets.QWidget):
                 'Failed to clean up version after failed publish'
             )
 
-    @ftrack_connect.asynchronous.asynchronous
     def _publish(
         self, entity=None, assetName=None, assetType=None,
         versionDescription='', taskId=None, components=None,

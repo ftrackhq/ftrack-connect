@@ -17,7 +17,6 @@ class EntityPath(QtWidgets.QLineEdit):
         self.setReadOnly(True)
         self.path_ready.connect(self.on_path_ready)
 
-    @ftrack_connect.asynchronous.asynchronous
     def setEntity(self, entity):
         '''Set the *entity* for this widget.'''
         if not entity:

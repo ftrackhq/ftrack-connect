@@ -30,7 +30,6 @@ def _send_event(event_name, metadata=None):
     except Exception:
         logger.exception('Failed to send event.')
 
-@ftrack_connect.asynchronous.asynchronous
 def _send_async_event(event_name, metadata=None):
     '''Call __send_event in a new thread.'''
     _send_event(event_name, metadata)
