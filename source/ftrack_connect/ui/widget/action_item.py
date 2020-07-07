@@ -7,6 +7,7 @@ import logging
 
 import ftrack_api.event.base
 
+import ftrack_connect.asynchronous
 from ftrack_connect.ui.widget.thumbnail import ActionIcon
 
 
@@ -145,6 +146,7 @@ class ActionItem(QtWidgets.QWidget):
         self.beforeActionLaunch.emit(action)
         self._publishLaunchActionEvent(action)
 
+    @ftrack_connect.asynchronous.asynchronous
     def _publishLaunchActionEvent(self, action):
         '''Launch *action* asynchronously and emit *actionLaunched* when completed.'''
 
