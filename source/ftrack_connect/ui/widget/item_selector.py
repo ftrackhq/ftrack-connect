@@ -8,6 +8,10 @@ class ItemSelector(QtWidgets.QComboBox):
     '''Item selector widget.'''
 
     @property
+    def scoped_session(self):
+        return self._session()
+
+    @property
     def session(self):
         '''Return current session.'''
         return self._session

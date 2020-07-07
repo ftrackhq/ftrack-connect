@@ -140,6 +140,10 @@ class Item(object):
 class Root(Item):
     '''Represent root.'''
 
+    @property
+    def scoped_session(self):
+        return self._session()
+
     def __init__(self, session):
         '''Initialise item.'''
         self._session = session
@@ -158,7 +162,7 @@ class Root(Item):
     def _fetchChildren(self):
         '''Fetch and return new child items.'''
         children = []
-        for entity in self._session.query('Project where status is active'):
+        for entity in self.scoped_session.query('Project where status is active'):
             children.append(Project(self._session, entity))
 
         return children
@@ -166,6 +170,14 @@ class Root(Item):
 
 class Context(Item):
     '''Represent context entity.'''
+
+    @property
+    def scoped_session(self):
+        return self._session()
+
+    @property
+    def session(self):
+        return self._session
 
     def __init__(self, session, entity):
         '''Initialise item.'''
@@ -188,7 +200,7 @@ class Context(Item):
     def _fetchChildren(self):
         '''Fetch and return new child items.'''
         children = []
-        entities = self._session.query(
+        entities = self.scoped_session.query(
             (
                 'select name, object_type_id, object_type.name, '
                 'object_type.is_leaf, object_type.icon from TypedContext '
@@ -196,7 +208,7 @@ class Context(Item):
             ).format(self.entity['id'])
         )
         for entity in entities:
-            children.append(ItemFactory(self._session, entity))
+            children.append(ItemFactory(self.session, entity))
 
         return children
 

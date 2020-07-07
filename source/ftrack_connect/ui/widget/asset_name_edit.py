@@ -12,6 +12,10 @@ class AssetNameValidator(QtGui.QValidator):
     '''
 
     @property
+    def scoped_session(self):
+        return self._session()
+
+    @property
     def session(self):
         '''Return current session.'''
         return self._session
@@ -29,7 +33,7 @@ class AssetNameValidator(QtGui.QValidator):
         assetTypeId = self.assetTypeSelector.currentItem()
         isValid = True
         for asset_id in self.assetSelector.items():
-            asset = self.session.get('Asset', asset_id)
+            asset = self.scoped_session.get('Asset', asset_id)
             if (
                 asset['type']['id'] == assetTypeId
                 and asset['name'].lower() == value.lower()

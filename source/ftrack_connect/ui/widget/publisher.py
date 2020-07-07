@@ -40,6 +40,10 @@ class Publisher(QtWidgets.QWidget):
     assetCreated = QtCore.Signal(object)
 
     @property
+    def scoped_session(self):
+        return self._session()
+
+    @property
     def session(self):
         '''Return current session.'''
         return self._session
@@ -162,7 +166,7 @@ class Publisher(QtWidgets.QWidget):
         previewPath = None
         previewComponentId = self.previewSelector.currentItem()
 
-        previewComponent = self.session.get('Component', previewComponentId)
+        previewComponent = self.scoped_session.get('Component', previewComponentId)
 
         if previewComponent:
             previewPath = previewComponent['resourceIdentifier']
@@ -173,7 +177,7 @@ class Publisher(QtWidgets.QWidget):
             taskId = entity['id']
             entity = entity['parent']
 
-        componentLocation = self.session.pick_location()
+        componentLocation = self.scoped_session.pick_location()
 
         components = []
         for component in self.componentsList.items():
@@ -248,18 +252,18 @@ class Publisher(QtWidgets.QWidget):
 
             task = None
             if taskId:
-                task = self.session.get('Context', taskId)
+                task = self.scoped_session.get('Context', taskId)
 
-            new_entity = self.session.get('Context', entity['id'])
+            new_entity = self.scoped_session.get('Context', entity['id'])
 
             if not asset:
-                asset_type = self.session.get(
+                asset_type = self.scoped_session.get(
                     'AssetType', assetType
                 )
                 if assetName is None:
                     assetName = asset_type['name']
 
-                asset = self.session.create(
+                asset = self.scoped_session.create(
                     'Asset',
                     {
                         'name': assetName,
@@ -268,13 +272,13 @@ class Publisher(QtWidgets.QWidget):
                     }
                 )
 
-                self.session.commit()
+                self.scoped_session.commit()
                 self.assetCreated.emit(asset)
 
             else:
-                asset = self.session.get('Asset', asset)
+                asset = self.scoped_session.get('Asset', asset)
 
-            version = self.session.create(
+            version = self.scoped_session.create(
                 'AssetVersion',
                 {
                     'asset': asset,
@@ -282,9 +286,9 @@ class Publisher(QtWidgets.QWidget):
                     'task': task,
                 }
             )
-            self.session.commit()
+            self.scoped_session.commit()
 
-            origin_location = self.session.query(
+            origin_location = self.scoped_session.query(
                 'Location where name is "ftrack.origin"'
             )
 
@@ -296,7 +300,7 @@ class Publisher(QtWidgets.QWidget):
                 )
 
                 for location in componentData.get('locations', []):
-                    new_location = self.session.get(
+                    new_location = self.scoped_session.get(
                         'Location', location['id']
                     )
                     new_location.add_component(
@@ -325,7 +329,7 @@ class Publisher(QtWidgets.QWidget):
 
             # TODO: check this does not apply anymore.
             # version['is_published'] = True
-            self.session.commit()
+            self.scoped_session.commit()
 
             self.publishFinished.emit(True)
 

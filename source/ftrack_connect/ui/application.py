@@ -45,6 +45,10 @@ class ApplicationPlugin(QtWidgets.QWidget):
     requestApplicationClose = QtCore.Signal(object)
 
     @property
+    def scoped_session(self):
+        return self._session()
+
+    @property
     def session(self):
         '''Return current session.'''
         return self._session
@@ -73,6 +77,11 @@ class Application(QtWidgets.QMainWindow):
 
     # Login signal.
     loginSignal = QtCore.Signal(object, object, object)
+
+
+    @property
+    def scoped_session(self):
+        return self._session()
 
     @property
     def session(self):
@@ -345,15 +354,15 @@ class Application(QtWidgets.QMainWindow):
         self._save_credentials(url, username, apiKey)
 
         # Verify storage scenario before starting.
-        if 'storage_scenario' in self.session.server_information:
-            storage_scenario = self.session.server_information.get(
+        if 'storage_scenario' in self.scoped_session.server_information:
+            storage_scenario = self.scoped_session.server_information.get(
                 'storage_scenario'
             )
             if storage_scenario is None:
                 # Hide login overlay at this time since it will be deleted
                 self.logger.debug('Storage scenario is not configured.')
                 scenario_widget = _scenario_widget.ConfigureScenario(
-                    self.session
+                    self.scoped_session
                 )
                 scenario_widget.configuration_completed.connect(
                     self.location_configuration_finished
@@ -380,12 +389,12 @@ class Application(QtWidgets.QMainWindow):
         event = ftrack_api.event.base.Event(
             topic='ftrack.connect.verify-startup',
             data={
-                'storage_scenario': self.session.server_information.get(
+                'storage_scenario': self.scoped_session.server_information.get(
                     'storage_scenario'
                 )
             }
         )
-        results = self.session.event_hub.publish(event, synchronous=True)
+        results = self.scoped_session.event_hub.publish(event, synchronous=True)
         problems = [
             problem for problem in results if isinstance(problem, basestring)
         ]
@@ -416,7 +425,7 @@ class Application(QtWidgets.QMainWindow):
 
         self.logger.info('Discovering plugins in : {}'.format(plugin_paths))
 
-        ftrack_api.plugin.discover(plugin_paths, [self.session], {})
+        ftrack_api.plugin.discover(plugin_paths, [self.scoped_session], {})
 
         self.tabPanel = _tab_widget.TabWidget()
         self.tabPanel.tabBar().setObjectName('application-tab-bar')
@@ -424,7 +433,7 @@ class Application(QtWidgets.QMainWindow):
 
         self._discoverTabPlugins()
 
-        self.session.event_hub.subscribe(
+        self.scoped_session.event_hub.subscribe(
             'topic=ftrack.connect and source.user.username={0}'.format(
                 getpass.getuser()
             ),
@@ -435,17 +444,17 @@ class Application(QtWidgets.QMainWindow):
         # Listen to events using the new API event hub. This is required to
         # allow reconfiguring the storage scenario.
         self._hub_thread = _event_hub_thread.NewApiEventHubThread()
-        self._hub_thread.start(self.session)
+        self._hub_thread.start(self.scoped_session)
 
         ftrack_api._centralized_storage_scenario.register_configuration(
-            self.session
+            self.scoped_session
         )
 
         self.focus()
 
         # Listen to discover connect event and respond to let the sender know
         # that connect is running.
-        self.session.event_hub.subscribe(
+        self.scoped_session.event_hub.subscribe(
             'topic=ftrack.connect.discover and source.user.username={0}'.format(
                 getpass.getuser()
             ),

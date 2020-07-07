@@ -133,7 +133,7 @@ def main(arguments=None):
 
     # Construct main connect window and apply theme.
     connectWindow = ftrack_connect.ui.application.Application(
-        session=get_scoped_session(),
+        session=get_scoped_session,
         theme=namespace.theme
     )
 

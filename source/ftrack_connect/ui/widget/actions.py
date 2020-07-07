@@ -72,6 +72,10 @@ class Actions(QtWidgets.QWidget):
     recentActionsChanged = QtCore.Signal(name='recentActionsChanged')
 
     @property
+    def scoped_session(self):
+        return self._session()
+
+    @property
     def session(self):
         '''Return current session.'''
         return self._session
@@ -256,7 +260,7 @@ class Actions(QtWidgets.QWidget):
         '''
         userHasMetadata = any(
             attribute.name == 'metadata'
-            for attribute in self._session.types['User'].attributes
+            for attribute in self.scoped_session.types['User'].attributes
         )
         return userHasMetadata
 
@@ -264,8 +268,8 @@ class Actions(QtWidgets.QWidget):
         '''Return current user id.'''
         if not self._currentUserId:
 
-            user = self.session.query(
-                'User where username="{0}"'.format(self.session.api_user)
+            user = self.scoped_session.query(
+                'User where username="{0}"'.format(self.scoped_session.api_user)
             ).one()
             self._currentUserId = user['id']
 
@@ -276,7 +280,7 @@ class Actions(QtWidgets.QWidget):
         if not self._isRecentActionsEnabled():
             return []
 
-        metadata = self.session.query(
+        metadata = self.scoped_session.query(
             'Metadata where key is "{0}" and parent_type is "User" '
             'and parent_id is "{1}"'.format(
                 self.RECENT_METADATA_KEY, self._getCurrentUserId()
@@ -320,7 +324,7 @@ class Actions(QtWidgets.QWidget):
         '''Obtain new actions synchronously for *context*.'''
         discoveredActions = []
 
-        results = self.session.event_hub.publish(
+        results = self.scoped_session.event_hub.publish(
             ftrack_api.event.base.Event(
                 topic='ftrack.action.discover',
                 data=dict(

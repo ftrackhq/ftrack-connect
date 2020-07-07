@@ -25,6 +25,10 @@ class AssetOptions(object):
     '''
 
     @property
+    def scoped_session(self):
+        return self._session()
+
+    @property
     def session(self):
         '''Return current session.'''
         return self._session
@@ -97,7 +101,7 @@ class AssetOptions(object):
             return
 
         if not self._hasEditedName:
-            assetType = self.session.get('AssetType', assetTypeId)
+            assetType = self.scoped_session.get('AssetType', assetTypeId)
             self.assetNameLineEdit.setText(assetType['name'])
 
     def _toggleFieldAndLabel(self, field, toggled):
