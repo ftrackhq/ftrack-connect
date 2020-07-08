@@ -25,7 +25,8 @@ class AssetTypeSelector(_item_selector.ItemSelector):
     @ftrack_connect.asynchronous.asynchronous
     def loadAssetTypes(self):
         '''Load asset types and add to selector.'''
-        assetTypes = self.scoped_session.query('AssetType').all()
+        session = ftrack_connect.session.get_scoped()
+        assetTypes = session.query('AssetType').all()
         assetTypes = sorted(
             assetTypes,
             key=lambda assetType: assetType['name']

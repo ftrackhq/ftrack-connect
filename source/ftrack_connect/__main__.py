@@ -119,21 +119,11 @@ def main(arguments=None):
     # Enable ctrl+c to quit application when started from command line.
     signal.signal(signal.SIGINT, signal.SIG_DFL)
 
-    # Create a session factory instead.
-    def session_creator():
-        return ftrack_api.Session(auto_connect_event_hub=True, thread_safe_warning='warn')
-
-    get_scoped_session = ftrack_api.util.session_factory(
-        creator=session_creator,
-        registry=ftrack_api.util.ThreadLocalRegistry()
-    )
-
-
-    # session = ftrack_api.Session(auto_connect_event_hub=True)
+    main_api_session = ftrack_api.Session(auto_connect_event_hub=True)
 
     # Construct main connect window and apply theme.
     connectWindow = ftrack_connect.ui.application.Application(
-        session=get_scoped_session,
+        main_api_session=main_api_session,
         theme=namespace.theme
     )
 

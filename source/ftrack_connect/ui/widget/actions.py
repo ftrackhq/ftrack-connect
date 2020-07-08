@@ -72,22 +72,17 @@ class Actions(QtWidgets.QWidget):
     recentActionsChanged = QtCore.Signal(name='recentActionsChanged')
 
     @property
-    def scoped_session(self):
-        return self._session()
-
-    @property
     def session(self):
         '''Return current session.'''
-        return self._session
+        return ftrack_connect.session.get_scoped()
 
-    def __init__(self, session, parent=None):
+    def __init__(self, parent=None):
         '''Initiate a actions view.'''
         super(Actions, self).__init__(parent)
 
         self.logger = logging.getLogger(
             __name__ + '.' + self.__class__.__name__
         )
-        self._session = session
 
         layout = QtWidgets.QVBoxLayout()
         self.setLayout(layout)
@@ -260,7 +255,7 @@ class Actions(QtWidgets.QWidget):
         '''
         userHasMetadata = any(
             attribute.name == 'metadata'
-            for attribute in self.scoped_session.types['User'].attributes
+            for attribute in self.session.types['User'].attributes
         )
         return userHasMetadata
 
@@ -268,8 +263,8 @@ class Actions(QtWidgets.QWidget):
         '''Return current user id.'''
         if not self._currentUserId:
 
-            user = self.scoped_session.query(
-                'User where username="{0}"'.format(self.scoped_session.api_user)
+            user = self.session.query(
+                'User where username="{0}"'.format(self.session.api_user)
             ).one()
             self._currentUserId = user['id']
 
@@ -280,7 +275,7 @@ class Actions(QtWidgets.QWidget):
         if not self._isRecentActionsEnabled():
             return []
 
-        metadata = self.scoped_session.query(
+        metadata = self.session.query(
             'Metadata where key is "{0}" and parent_type is "User" '
             'and parent_id is "{1}"'.format(
                 self.RECENT_METADATA_KEY, self._getCurrentUserId()
@@ -324,7 +319,7 @@ class Actions(QtWidgets.QWidget):
         '''Obtain new actions synchronously for *context*.'''
         discoveredActions = []
 
-        results = self.scoped_session.event_hub.publish(
+        results = self.session.event_hub.publish(
             ftrack_api.event.base.Event(
                 topic='ftrack.action.discover',
                 data=dict(

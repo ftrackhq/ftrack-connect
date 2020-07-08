@@ -17,6 +17,7 @@ from ftrack_connect.ui.widget import thumbnail_drop_zone as _thumbnail_drop_zone
 from ftrack_connect.ui.widget import asset_options as _asset_options
 from ftrack_connect.ui.widget import entity_selector
 
+import ftrack_connect.session
 import ftrack_connect.asynchronous
 import ftrack_connect.error
 
@@ -40,19 +41,14 @@ class Publisher(QtWidgets.QWidget):
     assetCreated = QtCore.Signal(object)
 
     @property
-    def scoped_session(self):
-        return self._session()
-
-    @property
     def session(self):
         '''Return current session.'''
-        return self._session
+        return ftrack_connect.session.get_scoped()
 
-    def __init__(self, session, parent=None):
+    def __init__(self, parent=None):
         '''Initiate a publish view.'''
         super(Publisher, self).__init__(parent)
 
-        self._session = session
         self.logger = logging.getLogger(
             __name__ + '.' + self.__class__.__name__
         )

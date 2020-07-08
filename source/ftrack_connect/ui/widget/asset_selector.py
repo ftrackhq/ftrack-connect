@@ -3,6 +3,7 @@
 
 import logging
 
+import ftrack_connect.session
 import ftrack_connect.asynchronous
 from ftrack_connect.ui.widget import item_selector as _item_selector
 
@@ -30,19 +31,21 @@ class AssetSelector(_item_selector.ItemSelector):
 
         If *selectAsset* is specified, select it after assets has loaded.
         '''
+        session = ftrack_connect.session.get_scoped()
+        safe_entity = session.get(entity.entity_type, entity['id'])
         assets = []
         try:
             # ftrack does not support having Tasks as parent for Assets.
             # Therefore get parent shot/sequence etc.
-            if entity.entity_type == 'Task':
-                entity = entity['parent']
+            if safe_entity.entity_type == 'Task':
+                safe_entity = safe_entity['parent']
 
-            assets = entity['assets']
+            assets = safe_entity['assets']
             self.logger.debug('Loaded {0} assets'.format(len(assets)))
             assets = sorted(assets, key=lambda asset: asset['name'])
         except AttributeError:
             self.logger.warning(
-                'Unable to fetch assets for entity: {0}'.format(entity)
+                'Unable to fetch assets for entity: {0}'.format(safe_entity)
             )
 
         self.setItems(assets)

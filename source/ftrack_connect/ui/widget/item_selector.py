@@ -3,18 +3,16 @@
 
 from Qt import QtWidgets
 
+import ftrack_connect.session
+
 
 class ItemSelector(QtWidgets.QComboBox):
     '''Item selector widget.'''
 
     @property
-    def scoped_session(self):
-        return self._session()
-
-    @property
     def session(self):
         '''Return current session.'''
-        return self._session
+        return ftrack_connect.session.get_scoped()
 
     def __init__(
         self, session=None, idField='id', labelField='label', defaultLabel='Unnamed Item',

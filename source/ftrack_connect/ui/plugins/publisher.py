@@ -11,7 +11,7 @@ import ftrack_connect.usage
 
 def register(connect):
     '''Register publish plugin to ftrack connect.'''
-    publisher = Publisher(connect.session)
+    publisher = Publisher()
     connect.addPlugin(publisher, publisher.getName())
 
 
@@ -37,13 +37,13 @@ class Publisher(ftrack_connect.ui.application.ApplicationPlugin):
     #: Signal to emit when the entity is changed.
     entityChanged = QtCore.Signal(object)
 
-    def __init__(self, session, parent=None):
+    def __init__(self, parent=None):
         '''Instantiate the publisher widget.'''
-        super(Publisher, self).__init__(session, parent=parent)
+        super(Publisher, self).__init__(parent=parent)
         layout = QtWidgets.QVBoxLayout()
         self.setLayout(layout)
 
-        self.publishView = ftrack_connect.ui.widget.publisher.Publisher(self.session)
+        self.publishView = ftrack_connect.ui.widget.publisher.Publisher()
         layout.addWidget(self.publishView)
 
         self.blockingOverlay = PublisherBlockingOverlay(self)

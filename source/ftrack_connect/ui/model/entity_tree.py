@@ -8,16 +8,16 @@ from Qt import QtWidgets, QtCore, QtGui
 import ftrack_connect.worker
 
 
-def ItemFactory(session, entity):
+def ItemFactory(entity):
     '''Return appropriate :py:class:`Item` to represent *entity*.
 
     If *entity* is null then return :class:`Root` item.
 
     '''
     if not entity:
-        return Root(session)
+        return Root()
 
-    return Context(session, entity)
+    return Context(entity)
 
 
 class Item(object):
@@ -141,12 +141,11 @@ class Root(Item):
     '''Represent root.'''
 
     @property
-    def scoped_session(self):
-        return self._session()
+    def session(self):
+        return ftrack_connect.session.get_scoped()
 
-    def __init__(self, session):
+    def __init__(self):
         '''Initialise item.'''
-        self._session = session
         super(Root, self).__init__(None)
 
     @property
@@ -162,8 +161,8 @@ class Root(Item):
     def _fetchChildren(self):
         '''Fetch and return new child items.'''
         children = []
-        for entity in self.scoped_session.query('Project where status is active'):
-            children.append(Project(self._session, entity))
+        for entity in self.session.query('Project where status is active'):
+            children.append(Project(entity))
 
         return children
 
@@ -172,16 +171,11 @@ class Context(Item):
     '''Represent context entity.'''
 
     @property
-    def scoped_session(self):
-        return self._session()
-
-    @property
     def session(self):
-        return self._session
+        return ftrack_connect.session.get_scoped()
 
-    def __init__(self, session, entity):
+    def __init__(self, entity):
         '''Initialise item.'''
-        self._session = session
         super(Context, self).__init__(entity)
 
     @property
@@ -200,7 +194,7 @@ class Context(Item):
     def _fetchChildren(self):
         '''Fetch and return new child items.'''
         children = []
-        entities = self.scoped_session.query(
+        entities = self.session.query(
             (
                 'select name, object_type_id, object_type.name, '
                 'object_type.is_leaf, object_type.icon from TypedContext '
@@ -208,7 +202,7 @@ class Context(Item):
             ).format(self.entity['id'])
         )
         for entity in entities:
-            children.append(ItemFactory(self.session, entity))
+            children.append(ItemFactory(entity))
 
         return children
 

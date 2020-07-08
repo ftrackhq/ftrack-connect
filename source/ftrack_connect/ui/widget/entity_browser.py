@@ -83,7 +83,7 @@ class EntityBrowser(QtWidgets.QDialog):
         proxy = ftrack_connect.ui.model.entity_tree.EntityTreeProxyModel(self)
         model = ftrack_connect.ui.model.entity_tree.EntityTreeModel(
             root=ftrack_connect.ui.model.entity_tree.ItemFactory(
-                self._session, self._root
+                self._root
             ),
             parent=self
         )
