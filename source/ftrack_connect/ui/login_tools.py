@@ -25,7 +25,7 @@ class LoginServerHandler(BaseHTTPRequestHandler):
         api_user = None
         api_key = None
         if 'api_user' and 'api_key' in query:
-            login_credentials = urllib.parse.urlparse.parse_qs(query)
+            login_credentials = urllib.parse.parse_qs(query)
             api_user = login_credentials['api_user'][0]
             api_key = login_credentials['api_key'][0]
             message = """
@@ -63,7 +63,7 @@ class LoginServerHandler(BaseHTTPRequestHandler):
 
         self.send_response(200)
         self.end_headers()
-        self.wfile.write(message)
+        self.wfile.write(message.encode())
 
         if login_credentials:
             self.login_callback(
