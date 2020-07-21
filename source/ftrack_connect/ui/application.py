@@ -387,7 +387,7 @@ class Application(QtWidgets.QMainWindow):
         )
         results = self.session.event_hub.publish(event, synchronous=True)
         problems = [
-            problem for problem in results if isinstance(problem, basestring)
+            problem for problem in results if isinstance(problem, str)
         ]
         if problems:
             msgBox = QtWidgets.QMessageBox(parent=self)
