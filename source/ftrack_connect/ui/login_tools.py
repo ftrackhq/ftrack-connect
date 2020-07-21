@@ -1,31 +1,31 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2016 ftrack
 
-import BaseHTTPServer
-import urlparse
+from http.server import BaseHTTPRequestHandler,HTTPServer
+import urllib.parse
 import webbrowser
 import functools
 
 from Qt import QtCore
 
 
-class LoginServerHandler(BaseHTTPServer.BaseHTTPRequestHandler):
+class LoginServerHandler(BaseHTTPRequestHandler):
     '''Login server handler.'''
 
     def __init__(self, login_callback, *args, **kw):
         '''Initialise handler.'''
         self.login_callback = login_callback
-        BaseHTTPServer.BaseHTTPRequestHandler.__init__(self, *args, **kw)
+        BaseHTTPRequestHandler.__init__(self, *args, **kw)
 
     def do_GET(self):
         '''Override to handle requests ourselves.'''
-        parsed_path = urlparse.urlparse(self.path)
+        parsed_path = urllib.parse.urlparse(self.path)
         query = parsed_path.query
 
         api_user = None
         api_key = None
         if 'api_user' and 'api_key' in query:
-            login_credentials = urlparse.parse_qs(query)
+            login_credentials = urllib.parse.urlparse.parse_qs(query)
             api_user = login_credentials['api_user'][0]
             api_key = login_credentials['api_key'][0]
             message = """
@@ -89,7 +89,7 @@ class LoginServerThread(QtCore.QThread):
 
     def run(self):
         '''Listen for events.'''
-        self._server = BaseHTTPServer.HTTPServer(
+        self._server = HTTPServer(
             ('localhost', 0),
             functools.partial(
                 LoginServerHandler, self._handle_login

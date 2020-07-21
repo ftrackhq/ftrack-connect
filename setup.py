@@ -81,7 +81,7 @@ class BuildResources(Command):
 
         '''
         replace = r'from Qt import QtCore'
-        for line in fileinput.input(self.resource_target_path, inplace=True, mode='rb'):
+        for line in fileinput.input(self.resource_target_path, inplace=True, mode='r'):
             if r'import QtCore' in line:
                 # Calling print will yield a new line in the resource file.
                 sys.stdout.write(line.replace(line, replace))
@@ -113,7 +113,7 @@ class BuildResources(Command):
             compiled = compiler.compile(
                 scss_file=scss_source
             )
-            with open(css_target, 'wb') as file_handle:
+            with open(css_target, 'w') as file_handle:
                 file_handle.write(compiled)
                 print('Compiled {0}'.format(css_target))
 
@@ -269,7 +269,7 @@ configuration = dict(
     ],
     install_requires=[
         'PySide2 >=5, <6',
-        'ftrack-python-api >= 1, < 2',
+        'ftrack-python-api >= 1, < 3',
         'riffle @ git+https://gitlab.com/lorenzo.angeli/riffle.git@backlog/support-pyside2#egg=riffle-0.4.0',
         'arrow >= 0.4.6, < 1',
         'appdirs >= 1.4, < 1.5',
