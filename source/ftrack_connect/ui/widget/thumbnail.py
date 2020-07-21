@@ -7,7 +7,6 @@ import urllib
 import urllib.error
 import urllib.request
 
-import ftrack_api
 from Qt import QtWidgets, QtCore, QtGui
 import ftrack_connect.worker
 

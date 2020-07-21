@@ -154,6 +154,8 @@ class AboutDialog(QtWidgets.QDialog):
         <p>{core_versions}</p>
         <h4>Ui Framework</h4>
         <p>{ui_framework}</p>
+        <h4>Python Version</h4>
+        <p>{python_version}</p>       
         <h4>Server and user:</h4>
         <p>{server}<br>
         {user}<br></p>
@@ -172,7 +174,8 @@ class AboutDialog(QtWidgets.QDialog):
             core_versions=coreVersions,
             server=server,
             user=user,
-            ui_framework=Qt.__binding__
+            ui_framework=Qt.__binding__,
+            python_version=sys.version
         )
 
         if plugins:

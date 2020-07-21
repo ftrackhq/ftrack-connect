@@ -25,7 +25,7 @@ class UncaughtError(QtWidgets.QMessageBox):
 
     def getTraceback(self, exceptionTraceback):
         '''Return message from *exceptionTraceback*.'''
-        tracebackInfoStream = StringIO.StringIO()
+        tracebackInfoStream = StringIO()
         traceback.print_tb(
             exceptionTraceback,
             None,

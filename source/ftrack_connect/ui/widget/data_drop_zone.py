@@ -38,12 +38,12 @@ def __init__(self, head, tail, padding, indexes=None):
     super(clique.collection.Collection, self).__init__()
     self.__dict__['indexes'] = clique.sorted_set.SortedSet()
     try:
-        head = head.encode('utf-8')
+        head = head
     except UnicodeDecodeError:
         pass
 
     try:
-        tail = tail.encode('utf-8')
+        tail = tail
     except UnicodeDecodeError:
         pass
 
@@ -74,7 +74,7 @@ def data(self, index, role):
         if column == 0:
             # Convert to unicode.
             if isinstance(item.name, str):
-                return item.name.decode('utf-8')
+                return item.name
 
             return item.name
         elif column == 1:
@@ -85,7 +85,7 @@ def data(self, index, role):
         elif column == 3:
             if item.modified is not None:
                 # Convert to unicode.
-                return item.modified.strftime('%c').decode('utf-8')
+                return item.modified.strftime('%c')
 
     elif role ==  QtCore.Qt.DecorationRole:
         if column == 0:
@@ -158,7 +158,7 @@ class DataDropZone(QtWidgets.QFrame):
                 item = selected[0]
                 # Convert to unicode.
                 if isinstance(item, str):
-                    item = item.decode('utf-8')
+                    item = item
                 self.dataSelected.emit(item)
 
         # TODO: This is fragile and should probably be available as public
