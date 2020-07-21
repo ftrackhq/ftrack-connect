@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-from PySide import QtGui, QtCore
+from Qt import QtGui, QtWidgets, QtCore
 
 import ftrack_connect.ui.widget.overlay
 from harness import Harness
@@ -13,10 +13,10 @@ class CustomOverlay(ftrack_connect.ui.widget.overlay.Overlay):
     def __init__(self, parent):
         '''Initialise.'''
         super(CustomOverlay, self).__init__(parent)
-        layout = QtGui.QVBoxLayout()
+        layout = QtWidgets.QVBoxLayout()
         self.setLayout(layout)
 
-        message = QtGui.QLabel('The background should be a pinkish color.')
+        message = QtWidgets.QLabel('The background should be a pinkish color.')
         message.setWordWrap(True)
         message.setAlignment(QtCore.Qt.AlignCenter)
         layout.addWidget(message)
@@ -40,8 +40,8 @@ class WidgetHarness(Harness):
 
     def constructWidget(self):
         '''Return widget instance to test.'''
-        widget = QtGui.QFrame()
-        widget.setFrameStyle(QtGui.QFrame.StyledPanel | QtGui.QFrame.Plain)
+        widget = QtWidgets.QFrame()
+        widget.setFrameStyle(QtWidgets.QFrame.StyledPanel | QtWidgets.QFrame.Plain)
         widget.setStyleSheet('QFrame { background-color: blue; }')
 
         self._overlay = CustomOverlay(widget)

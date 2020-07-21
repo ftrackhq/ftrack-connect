@@ -2,7 +2,6 @@
 # :copyright: Copyright (c) 2015 ftrack
 
 from Qt import QtWidgets, QtCore, QtGui
-import ftrack
 
 from ftrack_connect.ui.widget import entity_path as _entity_path
 from ftrack_connect.ui.widget import entity_browser as _entity_browser
@@ -13,18 +12,24 @@ class EntitySelector(QtWidgets.QStackedWidget):
 
     entityChanged = QtCore.Signal(object)
 
-    def __init__(self, *args, **kwargs):
+    @property
+    def session(self):
+        '''Return current session.'''
+        return self._session
+
+    def __init__(self, session, parent=None):
         '''Instantiate the entity selector widget.'''
-        super(EntitySelector, self).__init__(*args, **kwargs)
+        super(EntitySelector, self).__init__(parent=parent)
         self._entity = None
 
+        self._session = session
         # Create widget used to select an entity.
         selectionWidget = QtWidgets.QFrame()
         selectionWidget.setLayout(QtWidgets.QHBoxLayout())
         selectionWidget.layout().setContentsMargins(0, 0, 0, 0)
         self.insertWidget(0, selectionWidget)
 
-        self.entityBrowser = _entity_browser.EntityBrowser(parent=self)
+        self.entityBrowser = _entity_browser.EntityBrowser(self.session, parent=self)
         self.entityBrowser.setMinimumSize(600, 400)
         self.entityBrowser.selectionChanged.connect(
             self._onEntityBrowserSelectionChanged
@@ -85,12 +90,12 @@ class EntitySelector(QtWidgets.QStackedWidget):
         if self._entity is not None:
             location = []
             try:
-                parents = self._entity.getParents()
+                parents = self._entity['ancestors']
             except AttributeError:
                 pass
             else:
                 for parent in parents:
-                    location.append(parent.getId())
+                    location.append(parent['id'])
 
             location.reverse()
             self.entityBrowser.setLocation(location)
@@ -99,15 +104,7 @@ class EntitySelector(QtWidgets.QStackedWidget):
         if self.entityBrowser.exec_():
             selected = self.entityBrowser.selected()
             if selected:
-                # Translate new api entity to instance of ftrack.Task
-                # TODO: this should not be necessary once connect has been
-                # updated to use the new api.
-                if selected[0].entity_type == 'Project':
-                    entity = ftrack.Project(selected[0]['id'])
-                else:
-                    entity = ftrack.Task(selected[0]['id'])
-
-                self.setEntity(entity)
+                self.setEntity(selected[0])
             else:
                 self.setEntity(None)
 

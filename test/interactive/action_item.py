@@ -1,8 +1,8 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-from PySide import QtGui
-
+from Qt import QtGui, QtWidgets
+import ftrack_api
 from ftrack_connect.ui.widget.action_item import ActionItem
 from ftrack_connect.ui.widget.flow_layout import ScrollingFlowWidget
 from harness import Harness
@@ -46,19 +46,24 @@ ACTIONS = [
     )]
 ]
 
+
 class WidgetHarness(Harness):
     '''Test harness for widget.'''
 
     def constructWidget(self):
         '''Return widget instance to test.'''
-        widget = ScrollingFlowWidget()
 
+        widget = ScrollingFlowWidget(self.session)
         for item in 10*ACTIONS:
-            widget.addWidget(ActionItem(item))
+            widget.addWidget(ActionItem(self.session, item))
 
         return widget
 
+
 if __name__ == '__main__':
+
     raise SystemExit(
         WidgetHarness().run()
     )
+
+

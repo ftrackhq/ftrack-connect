@@ -7,8 +7,13 @@ from Qt import QtWidgets
 class ItemSelector(QtWidgets.QComboBox):
     '''Item selector widget.'''
 
+    @property
+    def session(self):
+        '''Return current session.'''
+        return self._session
+
     def __init__(
-        self, idField='id', labelField='label', defaultLabel='Unnamed Item',
+        self, session=None, idField='id', labelField='label', defaultLabel='Unnamed Item',
         emptyLabel='Select an item', *args, **kwargs
     ):
         '''Initialise item selector widget.
@@ -20,7 +25,7 @@ class ItemSelector(QtWidgets.QComboBox):
 
         '''
         super(ItemSelector, self).__init__(*args, **kwargs)
-
+        self._session = session
         # Set style delegate to allow styling of combobox menu via Qt Stylesheet
         itemDelegate = QtWidgets.QStyledItemDelegate()
         self.setItemDelegate(itemDelegate)
@@ -55,7 +60,7 @@ class ItemSelector(QtWidgets.QComboBox):
         foundIndex = -1
         for index in xrange(1, self.count()):
             item = self.itemData(index)
-            if item.get(self._idField) == itemId:
+            if item == itemId:
                 foundIndex = index
                 break
 
@@ -69,8 +74,7 @@ class ItemSelector(QtWidgets.QComboBox):
         '''
         index = 0
         if item is not None:
-            itemId = item.get(self._idField)
-            index = self.findData(itemId)
+            index = self.findData(item)
             if index == -1:
                 index = 0
 
@@ -98,11 +102,11 @@ class ItemSelector(QtWidgets.QComboBox):
         self.clear()
 
         # Add default empty item
-        self.addItem(self._emptyLabel, None)
+        self.addItem(str(self._emptyLabel), None)
 
         for item in items:
             label = item.get(self._labelField) or self._defaultLabel
-            self.addItem(label, item)
+            self.addItem(str(label), item['id'])
 
         # Re-select previously selected item
         self.selectItem(currentItem)

@@ -5,7 +5,6 @@ import logging
 import os
 
 import ftrack_api
-import ftrack
 
 import ftrack_connect.util
 
@@ -43,17 +42,6 @@ class OpenComponentDirectoryAction(object):
 
     def resolve_path(self, component_id):
         '''Return path from *component_id*.'''
-        legacy_component = None
-        legacy_location = None
-        try:
-            legacy_component = ftrack.Component(component_id)
-            legacy_location = legacy_component.getLocation()
-        except Exception:
-            self.logger.exception(
-                'Could not pick location for legacy component {0!r}'.format(
-                    legacy_component
-                )
-            )
 
         location = None
         component = None
@@ -63,58 +51,13 @@ class OpenComponentDirectoryAction(object):
         except Exception:
             self.logger.exception(
                 'Could not pick location for component {0!r}'.format(
-                    legacy_component
+                    component
                 )
             )
 
         path = None
-        if legacy_location and location:
-            if legacy_location.getPriority() < location.priority:
-                path = legacy_component.getFilesystemPath()
-                self.logger.info(
-                    'Location is defined with a higher priority in legacy api: '
-                    '{0!r}'.format(
-                        legacy_location
-                    )
-                )
-
-            elif (
-                legacy_location.getPriority() == location.priority and
-                legacy_location.getId() == location['id'] and
-                legacy_location.getName() == 'ftrack.unmanaged'
-            ):
-                # The legacy api is better suited to resolve the path for a
-                # location in the ftrack.unmanaged location, since it will
-                # account for platform and disk while resolving.
-                path = legacy_component.getFilesystemPath()
-                self.logger.info(
-                    'Location is unmanaged on both legacy api and api.'
-                )
-
-            else:
-                path = location.get_filesystem_path(component)
-                self.logger.info(
-                    'Location is defined with a higher priority in api: '
-                    '{0!r}'.format(
-                        location
-                    )
-                )
-
-        elif legacy_location:
-            path = legacy_component.getFilesystemPath()
-            self.logger.info(
-                'Location is only defined in legacy api: {0!r}'.format(
-                    legacy_location
-                )
-            )
-
-        elif location:
+        if location:
             path = location.get_filesystem_path(component)
-            self.logger.info(
-                'Location is only in api: {0!r}'.format(
-                    legacy_location
-                )
-            )
 
         return path
 

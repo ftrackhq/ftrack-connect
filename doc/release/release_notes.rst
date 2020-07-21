@@ -15,13 +15,23 @@ Release Notes
 
         Move to Pyside2.
 
+    .. change:: changed
+        :tags: API
+
+        Remove `ftrack-python-legacy-api <https://bitbucket.org/ftrack/ftrack-python-legacy-api/src/master/>`_
+        dependency and dependent code.
+
+        .. warning::
+
+            Hooks using ftrack.EVENT_HANDLERS won't be discovered anymore.
+
     .. change:: new
         :tags: Ui
 
         Replace QtExt with Qt.py module.
 
     .. change:: changed
-        :tags: Internal
+        :tags: changed
 
         Move connector integration codebase to separate repository.
 

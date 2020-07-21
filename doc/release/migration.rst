@@ -10,8 +10,8 @@ Migration notes
 
 .. _release/migration/upcoming:
 
-Migrate to Upcoming
-===================
+Migrate to 2.0
+==============
 
 .. _release/migration/upcoming/developer_notes:
 
@@ -20,14 +20,49 @@ Users of a downloaded
 recommended to test the new version before upgrading all workstations.
 Especially if you have custom locations implemented for the `legacy api`.
 
+
 Developer notes
 ---------------
+With version 2.0 connect drops support for ftrack-python-legacy-api.
 
-The Connect publisher has changed to use the `ftrack-python-api` instead of the
-`legacy api`.
+hooks
+.....
 
-The Connect import dialog has changed to use the `ftrack-python-api` instead of
-the `legacy api`.
+This means :
+
+* Actions and events requires to update their registration from:
+
+
+.. code-block::
+
+    def register(registry, **kw):
+        if registry is not ftrack.EVENT_HANDLERS:
+            return
+
+
+to:
+
+
+.. code-block::
+
+    def register(api_object, **kw):
+        if registry is not isinstance(api_object, ftrack.Session):
+            return
+
+
+or will not be discovered anymore.
+
+connector
+.........
+
+With this version we also drop the support for connector integration.
+
+The codebase has been moved into a `separate repository <https://bitbucket.org/ftrack/ftrack-connector-legacy.git>`_
+And will have to be included in the integration that requires connector to be present.
+
+
+location
+........
 
 Since custom locations are not compatible between the different APIs all users
 running from source with custom locations for the `legacy api` must either:

@@ -5,8 +5,6 @@
 
 from Qt import QtWidgets, QtCore, QtGui
 
-import ftrack_api
-
 import ftrack_connect.worker
 
 
@@ -20,6 +18,7 @@ def ItemFactory(session, entity):
         return Root(session)
 
     return Context(session, entity)
+
 
 class Item(object):
     '''Represent ftrack entity with consistent interface.'''
