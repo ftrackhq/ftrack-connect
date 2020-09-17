@@ -120,16 +120,7 @@ class BuildResources(Command):
         try:
             pyside_rcc_command = 'pyside2-rcc'
             executable = None
-
-            # On Windows, pyside-rcc is not automatically available on the
-            # PATH so try to find it manually.
-            if sys.platform == 'win32':
-                import Qt
-                pyside_rcc_command = os.path.join(
-                    os.path.dirname(Qt.__file__),
-                    '{}.exe'.format(pyside_rcc_command)
-                )
-
+    
             # Check if the command for pyside*-rcc is in executable paths.
             if find_executable(pyside_rcc_command):
                 executable = pyside_rcc_command
