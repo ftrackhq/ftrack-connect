@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
 
-import ftrack
+import ftrack_api
 from Qt import QtWidgets
 from Qt import QtCore
 
@@ -15,11 +15,17 @@ class ContextSelector(QtWidgets.QWidget):
 
     entityChanged = QtCore.Signal(object)
 
+    @property
+    def session(self):
+        '''Return current session.'''
+        return self._entity.session
+
     def __init__(self, currentEntity, parent=None):
         '''Initialise with the *currentEntity* and *parent* widget.'''
         super(ContextSelector, self).__init__(parent=parent)
         self._entity = currentEntity
-        self.entityBrowser = entityBrowser.EntityBrowser()
+
+        self.entityBrowser = entityBrowser.EntityBrowser(self.session)
         self.entityBrowser.setMinimumWidth(600)
         self.entityPath = entityPath.EntityPath()
         self.entityBrowseButton = QtWidgets.QPushButton('Browse')
@@ -57,12 +63,12 @@ class ContextSelector(QtWidgets.QWidget):
         if self._entity is not None:
             location = []
             try:
-                parents = self._entity.getParents()
+                parents = self._entity['ancestors']
             except AttributeError:
                 pass
             else:
                 for parent in parents:
-                    location.append(parent.getId())
+                    location.append(parent['id'])
 
             location.reverse()
             self.entityBrowser.setLocation(location)
@@ -71,7 +77,7 @@ class ContextSelector(QtWidgets.QWidget):
         if self.entityBrowser.exec_():
             selected = self.entityBrowser.selected()
             if selected:
-                self.setEntity(ftrack.Task(selected[0]['id']))
+                self.setEntity(self.session.get('Task', selected[0]['id']))
             else:
                 self.setEntity(None)
 

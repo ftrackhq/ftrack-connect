@@ -6,7 +6,6 @@ import logging
 from Qt import QtWidgets
 from Qt import QtCore
 
-import ftrack
 from ftrack_api import exception
 from ftrack_api import event
 
@@ -17,7 +16,6 @@ from ftrack_connect.ui.widget import item_selector as _item_selector
 from ftrack_connect.ui.widget import thumbnail_drop_zone as _thumbnail_drop_zone
 from ftrack_connect.ui.widget import asset_options as _asset_options
 from ftrack_connect.ui.widget import entity_selector
-from ftrack_connect.session import get_shared_session
 
 import ftrack_connect.asynchronous
 import ftrack_connect.error
@@ -41,11 +39,16 @@ class Publisher(QtWidgets.QWidget):
     #: Signal to emit when an asset is created.
     assetCreated = QtCore.Signal(object)
 
-    def __init__(self, parent=None):
+    @property
+    def session(self):
+        '''Return current session.'''
+        return self._session
+
+    def __init__(self, session, parent=None):
         '''Initiate a publish view.'''
         super(Publisher, self).__init__(parent)
 
-        self.session = get_shared_session()
+        self._session = session
         self.logger = logging.getLogger(
             __name__ + '.' + self.__class__.__name__
         )
@@ -76,11 +79,11 @@ class Publisher(QtWidgets.QWidget):
         layout.addLayout(formLayout, stretch=0)
 
         # Add entity selector.
-        self.entitySelector = EntitySelector()
+        self.entitySelector = EntitySelector(self.session)
         formLayout.addRow('Linked to', self.entitySelector)
 
         # Add asset options.
-        self.assetOptions = _asset_options.AssetOptions()
+        self.assetOptions = _asset_options.AssetOptions(session=self.session)
         self.entitySelector.entityChanged.connect(self.assetOptions.setEntity)
         self.assetCreated.connect(self.assetOptions.setAsset)
         formLayout.addRow('Asset', self.assetOptions.radioButtonFrame)
@@ -91,6 +94,7 @@ class Publisher(QtWidgets.QWidget):
 
         # Add preview selector.
         self.previewSelector = _item_selector.ItemSelector(
+            session=self.session,
             labelField='componentName',
             defaultLabel='Unnamed component',
             emptyLabel='Select component to use'
@@ -156,15 +160,18 @@ class Publisher(QtWidgets.QWidget):
         versionDescription = self.versionDescription.toPlainText()
 
         previewPath = None
-        previewComponent = self.previewSelector.currentItem()
+        previewComponentId = self.previewSelector.currentItem()
+
+        previewComponent = self.session.get('Component', previewComponentId)
+
         if previewComponent:
             previewPath = previewComponent['resourceIdentifier']
 
         # ftrack does not support having Tasks as parent for Assets.
         # Therefore get parent shot/sequence etc.
-        if entity.getObjectType() == 'Task':
-            taskId = entity.getId()
-            entity = entity.getParent()
+        if entity.entity_type == 'Task':
+            taskId = entity['id']
+            entity = entity['parent']
 
         componentLocation = self.session.pick_location()
 
@@ -243,11 +250,11 @@ class Publisher(QtWidgets.QWidget):
             if taskId:
                 task = self.session.get('Context', taskId)
 
-            new_entity = self.session.get('Context', entity.getId())
+            new_entity = self.session.get('Context', entity['id'])
 
             if not asset:
                 asset_type = self.session.get(
-                    'AssetType', assetType.getId()
+                    'AssetType', assetType
                 )
                 if assetName is None:
                     assetName = asset_type['name']
@@ -261,13 +268,11 @@ class Publisher(QtWidgets.QWidget):
                     }
                 )
 
-                # For compatibily reasons, emit old asset ftrack type.
                 self.session.commit()
-                old_ftrack_asset_type = ftrack.Asset(asset['id'])
-                self.assetCreated.emit(old_ftrack_asset_type)
+                self.assetCreated.emit(asset)
 
             else:
-                asset = self.session.get('Asset', asset.getId())
+                asset = self.session.get('Asset', asset)
 
             version = self.session.create(
                 'AssetVersion',
@@ -318,7 +323,8 @@ class Publisher(QtWidgets.QWidget):
             if thumbnailFilePath:
                 version.create_thumbnail(thumbnailFilePath)
 
-            version['is_published'] = True
+            # TODO: check this does not apply anymore.
+            # version['is_published'] = True
             self.session.commit()
 
             self.publishFinished.emit(True)

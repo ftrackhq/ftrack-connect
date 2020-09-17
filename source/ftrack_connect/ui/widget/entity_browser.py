@@ -6,11 +6,9 @@
 import os
 
 from Qt import QtWidgets, QtCore, QtGui, QtCompat
-import ftrack_api
 
 import ftrack_connect.ui.model.entity_tree
 import ftrack_connect.ui.widget.overlay
-import ftrack_connect.session
 
 
 class EntityBrowser(QtWidgets.QDialog):
@@ -22,7 +20,7 @@ class EntityBrowser(QtWidgets.QDialog):
     #: Signal when selection changes. Pass new selection.
     selectionChanged = QtCore.Signal(object)
 
-    def __init__(self, root=None, parent=None):
+    def __init__(self, session, root=None, parent=None):
         '''Initialise browser with *root* entity.
 
         Use an empty *root* to start with list of projects.
@@ -35,7 +33,7 @@ class EntityBrowser(QtWidgets.QDialog):
         self._selected = []
         self._updatingNavigationBar = False
 
-        self._session = ftrack_connect.session.get_session()
+        self._session = session
 
         self._construct()
         self._postConstruction()

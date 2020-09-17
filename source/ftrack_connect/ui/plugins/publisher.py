@@ -2,7 +2,6 @@
 # :copyright: Copyright (c) 2014 ftrack
 
 from Qt import QtCore, QtWidgets
-import ftrack
 
 import ftrack_connect.ui.application
 import ftrack_connect.ui.widget.overlay
@@ -12,7 +11,7 @@ import ftrack_connect.usage
 
 def register(connect):
     '''Register publish plugin to ftrack connect.'''
-    publisher = Publisher()
+    publisher = Publisher(connect.session)
     connect.addPlugin(publisher, publisher.getName())
 
 
@@ -38,13 +37,13 @@ class Publisher(ftrack_connect.ui.application.ApplicationPlugin):
     #: Signal to emit when the entity is changed.
     entityChanged = QtCore.Signal(object)
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, session, parent=None):
         '''Instantiate the publisher widget.'''
-        super(Publisher, self).__init__(*args, **kwargs)
+        super(Publisher, self).__init__(session, parent=parent)
         layout = QtWidgets.QVBoxLayout()
         self.setLayout(layout)
 
-        self.publishView = ftrack_connect.ui.widget.publisher.Publisher()
+        self.publishView = ftrack_connect.ui.widget.publisher.Publisher(self.session)
         layout.addWidget(self.publishView)
 
         self.blockingOverlay = PublisherBlockingOverlay(self)
@@ -152,13 +151,11 @@ class Publisher(ftrack_connect.ui.application.ApplicationPlugin):
         if manageData:
             self.publishView.setManageData(True)
 
-        entity = ftrack.Task(
-            entity.get('entityId')
-        )
+        entity = self.session.get('Task', entity.get('entityId'))
         self.setEntity(entity)
         self.requestApplicationFocus.emit(self)
 
-        ftrack.EVENT_HUB.publishReply(
-            sourceEvent=event,
+        self.session.event_hub.publish_reply(
+            source_event=event,
             data={'message': 'Publisher started.'}
         )

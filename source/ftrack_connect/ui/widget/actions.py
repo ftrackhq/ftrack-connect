@@ -8,7 +8,6 @@ import functools
 
 from Qt import QtCore
 from Qt import QtWidgets
-import ftrack
 import ftrack_api.event.base
 
 import ftrack_connect.asynchronous
@@ -26,12 +25,7 @@ class ActionBase(dict):
 
     def __init__(self, *args, **kwargs):
         '''Initialise the action.
-
-        *is_new_api* can be used to specify if the new or old event hub was used
-        to discover this event.
-
         '''
-        self.is_new_api = kwargs.pop('is_new_api', False)
         super(ActionBase, self).__init__(*args, **kwargs)
 
 
@@ -53,7 +47,7 @@ class ActionSection(flow_layout.ScrollingFlowWidget):
     def addActions(self, actions):
         '''Add *actions* to section'''
         for item in actions:
-            actionItem = action_item.ActionItem(item, parent=self)
+            actionItem = action_item.ActionItem(self.session, item, parent=self)
             actionItem.actionLaunched.connect(self._onActionLaunched)
             actionItem.beforeActionLaunch.connect(self._onBeforeActionLaunched)
             self.addWidget(actionItem)
@@ -66,6 +60,7 @@ class ActionSection(flow_layout.ScrollingFlowWidget):
         '''Forward beforeActionLaunch signal.'''
         self.beforeActionLaunch.emit(action)
 
+
 class Actions(QtWidgets.QWidget):
     '''Actions widget. Displays and runs actions with a selectable context.'''
 
@@ -76,14 +71,19 @@ class Actions(QtWidgets.QWidget):
     #: Emitted when recent actions has been modified
     recentActionsChanged = QtCore.Signal(name='recentActionsChanged')
 
-    def __init__(self, parent=None):
+    @property
+    def session(self):
+        '''Return current session.'''
+        return self._session
+
+    def __init__(self, session, parent=None):
         '''Initiate a actions view.'''
         super(Actions, self).__init__(parent)
 
         self.logger = logging.getLogger(
             __name__ + '.' + self.__class__.__name__
         )
-        self._session = ftrack_connect.session.get_session()
+        self._session = session
 
         layout = QtWidgets.QVBoxLayout()
         self.setLayout(layout)
@@ -92,7 +92,7 @@ class Actions(QtWidgets.QWidget):
         self._recentActions = []
         self._actions = []
 
-        self._entitySelector = entity_selector.EntitySelector()
+        self._entitySelector = entity_selector.EntitySelector(self.session)
         self._entitySelector.setFixedHeight(50)
         self._entitySelector.entityChanged.connect(
             self._onEntityChanged
@@ -102,7 +102,7 @@ class Actions(QtWidgets.QWidget):
 
         self._recentLabel = QtWidgets.QLabel('Recent')
         layout.addWidget(self._recentLabel)
-        self._recentSection = ActionSection(self)
+        self._recentSection = ActionSection(self.session, self)
         self._recentSection.setFixedHeight(100)
         self._recentSection.beforeActionLaunch.connect(self._onBeforeActionLaunched)
         self._recentSection.actionLaunched.connect(self._onActionLaunched)
@@ -111,7 +111,7 @@ class Actions(QtWidgets.QWidget):
         self._allLabel = QtWidgets.QLabel('Discovering actions..')
         self._allLabel.setAlignment(QtCore.Qt.AlignCenter)
         layout.addWidget(self._allLabel)
-        self._allSection = ActionSection(self)
+        self._allSection = ActionSection(self.session, self)
         self._allSection.beforeActionLaunch.connect(self._onBeforeActionLaunched)
         self._allSection.actionLaunched.connect(self._onActionLaunched)
         layout.addWidget(self._allSection)
@@ -264,8 +264,8 @@ class Actions(QtWidgets.QWidget):
         '''Return current user id.'''
         if not self._currentUserId:
 
-            user = self._session.query(
-                'User where username="{0}"'.format(self._session.api_user)
+            user = self.session.query(
+                'User where username="{0}"'.format(self.session.api_user)
             ).one()
             self._currentUserId = user['id']
 
@@ -276,7 +276,7 @@ class Actions(QtWidgets.QWidget):
         if not self._isRecentActionsEnabled():
             return []
 
-        metadata = self._session.query(
+        metadata = self.session.query(
             'Metadata where key is "{0}" and parent_type is "User" '
             'and parent_id is "{1}"'.format(
                 self.RECENT_METADATA_KEY, self._getCurrentUserId()
@@ -309,7 +309,7 @@ class Actions(QtWidgets.QWidget):
         recentActions = recentActions[:self.RECENT_ACTIONS_LENGTH]
         encodedRecentActions = json.dumps(recentActions)
 
-        self._session.ensure('Metadata', {
+        self.session.ensure('Metadata', {
             'parent_type': 'User',
             'parent_id': self._getCurrentUserId(),
             'key': self.RECENT_METADATA_KEY,
@@ -320,25 +320,7 @@ class Actions(QtWidgets.QWidget):
         '''Obtain new actions synchronously for *context*.'''
         discoveredActions = []
 
-        results = ftrack.EVENT_HUB.publish(
-            ftrack.Event(
-                topic='ftrack.action.discover',
-                data=dict(
-                    selection=context
-                )
-            ),
-            synchronous=True
-        )
-
-        for result in results:
-            if result:
-                for action in result.get('items', []):
-                    discoveredActions.append(
-                        ActionBase(action, is_new_api=False)
-                    )
-
-        session = ftrack_connect.session.get_shared_session()
-        results = session.event_hub.publish(
+        results = self.session.event_hub.publish(
             ftrack_api.event.base.Event(
                 topic='ftrack.action.discover',
                 data=dict(
@@ -352,7 +334,7 @@ class Actions(QtWidgets.QWidget):
             if result:
                 for action in result.get('items', []):
                     discoveredActions.append(
-                        ActionBase(action, is_new_api=True)
+                        ActionBase(action)
                     )
 
         # Sort actions by label

@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-from PySide import QtGui
+from Qt import QtGui, QtWidgets, QtCore
 
 import ftrack_connect.ui.widget.entity_browser
 from harness import Harness
@@ -12,7 +12,7 @@ class WidgetHarness(Harness):
 
     def constructWidget(self):
         '''Return widget instance to test.'''
-        widget = ftrack_connect.ui.widget.entity_browser.EntityBrowser()
+        widget = ftrack_connect.ui.widget.entity_browser.EntityBrowser(self.session)
         widget.setMinimumSize(600, 400)
         self._browser = widget
 
@@ -26,14 +26,14 @@ class WidgetHarness(Harness):
 
     def constructController(self, widget):
         '''Return controller for *widget*.'''
-        controlWidget = QtGui.QWidget()
-        layout = QtGui.QHBoxLayout()
+        controlWidget = QtWidgets.QWidget()
+        layout = QtWidgets.QHBoxLayout()
         controlWidget.setLayout(layout)
 
-        self._location = QtGui.QLineEdit()
+        self._location = QtWidgets.QLineEdit()
         layout.addWidget(self._location)
 
-        self._applyButton = QtGui.QPushButton('Apply')
+        self._applyButton = QtWidgets.QPushButton('Apply')
         layout.addWidget(self._applyButton)
 
         self._location.returnPressed.connect(self._applyButton.click)

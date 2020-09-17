@@ -106,7 +106,7 @@ def register(session, **kw):
     '''Register hooks.'''
 
     logger = logging.getLogger(
-        'ftrack_connect:resolver.register'
+        'ftrack_connect.resolver.register'
     )
 
     # Validate that session is an instance of ftrack_api.session.Session. If

@@ -24,14 +24,19 @@ class AssetOptions(object):
         labels / columns to line up.
     '''
 
-    def __init__(self, *args, **kwargs):
+    @property
+    def session(self):
+        '''Return current session.'''
+        return self._session
+
+    def __init__(self, session):
         '''Instantiate the asset options.'''
-        super(AssetOptions, self).__init__(*args, **kwargs)
+        super(AssetOptions, self).__init__()
 
         self.logger = logging.getLogger(
             __name__ + '.' + self.__class__.__name__
         )
-
+        self._session = session
         self._entity = None
         self._hasEditedName = False
 
@@ -47,10 +52,10 @@ class AssetOptions(object):
         self.existingAssetButton.toggled.connect(self._onExistingAssetToggled)
         self.radioButtonFrame.layout().addWidget(self.existingAssetButton)
 
-        self.existingAssetSelector = _asset_selector.AssetSelector()
-        self.assetTypeSelector = _asset_type_selector.AssetTypeSelector()
+        self.existingAssetSelector = _asset_selector.AssetSelector(session=self.session)
+        self.assetTypeSelector = _asset_type_selector.AssetTypeSelector(session=self.session)
         self.assetNameLineEdit = _asset_name_edit.AssetNameEdit(
-            self.existingAssetSelector, self.assetTypeSelector
+            self.session, self.existingAssetSelector, self.assetTypeSelector
         )
 
         self.assetTypeSelector.currentIndexChanged.connect(self._onAssetTypeChanged)
@@ -87,10 +92,13 @@ class AssetOptions(object):
 
     def _onAssetTypeChanged(self, currentIndex):
         '''Update asset name when asset type changes, unless user has edited name.'''
-        assetType = self.assetTypeSelector.itemData(currentIndex)
+        assetTypeId = self.assetTypeSelector.itemData(currentIndex)
+        if not assetTypeId:
+            return
+
         if not self._hasEditedName:
-            assetName = assetType and assetType.getName() or ''
-            self.assetNameLineEdit.setText(assetName)
+            assetType = self.session.get('AssetType', assetTypeId)
+            self.assetNameLineEdit.setText(assetType['name'])
 
     def _toggleFieldAndLabel(self, field, toggled):
         '''Set visibility for *field* with attached label to *toggled*.'''

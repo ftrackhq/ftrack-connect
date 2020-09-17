@@ -253,17 +253,18 @@ configuration = dict(
         'setuptools_scm'
     ],
     install_requires=[
-        'ftrack-python-legacy-api >=3, <4',
-        'ftrack-python-api >= 1, < 2',
+        'ftrack-python-api >= 1, < 3',
         'PySide >= 1.2.2, < 2',
         'Riffle',
         'arrow >= 0.4.6, < 1',
-        'appdirs == 1.4.0',
+        'appdirs >= 1.4, < 1.5',
         'requests >= 2, <3',
         'lowdown >= 0.1.0, < 1',
         'qt.py >=1.0.0, < 2',
     ],
-    tests_require=['pytest >= 2.3.5, < 3'],
+    tests_require=[
+        'pytest >= 2.3.5, < 3'
+    ],
     cmdclass={
         'build': Build,
         'build_ext': Build,

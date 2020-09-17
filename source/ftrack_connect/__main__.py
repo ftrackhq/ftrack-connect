@@ -8,6 +8,7 @@ import sys
 import signal
 import os
 import pkg_resources
+import ftrack_api
 
 bindings = ['PySide', 'PySide2']
 os.environ.setdefault('QT_PREFERRED_BINDING', os.pathsep.join(bindings))
@@ -34,6 +35,7 @@ except pkg_resources.DistributionNotFound:
 
 import ftrack_connect.ui.application
 import ftrack_connect.ui.theme
+import ftrack_connect.session
 
 
 def main(arguments=None):
@@ -117,8 +119,11 @@ def main(arguments=None):
     # Enable ctrl+c to quit application when started from command line.
     signal.signal(signal.SIGINT, signal.SIG_DFL)
 
+    session = ftrack_api.Session(auto_connect_event_hub=True)
+
     # Construct main connect window and apply theme.
     connectWindow = ftrack_connect.ui.application.Application(
+        session=session,
         theme=namespace.theme
     )
 
