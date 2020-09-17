@@ -269,16 +269,17 @@ configuration = dict(
     ],
     install_requires=[
         'PySide2 >=5, <6',
-        'ftrack-python-legacy-api >=3, <4',
-        'ftrack-python-api >= 1, < 2',
         'riffle @ git+https://gitlab.com/lorenzo.angeli/riffle.git@backlog/support-pyside2#egg=riffle-0.4.0',
+        'ftrack-python-api >= 1, < 3',
         'arrow >= 0.4.6, < 1',
-        'appdirs == 1.4.0',
+        'appdirs >= 1.4, < 1.5',
         'requests >= 2, <3',
         'lowdown >= 0.1.0, < 1',
         'Qt.py >=1.0.0, < 2',
     ],
-    tests_require=['pytest >= 2.3.5, < 3'],
+    tests_require=[
+        'pytest >= 2.3.5, < 3'
+    ],
     cmdclass={
         'build': Build,
         'build_ext': Build,

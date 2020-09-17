@@ -110,8 +110,14 @@ class ScrollingFlowWidget(QtWidgets.QWidget):
     Use its addWidget() method to flow children into it.
     '''
 
-    def __init__(self,parent=None):
-        super(ScrollingFlowWidget,self).__init__(parent)
+    @property
+    def session(self):
+        '''Return current session.'''
+        return self._session
+
+    def __init__(self, session, parent=None):
+        super(ScrollingFlowWidget, self).__init__(parent=parent)
+        self._session = session
         grid = QtWidgets.QGridLayout(self)
         scroll = ResizeScrollArea(parent)
         self._wrapper = QtWidgets.QWidget(scroll)

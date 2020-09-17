@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-from PySide import QtGui
+from Qt import QtGui, QtWidgets, QtCore
 
 import ftrack_connect.ui.widget.indicator
 from harness import Harness
@@ -19,14 +19,14 @@ class WidgetHarness(Harness):
 
     def constructController(self, widget):
         '''Return controller for *widget*.'''
-        controlWidget = QtGui.QWidget()
-        layout = QtGui.QHBoxLayout()
+        controlWidget = QtWidgets.QWidget()
+        layout = QtWidgets.QHBoxLayout()
         controlWidget.setLayout(layout)
 
-        startButton = QtGui.QPushButton('Start')
+        startButton = QtWidgets.QPushButton('Start')
         layout.addWidget(startButton)
 
-        stopButton = QtGui.QPushButton('Stop')
+        stopButton = QtWidgets.QPushButton('Stop')
         layout.addWidget(stopButton)
 
         startButton.clicked.connect(widget.start)

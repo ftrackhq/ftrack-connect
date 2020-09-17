@@ -2,9 +2,9 @@
 # :copyright: Copyright (c) 2014 ftrack
 
 from Qt import QtWidgets, QtCore
-import ftrack
 
 import ftrack_connect.asynchronous
+import ftrack_connect.session
 
 
 class EntityPath(QtWidgets.QLineEdit):
@@ -20,22 +20,11 @@ class EntityPath(QtWidgets.QLineEdit):
     @ftrack_connect.asynchronous.asynchronous
     def setEntity(self, entity):
         '''Set the *entity* for this widget.'''
-        names = []
-        entities = [entity]
-        try:
-            entities.extend(entity.getParents())
-        except AttributeError:
-            pass
+        if not entity:
+            return
 
-        for entity in entities:
-            if entity:
-                if isinstance(entity, ftrack.Show):
-                    names.append(entity.getFullName())
-                else:
-                    names.append(entity.getName())
+        names = [e['name'] for e in entity.get('link', [])]
 
-        # Reverse names since project should be first.
-        names.reverse()
         self.path_ready.emit(names)
 
     def on_path_ready(self, names):
