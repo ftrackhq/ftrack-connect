@@ -3,7 +3,7 @@
 
 import sys
 import traceback
-import cStringIO
+from io import StringIO
 import logging
 
 from Qt import QtWidgets, QtCore
@@ -25,7 +25,7 @@ class UncaughtError(QtWidgets.QMessageBox):
 
     def getTraceback(self, exceptionTraceback):
         '''Return message from *exceptionTraceback*.'''
-        tracebackInfoStream = cStringIO.StringIO()
+        tracebackInfoStream = StringIO()
         traceback.print_tb(
             exceptionTraceback,
             None,
