@@ -199,8 +199,8 @@ class Actions(QtWidgets.QWidget):
         context = []
         try:
             context = [{
-                'entityId': entity.get('entityId'),
-                'entityType': entity.get('entityType'),
+                'entityId': entity['id'],
+                'entityType': entity.entity_type,
             }]
             self.logger.debug(u'Context changed: {0}'.format(context))
         except Exception:
