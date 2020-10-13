@@ -139,6 +139,15 @@ class Application(QtWidgets.QMainWindow):
         self.loginWidget = _login.Login()
         self.loginSignal.connect(self.loginWithCredentials)
         self.login()
+        self.cache_entities()
+
+    def cache_entities(self):
+        '''Cache known entity types to speedup the loading.'''
+        asset_type = self.session.query('AssetType')
+        self.session.populate(asset_type, 'name, short')
+
+        task_type = self.session.query('Type')
+        self.session.populate(task_type, 'name')
 
     def theme(self):
         '''Return current theme.'''
