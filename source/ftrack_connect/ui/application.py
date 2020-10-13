@@ -139,15 +139,15 @@ class Application(QtWidgets.QMainWindow):
         self.loginWidget = _login.Login()
         self.loginSignal.connect(self.loginWithCredentials)
         self.login()
-        self.cache_entities()
-
-    def cache_entities(self):
-        '''Cache known entity types to speedup the loading.'''
-        asset_type = self.session.query('AssetType')
-        self.session.populate(asset_type, 'name, short')
-
-        task_type = self.session.query('Type')
-        self.session.populate(task_type, 'name')
+    #     self.cache_entities()
+    #
+    # def cache_entities(self):
+    #     '''Cache known entity types to speedup the loading.'''
+    #     asset_type = self.session.query('AssetType')
+    #     self.session.populate(asset_type, 'name, short')
+    #
+    #     task_type = self.session.query('Type')
+    #     self.session.populate(task_type, 'name')
 
     def theme(self):
         '''Return current theme.'''
@@ -409,6 +409,11 @@ class Application(QtWidgets.QMainWindow):
         if hasattr(self, '_hub_thread'):
             self._hub_thread.quit()
 
+        # Listen to events using the new API event hub. This is required to
+        # allow reconfiguring the storage scenario.
+        self._hub_thread = _event_hub_thread.NewApiEventHubThread()
+        self._hub_thread.start(self.session)
+
         plugin_paths = []
 
         event_plugin_paths = os.environ.get(
@@ -441,10 +446,6 @@ class Application(QtWidgets.QMainWindow):
         )
         self.eventHubSignal.connect(self._onConnectTopicEvent)
 
-        # Listen to events using the new API event hub. This is required to
-        # allow reconfiguring the storage scenario.
-        self._hub_thread = _event_hub_thread.NewApiEventHubThread()
-        self._hub_thread.start(self.session)
 
         ftrack_api._centralized_storage_scenario.register_configuration(
             self.session
