@@ -22,7 +22,7 @@ class AssetTypeSelector(_item_selector.ItemSelector):
         self.loadAssetTypes()
 
 
-    # @ftrack_connect.asynchronous.asynchronous
+    @ftrack_connect.asynchronous.asynchronous
     def loadAssetTypes(self):
         '''Load asset types and add to selector.'''
         assetTypes = self.session.query('AssetType').all()
