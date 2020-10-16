@@ -151,6 +151,7 @@ class AboutDialog(QtWidgets.QDialog):
         ]
 
         coreTemplate = '''
+            <h4>Version:</h4>
             <p><b>Connect: </b>{core_versions}</p>
             <p><b>PySide: </b>{pyside_version}</p>
             <p><b>Qt: </b>{qt_version}</p>
