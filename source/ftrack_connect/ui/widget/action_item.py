@@ -46,7 +46,6 @@ class ActionItem(QtWidgets.QWidget):
         multiple actions are specified.
         '''
         super(ActionItem, self).__init__(parent=parent)
-        self.logger.info('ADDING ACTIONS: {}'.format(actions))
         self._session = session
         self.logger = logging.getLogger(
             __name__ + '.' + self.__class__.__name__

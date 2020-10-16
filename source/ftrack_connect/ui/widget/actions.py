@@ -327,13 +327,11 @@ class Actions(QtWidgets.QWidget):
                 selection=context
             )
         )
-        self.logger.info('Emitting EVT {}'.format(event))
 
         results = self.session.event_hub.publish(
             event,
             synchronous=True
         )
-        self.logger.info('Loading action {} for context :{}'.format(results, context))
 
         for result in results:
             if result:
