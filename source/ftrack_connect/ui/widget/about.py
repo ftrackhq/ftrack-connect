@@ -4,6 +4,7 @@ import os
 import json
 import sys
 import textwrap
+import platform
 
 import Qt
 from Qt import QtCore, QtWidgets, QtGui
@@ -150,17 +151,16 @@ class AboutDialog(QtWidgets.QDialog):
         ]
 
         coreTemplate = '''
-        <h4>Version:</h4>
-        <p>{core_versions}</p>
-        <h4>Ui Framework</h4>
-        <p>{ui_framework}</p>
-        <h4>Python Version</h4>
-        <p>{python_version}</p>       
-        <h4>Server and user:</h4>
-        <p>{server}<br>
-        {user}<br></p>
+            <p><b>Connect: </b>{core_versions}</p>
+            <p><b>PySide: </b>{pyside_version}</p>
+            <p><b>Qt: </b>{qt_version}</p>
+            <p><b>Python Version: </b>{python_version}</p>     
+            <p><b>Hostname: </b>{host}</p>
+            <p><b>Os: </b>{os}</p>
+            <hr>  
+            <p><b>Server: </b>{server}</p>
+            <p><b>User: </b>{user}</p>
         '''
-
         itemTemplate = '{name}: {version}<br>'
 
         coreVersions = ''
@@ -174,8 +174,11 @@ class AboutDialog(QtWidgets.QDialog):
             core_versions=coreVersions,
             server=server,
             user=user,
-            ui_framework=Qt.__binding__,
-            python_version=sys.version
+            pyside_version=Qt.__version__,
+            qt_version=QtCore.qVersion(),
+            python_version=sys.version,
+            host=platform.node(),
+            os=platform.platform()
         )
 
         if plugins:

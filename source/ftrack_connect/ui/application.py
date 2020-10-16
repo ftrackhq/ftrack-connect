@@ -697,7 +697,7 @@ class Application(QtWidgets.QMainWindow):
         aboutDialog.setInformation(
             versionData=versionData,
             server=os.environ.get('FTRACK_SERVER', 'Not set'),
-            user=getpass.getuser(),
+            user=self.session.api_user,
         )
 
         aboutDialog.exec_()
