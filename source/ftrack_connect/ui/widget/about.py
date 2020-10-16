@@ -9,7 +9,7 @@ import platform
 import Qt
 from Qt import QtCore, QtWidgets, QtGui
 
-
+import ftrack_api
 from ftrack_connect.config import get_log_directory
 import ftrack_connect.util
 
@@ -151,8 +151,9 @@ class AboutDialog(QtWidgets.QDialog):
         ]
 
         coreTemplate = '''
-            <h4>Version:</h4>
             <p><b>Connect: </b>{core_versions}</p>
+            <hr>
+            <p><b>Python API: </b>{api_versions}</p>
             <p><b>PySide: </b>{pyside_version}</p>
             <p><b>Qt: </b>{qt_version}</p>
             <p><b>Python Version: </b>{python_version}</p>     
@@ -175,6 +176,7 @@ class AboutDialog(QtWidgets.QDialog):
             core_versions=coreVersions,
             server=server,
             user=user,
+            api_versions=ftrack_api.__version__,
             pyside_version=Qt.__version__,
             qt_version=QtCore.qVersion(),
             python_version=sys.version,
