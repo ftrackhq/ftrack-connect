@@ -115,6 +115,7 @@ def main(arguments=None):
     application.setOrganizationName('ftrack')
     application.setOrganizationDomain('ftrack.com')
     application.setQuitOnLastWindowClosed(False)
+    application.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
 
     # Enable ctrl+c to quit application when started from command line.
     signal.signal(signal.SIGINT, signal.SIG_DFL)
