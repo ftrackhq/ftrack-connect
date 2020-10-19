@@ -109,7 +109,7 @@ def main(arguments=None):
     if os.name == 'posix':
         QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_X11InitThreads)
 
-    # ensure support for highdpi
+    # Ensure support for highdpi
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
 
     # Construct global application.
