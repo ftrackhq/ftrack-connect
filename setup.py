@@ -270,8 +270,8 @@ configuration = dict(
         'Qt.py >=1.0.0, < 2',
     ],
     dependency_links=[
-        # 'git+https://bitbucket.org/kalemas/ftrack-python-api.git@wip/thread-local-auto-populate#egg=ftrack-python-api-2.0.0',
-        'git+https://bitbucket.org/kalemas/ftrack-python-api.git@wip-guard-with-rlock#egg=ftrack-python-api-2.0.0',
+        'git+https://bitbucket.org/kalemas/ftrack-python-api.git@wip/thread-local-auto-populate#egg=ftrack-python-api-2.0.0',
+        #'git+https://bitbucket.org/kalemas/ftrack-python-api.git@wip-guard-with-rlock#egg=ftrack-python-api-2.0.0',
 
     ],
     tests_require=[
