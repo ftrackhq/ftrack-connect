@@ -18,14 +18,12 @@ def asynchronous(method):
             https://sourceforge.net/tracker/?func=detail&atid=105470&aid=1230540&group_id=5470
             '''
 
-            session = args[0].session
-            with session.auto_populating(True):
-                try:
-                    method(*args, **kwargs)
-                except (KeyboardInterrupt, SystemExit):
-                    raise
-                except:
-                    sys.excepthook(*sys.exc_info())
+            try:
+                method(*args, **kwargs)
+            except (KeyboardInterrupt, SystemExit):
+                raise
+            except:
+                sys.excepthook(*sys.exc_info())
 
         thread = threading.Thread(
             target=exceptHookWrapper,
