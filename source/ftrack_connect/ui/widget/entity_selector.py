@@ -52,6 +52,7 @@ class EntitySelector(QtWidgets.QStackedWidget):
         self.insertWidget(1, presentationWidget)
 
         self.entityPath = _entity_path.EntityPath()
+        self.entityPath.session = self.session
         presentationWidget.layout().addWidget(self.entityPath)
 
         self.discardEntityButton = QtWidgets.QPushButton()

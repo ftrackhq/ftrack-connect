@@ -262,15 +262,12 @@ configuration = dict(
         'clique >=2, <3',
         'PySide2 >=5, <6',
         'Riffle >= 1',
-        'ftrack-python-api',
+        'ftrack-python-api @git+https://bitbucket.org/ftrack/ftrack-python-api.git@master#egg=ftrack-python-api-2.0.0',
         'arrow >= 0.4.6, < 1',
         'appdirs >= 1.4, < 1.5',
         'requests >= 2, <3',
         'lowdown >= 0.1.0, < 1',
         'Qt.py >=1.0.0, < 2',
-    ],
-    dependency_links = [
-        'git+https://bitbucket.org/kalemas/ftrack-python-api.git@wip-guard-with-rlock#egg=ftrack-python-api-2.0.0'
     ],
     tests_require=[
         'pytest >= 2.3.5, < 3'
