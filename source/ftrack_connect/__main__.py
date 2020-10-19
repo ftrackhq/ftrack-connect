@@ -109,13 +109,16 @@ def main(arguments=None):
     if os.name == 'posix':
         QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_X11InitThreads)
 
+    # ensure support for highdpi
+    QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
+
     # Construct global application.
+
     application = QtWidgets.QApplication([])
 
     application.setOrganizationName('ftrack')
     application.setOrganizationDomain('ftrack.com')
     application.setQuitOnLastWindowClosed(False)
-    application.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
 
     # Enable ctrl+c to quit application when started from command line.
     signal.signal(signal.SIGINT, signal.SIG_DFL)
