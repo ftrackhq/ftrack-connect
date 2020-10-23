@@ -249,7 +249,7 @@ configuration = dict(
         'ftrack-python-legacy-api >=3, <4',
         'ftrack-python-api >= 1, < 2',
         'PySide >= 1.2.2, < 2',
-        'Riffle',
+        'Riffle==0.3.0',
         'arrow >= 0.4.6, < 1',
         'appdirs == 1.4.0',
         'requests >= 2, <3',
