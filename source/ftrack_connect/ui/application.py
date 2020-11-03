@@ -8,6 +8,7 @@ import requests
 import requests.exceptions
 import uuid
 import logging
+import weakref
 
 import appdirs
 
@@ -259,7 +260,7 @@ class Application(QtWidgets.QMainWindow):
     def _setup_session(self, plugin_paths=None):
         '''Setup a new python API session.'''
         if hasattr(self, '_hub_thread'):
-            self._hub_thread.quit()
+            self._hub_thread.cleanup()
 
         if plugin_paths is None:
             plugin_paths = self.pluginHookPaths
@@ -276,6 +277,7 @@ class Application(QtWidgets.QMainWindow):
         # allow reconfiguring the storage scenario.
         self._hub_thread = _event_hub_thread.NewApiEventHubThread()
         self._hub_thread.start(session)
+        weakref.finalize(self._hub_thread, self._hub_thread.cleanup)
 
         ftrack_api._centralized_storage_scenario.register_configuration(
             session
