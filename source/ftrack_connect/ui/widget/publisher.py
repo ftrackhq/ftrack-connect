@@ -161,11 +161,10 @@ class Publisher(QtWidgets.QWidget):
 
         previewPath = None
         previewComponentId = self.previewSelector.currentItem()
-
-        previewComponent = self.session.get('Component', previewComponentId)
-
-        if previewComponent:
-            previewPath = previewComponent['resourceIdentifier']
+        if previewComponentId:
+            previewComponent = self.session.get('Component', previewComponentId)
+            if previewComponent:
+                previewPath = previewComponent['resourceIdentifier']
 
         # ftrack does not support having Tasks as parent for Assets.
         # Therefore get parent shot/sequence etc.
