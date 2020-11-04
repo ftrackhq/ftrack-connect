@@ -441,7 +441,7 @@ class Application(QtWidgets.QMainWindow):
 
         self.session.event_hub.subscribe(
             'topic=ftrack.connect and source.user.username="{0}"'.format(
-                self.session._api_user
+                self.session.api_user
             ),
             self._relayEventHubEvent
         )
@@ -453,7 +453,7 @@ class Application(QtWidgets.QMainWindow):
         # that connect is running.
         self.session.event_hub.subscribe(
             'topic=ftrack.connect.discover and source.user.username="{0}"'.format(
-                self.session._api_user
+                self.session.api_user
             ),
             lambda event : True
         )
