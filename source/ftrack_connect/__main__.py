@@ -38,10 +38,8 @@ import ftrack_connect.ui.theme
 
 def main(arguments=None):
     '''ftrack connect.'''
-    if arguments is None:
-        arguments = []
 
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(prog='ftrack-connect')
 
     # Allow setting of logging level from arguments.
     loggingLevels = {}
@@ -139,5 +137,5 @@ def main(arguments=None):
 
 if __name__ == '__main__':
     raise SystemExit(
-        main(sys.argv[1:])
+        main()
     )
