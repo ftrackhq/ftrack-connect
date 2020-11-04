@@ -4,6 +4,7 @@
 import sys
 import os
 import subprocess
+import re
 import glob
 
 from pkg_resources import parse_version
@@ -15,7 +16,9 @@ from setuptools.command.test import test as TestCommand
 import distutils.dir_util
 import distutils
 import fileinput
+from distutils.spawn import find_executable
 from pkg_resources import get_distribution, DistributionNotFound
+
 
 ROOT_PATH = os.path.dirname(
     os.path.realpath(__file__)
@@ -38,8 +41,9 @@ RESOURCE_TARGET_PATH = os.path.join(
 )
 
 README_PATH = os.path.join(os.path.dirname(__file__), 'README.rst')
-
 PACKAGES_PATH = os.path.join(os.path.dirname(__file__), 'source')
+
+
 
 # Read version from source.
 try:
@@ -70,20 +74,19 @@ class BuildResources(Command):
         self.resource_target_path = RESOURCE_TARGET_PATH
 
     def _replace_imports_(self):
-        '''Replace imports in resource files to QtExt instead of QtCore.
+        '''Replace imports in resource files to Qt instead of QtCore.
 
         This allows the resource file to work with many different versions of
         Qt.
 
         '''
-        replace = 'from Qt import QtCore'
-        for line in fileinput.input(self.resource_target_path, inplace=True):
-            if 'import Qt' in line:
+        replace = r'from Qt import QtCore'
+        for line in fileinput.input(self.resource_target_path, inplace=True, mode='r'):
+            if r'import QtCore' in line:
                 # Calling print will yield a new line in the resource file.
-                print line.replace(line, replace)
+                sys.stdout.write(line.replace(line, replace))
             else:
-                # Calling print will yield a new line in the resource file.
-                print line
+                sys.stdout.write(line)
 
     def run(self):
         '''Run build.'''
@@ -115,24 +118,27 @@ class BuildResources(Command):
                 print('Compiled {0}'.format(css_target))
 
         try:
-            pyside_rcc_command = 'pyside-rcc'
+            pyside_rcc_command = 'pyside2-rcc'
+            executable = None
+    
+            # Check if the command for pyside*-rcc is in executable paths.
+            if find_executable(pyside_rcc_command):
+                executable = pyside_rcc_command
 
-            # On Windows, pyside-rcc is not automatically available on the
-            # PATH so try to find it manually.
-            if sys.platform == 'win32':
-                import PySide
-                pyside_rcc_command = os.path.join(
-                    os.path.dirname(PySide.__file__),
-                    'pyside-rcc.exe'
-                )
+            if not executable:
+                raise IOError('Not executable found for pyside2-rcc ')
 
-            subprocess.check_call([
-                pyside_rcc_command,
+            # Use the first occurrence if more than one is found.
+            cmd = [
+                executable,
                 '-o',
                 self.resource_target_path,
                 self.resource_source_path
-            ])
-        except (subprocess.CalledProcessError, OSError) as error:
+            ]
+            print('running : {}'.format(cmd))
+            subprocess.check_call(cmd)
+
+        except (subprocess.CalledProcessError, OSError):
             raise RuntimeError(
                 'Error compiling resource.py using pyside-rcc. Possibly '
                 'pyside-rcc could not be found. You might need to manually add '
@@ -243,9 +249,9 @@ configuration = dict(
         '': 'source'
     },
     setup_requires=[
-        'qt.py >=1.0.0, < 2',
+        'PySide2 >=5, <6',
+        'Qt.py >=1.0.0, < 2',
         'pyScss >= 1.2.0, < 2',
-        'PySide >= 1.2.2, < 2',
         'sphinx >= 1.2.2, < 2',
         'sphinx_rtd_theme >= 0.1.6, < 2',
         'lowdown >= 0.1.0, < 1',
@@ -253,14 +259,20 @@ configuration = dict(
         'setuptools_scm'
     ],
     install_requires=[
-        'ftrack-python-api >= 1, < 3',
-        'PySide >= 1.2.2, < 2',
-        'Riffle',
+        'clique >=2, <3',
+        'PySide2 >=5, <6',
+        'Riffle >= 1',
+        'ftrack-python-api',
         'arrow >= 0.4.6, < 1',
         'appdirs >= 1.4, < 1.5',
         'requests >= 2, <3',
         'lowdown >= 0.1.0, < 1',
-        'qt.py >=1.0.0, < 2',
+        'Qt.py >=1.0.0, < 2',
+    ],
+    dependency_links=[
+        'git+https://bitbucket.org/kalemas/ftrack-python-api.git@wip/thread-local-auto-populate#egg=ftrack-python-api-2.0.0',
+        #'git+https://bitbucket.org/kalemas/ftrack-python-api.git@wip-guard-with-rlock#egg=ftrack-python-api-2.0.0',
+
     ],
     tests_require=[
         'pytest >= 2.3.5, < 3'
@@ -285,7 +297,8 @@ configuration = dict(
             glob.glob(os.path.join(RESOURCE_PATH, 'hook', '*.py'))
         )
     ],
-    zip_safe=False
+    zip_safe=False,
+    python_requires=">=3, <4.0"
 )
 
 

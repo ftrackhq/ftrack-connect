@@ -17,6 +17,7 @@ def asynchronous(method):
             This is needed in threads because of
             https://sourceforge.net/tracker/?func=detail&atid=105470&aid=1230540&group_id=5470
             '''
+
             try:
                 method(*args, **kwargs)
             except (KeyboardInterrupt, SystemExit):

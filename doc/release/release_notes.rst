@@ -11,6 +11,13 @@ Release Notes
 .. release:: Upcoming
 
 
+	
+
+    .. change:: changed
+        :tags: Ui
+
+        Move to Pyside2.
+
     .. change:: changed
         :tags: API
 
