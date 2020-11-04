@@ -2,7 +2,6 @@
 # :copyright: Copyright (c) 2014 ftrack
 
 import os
-import getpass
 import platform
 import requests
 import requests.exceptions
@@ -441,8 +440,8 @@ class Application(QtWidgets.QMainWindow):
         self._discoverTabPlugins()
 
         self.session.event_hub.subscribe(
-            'topic=ftrack.connect and source.user.username={0}'.format(
-                getpass.getuser()
+            'topic=ftrack.connect and source.user.username="{0}"'.format(
+                self.session._api_user
             ),
             self._relayEventHubEvent
         )
@@ -453,8 +452,8 @@ class Application(QtWidgets.QMainWindow):
         # Listen to discover connect event and respond to let the sender know
         # that connect is running.
         self.session.event_hub.subscribe(
-            'topic=ftrack.connect.discover and source.user.username={0}'.format(
-                getpass.getuser()
+            'topic=ftrack.connect.discover and source.user.username="{0}"'.format(
+                self.session._api_user
             ),
             lambda event : True
         )
