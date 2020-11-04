@@ -3,7 +3,7 @@
 
 import sys
 import traceback
-import cStringIO
+from io import StringIO
 import logging
 
 from Qt import QtWidgets, QtCore
@@ -25,7 +25,7 @@ class UncaughtError(QtWidgets.QMessageBox):
 
     def getTraceback(self, exceptionTraceback):
         '''Return message from *exceptionTraceback*.'''
-        tracebackInfoStream = cStringIO.StringIO()
+        tracebackInfoStream = StringIO()
         traceback.print_tb(
             exceptionTraceback,
             None,
@@ -50,13 +50,3 @@ class UncaughtError(QtWidgets.QMessageBox):
         # Otherwise buttons will not fit.
         self.setText(str(exceptionValue).ljust(50, ' '))
         self.exec_()
-
-    def resizeEvent(self, event):
-        '''Hook into the resize *event* and force width of detailed text.'''
-        result = super(UncaughtError, self).resizeEvent(event)
-
-        detailsBox = self.findChild(QtWidgets.QLineEdit)
-        if detailsBox is not None:
-            detailsBox.setFixedSize(500, 200)
-
-        return result

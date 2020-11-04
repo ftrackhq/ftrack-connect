@@ -58,7 +58,7 @@ class ItemSelector(QtWidgets.QComboBox):
 
         '''
         foundIndex = -1
-        for index in xrange(1, self.count()):
+        for index in range(1, self.count()):
             item = self.itemData(index)
             if item == itemId:
                 foundIndex = index
@@ -83,7 +83,7 @@ class ItemSelector(QtWidgets.QComboBox):
     def items(self):
         '''Return current items.'''
         items = []
-        for index in xrange(1, self.count()):
+        for index in range(1, self.count()):
             items.append(self.itemData(index))
 
         return items

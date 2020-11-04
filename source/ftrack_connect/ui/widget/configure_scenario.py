@@ -38,7 +38,7 @@ class ConfigureScenario(QtWidgets.QWidget):
         layout.addSpacing(100)
 
         svg_renderer = QtSvg.QSvgRenderer(':ftrack/image/default/cloud-done')
-        image = QtWidgets.QImage(50, 50, QtWidgets.QImage.Format_ARGB32)
+        image = QtGui.QImage(50, 50, QtGui.QImage.Format_ARGB32)
 
         # Set the ARGB to 0 to prevent rendering artifacts.
         image.fill(0x00000000)

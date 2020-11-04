@@ -2,9 +2,11 @@
 # :copyright: Copyright (c) 2015 ftrack
 
 import os
-import urllib2
 
-import ftrack_api
+import urllib
+import urllib.error
+import urllib.request
+
 from Qt import QtWidgets, QtCore, QtGui
 import ftrack_connect.worker
 
@@ -84,7 +86,7 @@ class Base(QtWidgets.QLabel):
         placeholder = self.placholderThumbnail
         try:
             response = opener_callback(url, timeout=timeout)
-        except urllib2.URLError:
+        except urllib.error.URLError:
             response = opener_callback(placeholder)
 
         return response
@@ -100,12 +102,12 @@ class Base(QtWidgets.QLabel):
             else:
                 httpHandle = 'http'
 
-            proxy = urllib2.ProxyHandler({httpHandle: ftrackProxy})
-            opener = urllib2.build_opener(proxy)
+            proxy = urllib.request.ProxyHandler({httpHandle: ftrackProxy})
+            opener = urllib.request.build_opener(proxy)
             response = self._safeDownload(url, opener.open)
             html = response.read()
         else:
-            response = self._safeDownload(url, urllib2.urlopen)
+            response = self._safeDownload(url, urllib.request.urlopen)
             html = response.read()
 
         return html

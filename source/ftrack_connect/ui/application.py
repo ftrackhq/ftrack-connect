@@ -17,8 +17,6 @@ import ftrack_api
 import ftrack_api._centralized_storage_scenario
 import ftrack_api.event.base
 
-
-
 import ftrack_connect
 import ftrack_connect.event_hub_thread as _event_hub_thread
 import ftrack_connect.error
@@ -79,31 +77,18 @@ class Application(QtWidgets.QMainWindow):
         '''Return current session.'''
         return self._session
 
-    def __init__(self, session, theme='light'):
+    def __init__(self, theme='light'):
         '''Initialise the main application window.'''
         super(Application, self).__init__()
         self.logger = logging.getLogger(
             __name__ + '.' + self.__class__.__name__
         )
 
-        self._session = session
-
         self.defaultPluginDirectory = appdirs.user_data_dir(
             'ftrack-connect-plugins', 'ftrack'
         )
 
-        self.pluginHookPaths = set()
-        self.pluginHookPaths.update(
-            self._gatherPluginHooks(
-                self.defaultPluginDirectory
-            )
-        )
-
-        self.logger.info(
-            u'Connect plugin hooks directories: {0}'.format(
-                ', '.join(self.pluginHookPaths)
-            )
-        )
+        self.pluginHookPaths = self._discover_hook_paths()
 
         # Register widget for error handling.
         self.uncaughtError = _uncaught_error.UncaughtError(
@@ -271,6 +256,33 @@ class Application(QtWidgets.QMainWindow):
         self.loginWidget.setFocus()
         self._login_overlay.hide()
 
+    def _setup_session(self, plugin_paths=None):
+        '''Setup a new python API session.'''
+        if hasattr(self, '_hub_thread'):
+            self._hub_thread.quit()
+
+        if plugin_paths is None:
+            plugin_paths = self.pluginHookPaths
+
+        try:
+            session = ftrack_api.Session(
+                auto_connect_event_hub=True,
+                plugin_paths=plugin_paths
+            )
+        except Exception as error:
+            raise ftrack_connect.error.ParseError(error)
+
+        # Listen to events using the new API event hub. This is required to
+        # allow reconfiguring the storage scenario.
+        self._hub_thread = _event_hub_thread.NewApiEventHubThread()
+        self._hub_thread.start(session)
+
+        ftrack_api._centralized_storage_scenario.register_configuration(
+            session
+        )
+
+        return session
+
     def _report_session_setup_error(self, error):
         '''Format error message and emit loginError.'''
         msg = (
@@ -341,6 +353,15 @@ class Application(QtWidgets.QMainWindow):
         os.environ['FTRACK_API_USER'] = username
         os.environ['FTRACK_API_KEY'] = apiKey
 
+        # Login using the new ftrack API.
+        try:
+            # Quick session to poll for settings, confirm credentials
+            self._session = self._setup_session(plugin_paths='')
+        except Exception as error:
+            self.logger.exception('Error during login:')
+            self._report_session_setup_error(error)
+            return
+
         # Store credentials since login was successful.
         self._save_credentials(url, username, apiKey)
 
@@ -350,6 +371,7 @@ class Application(QtWidgets.QMainWindow):
                 'storage_scenario'
             )
             if storage_scenario is None:
+                ftrack_api.plugin.discover(self.pluginHookPaths, [self.session])
                 # Hide login overlay at this time since it will be deleted
                 self.logger.debug('Storage scenario is not configured.')
                 scenario_widget = _scenario_widget.ConfigureScenario(
@@ -362,15 +384,27 @@ class Application(QtWidgets.QMainWindow):
                 self.focus()
                 return
 
-        self.location_configuration_finished()
+        # No change so build if needed
+        self.location_configuration_finished(reconfigure_session=False)
 
-    def location_configuration_finished(self):
+    def location_configuration_finished(self, reconfigure_session=True):
         '''Continue connect setup after location configuration is done.'''
+        if reconfigure_session:
+            try:
+                self.session.event_hub.disconnect(False)
+            except ftrack_api.exception.EventHubConnectionError:
+                # Maybe it wasn't connected yet.
+                self.logger.exception('Failed to disconnect from event hub.')
+                pass
+
+            self._session = self._setup_session()
+
+        ftrack_api.plugin.discover(self.pluginHookPaths, [self.session])
 
         try:
             self.configureConnectAndDiscoverPlugins()
         except Exception as error:
-            self.logger.exception(u'Error during location configuration.:')
+            self.logger.exception(u'Error during location configuration:')
             self._report_session_setup_error(error)
         else:
             self.focus()
@@ -387,7 +421,7 @@ class Application(QtWidgets.QMainWindow):
         )
         results = self.session.event_hub.publish(event, synchronous=True)
         problems = [
-            problem for problem in results if isinstance(problem, basestring)
+            problem for problem in results if isinstance(problem, str)
         ]
         if problems:
             msgBox = QtWidgets.QMessageBox(parent=self)
@@ -397,26 +431,6 @@ class Application(QtWidgets.QMainWindow):
 
     def configureConnectAndDiscoverPlugins(self):
         '''Configure connect and load plugins.'''
-        if hasattr(self, '_hub_thread'):
-            self._hub_thread.quit()
-
-        plugin_paths = []
-
-        event_plugin_paths = os.environ.get(
-            'FTRACK_EVENT_PLUGIN_PATH', ''
-        ).split(os.pathsep)
-
-        connect_plugin_paths = os.environ.get(
-            'FTRACK_CONNECT_PLUGIN_PATH', ''
-        ).split(os.pathsep)
-
-        plugin_paths.extend(event_plugin_paths)
-        plugin_paths.extend(connect_plugin_paths)
-        plugin_paths.extend(self.pluginHookPaths)
-
-        self.logger.info('Discovering plugins in : {}'.format(plugin_paths))
-
-        ftrack_api.plugin.discover(plugin_paths, [self.session], {})
 
         self.tabPanel = _tab_widget.TabWidget()
         self.tabPanel.tabBar().setObjectName('application-tab-bar')
@@ -432,15 +446,6 @@ class Application(QtWidgets.QMainWindow):
         )
         self.eventHubSignal.connect(self._onConnectTopicEvent)
 
-        # Listen to events using the new API event hub. This is required to
-        # allow reconfiguring the storage scenario.
-        self._hub_thread = _event_hub_thread.NewApiEventHubThread()
-        self._hub_thread.start(self.session)
-
-        ftrack_api._centralized_storage_scenario.register_configuration(
-            self.session
-        )
-
         self.focus()
 
         # Listen to discover connect event and respond to let the sender know
@@ -451,6 +456,32 @@ class Application(QtWidgets.QMainWindow):
             ),
             lambda event : True
         )
+
+    def _discover_hook_paths(self):
+        '''Return a list of paths to pass to ftrack_api.Session()'''
+
+        plugin_paths = set()
+        plugin_paths.update(
+            self._gatherPluginHooks(
+                self.defaultPluginDirectory
+            )
+        )
+
+        plugin_paths.update(os.environ.get(
+            'FTRACK_EVENT_PLUGIN_PATH', ''
+        ).split(os.pathsep))
+
+        plugin_paths.update(os.environ.get(
+            'FTRACK_CONNECT_PLUGIN_PATH', ''
+        ).split(os.pathsep))
+
+        self.logger.info(
+            u'Connect plugin hooks directories: {0}'.format(
+                ', '.join(plugin_paths)
+            )
+        )
+
+        return list(plugin_paths)
 
     def _gatherPluginHooks(self, path):
         '''Return plugin hooks from *path*.'''
@@ -687,7 +718,7 @@ class Application(QtWidgets.QMainWindow):
         aboutDialog.setInformation(
             versionData=versionData,
             server=os.environ.get('FTRACK_SERVER', 'Not set'),
-            user=getpass.getuser(),
+            user=self.session.api_user,
         )
 
         aboutDialog.exec_()

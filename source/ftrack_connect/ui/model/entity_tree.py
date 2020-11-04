@@ -398,7 +398,7 @@ class EntityTreeModel(QtCore.QAbstractItemModel):
                 app.processEvents()
 
             if worker.error:
-                raise worker.error[1], None, worker.error[2]
+                raise worker.error[1]
 
             additionalChildren = worker.result
 

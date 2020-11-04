@@ -4,10 +4,12 @@ import os
 import json
 import sys
 import textwrap
+import platform
 
+import Qt
 from Qt import QtCore, QtWidgets, QtGui
 
-
+import ftrack_api
 from ftrack_connect.config import get_log_directory
 import ftrack_connect.util
 
@@ -149,13 +151,18 @@ class AboutDialog(QtWidgets.QDialog):
         ]
 
         coreTemplate = '''
-        <h4>Version:</h4>
-        <p>{core_versions}</p>
-        <h4>Server and user:</h4>
-        <p>{server}<br>
-        {user}<br></p>
+            <p><b>Connect: </b>{core_versions}</p>
+            <hr>
+            <p><b>Python API: </b>{api_versions}</p>
+            <p><b>PySide: </b>{pyside_version}</p>
+            <p><b>Qt: </b>{qt_version}</p>
+            <p><b>Python Version: </b>{python_version}</p>     
+            <p><b>Hostname: </b>{host}</p>
+            <p><b>Os: </b>{os}</p>
+            <hr>  
+            <p><b>Server: </b>{server}</p>
+            <p><b>User: </b>{user}</p>
         '''
-
         itemTemplate = '{name}: {version}<br>'
 
         coreVersions = ''
@@ -168,7 +175,13 @@ class AboutDialog(QtWidgets.QDialog):
         content = coreTemplate.format(
             core_versions=coreVersions,
             server=server,
-            user=user
+            user=user,
+            api_versions=ftrack_api.__version__,
+            pyside_version=Qt.__version__,
+            qt_version=QtCore.qVersion(),
+            python_version=sys.version,
+            host=platform.node(),
+            os=platform.platform()
         )
 
         if plugins:

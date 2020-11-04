@@ -196,11 +196,12 @@ class Actions(QtWidgets.QWidget):
 
     def _onEntityChanged(self, entity):
         '''Load new actions when the context has changed'''
+
         context = []
         try:
             context = [{
-                'entityId': entity.get('entityId'),
-                'entityType': entity.get('entityType'),
+                'entityId': entity['id'],
+                'entityType': entity.entity_type.lower(),
             }]
             self.logger.debug(u'Context changed: {0}'.format(context))
         except Exception:
@@ -320,13 +321,15 @@ class Actions(QtWidgets.QWidget):
         '''Obtain new actions synchronously for *context*.'''
         discoveredActions = []
 
+        event = ftrack_api.event.base.Event(
+            topic='ftrack.action.discover',
+            data=dict(
+                selection=context
+            )
+        )
+
         results = self.session.event_hub.publish(
-            ftrack_api.event.base.Event(
-                topic='ftrack.action.discover',
-                data=dict(
-                    selection=context
-                )
-            ),
+            event,
             synchronous=True
         )
 
