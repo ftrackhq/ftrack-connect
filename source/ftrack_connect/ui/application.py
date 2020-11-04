@@ -2,12 +2,12 @@
 # :copyright: Copyright (c) 2014 ftrack
 
 import os
-import getpass
 import platform
 import requests
 import requests.exceptions
 import uuid
 import logging
+import weakref
 
 import appdirs
 
@@ -259,7 +259,7 @@ class Application(QtWidgets.QMainWindow):
     def _setup_session(self, plugin_paths=None):
         '''Setup a new python API session.'''
         if hasattr(self, '_hub_thread'):
-            self._hub_thread.quit()
+            self._hub_thread.cleanup()
 
         if plugin_paths is None:
             plugin_paths = self.pluginHookPaths
@@ -276,6 +276,7 @@ class Application(QtWidgets.QMainWindow):
         # allow reconfiguring the storage scenario.
         self._hub_thread = _event_hub_thread.NewApiEventHubThread()
         self._hub_thread.start(session)
+        weakref.finalize(self._hub_thread, self._hub_thread.cleanup)
 
         ftrack_api._centralized_storage_scenario.register_configuration(
             session
@@ -439,8 +440,8 @@ class Application(QtWidgets.QMainWindow):
         self._discoverTabPlugins()
 
         self.session.event_hub.subscribe(
-            'topic=ftrack.connect and source.user.username={0}'.format(
-                getpass.getuser()
+            'topic=ftrack.connect and source.user.username="{0}"'.format(
+                self.session._api_user
             ),
             self._relayEventHubEvent
         )
@@ -451,8 +452,8 @@ class Application(QtWidgets.QMainWindow):
         # Listen to discover connect event and respond to let the sender know
         # that connect is running.
         self.session.event_hub.subscribe(
-            'topic=ftrack.connect.discover and source.user.username={0}'.format(
-                getpass.getuser()
+            'topic=ftrack.connect.discover and source.user.username="{0}"'.format(
+                self.session._api_user
             ),
             lambda event : True
         )
