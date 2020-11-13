@@ -142,7 +142,7 @@ class Root(Item):
 
     @property
     def session(self):
-        return ftrack_connect.session.get_scoped()
+        return ftrack_connect.session.factory.get_session()
 
     def __init__(self):
         '''Initialise item.'''
@@ -172,7 +172,7 @@ class Context(Item):
 
     @property
     def session(self):
-        return ftrack_connect.session.get_scoped()
+        return ftrack_connect.session.factory.get_session()
 
     def __init__(self, entity):
         '''Initialise item.'''

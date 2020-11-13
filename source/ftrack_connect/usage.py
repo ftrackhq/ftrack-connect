@@ -16,7 +16,7 @@ def _send_event(event_name, metadata=None):
     global _log_usage_session
 
     if _log_usage_session is None:
-        _log_usage_session = ftrack_connect.session.get_session()
+        _log_usage_session = ftrack_connect.session.factory.get_session()
 
     try:
         _log_usage_session.call([{

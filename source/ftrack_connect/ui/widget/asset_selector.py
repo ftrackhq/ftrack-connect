@@ -31,7 +31,7 @@ class AssetSelector(_item_selector.ItemSelector):
 
         If *selectAsset* is specified, select it after assets has loaded.
         '''
-        session = ftrack_connect.session.get_scoped()
+        session = ftrack_connect.session.factory.get_session()
         safe_entity = session.get(entity.entity_type, entity['id'])
         assets = []
         try:

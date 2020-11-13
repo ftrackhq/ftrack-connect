@@ -74,7 +74,7 @@ class Actions(QtWidgets.QWidget):
     @property
     def session(self):
         '''Return current session.'''
-        return ftrack_connect.session.get_scoped()
+        return ftrack_connect.session.factory.get_session()
 
     def __init__(self, parent=None):
         '''Initiate a actions view.'''

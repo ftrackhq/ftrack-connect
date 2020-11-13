@@ -26,7 +26,7 @@ class AssetOptions(object):
 
     @property
     def scoped_session(self):
-        return self._session()
+        return self._session
 
     @property
     def session(self):

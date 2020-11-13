@@ -12,7 +12,7 @@ class ItemSelector(QtWidgets.QComboBox):
     @property
     def session(self):
         '''Return current session.'''
-        return ftrack_connect.session.get_scoped()
+        return ftrack_connect.session.factory.get_session()
 
     def __init__(
         self, session=None, idField='id', labelField='label', defaultLabel='Unnamed Item',

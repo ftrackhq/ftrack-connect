@@ -23,6 +23,9 @@ class EntityPath(QtWidgets.QLineEdit):
         if not entity:
             return
 
+        session = ftrack_connect.session.factory.get_session()
+        entity = session.merge(entity)
+
         names = [e['name'] for e in entity.get('link', [])]
 
         self.path_ready.emit(names)

@@ -43,7 +43,7 @@ class Publisher(QtWidgets.QWidget):
     @property
     def session(self):
         '''Return current session.'''
-        return ftrack_connect.session.get_scoped()
+        return ftrack_connect.session.factory.get_session()
 
     def __init__(self, parent=None):
         '''Initiate a publish view.'''
@@ -151,6 +151,9 @@ class Publisher(QtWidgets.QWidget):
                 'No linked entity selected to publish against!'
             )
 
+        scoped_session = self.session
+        entity = scoped_session.merge(entity)
+
         taskId = None
 
         asset = self.assetOptions.getAsset()
@@ -162,7 +165,7 @@ class Publisher(QtWidgets.QWidget):
         previewPath = None
         previewComponentId = self.previewSelector.currentItem()
 
-        previewComponent = self.scoped_session.get('Component', previewComponentId)
+        previewComponent = scoped_session.get('Component', previewComponentId)
 
         if previewComponent:
             previewPath = previewComponent['resourceIdentifier']
@@ -173,7 +176,7 @@ class Publisher(QtWidgets.QWidget):
             taskId = entity['id']
             entity = entity['parent']
 
-        componentLocation = self.scoped_session.pick_location()
+        componentLocation = scoped_session.pick_location()
 
         components = []
         for component in self.componentsList.items():
@@ -248,18 +251,18 @@ class Publisher(QtWidgets.QWidget):
 
             task = None
             if taskId:
-                task = self.scoped_session.get('Context', taskId)
+                task = self.session.get('Context', taskId)
 
-            new_entity = self.scoped_session.get('Context', entity['id'])
+            new_entity = self.session.get('Context', entity['id'])
 
             if not asset:
-                asset_type = self.scoped_session.get(
+                asset_type = self.session.get(
                     'AssetType', assetType
                 )
                 if assetName is None:
                     assetName = asset_type['name']
 
-                asset = self.scoped_session.create(
+                asset = self.session.create(
                     'Asset',
                     {
                         'name': assetName,
@@ -268,13 +271,13 @@ class Publisher(QtWidgets.QWidget):
                     }
                 )
 
-                self.scoped_session.commit()
+                self.session.commit()
                 self.assetCreated.emit(asset)
 
             else:
-                asset = self.scoped_session.get('Asset', asset)
+                asset = self.session.get('Asset', asset)
 
-            version = self.scoped_session.create(
+            version = self.session.create(
                 'AssetVersion',
                 {
                     'asset': asset,
@@ -282,9 +285,9 @@ class Publisher(QtWidgets.QWidget):
                     'task': task,
                 }
             )
-            self.scoped_session.commit()
+            self.session.commit()
 
-            origin_location = self.scoped_session.query(
+            origin_location = self.session.query(
                 'Location where name is "ftrack.origin"'
             )
 
@@ -296,7 +299,7 @@ class Publisher(QtWidgets.QWidget):
                 )
 
                 for location in componentData.get('locations', []):
-                    new_location = self.scoped_session.get(
+                    new_location = self.session.get(
                         'Location', location['id']
                     )
                     new_location.add_component(
@@ -309,7 +312,7 @@ class Publisher(QtWidgets.QWidget):
                     )
 
             if previewPath:
-                self.scoped_session.event_hub.publish(
+                self.session.event_hub.publish(
                     event.base.Event(
                         'ftrack.connect.publish.make-web-playable',
                         data=dict(
@@ -325,7 +328,7 @@ class Publisher(QtWidgets.QWidget):
 
             # TODO: check this does not apply anymore.
             # version['is_published'] = True
-            self.scoped_session.commit()
+            self.session.commit()
 
             self.publishFinished.emit(True)
 
