@@ -13,7 +13,6 @@ class AssetTypeSelector(_item_selector.ItemSelector):
     def __init__(self, *args, **kwargs):
         '''Instantiate the asset type selector.'''
         super(AssetTypeSelector, self).__init__(
-            idField='typeid',
             labelField='name',
             defaultLabel='Unknown asset type',
             emptyLabel='Select asset type',
