@@ -95,6 +95,7 @@ class Publisher(QtWidgets.QWidget):
         # Add preview selector.
         self.previewSelector = _item_selector.ItemSelector(
             session=self.session,
+            idField='resourceIdentifier',
             labelField='componentName',
             defaultLabel='Unnamed component',
             emptyLabel='Select component to use'
@@ -159,12 +160,7 @@ class Publisher(QtWidgets.QWidget):
 
         versionDescription = self.versionDescription.toPlainText()
 
-        previewPath = None
-        previewComponentId = self.previewSelector.currentItem()
-        if previewComponentId:
-            previewComponent = self.session.get('Component', previewComponentId)
-            if previewComponent:
-                previewPath = previewComponent['resourceIdentifier']
+        previewPath = self.previewSelector.currentItem()
 
         # ftrack does not support having Tasks as parent for Assets.
         # Therefore get parent shot/sequence etc.
