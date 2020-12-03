@@ -60,13 +60,16 @@ class ApplicationPlugin(QtWidgets.QWidget):
         '''Return identifier for widget.'''
         return self.getName().lower().replace(' ', '.')
 
+    def _return_widget(self, event):
+        return self
+
     def register(self):
         self.session.event_hub.subscribe(
-            'topic={} '
-            'and source.user.username={0}'.format(
+            'topic={0} '
+            'and source.user.username={1}'.format(
                 self.topic, self.session.api_user
             ),
-            self
+            self._return_widget
         )
 
 

@@ -35,5 +35,5 @@ def register(session, **kw):
         return
 
     publisher = Actions(session)
-    publisher.register(session)
+    publisher.register()
     logger.debug('Plugin registered')
