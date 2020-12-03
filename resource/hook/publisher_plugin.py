@@ -29,7 +29,7 @@ class PublisherBlockingOverlay(
         self.content.setMinimumWidth(350)
 
 
-class Publisher(ftrack_connect.ui.application.ApplicationPlugin):
+class Publisher(ftrack_connect.ui.application.TabPlugin):
     '''Base widget for ftrack connect publisher plugin.'''
 
     #: Signal to emit when the entity is changed.
@@ -157,8 +157,6 @@ class Publisher(ftrack_connect.ui.application.ApplicationPlugin):
             source_event=event,
             data={'message': 'Publisher started.'}
         )
-
-
 
 
 def register(session, **kw):

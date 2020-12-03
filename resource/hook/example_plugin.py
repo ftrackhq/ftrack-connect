@@ -10,7 +10,8 @@ import ftrack_connect.ui.widget.actions
 
 logger = logging.getLogger('ftrack_connect.plugin.actions')
 
-class ExamplePlugin(ftrack_connect.ui.application.ApplicationPlugin):
+
+class ExamplePlugin(ftrack_connect.ui.application.TabPlugin):
     '''Base widget for ftrack connect actions plugin.'''
 
     def __init__(self, session, parent=None):
@@ -23,22 +24,19 @@ class ExamplePlugin(ftrack_connect.ui.application.ApplicationPlugin):
         layout.addWidget(text)
 
 
+def register(session, **kw):
+    '''Register plugin. Called when used as an plugin.'''
+    # Validate that session is an instance of ftrack_api.Session. If not,
+    # assume that register is being called from an old or incompatible API and
+    # return without doing anything.
+    if not isinstance(session, ftrack_api.session.Session):
+        logger.debug(
+            'Not subscribing plugin as passed argument {0!r} is not an '
+            'ftrack_api.Session instance.'.format(session)
+        )
+        return
 
-##    Uncomment to register plugin
-
-# def register(session, **kw):
-#     '''Register plugin. Called when used as an plugin.'''
-#     # Validate that session is an instance of ftrack_api.Session. If not,
-#     # assume that register is being called from an old or incompatible API and
-#     # return without doing anything.
-#     if not isinstance(session, ftrack_api.session.Session):
-#         logger.debug(
-#             'Not subscribing plugin as passed argument {0!r} is not an '
-#             'ftrack_api.Session instance.'.format(session)
-#         )
-#         return
-
-
-#     publisher = ExamplePlugin(session)
-#     publisher.register()
-#     logger.debug('Plugin registered')
+    ##  Uncomment to register plugin
+    # publisher = ExamplePlugin(session)
+    # publisher.register()
+    # logger.debug('Plugin registered')

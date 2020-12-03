@@ -33,7 +33,8 @@ from ftrack_connect.ui.widget import configure_scenario as _scenario_widget
 import ftrack_connect.ui.config
 
 
-class ApplicationPlugin(QtWidgets.QWidget):
+
+class TabPlugin(QtWidgets.QWidget):
     '''Base widget for ftrack connect application plugin.'''
     topic = 'ftrack.connect.plugin.tab-plugin'
 
@@ -49,7 +50,7 @@ class ApplicationPlugin(QtWidgets.QWidget):
         return self._session
 
     def __init__(self, session, parent=None):
-        super(ApplicationPlugin, self).__init__(parent=parent)
+        super(TabPlugin, self).__init__(parent=parent)
         self._session = session
 
     def getName(self):
@@ -73,6 +74,18 @@ class ApplicationPlugin(QtWidgets.QWidget):
         )
 
 
+class PluginWarning(TabPlugin):
+    '''Warning missing plugin widget.'''
+    def __init__(self, session, parent=None):
+        '''Instantiate the actions widget.'''
+        super(PluginWarning, self).__init__(session, parent=parent)
+        layout = QtWidgets.QVBoxLayout()
+        self.setLayout(layout)
+
+        label = QtWidgets.QLabel(
+            'Warning!  no tab plugin found to register for connect.'
+        )
+        layout.addWidget(label, QtCore.Qt.AlignCenter)
 
 
 class Application(QtWidgets.QMainWindow):
@@ -582,15 +595,30 @@ class Application(QtWidgets.QMainWindow):
         #: TODO: Add discover functionality and search paths.
 
         event = ftrack_api.event.base.Event(
-            topic = ApplicationPlugin.topic
+            topic = TabPlugin.topic
         )
 
         responses = self.session.event_hub.publish(
             event, synchronous=True
         )
 
+
         for response in responses:
-            self.addPlugin(response, response.getName())
+            try:
+                self.logger.debug('Registering tab plugin {}'.format(response))
+                self.addPlugin(response, response.getName())
+            except Exception:
+                self.logger.warning(
+                    'Tab Plugin {} could not be loaded'.format(
+                        response.getName()
+                    )
+                )
+    
+        # check if any plugin has been registered.
+        # if not create and install a warning plugin.
+        if not self.plugins:
+            warning_plugin = PluginWarning(self.session)
+            self.addPlugin(warning_plugin, warning_plugin.getName())
 
 
     def _routeEvent(self, event):
