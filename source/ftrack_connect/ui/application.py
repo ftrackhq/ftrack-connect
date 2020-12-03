@@ -35,6 +35,7 @@ import ftrack_connect.ui.config
 
 class ApplicationPlugin(QtWidgets.QWidget):
     '''Base widget for ftrack connect application plugin.'''
+    topic = 'ftrack.connect.plugin.tab-plugin'
 
     #: Signal to emit to request focus of this plugin in application.
     requestApplicationFocus = QtCore.Signal(object)
@@ -58,6 +59,17 @@ class ApplicationPlugin(QtWidgets.QWidget):
     def getIdentifier(self):
         '''Return identifier for widget.'''
         return self.getName().lower().replace(' ', '.')
+
+    def register(self):
+        self.session.event_hub.subscribe(
+            'topic={} '
+            'and source.user.username={0}'.format(
+                self.topic, self.session.api_user
+            ),
+            self
+        )
+
+
 
 
 class Application(QtWidgets.QMainWindow):
@@ -566,10 +578,17 @@ class Application(QtWidgets.QMainWindow):
         '''Find and load tab plugins in search paths.'''
         #: TODO: Add discover functionality and search paths.
 
-        from ftrack_connect.ui.plugins import publisher
-        from ftrack_connect.ui.plugins import actions
-        actions.register(self)
-        publisher.register(self)
+        event = ftrack_api.event.base.Event(
+            topic = ApplicationPlugin.topic
+        )
+
+        responses = self.session.event_hub.publish(
+            event, synchronous=True
+        )
+
+        for response in responses:
+            self.addPlugin(response, response.getName())
+
 
     def _routeEvent(self, event):
         '''Route websocket *event* to publisher plugin.
