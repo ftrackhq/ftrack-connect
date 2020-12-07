@@ -36,7 +36,7 @@ def register(session, **kw):
         )
         return
 
-    ##  Uncomment to register plugin
+    # #  Uncomment to register plugin
     # publisher = ExamplePlugin(session)
     # publisher.register()
     # logger.debug('Plugin registered')

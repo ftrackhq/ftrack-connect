@@ -1,0 +1,28 @@
+..
+    :copyright: Copyright (c) 2016 ftrack
+
+.. _developing/hooks/tab_plugin:
+
+********************************
+ftrack.connect.plugin.tab-plugin
+********************************
+
+The *ftrack.connect.plugin.tab-plugin* hook is triggered when
+:term:`ftrack connect` starts up and is used to register custom widgets for connect.
+
+The hook can be used to inform the users about problems that could arise with
+the way ftrack connect is currently configured.
+
+Example event passed to hook::
+
+    Event(
+        topic='ftrack.connect.plugin.tab-plugin'
+    )
+
+Expects return data in the form of a QtWidget.
+
+
+An example is provided as part of the resources:
+
+
+.. literalinclude:: /../../resource/hook/example_plugin.py
