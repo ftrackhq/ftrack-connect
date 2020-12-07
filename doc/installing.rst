@@ -39,7 +39,7 @@ Building from git repository
 
 Alternatively, install using `pip <http://www.pip-installer.org/>`_:
 
-.. code-block::
+.. code-block:: none
 
     $ pip install git+https://bitbucket.org/ftrack/ftrack-connect.git
 

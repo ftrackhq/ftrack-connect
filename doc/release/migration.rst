@@ -33,7 +33,7 @@ This means :
 * Actions and events requires to update their registration from:
 
 
-.. code-block::
+.. code-block:: python
 
     def register(registry, **kw):
         if registry is not ftrack.EVENT_HANDLERS:
@@ -43,7 +43,7 @@ This means :
 to:
 
 
-.. code-block::
+.. code-block:: python
 
     def register(api_object, **kw):
         if registry is not isinstance(api_object, ftrack.Session):
