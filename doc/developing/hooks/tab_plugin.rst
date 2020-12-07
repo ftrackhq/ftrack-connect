@@ -25,4 +25,4 @@ Expects return data in the form of a QtWidget.
 An example is provided as part of the resources:
 
 
-.. literalinclude:: /../../resource/hook/example_plugin.py
+.. literalinclude:: /../resource/hook/example_plugin.py

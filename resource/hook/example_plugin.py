@@ -5,8 +5,6 @@ import logging
 from Qt import QtWidgets, QtCore
 
 import ftrack_connect.ui.application
-import ftrack_connect.ui.widget.overlay
-import ftrack_connect.ui.widget.actions
 
 logger = logging.getLogger('ftrack_connect.plugin.actions')
 
