@@ -44,9 +44,3 @@ Expects reply data in the form::
         message='maya-2014 launched successfully.'
     )
 
-Default hook
-============
-
-.. literalinclude:: /../resource/hook/applications.py
-    :language: python
-    :pyobject: LaunchApplicationHook
