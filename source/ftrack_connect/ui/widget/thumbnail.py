@@ -132,7 +132,8 @@ class ActionIcon(Base):
         '3ds_max': '/application_icons/3ds_max.png',
         'cinema_4d': '/application_icons/cinema_4d.png',
         'indesign': '/application_icons/indesign.png',
-        'illustrator': '/application_icons/illustrator.png'
+        'illustrator': '/application_icons/illustrator.png',
+        'houdini': '/application_icons/houdini.png'
     }
 
     def __init__(self, parent=None):
