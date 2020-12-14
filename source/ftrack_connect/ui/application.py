@@ -64,13 +64,14 @@ class TabPlugin(QtWidgets.QWidget):
     def _return_widget(self, event):
         return self
 
-    def register(self):
+    def register(self, priority=10):
         self.session.event_hub.subscribe(
             'topic={0} '
             'and source.user.username={1}'.format(
                 self.topic, self.session.api_user
             ),
-            self._return_widget
+            self._return_widget,
+            priority=priority
         )
 
 
