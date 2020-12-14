@@ -33,7 +33,7 @@ This means :
 * Actions and events requires to update their registration from:
 
 
-.. code-block::
+.. code-block:: python
 
     def register(registry, **kw):
         if registry is not ftrack.EVENT_HANDLERS:
@@ -43,7 +43,7 @@ This means :
 to:
 
 
-.. code-block::
+.. code-block:: python
 
     def register(api_object, **kw):
         if registry is not isinstance(api_object, ftrack.Session):
@@ -163,7 +163,7 @@ Developer notes
 .. _release/migration/0_1_3/developer_notes/updated_action_hooks:
 
 Updated action hooks
-^^^^^^^^^^^^^^^^^^^^
+--------------------
 
 The default :ref:`discover <developing/hooks/action_discover>` and
 :ref:`launch <developing/hooks/action_launch>` action hooks has been updated

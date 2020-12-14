@@ -39,12 +39,6 @@ multiple variants are available.
 
 .. seealso::
 
-    For more information on how to add new applications, see:
-
-    :ref:`developing/tutorial/custom_applications`
-
-.. seealso::
-
     You can also launch actions from the web interface.
 
     :ref:`ftrack:using/actions`

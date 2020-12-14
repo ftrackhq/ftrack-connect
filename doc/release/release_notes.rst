@@ -10,9 +10,6 @@ Release Notes
 
 .. release:: Upcoming
 
-
-	
-
     .. change:: changed
         :tags: Ui
 
@@ -71,12 +68,12 @@ Release Notes
 .. release:: 1.1.6
     :date: 2018-10-8
 
-  .. change:: changed
+    .. change:: changed
         :tags: Ui
 
         Update icons and style.
 
-  .. change:: fixed
+    .. change:: fixed
         :tags: Internal
 
         util.open_directory fails on Windows when path includes spaces.
@@ -84,17 +81,17 @@ Release Notes
 .. release:: 1.1.5
     :date: 2018-9-13
 
-  .. change:: fixed
+    .. change:: fixed
         :tags: Logging
 
         logger breaks with non ascii path.
 
-  .. change:: changed
+    .. change:: changed
         :tags: Logging
 
         Improve logging configuration.
 
-  .. change:: fixed
+    .. change:: fixed
         :tags: Ui
 
         Application versions are not correctly sorted.
@@ -213,7 +210,6 @@ Release Notes
         Changed from using legacy API locations to using locations from the
         ftrack-python-api. Make sure to read the migration notes before
         upgrading:
-        :ref:`release/migration/upcoming/developer_notes`
 
     .. change:: fixed
         :tags: Internal
@@ -224,10 +220,6 @@ Release Notes
         :tags: Publish
 
         The new api and locations are used for publishing.
-
-        .. seealso::
-
-            :ref:`Read more <release/migration/upcoming/developer_notes>`
 
     .. change:: changed
         :tags: Internal
@@ -614,7 +606,7 @@ Release Notes
         :tags: Developer, Tutorial
 
         Added tutorial on how to add you own custom applications and how
-        to modify the environment. :ref:`Read more <developing/tutorial/custom_applications>`
+        to modify the environment.
 
     .. change:: changed
         :tags: Publisher
