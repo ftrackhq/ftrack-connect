@@ -611,7 +611,7 @@ Release Notes
         :tags: Developer, Tutorial
 
         Added tutorial on how to add you own custom applications and how
-        to modify the environment. :ref:`Read more <developing/tutorial/custom_applications>`
+        to modify the environment.
 
     .. change:: changed
         :tags: Publisher
