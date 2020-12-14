@@ -163,7 +163,7 @@ Developer notes
 .. _release/migration/0_1_3/developer_notes/updated_action_hooks:
 
 Updated action hooks
-^^^^^^^^^^^^^^^^^^^^
+--------------------
 
 The default :ref:`discover <developing/hooks/action_discover>` and
 :ref:`launch <developing/hooks/action_launch>` action hooks has been updated
