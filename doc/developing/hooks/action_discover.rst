@@ -103,9 +103,3 @@ icon
     In the default hook each item contains an ``applicationIdentifier``
     which is used to uniquely identify which application to start.
 
-Default hook
-============
-
-.. literalinclude:: /../resource/hook/applications.py
-    :language: python
-    :pyobject: GetApplicationsHook

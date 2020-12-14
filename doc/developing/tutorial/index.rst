@@ -13,5 +13,4 @@ more customisation options.
 .. toctree::
     :maxdepth: 1
 
-    custom_applications
     adding_a_location

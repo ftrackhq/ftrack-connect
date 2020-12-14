@@ -11,11 +11,16 @@ Release Notes
 .. release:: Upcoming
 
 
-	.. change:: new:
+	
+
+   .. change:: new:
         :tags: Ui
 
         Provide ability to extend connect through tab plugins.
-        
+
+
+
+
     .. change:: changed
         :tags: Ui
 
