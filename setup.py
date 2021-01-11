@@ -18,6 +18,10 @@ import distutils
 import fileinput
 from distutils.spawn import find_executable
 from pkg_resources import get_distribution, DistributionNotFound
+from pip.req import parse_requirements
+
+requirements_file = parse_requirements('requirements.txt')
+requirements = [str(ir.req) for ir in install_reqs]
 
 
 ROOT_PATH = os.path.dirname(
@@ -248,27 +252,8 @@ configuration = dict(
     package_dir={
         '': 'source'
     },
-    setup_requires=[
-        'PySide2 >=5, <6',
-        'Qt.py >=1.0.0, < 2',
-        'pyScss >= 1.2.0, < 2',
-        'sphinx >= 1.2.2, < 2',
-        'sphinx_rtd_theme >= 0.1.6, < 2',
-        'lowdown >= 0.1.0, < 1',
-        'setuptools>=30.3.0',
-        'setuptools_scm'
-    ],
-    install_requires=[
-        'clique >=2, <3',
-        'PySide2 >=5, <6',
-        'Riffle >= 1',
-        'ftrack-python-api',
-        'arrow >= 0.4.6, < 1',
-        'appdirs >= 1.4, < 1.5',
-        'requests >= 2, <3',
-        'lowdown >= 0.1.0, < 1',
-        'Qt.py >=1.0.0, < 2',
-    ],
+    setup_requires=requirements,
+    install_requires=requirements,
     tests_require=[
         'pytest >= 2.3.5, < 3'
     ],

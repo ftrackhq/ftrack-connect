@@ -1,0 +1,14 @@
+PySide2 >=5, <6
+Qt.py >=1.0.0, < 2
+pyScss >= 1.2.0, < 2
+sphinx >= 1.2.2, < 2
+sphinx_rtd_theme >= 0.1.6, < 2
+lowdown >= 0.1.0, < 1
+setuptools>=30.3.0
+setuptools_scm
+clique >=2, <3
+Riffle >= 1
+ftrack-python-api >= 2, < 3
+arrow >= 0.4.6, < 1
+appdirs >= 1.4, < 1.5
+requests >= 2, <3
