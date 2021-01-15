@@ -457,6 +457,7 @@ class Application(QtWidgets.QMainWindow):
             ),
             lambda event : True
         )
+        self.session._configure_locations()
 
     def _discover_hook_paths(self):
         '''Return a list of paths to pass to ftrack_api.Session()'''
