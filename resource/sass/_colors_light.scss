@@ -28,11 +28,14 @@ $brand-info:            $color-blue;
 $brand-warning:         $color-yellow;
 $brand-danger:          $color-red;
 
-$body-bg:               $color-purple-light-1;
-$text-color:            $gray-dark;
-$text-color-light:      $gray;
-$text-color-primary:    #548cd7;
-$border-color:          $gray-lighter;
+$body-bg:                       $color-purple-light-1;
+$text-color:                    $gray-dark;
+$text-color-default:            black;
+$text-color-default-hover:      $text-color-default;
+$text-color-default-pressed:    $text-color-default;
+$text-color-light:              $gray;
+$text-color-primary:            #548cd7;
+$border-color:                  $gray-lighter;
 
 $overlay-bg:            $white;
 

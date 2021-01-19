@@ -3,7 +3,7 @@ QPushButton {
     border: 1px solid $border-color;
     border-radius: 2px;
     background-color: $white;
-    color: black;
+    color: $text-color-default;
     padding: 4px;
     min-width: 80px;
 
@@ -12,13 +12,13 @@ QPushButton {
 QPushButton:hover {
     border-color: darken($border-color, 5%);
     background-color: $gray-lighter;
-    color: black
+    color: $text-color-default-hover;
 }
 
 QPushButton:pressed {
     border-color: darken($border-color, 5%);
     background-color: darken( $gray-lighter,  5%);
-    color: black
+    color: $text-color-default-pressed;
 
 }
 
