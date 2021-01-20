@@ -42,6 +42,7 @@
     </qresource>
 
     <qresource prefix='ftrack/image/light'>
+        <file alias='boxShadow'>image/box_shadow.png</file>
         <file alias='selectedTab'>image/light/selected_tab.png</file>
         <file alias='downArrow'>image/light/down_arrow.png</file>
         <file alias='upArrow'>image/light/up_arrow.svg</file>
@@ -53,7 +54,7 @@
         <file alias='remove'>image/light/remove.svg</file>
         <file alias='reload'>image/light/refresh.svg</file>
         <file alias='ftrackLogoColor'>image/ftrack_icon_circle_light.svg</file>
-        <file alias='ftrackLogoGrey'>image/ftrack_icon_circle_dark.svg</file>
+        <file alias='ftrackLogoGreyDark'>image/ftrack_icon_circle_dark.svg</file>
         <file alias='radiobutton_unchecked'>image/light/radiobutton/radiobutton_unchecked.png</file>
         <file alias='radiobutton_unchecked_hover'>image/light/radiobutton/radiobutton_unchecked_hover.png</file>
         <file alias='radiobutton_unchecked_pressed'>image/light/radiobutton/radiobutton_unchecked_pressed.png</file>
@@ -288,6 +289,7 @@
     </qresource>
 
     <qresource prefix='ftrack/image/dark'>
+        <file alias='boxShadow'>image/box_shadow_dark.png</file>
         <file alias='selectedTab'>image/dark/selected_tab.png</file>
         <file alias='downArrow'>image/dark/down_arrow.png</file>
         <file alias='upArrow'>image/dark/up_arrow.svg</file>
@@ -295,12 +297,12 @@
         <file alias='action'>image/dark/actions.svg</file>
         <file alias='play'>image/dark/play.svg</file>
         <file alias='menu'>image/dark/menu.svg</file>
-        <file alias='remove'>image/light/remove.svg</file>
+        <file alias='remove'>image/dark/remove.svg</file>
         <file alias='reload'>image/dark/refresh.svg</file>
         <file alias='project'>image/dark/project.svg</file>
-        <file alias='ftrackLogoColor'>image/ftrack_icon_circle_light.svg</file>
+        <file alias='ftrackLogoColor'>image/ftrack_icon_circle_dark.svg</file>
         <file alias='ftrackLogoGrey'>image/ftrack_icon_circle_faded.svg</file>
-        <file alias='ftrackLogoGrey'>image/ftrack_icon_circle_dark.svg</file>
+        <file alias='ftrackLogoGreyDark'>image/ftrack_icon_circle_light.svg</file>
         <file alias='radiobutton_unchecked'>image/dark/radiobutton/radiobutton_unchecked.png</file>
         <file alias='radiobutton_unchecked_hover'>image/dark/radiobutton/radiobutton_unchecked_hover.png</file>
         <file alias='radiobutton_unchecked_pressed'>image/dark/radiobutton/radiobutton_unchecked_pressed.png</file>

@@ -124,6 +124,7 @@ class Application(QtWidgets.QMainWindow):
         self.loginWidget = _login.Login()
         self.loginSignal.connect(self.loginWithCredentials)
         self.login()
+        self._session.connect_theme = self.theme()
 
     def theme(self):
         '''Return current theme.'''

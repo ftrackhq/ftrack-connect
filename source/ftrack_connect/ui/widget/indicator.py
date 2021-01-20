@@ -14,8 +14,8 @@ class BusyIndicator(QtWidgets.QWidget):
         self._timerInterval = 30
         self._speed = 8.0
         self._spinnerAngle = 0
-        # TODO: Use properties to enable setting this colour via stylesheets.
-        self._spinnerColor = QtGui.QColor(147,91,162)  # Color: '#935BA2'
+        # # # TODO: Use properties to enable setting this colour via stylesheets.
+        # self._spinnerColor = QtGui.QColor(147,91,162)  # Color: '#935BA2'
         self._logo = ':ftrack/image/default/ftrackLogoColor'
 
         self.start()
@@ -72,7 +72,7 @@ class BusyIndicator(QtWidgets.QWidget):
             pen = QtGui.QPen()
             penWidth = 8.0
             pen.setWidth(penWidth)
-            pen.setColor(self._spinnerColor)
+            # pen.setColor(self._spinnerColor)
             pen.setCapStyle(QtCore.Qt.RoundCap)
 
             painter.setPen(pen)

@@ -9,3 +9,28 @@ BusyOverlay QLabel {
     // Doesn't currently work due to Sass logic.
     // background: transparent;
 }
+
+/** BusyIndicator */
+BlockingOverlay {
+        background-color: $overlay-bg;
+        border: none;
+}
+
+BlockingOverlay QFrame#content {
+        padding: 0px;
+        border: 80px solid transparent;
+        background-color: transparent;
+        border-image: theme-image('boxShadow') 140 stretch;
+}
+BlockingOverlay QLabel {
+        background: transparent;
+}
+
+// BusyIndicator QWidget{
+//     background-color: red;
+// }
+//
+//
+// BusyIndicator QPen {
+//     color: red;
+// }

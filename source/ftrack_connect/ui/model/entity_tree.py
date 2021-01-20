@@ -23,10 +23,11 @@ def ItemFactory(session, entity):
 class Item(object):
     '''Represent ftrack entity with consistent interface.'''
 
-    def __init__(self, entity):
+    def __init__(self, session, entity):
         '''Initialise item with *entity*.'''
         super(Item, self).__init__()
         self.entity = entity
+        self._session = session
 
         self.children = []
         self.parent = None
@@ -35,6 +36,19 @@ class Item(object):
     def __repr__(self):
         '''Return representation.'''
         return '<{0} {1}>'.format(self.__class__.__name__, self.entity)
+
+    @property
+    def session(self):
+        '''Return session of item.'''
+        return self._session
+
+    @property
+    def connect_theme(self):
+        '''Return connect theme of the session.'''
+        if self.session:
+            if hasattr(self.session, 'connect_theme'):
+                return self._session.connect_theme
+        return 'default'
 
     @property
     def id(self):
@@ -54,7 +68,9 @@ class Item(object):
     @property
     def icon(self):
         '''Return icon.'''
-        return QtGui.QIcon(':/ftrack/image/default/ftrackLogoGreyDark')
+        return QtGui.QIcon(
+            ':/ftrack/image/{}/ftrackLogoGreyDark'.format(self.connect_theme)
+        )
 
     @property
     def row(self):
@@ -143,7 +159,7 @@ class Root(Item):
     def __init__(self, session):
         '''Initialise item.'''
         self._session = session
-        super(Root, self).__init__(None)
+        super(Root, self).__init__(session, None)
 
     @property
     def name(self):
@@ -170,7 +186,7 @@ class Context(Item):
     def __init__(self, session, entity):
         '''Initialise item.'''
         self._session = session
-        super(Context, self).__init__(entity)
+        super(Context, self).__init__(session, entity)
 
     @property
     def type(self):
@@ -182,7 +198,9 @@ class Context(Item):
         '''Return icon.'''
         icon = self.entity.get('object_type', {}).get('icon', 'default')
         return QtGui.QIcon(
-            ':/ftrack/image/light/object_type/{0}'.format(icon)
+            ':/ftrack/image/{0}/object_type/{1}'.format(
+                self.connect_theme, icon
+            )
         )
 
     def _fetchChildren(self):
@@ -216,7 +234,9 @@ class Project(Context):
     @property
     def icon(self):
         '''Return icon.'''
-        return QtGui.QIcon(':/ftrack/image/light/project')
+        return QtGui.QIcon(
+            ':/ftrack/image/{}/project'.format(self.connect_theme)
+        )
 
 
 class EntityTreeModel(QtCore.QAbstractItemModel):
