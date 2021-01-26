@@ -7,8 +7,6 @@ QLabel[title] {
     font-weight: bold;
 }
 
-QLineEdit,
-QTextEdit,
 QComboBox {
     border: 1px solid $input-border-color;
     border-radius: 2px;
@@ -23,5 +21,22 @@ QComboBox {
 
     &:focus {
         border: 1px solid $input-border-color-focus;
+    }
+}
+
+QTextEdit, QLineEdit  {
+    border: 1px solid $input-border-color;
+    border-radius: 2px;
+    padding: $input-padding;
+    background: $input-background;
+    selection-background-color: $input-border-color;
+    color: $text-color;
+
+    &:hover {
+        border-color: darken($input-border-color, 5%);
+    }
+
+    &:focus {
+        border: 1px solid #33313F;
     }
 }

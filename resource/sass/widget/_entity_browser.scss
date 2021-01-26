@@ -10,7 +10,7 @@ EntityBrowser QTabBar::tab {
     background: $brand-primary;
     min-width: 0px;
     padding: 2px 8px;
-    color: $white;
+    color: $color-white;
     border-radius: 3px;
     margin: 3px;
     margin-right: 0px;
@@ -18,7 +18,7 @@ EntityBrowser QTabBar::tab {
 
 
 EntityBrowser QTabBar::tab:selected {
-    color: $white;
+    color: $color-white;
 }
 
 

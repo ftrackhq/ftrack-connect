@@ -45,7 +45,8 @@ $text-color-default-hover:      darken($text-color-default, 5%);
 $text-color-default-pressed:    darken($text-color-default, 5%);
 $text-color-light:              white;
 $text-color-primary:            #548cd7;
-$border-color:                  $color-purple;
+$text-color-drop-zone:          lighten($gray-light, 15%);
+$border-color:                  $gray-light;
 
 $overlay-bg:            $gray-dark;
 
