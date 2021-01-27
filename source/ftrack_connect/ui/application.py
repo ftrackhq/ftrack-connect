@@ -127,9 +127,9 @@ class Application(QtWidgets.QMainWindow):
         self.loginSignal.connect(self.loginWithCredentials)
         self.login()
 
-    def _assign_session_theme(self):
+    def _assign_session_theme(self, theme):
         if self.session:
-            self.session.connect_theme = self.theme()
+            self.session.connect_theme = theme
 
     def theme(self):
         '''Return current theme.'''
@@ -364,7 +364,7 @@ class Application(QtWidgets.QMainWindow):
         try:
             # Quick session to poll for settings, confirm credentials
             self._session = self._setup_session(plugin_paths='')
-            self._assign_session_theme()
+            self._assign_session_theme(self.theme())
         except Exception as error:
             self.logger.exception('Error during login:')
             self._report_session_setup_error(error)
