@@ -462,19 +462,31 @@ class Application(QtWidgets.QMainWindow):
         '''Return a list of paths to pass to ftrack_api.Session()'''
 
         plugin_paths = set()
+
+        check_paths = set()
+
+        check_paths.update(
+            os.environ.get(
+                'FTRACK_EVENT_PLUGIN_PATH', ''
+            ).split(os.pathsep)
+        )
+        check_paths.update(
+            os.environ.get(
+                'FTRACK_CONNECT_PLUGIN_PATH', ''
+            ).split(os.pathsep)
+        )
+
         plugin_paths.update(
             self._gatherPluginHooks(
                 self.defaultPluginDirectory
             )
         )
-
-        plugin_paths.update(os.environ.get(
-            'FTRACK_EVENT_PLUGIN_PATH', ''
-        ).split(os.pathsep))
-
-        plugin_paths.update(os.environ.get(
-            'FTRACK_CONNECT_PLUGIN_PATH', ''
-        ).split(os.pathsep))
+        for path in check_paths:
+            plugin_paths.update(
+                self._gatherPluginHooks(
+                    path
+                )
+            )
 
         self.logger.info(
             u'Connect plugin hooks directories: {0}'.format(
