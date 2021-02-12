@@ -55,11 +55,8 @@ class EntitySelector(QtWidgets.QStackedWidget):
         presentationWidget.layout().addWidget(self.entityPath)
 
         self.discardEntityButton = QtWidgets.QPushButton()
-        removeIcon = QtGui.QIcon(
-            QtGui.QPixmap(':/ftrack/image/light/remove')
-        )
+        self.discardEntityButton.setObjectName('entity-selector-remove-button')
         self.discardEntityButton.setIconSize(QtCore.QSize(20, 20))
-        self.discardEntityButton.setIcon(removeIcon)
         self.discardEntityButton.setFixedWidth(20)
         self.discardEntityButton.clicked.connect(
             self._onDiscardEntityButtonClicked

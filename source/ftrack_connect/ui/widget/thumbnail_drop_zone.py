@@ -44,14 +44,10 @@ class ThumbnailDropZone(QtWidgets.QFrame):
         self.setDropZoneText()
         layout.addWidget(self.imageLabel, alignment=QtCore.Qt.AlignLeft)
 
-        # TODO: Add theme support.
-        removeIcon = QtGui.QIcon(
-            QtGui.QPixmap(':/ftrack/image/light/trash')
-        )
         self.removeButton = QtWidgets.QPushButton()
+        self.removeButton.setObjectName('thumbnail-drop-zone-remove-button')
         self.removeButton.setVisible(False)
         self.removeButton.setFlat(True)
-        self.removeButton.setIcon(removeIcon)
         self.removeButton.clicked.connect(self.removeThumbnail)
         layout.addWidget(self.removeButton, alignment=QtCore.Qt.AlignRight)
 
