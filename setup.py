@@ -147,6 +147,20 @@ class BuildResources(Command):
 
         self._replace_imports_()
 
+        # Install pywin32 dependency with pip if we are on windows.
+        # Important note: we can not add this into install_requirements as it
+        # will be installed with easy_install and will not work, it has to be
+        # installed with pip
+        if sys.platform == 'win32':
+            try:
+                win_32_cmd = 'pip install pywin32'
+                os.system(win_32_cmd)
+            except Exception as e:
+                print(
+                    "Could not install pywin32 package, please install it manually "
+                    "using `pip install pywin32` \n Error: {}".format(e)
+                )
+
 
 class BuildEgg(BuildEggCommand):
     '''Custom egg build to ensure resources built.
@@ -267,7 +281,7 @@ configuration = dict(
         'appdirs >= 1.4, < 1.5',
         'requests >= 2, <3',
         'lowdown >= 0.1.0, < 1',
-        'Qt.py >=1.0.0, < 2',
+        'Qt.py >=1.0.0, < 2'
     ],
     tests_require=[
         'pytest >= 2.3.5, < 3'

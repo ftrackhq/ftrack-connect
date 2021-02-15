@@ -2,12 +2,15 @@
 # :copyright: Copyright (c) 2014 ftrack
 
 import os
+import sys
 import platform
 import requests
 import requests.exceptions
 import uuid
 import logging
 import weakref
+if sys.platform == 'win32':
+    import win32com.client
 
 import appdirs
 
@@ -499,10 +502,16 @@ class Application(QtWidgets.QMainWindow):
 
         if os.path.isdir(path):
             for candidate in os.listdir(path):
-                candidatePath = os.path.join(path, candidate)
-                if os.path.isdir(candidatePath):
+                candidate_path = os.path.join(path, candidate)
+                if candidate.endswith('.lnk') and sys.platform == 'win32':
+                    full_path = os.path.join(path, candidate)
+                    shell = win32com.client.Dispatch("WScript.Shell")
+                    shortcut = shell.CreateShortCut(full_path)
+                    candidate_path = shortcut.Targetpath
+
+                if os.path.isdir(candidate_path):
                     paths.append(
-                        os.path.join(candidatePath, 'hook')
+                        os.path.join(candidate_path, 'hook')
                     )
 
         self.logger.debug(
