@@ -270,6 +270,12 @@ class Application(QtWidgets.QMainWindow):
         if plugin_paths is None:
             plugin_paths = self.pluginHookPaths
 
+            plugin_paths.extend(
+                os.environ.get(
+                    'FTRACK_EVENT_PLUGIN_PATH', ''
+                ).split(os.pathsep)
+            )
+
         try:
             session = ftrack_api.Session(
                 auto_connect_event_hub=True,
@@ -470,19 +476,22 @@ class Application(QtWidgets.QMainWindow):
         '''Return a list of paths to pass to ftrack_api.Session()'''
 
         plugin_paths = set()
+
         plugin_paths.update(
             self._gatherPluginHooks(
                 self.defaultPluginDirectory
             )
         )
 
-        plugin_paths.update(os.environ.get(
-            'FTRACK_EVENT_PLUGIN_PATH', ''
-        ).split(os.pathsep))
-
-        plugin_paths.update(os.environ.get(
-            'FTRACK_CONNECT_PLUGIN_PATH', ''
-        ).split(os.pathsep))
+        if 'FTRACK_CONNECT_PLUGIN_PATH' in os.environ:
+            for connectPluginPath in (
+                os.environ['FTRACK_CONNECT_PLUGIN_PATH'].split(os.pathsep)
+            ):
+                plugin_paths.update(
+                    self._gatherPluginHooks(
+                        connectPluginPath
+                    )
+                )
 
         self.logger.info(
             u'Connect plugin hooks directories: {0}'.format(
