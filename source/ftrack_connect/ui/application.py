@@ -488,7 +488,7 @@ class Application(QtWidgets.QMainWindow):
         ):
             plugin_paths.update(
                 self._gatherPluginHooks(
-                    connectPluginPath
+                    os.path.expandvars(connectPluginPath)
                 )
             )
 
