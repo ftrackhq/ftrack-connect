@@ -7,6 +7,9 @@
 About
 *****
 
+ftrack-connect
+==============
+
 ftrack connect is all about connecting ftrack to other systems and providing
 tighter integration into your everyday workflows.
 
@@ -15,7 +18,11 @@ that provides enhanced functionality for the web interface including launching
 applications, notifications, local action processing and multi-site as well as
 generic interfaces for logging time and publishing any kind of data into ftrack.
 
-This package contains that core service and standalone applications. Specific
+
+ftrack-connect-package
+======================
+
+ftrack connect package contains that core service and standalone applications. Specific
 integrations with other applications are named following the convention
 *ftrack-connect-[application]* and are available separately. In the not too
 distant future you will be able to install and configure those separate

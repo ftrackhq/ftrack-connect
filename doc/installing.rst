@@ -49,7 +49,7 @@ Alternatively, install using `pip <http://www.pip-installer.org/>`_:
     When installing through pip, the default hooks will not be properly installed as part of the package,
     but they'll instead be installed on the root of the interpreter eg:
 
-    C:\Python27\ftrack_connect_resource\hook
+    C:\Python37\ftrack_connect_resource\hook
 
     Before starting connect please ensure the path is added to your
 
@@ -88,7 +88,7 @@ Alternatively, just build locally and manage yourself:
     $ python setup.py build
 
 
-Is also possible to build live developmnet version using either:
+Is also possible to build live development version using:
 
 .. code-block:: none
 
@@ -119,32 +119,14 @@ With a copy of the source it is also possible to run the unit tests:
     $ python setup.py test
 
 
-There are also interactive tests for many of the widgets that can be run
-directly once you have configured your environment to include the built
-package:
-
-
-.. code-block:: none
-
-    $ python test/interactive/timer.py
-
 
 Dependencies
 ============
 
-* `Python <http://python.org>`_ >= 2.6, < 3
-* `PySide <http://qt-project.org/wiki/PySide>`_ >= 1.2.2, < 2
-
-  .. note::
-
-      On Windows and Osx, PySide does not always put the required ``pyside-rcc``
-      runtime in an accessible place. If you encounter build errors when
-      installing, try adding the location of ``pyside-rcc`` to your ``PATH``::
-
-      $ set "PATH=C:\Python27\Lib\site-packages\PySide\;%PATH%"
-
+* `Python <http://python.org>`_ >= 3, < 4
+* `PySide <http://qt-project.org/wiki/PySide>`_ >= 2, < 3
 * `Riffle <https://github.com/4degrees/riffle>`_ >= 0.1.0, < 2W
-* `QtExt <https://bitbucket.org/ftrack/qtext>`_ >= 0.2.2
+* `Qt.py <https://github.com/mottosso/Qt.py>`_ >= 1.3 < 2
 
 Additional For building
 -----------------------
