@@ -10,8 +10,8 @@ Migration notes
 
 .. _release/migration/upcoming:
 
-Migrate to 2.0
-==============
+Migrate from 1.X to 2.0
+=======================
 
 .. _release/migration/upcoming/developer_notes:
 
@@ -23,7 +23,22 @@ Especially if you have custom locations implemented for the `legacy api`.
 
 Developer notes
 ---------------
-With version 2.0 connect drops support for ftrack-python-legacy-api.
+With version 2.0 connect drops support for ftrack-python-legacy-api, and will stop including backward compatibilty modules such as:
+
+ * `ftrack-location-compatibility <https://bitbucket.org/ftrack/ftrack-location-compatibility/src/master/>`_
+
+Modules and interpreter changes
+...............................
+
+With the move to connect2 some of the basic modules and systems have been updated or changed to match the current `VFX platform <https://vfxplatform.com/>`_.:
+
+* Python: 2.7 --> 3.7
+* PySide: 1.1.3   --> 1.3.x
+* Qt: 4.8 --> 5.14.X
+* QtExt: 0.2.2 -> Qt.py 1.3.3
+* ftrack-python-api: 1.8.X -> 2.X
+
+
 
 hooks
 .....
