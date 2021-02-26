@@ -483,15 +483,14 @@ class Application(QtWidgets.QMainWindow):
             )
         )
 
-        if 'FTRACK_CONNECT_PLUGIN_PATH' in os.environ:
-            for connectPluginPath in (
-                os.environ['FTRACK_CONNECT_PLUGIN_PATH'].split(os.pathsep)
-            ):
-                plugin_paths.update(
-                    self._gatherPluginHooks(
-                        connectPluginPath
-                    )
+        for connectPluginPath in (
+            os.environ.get('FTRACK_CONNECT_PLUGIN_PATH', '').split(os.pathsep)
+        ):
+            plugin_paths.update(
+                self._gatherPluginHooks(
+                    os.path.expandvars(connectPluginPath)
                 )
+            )
 
         self.logger.info(
             u'Connect plugin hooks directories: {0}'.format(
