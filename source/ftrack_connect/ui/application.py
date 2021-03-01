@@ -487,9 +487,7 @@ class Application(QtWidgets.QMainWindow):
             os.environ.get('FTRACK_EVENT_PLUGIN_PATH', '').split(os.pathsep)
         ):
             plugin_paths.update(
-                self._gatherPluginHooks(
-                    os.path.expandvars(apiPluginPath)
-                )
+                os.path.expandvars(apiPluginPath)
             )
 
         for connectPluginPath in (
