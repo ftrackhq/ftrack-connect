@@ -27,7 +27,7 @@ try:
             'ftrack_connect_resource/hook'
         )
     )
-except pkg_resources.DistributionNotFound as error:
+except pkg_resources.DistributionNotFound:
     # If part of a frozen package then distribution might not be found.
     pass
 
