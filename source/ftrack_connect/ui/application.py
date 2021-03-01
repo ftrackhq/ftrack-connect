@@ -275,7 +275,6 @@ class Application(QtWidgets.QMainWindow):
                     'FTRACK_EVENT_PLUGIN_PATH', ''
                 ).split(os.pathsep)
             )
-
         try:
             session = ftrack_api.Session(
                 auto_connect_event_hub=True,
@@ -486,8 +485,8 @@ class Application(QtWidgets.QMainWindow):
         for apiPluginPath in (
             os.environ.get('FTRACK_EVENT_PLUGIN_PATH', '').split(os.pathsep)
         ):
-            plugin_paths.update(
-                os.path.expandvars(apiPluginPath)
+            plugin_paths.add(
+                    os.path.expandvars(apiPluginPath)
             )
 
         for connectPluginPath in (

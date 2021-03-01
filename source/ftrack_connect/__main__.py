@@ -28,7 +28,6 @@ try:
         )
     )
 except pkg_resources.DistributionNotFound as error:
-    logging.info(error)
     # If part of a frozen package then distribution might not be found.
     pass
 
