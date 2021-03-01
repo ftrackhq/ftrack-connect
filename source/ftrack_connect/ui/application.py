@@ -483,6 +483,15 @@ class Application(QtWidgets.QMainWindow):
             )
         )
 
+        for apiPluginPath in (
+            os.environ.get('FTRACK_EVENT_PLUGIN_PATH', '').split(os.pathsep)
+        ):
+            plugin_paths.update(
+                self._gatherPluginHooks(
+                    os.path.expandvars(apiPluginPath)
+                )
+            )
+
         for connectPluginPath in (
             os.environ.get('FTRACK_CONNECT_PLUGIN_PATH', '').split(os.pathsep)
         ):
