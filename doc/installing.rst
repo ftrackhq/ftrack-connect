@@ -12,24 +12,6 @@ Installing
 Pre-built packages are available for download for Windows, Linux and Mac from
 the `Integrations webpage <https://www.ftrack.com/portfolio/connect>`_.
 
-The pre-built packages includes integrations for various applications:
-
-    *   3DS Max
-    *   Hiero
-    *   Maya
-    *   Nuke
-    *   Nuke Studio
-    *   Hiero
-    *   Hiero Player
-    *   RV
-    *   Houdini
-    *   Adobe Creative Cloud
-    *   Adobe Photoshop
-    *   Adobe Illustrator
-    *   Adobe AfterEffects
-    *   Adobe Premier Pro
-    *   Cinema 4D
-
 .. note::
 
     Alternative installation methods require technical knowledge.
