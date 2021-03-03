@@ -49,7 +49,7 @@ Alternatively, install using `pip <http://www.pip-installer.org/>`_:
     When installing through pip, the default hooks will not be properly installed as part of the package,
     but they'll instead be installed on the root of the interpreter eg:
 
-    C:\Python37\ftrack_connect_resource\hook
+    C:\\Python37\\ftrack_connect_resource\\hook
 
     Before starting connect please ensure the path is added to your
 
