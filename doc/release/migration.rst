@@ -10,27 +10,54 @@ Migration notes
 
 .. _release/migration/upcoming:
 
-Migrate to 2.0
-==============
+Migrate from 1.X to 2.0
+=======================
 
 .. _release/migration/upcoming/developer_notes:
 
 Users of a downloaded 
 `Connect package <https://www.ftrack.com/portfolio/connect>`_ are
 recommended to test the new version before upgrading all workstations.
-Especially if you have custom locations implemented for the `legacy api`.
+Especially if you have custom code implemented with the `legacy api`.
 
 
 Developer notes
 ---------------
-With version 2.0 connect drops support for ftrack-python-legacy-api.
+With version 2.0, ftrack-connect drops support for `ftrack-python-legacy-api <https://bitbucket.org/ftrack/ftrack-python-legacy-api>`_, and will stop including backward compatibility modules such as:
+
+ * `ftrack-location-compatibility <https://bitbucket.org/ftrack/ftrack-location-compatibility/src/master/>`_
+
+Legacy locations will have to update to `ftrack-python-api <http://ftrack-python-api.rtd.ftrack.com/en/stable/locations/index.html>`_ syntax in order to keep them working.
+
+
+Modules and interpreter changes
+...............................
+
+With the move to connect2 some of the basic modules and systems have been updated or changed to match the current `VFX platform <https://vfxplatform.com/>`_.:
+
+* Python: 2.7 --> 3.7
+* PySide: 1.1.3   --> 1.3.x
+* Qt: 4.8 --> 5.14.X
+* QtExt: 0.2.2 -> Qt.py 1.3.3
+* ftrack-python-api: 1.8.X -> 2.X
+
+Launching applications
+......................
+
+The application launch logic has now been moved to the `ftrack-application-launcher <https://bitbucket.org/ftrack/ftrack-application-launcher>`_
+
+.. warning::
+
+    Is likely your application launcher or hooks could have import references to: **ftrack_connect.application**
+    This should be replaced with: **ftrack_application_launcher.application**
+
+    For other changes regarding the launch of applications please refer to the `ftrack-application-launcher <https://bitbucket.org/ftrack/ftrack-application-launcher>`_ `documentation <http://ftrack-application-launcher.rtd.ftrack.com/en/latest/>`_.
+
 
 hooks
 .....
 
-This means :
-
-* Actions and events requires to update their registration from:
+Updating hooks mostly means updating the registration function from:
 
 
 .. code-block:: python
@@ -41,7 +68,6 @@ This means :
 
 
 to:
-
 
 .. code-block:: python
 
@@ -55,23 +81,32 @@ or will not be discovered anymore.
 connector
 .........
 
-With this version we also drop the support for connector integration.
+Due to the changes of python interpreter and pyside version, we also dropping the support for connector integration from within connect itself.
 
-The codebase has been moved into a `separate repository <https://bitbucket.org/ftrack/ftrack-connector-legacy.git>`_
-And will have to be included in the integration that requires connector to be present.
+To allow backward compatiblity , the codebase has been moved into a `separate repository <https://bitbucket.org/ftrack/ftrack-connector-legacy.git>`_
+And will have to be included as dependency in the integration that requires connector to be present.
 
+.. note::
 
-location
-........
+    Any reference to **ftrack_connect.connector** should be replaced with **ftrack_connector_legacy.connector**
 
-Since custom locations are not compatible between the different APIs all users
-running from source with custom locations for the `legacy api` must either:
+    Eg, from ::
 
-#.  Use the
-    `Location compatibility layer <https://bitbucket.org/ftrack/ftrack-location-compatibility/>`_
-    by putting it's resource folder on the `FTRACK_EVENT_PLUGIN_PATH`.
-#.  Or, re-write the location using the `ftrack-python-api`.
+        from ftrack_connect.connector import (
+            FTAssetHandlerInstance,
+            HelpFunctions,
+            FTAssetType,
+            FTComponent
+        )
 
+    To ::
+
+        from ftrack_connector_legacy.connector import (
+            FTAssetHandlerInstance,
+            HelpFunctions,
+            FTAssetType,
+            FTComponent
+        )
 
 Migrate from 0.1.19 to 0.1.20
 ===============================
