@@ -116,8 +116,6 @@ class Base(QtWidgets.QLabel):
 class ActionIcon(Base):
     '''Widget to load action icons over HTTP.'''
 
-    #: Available icons on ftrack server.
-
 
     def __init__(self, parent=None):
         '''Initialize action icon.'''
@@ -130,7 +128,6 @@ class ActionIcon(Base):
         *icon* may be one of the following.
 
             * A URL to load the image from starting with 'http'.
-            * One of the predefined icons in AVAILABLE_ICONS
         '''
         if icon and icon[:4] == 'http':
             self.load(icon)
