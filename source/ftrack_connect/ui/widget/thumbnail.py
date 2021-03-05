@@ -116,25 +116,6 @@ class Base(QtWidgets.QLabel):
 class ActionIcon(Base):
     '''Widget to load action icons over HTTP.'''
 
-    #: Available icons on ftrack server.
-    AVAILABLE_ICONS = {
-        'hiero': '/application_icons/hiero.png',
-        'hieroplayer': '/application_icons/hieroplayer.png',
-        'nukex': '/application_icons/nukex.png',
-        'nuke': '/application_icons/nuke.png',
-        'nuke_studio': '/application_icons/nuke_studio.png',
-        'premiere': '/application_icons/premiere.png',
-        'maya': '/application_icons/maya.png',
-        'cinesync': '/application_icons/cinesync.png',
-        'photoshop': '/application_icons/photoshop.png',
-        'prelude': '/application_icons/prelude.png',
-        'after_effects': '/application_icons/after_effects.png',
-        '3ds_max': '/application_icons/3ds_max.png',
-        'cinema_4d': '/application_icons/cinema_4d.png',
-        'indesign': '/application_icons/indesign.png',
-        'illustrator': '/application_icons/illustrator.png',
-        'houdini': '/application_icons/houdini.png'
-    }
 
     def __init__(self, parent=None):
         '''Initialize action icon.'''
@@ -147,15 +128,9 @@ class ActionIcon(Base):
         *icon* may be one of the following.
 
             * A URL to load the image from starting with 'http'.
-            * One of the predefined icons in AVAILABLE_ICONS
         '''
         if icon and icon[:4] == 'http':
             self.load(icon)
-
-        elif self.AVAILABLE_ICONS.get(icon):
-            url = os.environ['FTRACK_SERVER'] + self.AVAILABLE_ICONS[icon]
-            self.load(url)
-
         else:
             self.loadResource(':/ftrack/image/light/action')
 
