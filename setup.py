@@ -232,7 +232,6 @@ __version__ = {version!r}
 # General configuration.
 configuration = dict(
     name='ftrack-connect',
-    version=VERSION,
     description='Core for ftrack connect.',
     long_description=open(README_PATH).read(),
     keywords='ftrack, connect, publish',
@@ -244,6 +243,7 @@ configuration = dict(
     use_scm_version={
         'write_to': 'source/ftrack_connect/_version.py',
         'write_to_template': version_template,
+        'version_scheme': 'post-release'
     },
     package_dir={
         '': 'source'
