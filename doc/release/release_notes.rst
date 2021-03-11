@@ -8,7 +8,8 @@
 Release Notes
 *************
 
-.. release:: Upcoming
+.. release:: 1.1.9
+    :date: 2021-03-11
 
     .. change:: fixed
         :tags: open_directory
