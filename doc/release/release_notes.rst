@@ -50,6 +50,14 @@ Release Notes
 
         Standalone installation does not correctly inject dependencies at application startup.
 
+.. release:: 1.1.9
+    :date: 2021-03-11
+
+    .. change:: fixed
+        :tags: open_directory
+
+        Opening component breaks on cloud paths.
+ 
 
 .. release:: 1.1.8
     :date: 2020-01-21

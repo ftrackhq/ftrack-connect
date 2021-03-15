@@ -24,7 +24,9 @@ class Login(QtWidgets.QWidget):
 
     def __init__(self, *args, **kwargs):
         '''Instantiate the login widget.'''
-        super(Login, self).__init__(*args, **kwargs)
+        super(Login, self).__init__()
+
+        theme = kwargs.get("theme", "light")
 
         layout = QtWidgets.QVBoxLayout()
         layout.addSpacing(50)
@@ -33,7 +35,9 @@ class Login(QtWidgets.QWidget):
         self.setLayout(layout)
 
         logo = QtWidgets.QLabel()
-        logoPixmap = QtGui.QPixmap(':ftrack/image/default/ftrackLogoLabelDark')
+        logoPixmap = QtGui.QPixmap(
+            ':ftrack/image/{}/ftrackLogoLabelDark'.format(theme)
+        )
         logo.setPixmap(
             logoPixmap.scaled(
                 QtCore.QSize(100, 100),

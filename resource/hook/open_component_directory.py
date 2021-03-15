@@ -5,7 +5,6 @@ import logging
 import os
 
 import ftrack_api
-
 import ftrack_connect.util
 
 
@@ -57,8 +56,18 @@ class OpenComponentDirectoryAction(object):
 
         path = None
         if location:
-            path = location.get_filesystem_path(component)
-
+            try:
+                path = location.get_filesystem_path(component)
+            except ftrack_api.exception.AccessorUnsupportedOperationError:
+                self.logger.warn(
+                    'Component {0!r} does not support filesystem access for '
+                    '{1!r}'.format(component, location)
+                )
+            self.logger.info(
+                'Location is only in api: {0!r}'.format(
+                    legacy_location
+                )
+            )
         return path
 
     def launch(self, event):

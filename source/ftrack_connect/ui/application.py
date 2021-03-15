@@ -113,6 +113,8 @@ class Application(QtWidgets.QMainWindow):
             __name__ + '.' + self.__class__.__name__
         )
 
+        self._session = None
+
         self.defaultPluginDirectory = appdirs.user_data_dir(
             'ftrack-connect-plugins', 'ftrack'
         )
@@ -150,9 +152,13 @@ class Application(QtWidgets.QMainWindow):
         self.setWindowIcon(self.logoIcon)
 
         self._login_overlay = None
-        self.loginWidget = _login.Login()
+        self.loginWidget = _login.Login(theme=theme)
         self.loginSignal.connect(self.loginWithCredentials)
         self.login()
+
+    def _assign_session_theme(self, theme):
+        if self.session:
+            self.session.connect_theme = theme
 
     def theme(self):
         '''Return current theme.'''
@@ -293,6 +299,11 @@ class Application(QtWidgets.QMainWindow):
         if plugin_paths is None:
             plugin_paths = self.pluginHookPaths
 
+            plugin_paths.extend(
+                os.environ.get(
+                    'FTRACK_EVENT_PLUGIN_PATH', ''
+                ).split(os.pathsep)
+            )
         try:
             session = ftrack_api.Session(
                 auto_connect_event_hub=True,
@@ -387,6 +398,7 @@ class Application(QtWidgets.QMainWindow):
         try:
             # Quick session to poll for settings, confirm credentials
             self._session = self._setup_session(plugin_paths='')
+            self._assign_session_theme(self.theme())
         except Exception as error:
             self.logger.exception('Error during login:')
             self._report_session_setup_error(error)
@@ -486,24 +498,34 @@ class Application(QtWidgets.QMainWindow):
             ),
             lambda event : True
         )
+        self.session._configure_locations()
 
     def _discover_hook_paths(self):
         '''Return a list of paths to pass to ftrack_api.Session()'''
 
         plugin_paths = set()
+
         plugin_paths.update(
             self._gatherPluginHooks(
                 self.defaultPluginDirectory
             )
         )
 
-        plugin_paths.update(os.environ.get(
-            'FTRACK_EVENT_PLUGIN_PATH', ''
-        ).split(os.pathsep))
+        for apiPluginPath in (
+            os.environ.get('FTRACK_EVENT_PLUGIN_PATH', '').split(os.pathsep)
+        ):
+            plugin_paths.add(
+                    os.path.expandvars(apiPluginPath)
+            )
 
-        plugin_paths.update(os.environ.get(
-            'FTRACK_CONNECT_PLUGIN_PATH', ''
-        ).split(os.pathsep))
+        for connectPluginPath in (
+            os.environ.get('FTRACK_CONNECT_PLUGIN_PATH', '').split(os.pathsep)
+        ):
+            plugin_paths.update(
+                self._gatherPluginHooks(
+                    os.path.expandvars(connectPluginPath)
+                )
+            )
 
         self.logger.info(
             u'Connect plugin hooks directories: {0}'.format(

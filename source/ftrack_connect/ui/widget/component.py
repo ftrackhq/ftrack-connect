@@ -27,14 +27,8 @@ class Component(QtWidgets.QWidget):
 
         self.layout().addWidget(self.componentNameEdit)
 
-        # TODO: Add theme support.
-        removeIcon = QtGui.QIcon(
-            QtGui.QPixmap(':/ftrack/image/light/trash')
-        )
-
-        self.removeAction = QtWidgets.QAction(
-            QtGui.QIcon(removeIcon), 'Remove', self.componentNameEdit
-        )
+        self.removeAction = QtWidgets.QAction('Remove', self.componentNameEdit)
+        self.removeAction.setObjectName('component-remove-action')
         self.removeAction.setStatusTip('Remove component.')
         self.componentNameEdit.addAction(
             self.removeAction

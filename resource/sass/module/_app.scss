@@ -19,6 +19,9 @@ QLabel#regular-label {
 
 QLabel#lead-label {
     font-size: 13px;
-    color: $gray-light;
+    color: $text-color-drop-zone;
     font-weight: light;
+}
+QPixmap{
+    image: theme-image('ftrackLogoLabelDark');
 }
