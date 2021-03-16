@@ -625,7 +625,6 @@ class Application(QtWidgets.QMainWindow):
             event, synchronous=True
         )
 
-
         for response in responses:
             try:
                 self.logger.debug('Registering tab plugin {}'.format(response))
