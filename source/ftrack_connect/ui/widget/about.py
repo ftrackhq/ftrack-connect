@@ -11,6 +11,8 @@ from Qt import QtCore, QtWidgets, QtGui
 
 import ftrack_api
 from ftrack_connect.config import get_log_directory
+from ftrack_connect.ui.widget.widget_list import WidgetList
+
 import ftrack_connect.util
 
 
@@ -44,6 +46,10 @@ class AboutDialog(QtWidgets.QDialog):
 
         layout.addSpacing(25)
 
+        self.widget_list = WidgetList()
+
+        layout.addWidget(self.widget_list)
+
         self.debugButton = QtWidgets.QPushButton('More info')
         self.debugButton.clicked.connect(self._onDebugButtonClicked)
 
@@ -70,6 +76,12 @@ class AboutDialog(QtWidgets.QDialog):
         layout.addWidget(self.debugTextEdit)
 
     def _onDebugButtonClicked(self):
+        '''Handle debug button clicked.'''
+        self.debugButton.hide()
+        self.debugTextEdit.show()
+        self.adjustSize()
+
+    def _onWidgetButtonClicked(self):
         '''Handle debug button clicked.'''
         self.debugButton.hide()
         self.debugTextEdit.show()
@@ -143,7 +155,7 @@ class AboutDialog(QtWidgets.QDialog):
         )
         messageBox.exec_()
 
-    def setInformation(self, versionData, user, server):
+    def setInformation(self, versionData, user, server, widget_plugins):
         '''Set displayed *versionData*, *user*, *server*.'''
         core = [plugin for plugin in versionData if plugin.get('core')]
         plugins = [
@@ -198,3 +210,5 @@ class AboutDialog(QtWidgets.QDialog):
         self.debugTextEdit.insertPlainText(
             json.dumps(versionData, indent=4, sort_keys=True)
         )
+
+        self.widget_list.add_plugins(widget_plugins)

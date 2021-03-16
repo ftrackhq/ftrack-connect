@@ -777,6 +777,7 @@ class Application(QtWidgets.QMainWindow):
             responses = self.session.event_hub.publish(
                 event, synchronous=True
             )
+            self.logger.info('debug-info {}'.format(responses))
 
             for response in responses:
                 if isinstance(response, dict):
@@ -793,6 +794,7 @@ class Application(QtWidgets.QMainWindow):
             versionData=versionData,
             server=os.environ.get('FTRACK_SERVER', 'Not set'),
             user=self.session.api_user,
+            widget_plugins=self.plugins
         )
 
         aboutDialog.exec_()
