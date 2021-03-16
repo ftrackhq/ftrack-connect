@@ -29,7 +29,7 @@ class PublisherBlockingOverlay(
         self.content.setMinimumWidth(350)
 
 
-class Publisher(ftrack_connect.ui.application.TabPlugin):
+class Publisher(ftrack_connect.ui.application.ConnectWidget):
     '''Base widget for ftrack connect publisher plugin.'''
 
     #: Signal to emit when the entity is changed.

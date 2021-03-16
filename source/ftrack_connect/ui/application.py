@@ -34,7 +34,7 @@ import ftrack_connect.ui.config
 
 
 
-class TabPlugin(QtWidgets.QWidget):
+class ConnectWidget(QtWidgets.QWidget):
     '''Base widget for ftrack connect application plugin.'''
     topic = 'ftrack.connect.plugin.tab-plugin'
 
@@ -50,7 +50,7 @@ class TabPlugin(QtWidgets.QWidget):
         return self._session
 
     def __init__(self, session, parent=None):
-        super(TabPlugin, self).__init__(parent=parent)
+        super(ConnectWidget, self).__init__(parent=parent)
         self._session = session
 
     def getName(self):
@@ -75,7 +75,7 @@ class TabPlugin(QtWidgets.QWidget):
         )
 
 
-class PluginWarning(TabPlugin):
+class PluginWarning(ConnectWidget):
     '''Warning missing plugin widget.'''
     def __init__(self, session, parent=None):
         '''Instantiate the actions widget.'''
@@ -618,7 +618,7 @@ class Application(QtWidgets.QMainWindow):
         #: TODO: Add discover functionality and search paths.
 
         event = ftrack_api.event.base.Event(
-            topic = TabPlugin.topic
+            topic = ConnectWidget.topic
         )
 
         responses = self.session.event_hub.publish(

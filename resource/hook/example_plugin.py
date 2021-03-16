@@ -8,8 +8,7 @@ import ftrack_connect.ui.application
 
 logger = logging.getLogger('ftrack_connect.plugin.actions')
 
-
-class ExamplePlugin(ftrack_connect.ui.application.TabPlugin):
+class ExamplePlugin(ftrack_connect.ui.application.ConnectWidget):
     '''Base widget for ftrack connect actions plugin.'''
 
     def __init__(self, session, parent=None):
