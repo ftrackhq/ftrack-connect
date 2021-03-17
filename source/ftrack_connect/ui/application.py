@@ -577,7 +577,6 @@ class Application(QtWidgets.QMainWindow):
         self.menu_bar = QtWidgets.QMenuBar()
         self.setMenuWidget(self.menu_bar)
         widget_menu = self.menu_bar.addMenu('widgets')
-        self.menu_bar.setCornerWidget(widget_menu)
         self.menu_widget = widget_menu
 
     def _createTrayMenu(self):
@@ -622,14 +621,13 @@ class Application(QtWidgets.QMainWindow):
 
         return menu
 
-    def _creteTabPluginMenu(self, entry):
+    def _creteConnectWidgetMenu(self, entry):
         widget_menu_action = QtWidgets.QAction(entry.getName(), self)
         widget_menu_action.setData(entry)
         widget_menu_action.setCheckable(True)
         widget_menu_action.setChecked(True)
         widget_menu_action.changed.connect(self._manage_custom_widget)
         self.menu_widget.addAction(widget_menu_action)
-
 
     def _discoverConnectWidget(self):
         '''Find and load connect widgets in search paths.'''
@@ -654,7 +652,7 @@ class Application(QtWidgets.QMainWindow):
                         response.getName()
                     )
                 )
-            self._creteTabPluginMenu(response)
+            self._creteConnectWidgetMenu(response)
 
         # check if any plugin has been registered.
         # if not create and install a warning plugin.
