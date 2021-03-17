@@ -11,7 +11,6 @@ from Qt import QtCore, QtWidgets, QtGui
 
 import ftrack_api
 from ftrack_connect.config import get_log_directory
-from ftrack_connect.ui.widget.widget_list import WidgetList
 
 import ftrack_connect.util
 
@@ -46,9 +45,6 @@ class AboutDialog(QtWidgets.QDialog):
 
         layout.addSpacing(25)
 
-        self.widget_list = WidgetList()
-
-        layout.addWidget(self.widget_list)
 
         self.debugButton = QtWidgets.QPushButton('More info')
         self.debugButton.clicked.connect(self._onDebugButtonClicked)
@@ -210,5 +206,3 @@ class AboutDialog(QtWidgets.QDialog):
         self.debugTextEdit.insertPlainText(
             json.dumps(versionData, indent=4, sort_keys=True)
         )
-
-        self.widget_list.add_plugins(widget_plugins)

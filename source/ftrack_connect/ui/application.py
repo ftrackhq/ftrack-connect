@@ -89,6 +89,7 @@ class PluginWarning(ConnectWidget):
         layout.addWidget(label, QtCore.Qt.AlignCenter)
 
 
+
 class Application(QtWidgets.QMainWindow):
     '''Main application window for ftrack connect.'''
 
@@ -143,6 +144,7 @@ class Application(QtWidgets.QMainWindow):
         self.plugins = {}
 
         self._initialiseTray()
+        self._initialiseMenuBar()
 
         self.setObjectName('ftrack-connect-window')
         self.setWindowTitle('ftrack connect')
@@ -571,6 +573,13 @@ class Application(QtWidgets.QMainWindow):
         self.tray.setIcon(self.logoIcon)
         self.tray.show()
 
+    def _initialiseMenuBar(self):
+        self.menu_bar = QtWidgets.QMenuBar()
+        self.setMenuWidget(self.menu_bar)
+        widget_menu = self.menu_bar.addMenu('widgets')
+        self.menu_bar.setCornerWidget(widget_menu)
+        self.menu_widget = widget_menu
+
     def _createTrayMenu(self):
         '''Return a menu for system tray.'''
         menu = QtWidgets.QMenu(self)
@@ -613,6 +622,14 @@ class Application(QtWidgets.QMainWindow):
 
         return menu
 
+    def _creteTabPluginMenu(self, entry):
+        widget_menu_action = QtWidgets.QAction(entry.getName(), self)
+        widget_menu_action.setData(entry)
+        widget_menu_action.setCheckable(True)
+        widget_menu_action.setChecked(True)
+        widget_menu_action.changed.connect(self._manage_custom_widget)
+        self.menu_widget.addAction(widget_menu_action)
+
     def _discoverTabPlugins(self):
         '''Find and load tab plugins in search paths.'''
         #: TODO: Add discover functionality and search paths.
@@ -629,19 +646,30 @@ class Application(QtWidgets.QMainWindow):
             try:
                 self.logger.debug('Registering tab plugin {}'.format(response))
                 self.addPlugin(response, response.getName())
+
             except Exception:
                 self.logger.warning(
                     'Tab Plugin {} could not be loaded'.format(
                         response.getName()
                     )
                 )
-    
+            self._creteTabPluginMenu(response)
+
         # check if any plugin has been registered.
         # if not create and install a warning plugin.
         if not self.plugins:
             warning_plugin = PluginWarning(self.session)
             self.addPlugin(warning_plugin, warning_plugin.getName())
 
+    def _manage_custom_widget(self):
+        action = self.sender()
+        status = action.isChecked()
+        item = action.data()
+        if not status:
+            tab_index = self.tabPanel.indexOf(item)
+            self.tabPanel.removeTab(tab_index)
+        else:
+            self.tabPanel.addTab(item, item.getName())
 
     def _routeEvent(self, event):
         '''Route websocket *event* to publisher plugin.
