@@ -33,7 +33,6 @@ from ftrack_connect.ui.widget import configure_scenario as _scenario_widget
 import ftrack_connect.ui.config
 
 
-
 class ConnectWidget(QtWidgets.QWidget):
     '''Base widget for ftrack connect application plugin.'''
     topic = 'ftrack.connect.plugin.connect-widget'
@@ -579,6 +578,49 @@ class Application(QtWidgets.QMainWindow):
         widget_menu = self.menu_bar.addMenu('widgets')
         self.menu_widget = widget_menu
 
+    def _get_widget_preferences(self):
+        '''Return a dict with API credentials from storage.'''
+        widgets = {}
+
+        # Read from json config file.
+        json_config = ftrack_connect.ui.config.read_json_config()
+        if json_config:
+            try:
+                widgets = json_config['widgets']
+            except Exception:
+                self.logger.debug(
+                    u'No widget preferences were found in config: {0}.'.format(
+                        json_config
+                    )
+                )
+
+        # Fallback on old QSettings.
+        if not json_config and not widgets:
+            settings = QtCore.QSettings()
+            settings.value('widgets', {})
+
+        return widgets
+
+    def _save_widget_preferences(self, plugin_name, state):
+        '''Save API credentials to storage.'''
+        # Clear QSettings since they should not be used any more.
+        self._clear_qsettings()
+
+        # Save the credentials.
+        json_config = ftrack_connect.ui.config.read_json_config()
+
+        if not json_config:
+            json_config = {}
+
+        # Add a unique id to the config that can be used to identify this
+        # machine.
+        if not 'id' in json_config:
+            json_config['id'] = str(uuid.uuid4())
+        json_config.setdefault('widgets', {})
+        json_config['widgets'][plugin_name] = state
+        self.logger.info('SAVING PREFS {}'.format(json_config))
+        ftrack_connect.ui.config.write_json_config(json_config)
+
     def _createTrayMenu(self):
         '''Return a menu for system tray.'''
         menu = QtWidgets.QMenu(self)
@@ -621,11 +663,12 @@ class Application(QtWidgets.QMainWindow):
 
         return menu
 
-    def _creteConnectWidgetMenu(self, entry):
+    def _creteConnectWidgetMenu(self, entry,  stored_state):
+        self.logger.info('Creating menu for {} with status {}'.format(entry, stored_state))
         widget_menu_action = QtWidgets.QAction(entry.getName(), self)
         widget_menu_action.setData(entry)
         widget_menu_action.setCheckable(True)
-        widget_menu_action.setChecked(True)
+        widget_menu_action.setChecked(stored_state)
         widget_menu_action.changed.connect(self._manage_custom_widget)
         self.menu_widget.addAction(widget_menu_action)
 
@@ -640,35 +683,50 @@ class Application(QtWidgets.QMainWindow):
         responses = self.session.event_hub.publish(
             event, synchronous=True
         )
+        widgets = self._get_widget_preferences()
 
+        self.logger.info('WIDGETS FROM PREFS: {}'.format(widgets))
         for response in responses:
+            stored_state = True
             try:
                 self.logger.debug('Registering tab plugin {}'.format(response))
-                self.addPlugin(response, response.getName())
-
+                stored_state = widgets.get(response.getName(), stored_state)
+                self.logger.info('FOUND : {} {}'.format(response, stored_state))
+                self._setConnectWidgetState(response, stored_state)
+                self._creteConnectWidgetMenu(response, stored_state)
             except Exception:
                 self.logger.warning(
                     'Tab Plugin {} could not be loaded'.format(
                         response.getName()
                     )
                 )
-            self._creteConnectWidgetMenu(response)
 
-        # check if any plugin has been registered.
-        # if not create and install a warning plugin.
-        if not self.plugins:
-            warning_plugin = PluginWarning(self.session)
-            self.addPlugin(warning_plugin, warning_plugin.getName())
+        # # check if any plugin has been registered.
+        # # if not create and install a warning plugin.
+        # if not self.plugins:
+        #     warning_plugin = PluginWarning(self.session)
+        #     self.addPlugin(warning_plugin, warning_plugin.getName())
+
+    def _setConnectWidgetState(self, item, state):
+        plugin_exists = self.plugins.get(item.getIdentifier())
+        if not plugin_exists:
+            self.plugins[item.getIdentifier()] = item
+
+        if state is False:
+            self.logger.info('REMOVING {}'.format(item))
+            self.removePlugin(item.getIdentifier())
+        elif state is True:
+            self.logger.info('ADDING {}'.format(item))
+            self.addPlugin(item)
+
+
+        self._save_widget_preferences(item.getName(), state)
 
     def _manage_custom_widget(self):
         action = self.sender()
-        status = action.isChecked()
+        state = action.isChecked()
         item = action.data()
-        if not status:
-            tab_index = self.tabPanel.indexOf(item)
-            self.tabPanel.removeTab(tab_index)
-        else:
-            self.tabPanel.addTab(item, item.getName())
+        self._setConnectWidgetState(item, state)
 
     def _routeEvent(self, event):
         '''Route websocket *event* to publisher plugin.
@@ -733,9 +791,9 @@ class Application(QtWidgets.QMainWindow):
             identifier = plugin.getIdentifier()
 
         if identifier in self.plugins:
-            raise _NotUniqueError(
-                'Cannot add plugin. An existing plugin has already been '
-                'registered with identifier {0}.'.format(identifier)
+            self.logger.warning(
+                'An existing plugin has already been '
+                'registered with identifier {0}, it will be replaced'.format(identifier)
             )
 
         self.plugins[identifier] = plugin
@@ -764,8 +822,8 @@ class Application(QtWidgets.QMainWindow):
         index = self.tabPanel.indexOf(plugin)
         self.tabPanel.removeTab(index)
 
-        plugin.deleteLater()
-        del self.plugins[identifier]
+        # plugin.deleteLater()
+        # del self.plugins[identifier]
 
     def focus(self):
         '''Focus and bring the window to top.'''
