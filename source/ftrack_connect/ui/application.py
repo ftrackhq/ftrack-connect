@@ -480,7 +480,7 @@ class Application(QtWidgets.QMainWindow):
         self.tabPanel.tabBar().setObjectName('application-tab-bar')
         self.setCentralWidget(self.tabPanel)
 
-        self._discoverTabPlugins()
+        self._discoverConnectWidget()
 
         self.session.event_hub.subscribe(
             'topic=ftrack.connect and source.user.username="{0}"'.format(
@@ -630,8 +630,9 @@ class Application(QtWidgets.QMainWindow):
         widget_menu_action.changed.connect(self._manage_custom_widget)
         self.menu_widget.addAction(widget_menu_action)
 
-    def _discoverTabPlugins(self):
-        '''Find and load tab plugins in search paths.'''
+
+    def _discoverConnectWidget(self):
+        '''Find and load connect widgets in search paths.'''
         #: TODO: Add discover functionality and search paths.
 
         event = ftrack_api.event.base.Event(
