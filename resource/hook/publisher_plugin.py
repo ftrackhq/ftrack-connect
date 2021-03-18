@@ -31,7 +31,7 @@ class PublisherBlockingOverlay(
 
 class Publisher(ftrack_connect.ui.application.ConnectWidget):
     '''Base widget for ftrack connect publisher plugin.'''
-
+    icon = ':ftrack/image/default/ftrackLogoColor'
     #: Signal to emit when the entity is changed.
     entityChanged = QtCore.Signal(object)
 
