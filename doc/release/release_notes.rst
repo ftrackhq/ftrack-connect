@@ -13,7 +13,7 @@ Release Notes
     .. change:: new:
         :tags: Ui
 
-        Provide ability to extend connect through tab plugins.
+        Provide ability to extend connect through ConnectWidgets plugins.
 
     .. change:: changed
         :tags: Ui
