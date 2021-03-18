@@ -35,4 +35,4 @@ priority or by removing the default hook using
     plugin_information
     application_launch
     verify_startup
-    tab_plugin
+    connect_widget

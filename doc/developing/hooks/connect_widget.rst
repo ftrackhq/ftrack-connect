@@ -16,7 +16,7 @@ the way ftrack connect is currently configured.
 Example event passed to hook::
 
     Event(
-        topic='ftrack.connect.plugin.tab-plugin'
+        topic='ftrack.connect.plugin.connect-widget'
     )
 
 Expects return data in the form of a QtWidget.
