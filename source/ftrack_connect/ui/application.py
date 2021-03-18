@@ -36,7 +36,7 @@ import ftrack_connect.ui.config
 class ConnectWidget(QtWidgets.QWidget):
     '''Base widget for ftrack connect application plugin.'''
     topic = 'ftrack.connect.plugin.connect-widget'
-
+    icon = None
     #: Signal to emit to request focus of this plugin in application.
     requestApplicationFocus = QtCore.Signal(object)
 
@@ -797,7 +797,9 @@ class Application(QtWidgets.QMainWindow):
             )
 
         self.plugins[identifier] = plugin
-        self.tabPanel.addTab(plugin, name)
+
+        icon = QtGui.QIcon(plugin.icon)
+        self.tabPanel.addTab(plugin, icon, name)
 
         # Connect standard plugin events.
         plugin.requestApplicationFocus.connect(
