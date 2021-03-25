@@ -259,7 +259,7 @@ configuration = dict(
         'setuptools_scm'
     ],
     install_requires=[
-        'clique == 1.6.0',
+        'clique >= 2, <3',
         'PySide2 >=5, <6',
         'Riffle >= 1',
         'ftrack-python-api',
