@@ -259,7 +259,7 @@ configuration = dict(
         'setuptools_scm'
     ],
     install_requires=[
-        'clique @ git+ssh://git@gitlab.com:4degrees/clique@fix-six-compatiblity#egg=clique-1.6.1',
+        'clique==1.6.1',
         'PySide2 >=5, <6',
         'Riffle @ git+ssh://git@gitlab.com:4degrees/riffle@update-clique-dependency#egg=riffle-1.1',
         'ftrack-python-api @ git+ssh://git@bitbucket.org:ftrack/ftrack-python-api@master#egg=ftrack-python-api-2.1.1',
