@@ -54,6 +54,13 @@ cloning the public repository:
     $ git clone git@bitbucket.org:ftrack/ftrack-connect.git
 
 
+install the requirements to prepare you environment with:
+
+.. code-block:: none
+
+    $ python -m pip install requirements.txt
+
+
 Then you can build and install the package into your current Python
 site-packages folder:
 
