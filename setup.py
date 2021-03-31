@@ -262,7 +262,7 @@ configuration = dict(
         'clique==1.6.1',
         'PySide2 >=5, <6',
         'Riffle >= 1.0.1',
-        'ftrack-python-api @ git+ssh://git@bitbucket.org:ftrack/ftrack-python-api@master#egg=ftrack-python-api-2.1.1',
+        'ftrack-python-api >=2, <3',
         'arrow >= 0.4.6, < 1',
         'appdirs >= 1.4, < 1.5',
         'requests >= 2, <3',
