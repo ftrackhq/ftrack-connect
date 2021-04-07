@@ -33,6 +33,7 @@ from ftrack_connect.ui.widget import configure_scenario as _scenario_widget
 import ftrack_connect.ui.config
 
 
+
 class ConnectWidget(QtWidgets.QWidget):
     '''Base widget for ftrack connect application plugin.'''
     topic = 'ftrack.connect.plugin.connect-widget'
@@ -63,7 +64,8 @@ class ConnectWidget(QtWidgets.QWidget):
     def _return_widget(self, event):
         return self
 
-    def register(self, priority=10):
+    def register(self, priority):
+        '''register a new connect widget with given **priority**.'''
         self.session.event_hub.subscribe(
             'topic={0} '
             'and source.user.username={1}'.format(
@@ -88,7 +90,6 @@ class PluginWarning(ConnectWidget):
         layout.addWidget(label, QtCore.Qt.AlignCenter)
 
 
-
 class Application(QtWidgets.QMainWindow):
     '''Main application window for ftrack connect.'''
 
@@ -100,6 +101,7 @@ class Application(QtWidgets.QMainWindow):
 
     # Login signal.
     loginSignal = QtCore.Signal(object, object, object)
+    loginSuccessSignal = QtCore.Signal()
 
     @property
     def session(self):
@@ -155,6 +157,7 @@ class Application(QtWidgets.QMainWindow):
         self._login_overlay = None
         self.loginWidget = _login.Login(theme=theme)
         self.loginSignal.connect(self.loginWithCredentials)
+        self.loginSuccessSignal.connect(self._initialiseTray)
         self.login()
 
     def _assign_session_theme(self, theme):
@@ -429,6 +432,7 @@ class Application(QtWidgets.QMainWindow):
 
         # No change so build if needed
         self.location_configuration_finished(reconfigure_session=False)
+        self.loginSuccessSignal.emit()
 
     def location_configuration_finished(self, reconfigure_session=True):
         '''Continue connect setup after location configuration is done.'''
@@ -572,11 +576,6 @@ class Application(QtWidgets.QMainWindow):
         self.tray.setIcon(self.logoIcon)
         self.tray.show()
 
-    def _initialiseMenuBar(self):
-        self.menu_bar = QtWidgets.QMenuBar()
-        self.setMenuWidget(self.menu_bar)
-        widget_menu = self.menu_bar.addMenu('widgets')
-        self.menu_widget = widget_menu
 
     def _get_widget_preferences(self):
         '''Return a dict with API credentials from storage.'''
@@ -700,13 +699,6 @@ class Application(QtWidgets.QMainWindow):
                         response.getName()
                     )
                 )
-
-        # # check if any plugin has been registered.
-        # # if not create and install a warning plugin.
-        # if not self.plugins:
-        #     warning_plugin = PluginWarning(self.session)
-        #     self.addPlugin(warning_plugin, warning_plugin.getName())
-
     def _setConnectWidgetState(self, item, state):
         plugin_exists = self.plugins.get(item.getIdentifier())
         if not plugin_exists:
