@@ -576,6 +576,11 @@ class Application(QtWidgets.QMainWindow):
         self.tray.setIcon(self.logoIcon)
         self.tray.show()
 
+    def _initialiseMenuBar(self):
+        self.menu_bar = QtWidgets.QMenuBar()
+        self.setMenuWidget(self.menu_bar)
+        widget_menu = self.menu_bar.addMenu('widgets')
+        self.menu_widget = widget_menu
 
     def _get_widget_preferences(self):
         '''Return a dict with API credentials from storage.'''
