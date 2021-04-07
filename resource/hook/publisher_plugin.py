@@ -1,6 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
-
+import ftrack_api
+import logging
 from Qt import QtCore, QtWidgets
 
 import ftrack_connect.ui.application
@@ -9,10 +10,7 @@ import ftrack_connect.ui.widget.publisher
 import ftrack_connect.usage
 
 
-def register(connect):
-    '''Register publish plugin to ftrack connect.'''
-    publisher = Publisher(connect.session)
-    connect.addPlugin(publisher, publisher.getName())
+logger = logging.getLogger('ftrack_connect.plugin.publisher')
 
 
 class PublisherBlockingOverlay(
@@ -31,9 +29,9 @@ class PublisherBlockingOverlay(
         self.content.setMinimumWidth(350)
 
 
-class Publisher(ftrack_connect.ui.application.ApplicationPlugin):
+class Publisher(ftrack_connect.ui.application.ConnectWidget):
     '''Base widget for ftrack connect publisher plugin.'''
-
+    icon = ':ftrack/image/default/ftrackLogoColor'
     #: Signal to emit when the entity is changed.
     entityChanged = QtCore.Signal(object)
 
@@ -159,3 +157,20 @@ class Publisher(ftrack_connect.ui.application.ApplicationPlugin):
             source_event=event,
             data={'message': 'Publisher started.'}
         )
+
+
+def register(session, **kw):
+    '''Register plugin. Called when used as an plugin.'''
+    # Validate that session is an instance of ftrack_api.Session. If not,
+    # assume that register is being called from an old or incompatible API and
+    # return without doing anything.
+    if not isinstance(session, ftrack_api.session.Session):
+        logger.debug(
+            'Not subscribing plugin as passed argument {0!r} is not an '
+            'ftrack_api.Session instance.'.format(session)
+        )
+        return
+
+    publisher = Publisher(session)
+    publisher.register(priority=20)
+    logger.debug('Plugin registered')
