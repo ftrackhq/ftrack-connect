@@ -101,6 +101,7 @@ class Application(QtWidgets.QMainWindow):
 
     # Login signal.
     loginSignal = QtCore.Signal(object, object, object)
+    loginSuccessSignal = QtCore.Signal()
 
     @property
     def session(self):
@@ -143,7 +144,6 @@ class Application(QtWidgets.QMainWindow):
 
         self.plugins = {}
 
-        self._initialiseTray()
 
         self.setObjectName('ftrack-connect-window')
         self.setWindowTitle('ftrack connect')
@@ -155,6 +155,7 @@ class Application(QtWidgets.QMainWindow):
         self._login_overlay = None
         self.loginWidget = _login.Login(theme=theme)
         self.loginSignal.connect(self.loginWithCredentials)
+        self.loginSuccessSignal.connect(self._initialiseTray)
         self.login()
 
     def _assign_session_theme(self, theme):
@@ -429,6 +430,7 @@ class Application(QtWidgets.QMainWindow):
 
         # No change so build if needed
         self.location_configuration_finished(reconfigure_session=False)
+        self.loginSuccessSignal.emit()
 
     def location_configuration_finished(self, reconfigure_session=True):
         '''Continue connect setup after location configuration is done.'''
@@ -574,6 +576,7 @@ class Application(QtWidgets.QMainWindow):
 
     def _createTrayMenu(self):
         '''Return a menu for system tray.'''
+
         menu = QtWidgets.QMenu(self)
 
         logoutAction = QtWidgets.QAction(
