@@ -64,7 +64,7 @@ class ConnectWidget(QtWidgets.QWidget):
     def _return_widget(self, event):
         return self
 
-    def register(self, priority=10):
+    def register(self, priority):
         self.session.event_hub.subscribe(
             'topic={0} '
             'and source.user.username={1}'.format(

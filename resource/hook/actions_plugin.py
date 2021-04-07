@@ -37,5 +37,5 @@ def register(session, **kw):
         return
 
     publisher = Launcher(session)
-    publisher.register(priority=0)
+    publisher.register(priority=10)
     logger.debug('Plugin registered')

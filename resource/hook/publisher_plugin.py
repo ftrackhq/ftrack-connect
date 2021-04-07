@@ -172,5 +172,5 @@ def register(session, **kw):
         return
 
     publisher = Publisher(session)
-    publisher.register(priority=1)
+    publisher.register(priority=20)
     logger.debug('Plugin registered')
