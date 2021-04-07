@@ -65,6 +65,7 @@ class ConnectWidget(QtWidgets.QWidget):
         return self
 
     def register(self, priority):
+        '''register a new connect widget with given **priority**.'''
         self.session.event_hub.subscribe(
             'topic={0} '
             'and source.user.username={1}'.format(
