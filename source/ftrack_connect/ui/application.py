@@ -33,9 +33,11 @@ from ftrack_connect.ui.widget import configure_scenario as _scenario_widget
 import ftrack_connect.ui.config
 
 
-class ApplicationPlugin(QtWidgets.QWidget):
-    '''Base widget for ftrack connect application plugin.'''
 
+class ConnectWidget(QtWidgets.QWidget):
+    '''Base widget for ftrack connect application plugin.'''
+    topic = 'ftrack.connect.plugin.connect-widget'
+    icon = None
     #: Signal to emit to request focus of this plugin in application.
     requestApplicationFocus = QtCore.Signal(object)
 
@@ -48,7 +50,7 @@ class ApplicationPlugin(QtWidgets.QWidget):
         return self._session
 
     def __init__(self, session, parent=None):
-        super(ApplicationPlugin, self).__init__(parent=parent)
+        super(ConnectWidget, self).__init__(parent=parent)
         self._session = session
 
     def getName(self):
@@ -58,6 +60,34 @@ class ApplicationPlugin(QtWidgets.QWidget):
     def getIdentifier(self):
         '''Return identifier for widget.'''
         return self.getName().lower().replace(' ', '.')
+
+    def _return_widget(self, event):
+        return self
+
+    def register(self, priority):
+        '''register a new connect widget with given **priority**.'''
+        self.session.event_hub.subscribe(
+            'topic={0} '
+            'and source.user.username={1}'.format(
+                self.topic, self.session.api_user
+            ),
+            self._return_widget,
+            priority=priority
+        )
+
+
+class PluginWarning(ConnectWidget):
+    '''Warning missing plugin widget.'''
+    def __init__(self, session, parent=None):
+        '''Instantiate the actions widget.'''
+        super(PluginWarning, self).__init__(session, parent=parent)
+        layout = QtWidgets.QVBoxLayout()
+        self.setLayout(layout)
+
+        label = QtWidgets.QLabel(
+            'Warning!  no tab plugin found to register for connect.'
+        )
+        layout.addWidget(label, QtCore.Qt.AlignCenter)
 
 
 class Application(QtWidgets.QMainWindow):
@@ -451,7 +481,7 @@ class Application(QtWidgets.QMainWindow):
         self.tabPanel.tabBar().setObjectName('application-tab-bar')
         self.setCentralWidget(self.tabPanel)
 
-        self._discoverTabPlugins()
+        self._discoverConnectWidget()
 
         self.session.event_hub.subscribe(
             'topic=ftrack.connect and source.user.username="{0}"'.format(
@@ -587,14 +617,34 @@ class Application(QtWidgets.QMainWindow):
 
         return menu
 
-    def _discoverTabPlugins(self):
-        '''Find and load tab plugins in search paths.'''
+    def _discoverConnectWidget(self):
+        '''Find and load connect widgets in search paths.'''
         #: TODO: Add discover functionality and search paths.
 
-        from ftrack_connect.ui.plugins import publisher
-        from ftrack_connect.ui.plugins import actions
-        actions.register(self)
-        publisher.register(self)
+        event = ftrack_api.event.base.Event(
+            topic = ConnectWidget.topic
+        )
+
+        responses = self.session.event_hub.publish(
+            event, synchronous=True
+        )
+
+        for response in responses:
+            try:
+                self.logger.debug('Registering tab plugin {}'.format(response))
+                self.addPlugin(response, response.getName())
+            except Exception:
+                self.logger.warning(
+                    'Tab Plugin {} could not be loaded'.format(
+                        response.getName()
+                    )
+                )
+    
+        # check if any plugin has been registered.
+        # if not create and install a warning plugin.
+        if not self.plugins:
+            warning_plugin = PluginWarning(self.session)
+            self.addPlugin(warning_plugin, warning_plugin.getName())
 
     def _routeEvent(self, event):
         '''Route websocket *event* to publisher plugin.
@@ -665,7 +715,9 @@ class Application(QtWidgets.QMainWindow):
             )
 
         self.plugins[identifier] = plugin
-        self.tabPanel.addTab(plugin, name)
+
+        icon = QtGui.QIcon(plugin.icon)
+        self.tabPanel.addTab(plugin, icon, name)
 
         # Connect standard plugin events.
         plugin.requestApplicationFocus.connect(
