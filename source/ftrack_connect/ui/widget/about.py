@@ -185,6 +185,8 @@ class AboutDialog(QtWidgets.QDialog):
         )
 
         if plugins:
+            # deduplicate list of dictionary.
+            plugins = [dict(t) for t in {tuple(d.items()) for d in plugins}]
             pluginVersions = ''
             for _plugin in plugins:
                 pluginVersions += itemTemplate.format(
