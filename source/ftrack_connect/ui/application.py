@@ -36,8 +36,8 @@ import ftrack_connect.ui.config
 
 class ConnectWidget(QtWidgets.QWidget):
     '''Base widget for ftrack connect application plugin.'''
-    topic = 'ftrack.connect.plugin.tab-plugin'
-
+    topic = 'ftrack.connect.plugin.connect-widget'
+    icon = None
     #: Signal to emit to request focus of this plugin in application.
     requestApplicationFocus = QtCore.Signal(object)
 
@@ -479,7 +479,7 @@ class Application(QtWidgets.QMainWindow):
         self.tabPanel.tabBar().setObjectName('application-tab-bar')
         self.setCentralWidget(self.tabPanel)
 
-        self._discoverTabPlugins()
+        self._discoverConnectWidget()
 
         self.session.event_hub.subscribe(
             'topic=ftrack.connect and source.user.username="{0}"'.format(
@@ -614,8 +614,8 @@ class Application(QtWidgets.QMainWindow):
 
         return menu
 
-    def _discoverTabPlugins(self):
-        '''Find and load tab plugins in search paths.'''
+    def _discoverConnectWidget(self):
+        '''Find and load connect widgets in search paths.'''
         #: TODO: Add discover functionality and search paths.
 
         event = ftrack_api.event.base.Event(
@@ -625,7 +625,6 @@ class Application(QtWidgets.QMainWindow):
         responses = self.session.event_hub.publish(
             event, synchronous=True
         )
-
 
         for response in responses:
             try:
@@ -643,7 +642,6 @@ class Application(QtWidgets.QMainWindow):
         if not self.plugins:
             warning_plugin = PluginWarning(self.session)
             self.addPlugin(warning_plugin, warning_plugin.getName())
-
 
     def _routeEvent(self, event):
         '''Route websocket *event* to publisher plugin.
@@ -714,7 +712,9 @@ class Application(QtWidgets.QMainWindow):
             )
 
         self.plugins[identifier] = plugin
-        self.tabPanel.addTab(plugin, name)
+
+        icon = QtGui.QIcon(plugin.icon)
+        self.tabPanel.addTab(plugin, icon, name)
 
         # Connect standard plugin events.
         plugin.requestApplicationFocus.connect(
