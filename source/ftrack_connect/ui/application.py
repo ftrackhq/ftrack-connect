@@ -144,9 +144,6 @@ class Application(QtWidgets.QMainWindow):
 
         self.plugins = {}
 
-        self._initialiseTray()
-        self._initialiseMenuBar()
-
         self.setObjectName('ftrack-connect-window')
         self.setWindowTitle('ftrack connect')
         self.resize(450, 700)
@@ -154,11 +151,22 @@ class Application(QtWidgets.QMainWindow):
 
         self.setWindowIcon(self.logoIcon)
 
+        self._initialiseTray()
+        self._initialiseMenuBar()
+
         self._login_overlay = None
         self.loginWidget = _login.Login(theme=theme)
         self.loginSignal.connect(self.loginWithCredentials)
-        self.loginSuccessSignal.connect(self._initialiseTray)
+        self.loginSuccessSignal.connect(self._post_login_settings)
         self.login()
+
+    def _post_login_settings(self):
+
+        if self.menu_bar:
+            self.menu_bar.setVisible(True)
+
+        if self.tray:
+            self.tray.show()
 
     def _assign_session_theme(self, theme):
         if self.session:
@@ -572,15 +580,14 @@ class Application(QtWidgets.QMainWindow):
         self.tray.setContextMenu(
             self.trayMenu
         )
-
         self.tray.setIcon(self.logoIcon)
-        self.tray.show()
 
     def _initialiseMenuBar(self):
         self.menu_bar = QtWidgets.QMenuBar()
         self.setMenuWidget(self.menu_bar)
         widget_menu = self.menu_bar.addMenu('widgets')
         self.menu_widget = widget_menu
+        self.menu_bar.setVisible(False)
 
     def _get_widget_preferences(self):
         '''Return a dict with API credentials from storage.'''
@@ -689,33 +696,30 @@ class Application(QtWidgets.QMainWindow):
         )
         widgets = self._get_widget_preferences()
 
-        self.logger.info('WIDGETS FROM PREFS: {}'.format(widgets))
         for response in responses:
             stored_state = True
             try:
-                self.logger.debug('Registering tab plugin {}'.format(response))
                 stored_state = widgets.get(response.getName(), stored_state)
-                self.logger.info('FOUND : {} {}'.format(response, stored_state))
-                self._setConnectWidgetState(response, stored_state)
                 self._creteConnectWidgetMenu(response, stored_state)
+                self._setConnectWidgetState(response, stored_state)
+
             except Exception:
                 self.logger.warning(
                     'Tab Plugin {} could not be loaded'.format(
                         response.getName()
                     )
                 )
+
     def _setConnectWidgetState(self, item, state):
         plugin_exists = self.plugins.get(item.getIdentifier())
         if not plugin_exists:
             self.plugins[item.getIdentifier()] = item
 
         if state is False:
-            self.logger.info('REMOVING {}'.format(item))
             self.removePlugin(item.getIdentifier())
-        elif state is True:
-            self.logger.info('ADDING {}'.format(item))
-            self.addPlugin(item)
 
+        elif state is True:
+            self.addPlugin(item)
 
         self._save_widget_preferences(item.getName(), state)
 
