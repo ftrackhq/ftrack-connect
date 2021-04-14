@@ -6,11 +6,11 @@ from Qt import QtCore, QtWidgets
 
 import ftrack_connect.ui.application
 import ftrack_connect.ui.widget.overlay
-import ftrack_connect.ui.widget.publisher
+import ftrack_connect.ui.widget.sequential_publisher
 import ftrack_connect.usage
 
 
-logger = logging.getLogger('ftrack_connect.plugin.publisher')
+logger = logging.getLogger('ftrack_connect.plugin.sequential_publisher')
 
 
 class PublisherBlockingOverlay(
@@ -29,7 +29,7 @@ class PublisherBlockingOverlay(
         self.content.setMinimumWidth(350)
 
 
-class Publisher(ftrack_connect.ui.application.ConnectWidget):
+class SequentialPublisher(ftrack_connect.ui.application.ConnectWidget):
     '''Base widget for ftrack connect publisher plugin.'''
     icon = ':ftrack/image/default/ftrackLogoColor'
     #: Signal to emit when the entity is changed.
@@ -37,11 +37,11 @@ class Publisher(ftrack_connect.ui.application.ConnectWidget):
 
     def __init__(self, session, parent=None):
         '''Instantiate the publisher widget.'''
-        super(Publisher, self).__init__(session, parent=parent)
+        super(SequentialPublisher, self).__init__(session, parent=parent)
         layout = QtWidgets.QVBoxLayout()
         self.setLayout(layout)
 
-        self.publishView = ftrack_connect.ui.widget.publisher.Publisher(self.session)
+        self.publishView = ftrack_connect.ui.widget.sequential_publisher.SequentialPublisher(self.session)
         layout.addWidget(self.publishView)
 
         self.blockingOverlay = PublisherBlockingOverlay(self)
@@ -94,7 +94,7 @@ class Publisher(ftrack_connect.ui.application.ConnectWidget):
 
     def getName(self):
         '''Return name of widget.'''
-        return 'Publish'
+        return 'PublishTest'
 
     def setEntity(self, entity):
         '''Set the *entity* for the publisher.'''
@@ -126,7 +126,6 @@ class Publisher(ftrack_connect.ui.application.ConnectWidget):
         Clear state, set the *entity* and request to start the publisher.
 
         '''
-        print("lluis----> START!!!")
         entity = event['data']['entity']
 
         self.clear()
@@ -172,6 +171,6 @@ def register(session, **kw):
         )
         return
 
-    publisher = Publisher(session)
+    publisher = SequentialPublisher(session)
     publisher.register(priority=20)
     logger.debug('Plugin registered')
