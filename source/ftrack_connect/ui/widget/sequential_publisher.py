@@ -12,9 +12,9 @@ from ftrack_api import event
 
 from ftrack_connect.ui.widget import data_drop_zone as _data_drop_zone
 from ftrack_connect.ui.widget import components_list as _components_list
-from ftrack_connect.ui.widget import item_selector as _item_selector
-from ftrack_connect.ui.widget import thumbnail_drop_zone as _thumbnail_drop_zone
-from ftrack_connect.ui.widget import asset_options as _asset_options
+# from ftrack_connect.ui.widget import item_selector as _item_selector
+# from ftrack_connect.ui.widget import thumbnail_drop_zone as _thumbnail_drop_zone
+# from ftrack_connect.ui.widget import asset_options as _asset_options
 from ftrack_connect.ui.widget import entity_selector
 
 import ftrack_connect.asynchronous
@@ -64,7 +64,7 @@ class SequentialPublisher(QtWidgets.QWidget):
         self.browser.dataSelected.connect(self._onDataSelected)
 
         # Create a components list widget.
-        #TODO: this will be the assetVersion list
+        # Now used ass asset versions
         self.componentsList = _components_list.ComponentsList()
         self.componentsList.setObjectName('publisher-componentlist')
         self.componentsList.itemsChanged.connect(
@@ -83,35 +83,9 @@ class SequentialPublisher(QtWidgets.QWidget):
         self.entitySelector = EntitySelector(self.session)
         formLayout.addRow('Linked to', self.entitySelector)
 
-        #TODO: I can use one asset options for each compoennt
-        # # Add asset options.
-        self.assetOptions = _asset_options.AssetOptions(session=self.session)
-        self.entitySelector.entityChanged.connect(self.assetOptions.setEntity)
-        self.assetCreated.connect(self.assetOptions.setAsset)
-        formLayout.addRow('Asset', self.assetOptions.radioButtonFrame)
-        formLayout.addRow('Existing asset', self.assetOptions.existingAssetSelector)
-        formLayout.addRow('Type', self.assetOptions.assetTypeSelector)
-        formLayout.addRow('Name', self.assetOptions.assetNameLineEdit)
-        self.assetOptions.initializeFieldLabels(formLayout)
-
-        #TODO: be aware of this and check wich component should I preselect.
-        # Add preview selector. I will have to have a ftrackreview-image compoentnt and the name of the image as compoentnt too
-        self.previewSelector = _item_selector.ItemSelector(
-            session=self.session,
-            idField='resourceIdentifier',
-            labelField='componentName',
-            defaultLabel='Unnamed component',
-            emptyLabel='Select component to use'
-        )
-        formLayout.addRow('Web playable', self.previewSelector)
-
-        #Thumbnail should also be one frame of thesequence or video
-        # self.thumbnailDropZone = _thumbnail_drop_zone.ThumbnailDropZone()
-        # formLayout.addRow('Thumbnail', self.thumbnailDropZone)
-
-        # Add version description component.
-        self.versionDescription = QtWidgets.QTextEdit()
-        formLayout.addRow('Description', self.versionDescription)
+        # # Add version description component.
+        # self.versionDescription = QtWidgets.QTextEdit()
+        # formLayout.addRow('Description', self.versionDescription)
 
         publishButton = QtWidgets.QPushButton(text='Publish')
         publishButton.setObjectName('primary')
@@ -127,7 +101,7 @@ class SequentialPublisher(QtWidgets.QWidget):
 
     def _onComponentListItemsChanged(self):
         '''Callback for component changed signal.'''
-        self.previewSelector.setItems(self.componentsList.items())
+        # self.previewSelector.setItems(self.componentsList.items())
         if self.componentsList.count():
             self.componentsList.show()
         else:
@@ -141,8 +115,8 @@ class SequentialPublisher(QtWidgets.QWidget):
 
     def clear(self):
         '''Clear the publish view to it's initial state.'''
-        self.assetOptions.clear()
-        self.versionDescription.clear()
+        # self.assetOptions.clear()
+        # self.versionDescription.clear()
         self.componentsList.clearItems()
         # self.thumbnailDropZone.clear()
         self.entitySelector.setEntity(None)
@@ -170,67 +144,161 @@ class SequentialPublisher(QtWidgets.QWidget):
                 'No linked entity selected to publish against!'
             )
 
-        taskId = None
+        task_id = None
         assets = self.get_assets(entity)
-
-        versionDescription = self.versionDescription.toPlainText()
 
         # ftrack does not support having Tasks as parent for Assets.
         # Therefore get parent shot/sequence etc.
         if entity.entity_type == 'Task':
-            taskId = entity['id']
-            entity = entity['parent']
+            task_id = entity['id']
 
-        for asset_path in self.componentsList.items():
-            asset_name = asset_path['componentName']
-            asset_id=None
-            asset_type=None
-            for asset in assets:
-                asset_label = asset.get('label') or 'Unnamed'
-                if asset_label == asset_name:
-                    asset_id = asset['id']
+        #TODO: print asset_path to make sure its a path....
+        for asset_item in self.componentsList.items():
+            print("lluis asset_name --> {}".format(asset_item['componentName']))
+            print("lluis asset_path --> {}".format(asset_item['resourceIdentifier']))
+            asset_name = asset_item['componentName']
+            asset_path = asset_item['resourceIdentifier']
+            asset_id = None
+            asset_type = None
+            for server_asset in assets:
+                server_asset_name = server_asset['name']
+                if server_asset_name == asset_name:
+                    asset_id = server_asset['id']
+                    asset_type = server_asset['type']
+                    break
 
             if not asset_id:
-                asset_type = 'Upload'
+                asset_type = self.session.query(
+                    'AssetType where name is "Upload"'
+                ).one()
 
-            # asset = self.assetOptions.getAsset()
-            # assetType = self.assetOptions.getAssetType()
-            # assetName = self.assetOptions.getAssetName()
-
-            # versionDescription = self.versionDescription.toPlainText()
-
-            #TODO: Check this one not sure what to use
-            previewPath = self.previewSelector.currentItem()
-
-
-
-            componentLocation = self.session.pick_location()
+            component_location = self.session.pick_location()
 
             components = [{
-                'locations': [componentLocation],
+                'locations': [component_location],
                 'name': asset_name,
-                'filePath': asset_path['resourceIdentifier']
+                'filePath': asset_path
             }]
-            # for component in self.componentsList.items():
-            #     components.append({
-            #         'locations': [componentLocation],
-            #         'name': component['componentName'],
-            #         'filePath': component['resourceIdentifier']
-            #     })
-
-            thumbnailFilePath = asset_path['resourceIdentifier']
+            preview_path = asset_path
+            thumbnail_file_path = asset_path
 
             self._publish(
                 entity=entity,
-                asset=asset_id,
-                assetName=asset_name,
-                assetType=asset_type,
-                versionDescription=versionDescription,
-                taskId=taskId,
+                asset_id=asset_id,
+                asset_name=asset_name,
+                asset_type=asset_type,
+                version_description='',
+                task_id=task_id,
                 components=components,
-                previewPath=previewPath,
-                thumbnailFilePath=thumbnailFilePath
+                preview_path=preview_path,
+                thumbnail_file_path=thumbnail_file_path
             )
+
+    # @ftrack_connect.asynchronous.asynchronous
+    def _publish(
+            self, entity=None, asset_id=None, asset_name=None,
+            asset_type='', version_description=None, task_id=None,
+            components=None, preview_path=None, thumbnail_file_path=None
+    ):
+        asset_version = None
+
+        self.publishStarted.emit()
+
+        try:
+            if not asset_type:
+                self.publishFinished.emit(False)
+                raise ftrack_connect.error.ConnectError(
+                    'No asset type selected.'
+                )
+            if not asset_name:
+                self.publishFinished.emit(False)
+                raise ftrack_connect.error.ConnectError(
+                    'No asset name selected.'
+                )
+            if not entity:
+                self.publishFinished.emit(False)
+                raise ftrack_connect.error.ConnectError('No entity found')
+
+            if components is None:
+                components = []
+
+            asset_parent = entity['parent']
+
+            if not asset_id:
+
+                asset = self.session.create(
+                    'Asset',
+                    {
+                        'name': asset_name,
+                        'type': asset_type,
+                        'parent': asset_parent
+                    }
+                )
+
+                self.session.commit()
+                self.assetCreated.emit(asset)
+            else:
+                asset = self.session.get('Asset', asset_id)
+
+            asset_version = self.session.create(
+                'AssetVersion',
+                {
+                    'asset': asset,
+                    'task': entity,
+                }
+            )
+            self.session.commit()
+
+            origin_location = self.session.query(
+                'Location where name is "ftrack.origin"'
+            )
+
+            for component_data in components:
+                component = asset_version.create_component(
+                    component_data.get('filePath'),
+                    {'name': component_data.get('name', None)},
+                    location=None
+                )
+                for location in component_data.get('locations', []):
+                    new_location = self.session.get(
+                        'Location', location['id']
+                    )
+                    new_location.add_component(
+                        component, source=origin_location
+                    )
+                    self.logger.info(
+                        u'Publish {0!r} to location: {1!r}.'.format(
+                            component, new_location['name']
+                        )
+                    )
+
+            if preview_path:
+                # TODO in case of error simply use this one
+                # asset_version.encode_media(preview_path)
+                self.session.event_hub.publish(
+                    event.base.Event(
+                        'ftrack.connect.publish.make-web-playable',
+                        data=dict(
+                            versionId=asset_version['id'],
+                            path=preview_path
+                        )
+                    ),
+                    synchronous=True
+                )
+
+            if thumbnail_file_path:
+                asset_version.create_thumbnail(thumbnail_file_path)
+
+            self.session.commit()
+            self.publishFinished.emit(True)
+
+        # Catch any errors, emit *publishFinished*, clean up and re-raise.
+        except Exception as error:
+            self.logger.exception(u'Failed to publish: {0}'.format(error))
+            self.publishFinished.emit(False)
+            self._cleanupFailedPublish(version=asset_version)
+
+            raise
 
     def _cleanupFailedPublish(self, version=None):
         '''Clean up after a failed publish.'''
@@ -246,135 +314,3 @@ class SequentialPublisher(QtWidgets.QWidget):
             self.logger.exception(
                 'Failed to clean up version after failed publish'
             )
-
-    @ftrack_connect.asynchronous.asynchronous
-    def _publish(
-        self, entity=None, assetName=None, assetType=None,
-        versionDescription='', taskId=None, components=None,
-        previewPath=None, thumbnailFilePath=None, asset=None
-    ):
-        '''If *asset* is specified, publish a new version of it. Otherwise, get
-        or create an asset of *assetType* on *entity*.
-
-        *taskId*, *versionDescription*, *components*, *previewPath* and
-        *thumbnailFilePath* are optional.
-
-        Each component in *components* should be represented by a dictionary
-        containing name, filepath and a list of locations.
-
-        '''
-
-        print('{}/n{}/n{}/n{}/n{}/n{}/n{}/n{}/n{}/n'.format(entity, assetName, assetType,
-        versionDescription, taskId, components,
-        previewPath, thumbnailFilePath, asset))
-
-
-
-        version = None
-
-        self.publishStarted.emit()
-
-        try:
-            if not (asset or assetType):
-                self.publishFinished.emit(False)
-                raise ftrack_connect.error.ConnectError(
-                    'No asset type selected.'
-                )
-
-            if not entity:
-                self.publishFinished.emit(False)
-                raise ftrack_connect.error.ConnectError('No entity found')
-
-            if components is None:
-                components = []
-
-            task = None
-            if taskId:
-                task = self.session.get('Context', taskId)
-
-            new_entity = self.session.get('Context', entity['id'])
-
-            if not asset:
-                asset_type = self.session.get(
-                    'AssetType', assetType
-                )
-                if assetName is None:
-                    assetName = asset_type['name']
-
-                asset = self.session.create(
-                    'Asset',
-                    {
-                        'name': assetName,
-                        'type': asset_type,
-                        'parent': new_entity
-                    }
-                )
-
-                self.session.commit()
-                self.assetCreated.emit(asset)
-
-            else:
-                asset = self.session.get('Asset', asset)
-
-            version = self.session.create(
-                'AssetVersion',
-                {
-                    'asset': asset,
-                    'comment': versionDescription,
-                    'task': task,
-                }
-            )
-            self.session.commit()
-
-            origin_location = self.session.query(
-                'Location where name is "ftrack.origin"'
-            )
-
-            for componentData in components:
-                component = version.create_component(
-                    componentData.get('filePath'),
-                    {'name': componentData.get('name', None)},
-                    location=None
-                )
-
-                for location in componentData.get('locations', []):
-                    new_location = self.session.get(
-                        'Location', location['id']
-                    )
-                    new_location.add_component(
-                        component, source=origin_location
-                    )
-                    self.logger.info(
-                        u'Publish {0!r} to location: {1!r}.'.format(
-                            component, new_location['name']
-                        )
-                    )
-
-            if previewPath:
-                self.session.event_hub.publish(
-                    event.base.Event(
-                        'ftrack.connect.publish.make-web-playable',
-                        data=dict(
-                            versionId=version['id'],
-                            path=previewPath
-                        )
-                    ),
-                    synchronous=True
-                )
-
-            if thumbnailFilePath:
-                version.create_thumbnail(thumbnailFilePath)
-
-            # TODO: check this does not apply anymore.
-            # version['is_published'] = True
-            self.session.commit()
-
-            self.publishFinished.emit(True)
-
-        # Catch any errors, emit *publishFinished*, clean up and re-raise.
-        except Exception as error:
-            self.logger.exception(u'Failed to publish: {0}'.format(error))
-            self.publishFinished.emit(False)
-            self._cleanupFailedPublish(version=version)
-
-            raise
