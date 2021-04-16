@@ -5,6 +5,7 @@ import logging
 
 from Qt import QtWidgets
 from Qt import QtCore
+import clique
 
 from ftrack_api import exception
 from ftrack_api import event
@@ -145,22 +146,22 @@ class SequentialPublisher(QtWidgets.QWidget):
             )
 
         task_id = None
-        assets = self.get_assets(entity)
 
         # ftrack does not support having Tasks as parent for Assets.
         # Therefore get parent shot/sequence etc.
         if entity.entity_type == 'Task':
             task_id = entity['id']
 
-        #TODO: print asset_path to make sure its a path....
+        self.publishStarted.emit()
         for asset_item in self.componentsList.items():
-            print("lluis asset_name --> {}".format(asset_item['componentName']))
-            print("lluis asset_path --> {}".format(asset_item['resourceIdentifier']))
+            server_assets = self.get_assets(entity)
+
             asset_name = asset_item['componentName']
             asset_path = asset_item['resourceIdentifier']
             asset_id = None
             asset_type = None
-            for server_asset in assets:
+
+            for server_asset in server_assets:
                 server_asset_name = server_asset['name']
                 if server_asset_name == asset_name:
                     asset_id = server_asset['id']
@@ -180,7 +181,23 @@ class SequentialPublisher(QtWidgets.QWidget):
                 'filePath': asset_path
             }]
             preview_path = asset_path
+
             thumbnail_file_path = asset_path
+            if asset_path.endswith(']'):
+                preview_path = None
+                try:
+                    collection = clique.parse(asset_path)
+                    path = list(collection)[0]
+                    thumbnail_file_path =path
+                except:
+                    thumbnail_file_path = None
+
+            if thumbnail_file_path:
+                if thumbnail_file_path.split('.')[-1] not in [
+                    'bmp', 'gif', 'jpg', 'jpeg', 'png', 'tif', 'tiff'
+                ]:
+                    thumbnail_file_path = None
+
 
             self._publish(
                 entity=entity,
@@ -202,7 +219,7 @@ class SequentialPublisher(QtWidgets.QWidget):
     ):
         asset_version = None
 
-        self.publishStarted.emit()
+        # self.publishStarted.emit()
 
         try:
             if not asset_type:
