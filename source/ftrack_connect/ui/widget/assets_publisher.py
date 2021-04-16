@@ -13,9 +13,6 @@ from ftrack_api import event
 
 from ftrack_connect.ui.widget import data_drop_zone as _data_drop_zone
 from ftrack_connect.ui.widget import components_list as _components_list
-# from ftrack_connect.ui.widget import item_selector as _item_selector
-# from ftrack_connect.ui.widget import thumbnail_drop_zone as _thumbnail_drop_zone
-# from ftrack_connect.ui.widget import asset_options as _asset_options
 from ftrack_connect.ui.widget import entity_selector
 
 import ftrack_connect.asynchronous
@@ -31,7 +28,7 @@ class EntitySelector(entity_selector.EntitySelector):
         return entity.entity_type != 'Project'
 
 
-class SequentialPublisher(QtWidgets.QWidget):
+class AssetsPublisher(QtWidgets.QWidget):
     '''Publish widget for ftrack connect Publisher.'''
 
     publishStarted = QtCore.Signal()
@@ -47,7 +44,7 @@ class SequentialPublisher(QtWidgets.QWidget):
 
     def __init__(self, session, parent=None):
         '''Initiate a publish view.'''
-        super(SequentialPublisher, self).__init__(parent)
+        super(AssetsPublisher, self).__init__(parent)
 
         self._session = session
         self.logger = logging.getLogger(
@@ -60,29 +57,39 @@ class SequentialPublisher(QtWidgets.QWidget):
 
         self.setLayout(layout)
 
+        self.entitySelector = EntitySelector(self.session)
+        self.entitySelector.setFixedHeight(50)
+        self.context_label = QtWidgets.QLabel('Select task context')
+        self.context_label.setAlignment(QtCore.Qt.AlignTop)
+        layout.addWidget(self.context_label)
+        layout.addWidget(self.entitySelector)
+
+
         self.browser = _data_drop_zone.DataDropZone()
-        layout.addWidget(self.browser)
+        layout.addWidget(self.browser,  stretch=1)
         self.browser.dataSelected.connect(self._onDataSelected)
 
         # Create a components list widget.
-        # Now used ass asset versions
+        # Now used as asset versions
         self.componentsList = _components_list.ComponentsList()
+        self.componentsList.label.text = 'Assets'
         self.componentsList.setObjectName('publisher-componentlist')
         self.componentsList.itemsChanged.connect(
             self._onComponentListItemsChanged
         )
         layout.addWidget(
-            self.componentsList, stretch=1
+            self.componentsList, stretch=3
         )
+
         self.componentsList.hide()
 
-        # Create form layout to keep track of publish form items.
-        formLayout = QtWidgets.QFormLayout()
-        layout.addLayout(formLayout, stretch=0)
-
-        # Add entity selector.
-        self.entitySelector = EntitySelector(self.session)
-        formLayout.addRow('Linked to', self.entitySelector)
+        # # Create form layout to keep track of publish form items.
+        # formLayout = QtWidgets.QFormLayout()
+        # layout.addLayout(formLayout, stretch=0)
+        #
+        # # Add entity selector.
+        # self.entitySelector = EntitySelector(self.session)
+        # formLayout.addRow('Select task context', self.entitySelector)
 
         # # Add version description component.
         # self.versionDescription = QtWidgets.QTextEdit()

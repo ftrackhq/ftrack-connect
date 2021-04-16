@@ -6,7 +6,7 @@ from Qt import QtCore, QtWidgets
 
 import ftrack_connect.ui.application
 import ftrack_connect.ui.widget.overlay
-import ftrack_connect.ui.widget.sequential_publisher
+import ftrack_connect.ui.widget.assets_publisher
 import ftrack_connect.usage
 
 
@@ -29,7 +29,7 @@ class PublisherBlockingOverlay(
         self.content.setMinimumWidth(350)
 
 
-class SequentialPublisher(ftrack_connect.ui.application.ConnectWidget):
+class AssetsPublisher(ftrack_connect.ui.application.ConnectWidget):
     '''Base widget for ftrack connect publisher plugin.'''
     icon = ':ftrack/image/default/ftrackLogoColor'
     #: Signal to emit when the entity is changed.
@@ -37,11 +37,11 @@ class SequentialPublisher(ftrack_connect.ui.application.ConnectWidget):
 
     def __init__(self, session, parent=None):
         '''Instantiate the publisher widget.'''
-        super(SequentialPublisher, self).__init__(session, parent=parent)
+        super(AssetsPublisher, self).__init__(session, parent=parent)
         layout = QtWidgets.QVBoxLayout()
         self.setLayout(layout)
 
-        self.publishView = ftrack_connect.ui.widget.sequential_publisher.SequentialPublisher(self.session)
+        self.publishView = ftrack_connect.ui.widget.assets_publisher.AssetsPublisher(self.session)
         layout.addWidget(self.publishView)
 
         self.blockingOverlay = PublisherBlockingOverlay(self)
@@ -94,7 +94,7 @@ class SequentialPublisher(ftrack_connect.ui.application.ConnectWidget):
 
     def getName(self):
         '''Return name of widget.'''
-        return 'PublishTest'
+        return 'AssetsPublisher'
 
     def setEntity(self, entity):
         '''Set the *entity* for the publisher.'''
@@ -171,6 +171,6 @@ def register(session, **kw):
         )
         return
 
-    publisher = SequentialPublisher(session)
+    publisher = AssetsPublisher(session)
     publisher.register(priority=20)
     logger.debug('Plugin registered')
