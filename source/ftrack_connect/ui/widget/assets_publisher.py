@@ -159,6 +159,11 @@ class AssetsPublisher(QtWidgets.QWidget):
         if entity.entity_type == 'Task':
             task_id = entity['id']
 
+        self.publish_asset(entity, task_id)
+
+    @ftrack_connect.asynchronous.asynchronous
+    def publish_asset(self, entity, task_id):
+
         self.publishStarted.emit()
         for asset_item in self.componentsList.items():
             server_assets = self.get_assets(entity)
@@ -218,7 +223,6 @@ class AssetsPublisher(QtWidgets.QWidget):
                 thumbnail_file_path=thumbnail_file_path
             )
 
-    # @ftrack_connect.asynchronous.asynchronous
     def _publish(
             self, entity=None, asset_id=None, asset_name=None,
             asset_type='', version_description=None, task_id=None,

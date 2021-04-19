@@ -126,7 +126,6 @@ class Publisher(ftrack_connect.ui.application.ConnectWidget):
         Clear state, set the *entity* and request to start the publisher.
 
         '''
-        print("lluis----> START!!!")
         entity = event['data']['entity']
 
         self.clear()
