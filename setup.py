@@ -255,7 +255,7 @@ configuration = dict(
         'sphinx >= 1.2.2, < 2',
         'sphinx_rtd_theme >= 0.1.6, < 2',
         'lowdown >= 0.1.0, < 1',
-        'setuptools>=30.3.0',
+        'setuptools>=45.0.0',
         'setuptools_scm'
     ],
     install_requires=[
