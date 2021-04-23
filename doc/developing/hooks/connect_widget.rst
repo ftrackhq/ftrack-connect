@@ -3,9 +3,9 @@
 
 .. _developing/hooks/tab_plugin:
 
-********************************
+************************************
 ftrack.connect.plugin.connect-widget
-********************************
+************************************
 
 The *ftrack.connect.plugin.connect-widget* hook is triggered when
 :term:`ftrack connect` starts up and is used to register custom widgets for connect.
