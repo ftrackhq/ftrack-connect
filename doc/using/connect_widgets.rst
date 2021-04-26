@@ -7,9 +7,21 @@
 Custom tab widgets
 ******************
 
-It is currently possibe to provide connect with custom tabs though **connect widget plugins**.
+It is currently possible to provide connect with custom tabs though **connect widget plugins**.
 
 This plugins allow to inject any code in the tab allowing to provide custom ui and functionalities, 
-which migth be required by productions.
+which might be required by productions.
 
-The easier way to 
+
+Default Connect widget exampl
+
+.. image:: /image/connect_widget.png
+
+
+From the top bar menu, widgets can be enabled and disabled.
+These settings will persists across connect restart.
+
+
+Connect widget management menu
+
+.. image:: /image/connect_widget_menu.png
