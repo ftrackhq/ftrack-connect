@@ -13,7 +13,12 @@ This plugins allow to inject any code in the tab allowing to provide custom ui a
 which might be required by productions.
 
 
-Default Connect widget exampl
+By default ftrack connect is shipped with two default plugins.
+
+* Launcher
+
+
+Default Connect widget example
 
 .. image:: /image/connect_widget.png
 
