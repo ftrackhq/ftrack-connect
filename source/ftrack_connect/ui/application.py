@@ -629,7 +629,6 @@ class Application(QtWidgets.QMainWindow):
             json_config['id'] = str(uuid.uuid4())
         json_config.setdefault('widgets', {})
         json_config['widgets'][plugin_name] = state
-        self.logger.info('SAVING PREFS {}'.format(json_config))
         ftrack_connect.ui.config.write_json_config(json_config)
 
     def _createTrayMenu(self):
