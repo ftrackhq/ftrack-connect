@@ -16,30 +16,6 @@ the `Integrations webpage <https://www.ftrack.com/portfolio/connect>`_.
 
     Alternative installation methods require technical knowledge.
 
-Building from git repository
-============================
-
-Alternatively, install using `pip <http://www.pip-installer.org/>`_:
-
-.. code-block:: none
-
-    $ pip install git+https://bitbucket.org/ftrack/ftrack-connect.git
-
-
-.. warning::
-
-    When installing through pip, the default hooks will not be properly installed as part of the package,
-    but they'll instead be installed on the root of the interpreter eg:
-
-    C:\\Python37\\ftrack_connect_resource\\hook
-
-    Before starting connect please ensure the path is added to your
-
-    * **FTRACK_EVENT_PLUGIN_PATH**
-
-    environment variable.
-
-
 Building from source
 ====================
 
@@ -82,6 +58,36 @@ Is also possible to build live development version using:
 .. code-block:: none
 
     $ python setup.py build_ext --inplace
+
+
+Building from git repository
+============================
+
+.. note::
+
+    This is an advance method and is not suggested for average users
+    Please refer to the previous way to install as default.
+
+
+Alternatively, install using `pip <http://www.pip-installer.org/>`_:
+
+.. code-block:: none
+
+    $ pip install git+https://bitbucket.org/ftrack/ftrack-connect.git
+
+
+.. warning::
+
+    When installing through pip, the default hooks will not be properly installed as part of the package,
+    but they'll instead be installed on the root of the interpreter eg:
+
+    C:\\Python37\\ftrack_connect_resource\\hook
+
+    Before starting connect please ensure the path is added to your
+
+    * **FTRACK_EVENT_PLUGIN_PATH**
+
+    environment variable.
 
 
 Building documentation from source
