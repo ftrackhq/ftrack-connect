@@ -10,6 +10,11 @@ Release Notes
 
 .. release:: Upcoming
 
+    .. change:: new:
+        :tags: Ui
+
+        Provide ability to extend connect through ConnectWidgets plugins.
+
     .. change:: changed
         :tags: Ui
 
