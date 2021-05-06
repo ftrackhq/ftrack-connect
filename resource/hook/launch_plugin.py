@@ -21,7 +21,7 @@ class Launch(ftrack_connect.ui.application.ConnectWidget):
         layout = QtWidgets.QVBoxLayout()
         self.setLayout(layout)
 
-        self.actionsView = ftrack_connect.ui.widget.actions.Actions(self.session)
+        self.actionsView = ftrack_connect.ui.widget.actions.Actions(session)
         layout.addWidget(self.actionsView)
 
 

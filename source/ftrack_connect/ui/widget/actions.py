@@ -320,7 +320,7 @@ class Actions(QtWidgets.QWidget):
     def _loadActionsForContext(self, context):
         '''Obtain new actions synchronously for *context*.'''
         discoveredActions = []
-
+        self.logger.info('_loadActionsForContext {}'.format(context))
         event = ftrack_api.event.base.Event(
             topic='ftrack.action.discover',
             data=dict(

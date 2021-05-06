@@ -66,6 +66,7 @@ class ConnectWidget(QtWidgets.QWidget):
 
     def register(self, priority):
         '''register a new connect widget with given **priority**.'''
+        priority = -100000 + priority
         self.session.event_hub.subscribe(
             'topic={0} '
             'and source.user.username={1}'.format(
@@ -310,12 +311,6 @@ class Application(QtWidgets.QMainWindow):
 
         if plugin_paths is None:
             plugin_paths = self.pluginHookPaths
-
-            plugin_paths.extend(
-                os.environ.get(
-                    'FTRACK_EVENT_PLUGIN_PATH', ''
-                ).split(os.pathsep)
-            )
         try:
             session = ftrack_api.Session(
                 auto_connect_event_hub=True,
@@ -793,13 +788,14 @@ class Application(QtWidgets.QMainWindow):
         if identifier is None:
             identifier = plugin.getIdentifier()
 
-        if identifier in self.plugins:
-            self.logger.warning(
-                'An existing plugin has already been '
-                'registered with identifier {0}, it will be replaced'.format(identifier)
-            )
+        # if identifier in self.plugins:
+        #     self.logger.warning(
+        #         'An existing plugin has already been '
+        #         'registered with identifier {0}, it will be replaced'.format(identifier)
+        #     )
 
-        self.plugins[identifier] = plugin
+        if identifier not in self.plugins:
+            self.plugins[identifier] = plugin
 
         icon = QtGui.QIcon(plugin.icon)
         self.tabPanel.addTab(plugin, icon, name)
