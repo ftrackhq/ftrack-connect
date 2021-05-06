@@ -587,7 +587,7 @@ class Application(QtWidgets.QMainWindow):
 
         self.menu_bar = QtWidgets.QMenuBar()
         self.setMenuWidget(self.menu_bar)
-        widget_menu = self.menu_bar.addMenu('widgets')
+        widget_menu = self.menu_bar.addMenu('Widgets')
         self.menu_widget = widget_menu
         self.menu_bar.setVisible(False)
 
