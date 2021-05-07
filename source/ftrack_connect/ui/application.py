@@ -42,6 +42,7 @@ class ConnectWidget(QtWidgets.QWidget):
     #: Signal to emit to request closing application.
     requestApplicationClose = QtCore.Signal(object)
 
+
     @property
     def session(self):
         '''Return current session.'''
@@ -326,9 +327,9 @@ class Application(QtWidgets.QMainWindow):
         self._hub_thread.start(session)
         weakref.finalize(self._hub_thread, self._hub_thread.cleanup)
 
-        ftrack_api._centralized_storage_scenario.register_configuration(
-            session
-        )
+        # ftrack_api._centralized_storage_scenario.register_configuration(
+        #     session
+        # )
 
         return session
 
@@ -440,7 +441,6 @@ class Application(QtWidgets.QMainWindow):
 
     def location_configuration_finished(self):
         '''Continue connect setup after location configuration is done.'''
-        ftrack_api.plugin.discover(self.pluginHookPaths, [self.session])
 
         try:
             self.configureConnectAndDiscoverPlugins()
