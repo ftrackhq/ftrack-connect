@@ -303,17 +303,13 @@ class Application(QtWidgets.QMainWindow):
         self.loginWidget.setFocus()
         self._login_overlay.hide()
 
-    def _setup_session(self, plugin_paths=None):
+    def _setup_session(self):
         '''Setup a new python API session.'''
         if hasattr(self, '_hub_thread'):
             self._hub_thread.cleanup()
-
-        if plugin_paths is None:
-            plugin_paths = self.pluginHookPaths
         try:
             session = ftrack_api.Session(
-                auto_connect_event_hub=True,
-                plugin_paths=plugin_paths
+                auto_connect_event_hub=True
             )
         except Exception as error:
             raise ftrack_connect.error.ParseError(error)
@@ -403,7 +399,7 @@ class Application(QtWidgets.QMainWindow):
         # Login using the new ftrack API.
         try:
             # Quick session to poll for settings, confirm credentials
-            self._session = self._setup_session(plugin_paths='')
+            self._session = self._setup_session()
             self._assign_session_theme(self.theme())
         except Exception as error:
             self.logger.exception('Error during login:')
@@ -438,16 +434,6 @@ class Application(QtWidgets.QMainWindow):
 
     def location_configuration_finished(self):
         '''Continue connect setup after location configuration is done.'''
-        # if reconfigure_session:
-        #     try:
-        #         self.session.event_hub.disconnect(False)
-        #     except ftrack_api.exception.EventHubConnectionError:
-        #         # Maybe it wasn't connected yet.
-        #         self.logger.exception('Failed to disconnect from event hub.')
-        #         pass
-        #
-        #     self._session = self._setup_session()
-
         ftrack_api.plugin.discover(self.pluginHookPaths, [self.session])
 
         try:
@@ -683,7 +669,7 @@ class Application(QtWidgets.QMainWindow):
         #: TODO: Add discover functionality and search paths.
 
         event = ftrack_api.event.base.Event(
-            topic = ConnectWidget.topic
+            topic=ConnectWidget.topic
         )
 
         responses = self.session.event_hub.publish(
@@ -692,11 +678,19 @@ class Application(QtWidgets.QMainWindow):
         widgets = self._get_widget_preferences()
 
         for response in responses:
+            plugin_exists = self.plugins.get(response.getIdentifier())
+            self.logger.info('test: {}'.format(response.getIdentifier(), plugin_exists))
+
+            if not plugin_exists:
+                self.logger.info('adding: {}'.format(response.getIdentifier(), plugin_exists))
+                self.plugins[response.getIdentifier()] = response
+
+        for plugin_id, plugin_widget in self.plugins.items():
             stored_state = True
             try:
-                stored_state = widgets.get(response.getName(), stored_state)
-                self._creteConnectWidgetMenu(response, stored_state)
-                self._setConnectWidgetState(response, stored_state)
+                stored_state = widgets.get(plugin_id, stored_state)
+                self._creteConnectWidgetMenu(plugin_widget, stored_state)
+                self._setConnectWidgetState(plugin_widget, stored_state)
 
             except Exception:
                 self.logger.warning(
@@ -707,17 +701,16 @@ class Application(QtWidgets.QMainWindow):
 
     def _setConnectWidgetState(self, item, state):
         '''Set plugin *item* as give visible *state*'''
-        plugin_exists = self.plugins.get(item.getIdentifier())
-        if not plugin_exists:
-            self.plugins[item.getIdentifier()] = item
 
         if state is False:
+            self.logger.info('Removing {}'.format(item.getIdentifier()))
             self.removePlugin(item.getIdentifier())
 
         elif state is True:
+            self.logger.info('Setting {}'.format(item.getIdentifier()))
             self.addPlugin(item)
 
-        self._save_widget_preferences(item.getName(), state)
+        self._save_widget_preferences(item.getIdentifier(), state)
 
     def _manage_custom_widget(self):
         action = self.sender()
@@ -787,16 +780,8 @@ class Application(QtWidgets.QMainWindow):
         if identifier is None:
             identifier = plugin.getIdentifier()
 
-        # if identifier in self.plugins:
-        #     self.logger.warning(
-        #         'An existing plugin has already been '
-        #         'registered with identifier {0}, it will be replaced'.format(identifier)
-        #     )
-
-        if identifier not in self.plugins:
-            self.plugins[identifier] = plugin
-
         icon = QtGui.QIcon(plugin.icon)
+        self.logger.warning('Addding widget {}'.format(identifier))
         self.tabPanel.addTab(plugin, icon, name)
 
         # Connect standard plugin events.
