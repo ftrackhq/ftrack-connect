@@ -679,10 +679,7 @@ class Application(QtWidgets.QMainWindow):
 
         for response in responses:
             plugin_exists = self.plugins.get(response.getIdentifier())
-            self.logger.info('test: {}'.format(response.getIdentifier(), plugin_exists))
-
             if not plugin_exists:
-                self.logger.info('adding: {}'.format(response.getIdentifier(), plugin_exists))
                 self.plugins[response.getIdentifier()] = response
 
         for plugin_id, plugin_widget in self.plugins.items():
@@ -703,11 +700,9 @@ class Application(QtWidgets.QMainWindow):
         '''Set plugin *item* as give visible *state*'''
 
         if state is False:
-            self.logger.info('Removing {}'.format(item.getIdentifier()))
             self.removePlugin(item.getIdentifier())
 
         elif state is True:
-            self.logger.info('Setting {}'.format(item.getIdentifier()))
             self.addPlugin(item)
 
         self._save_widget_preferences(item.getIdentifier(), state)
@@ -781,7 +776,6 @@ class Application(QtWidgets.QMainWindow):
             identifier = plugin.getIdentifier()
 
         icon = QtGui.QIcon(plugin.icon)
-        self.logger.warning('Addding widget {}'.format(identifier))
         self.tabPanel.addTab(plugin, icon, name)
 
         # Connect standard plugin events.
