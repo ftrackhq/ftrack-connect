@@ -433,20 +433,20 @@ class Application(QtWidgets.QMainWindow):
                 return
 
         # No change so build if needed
-        self.location_configuration_finished(reconfigure_session=False)
+        self.location_configuration_finished()
         self.loginSuccessSignal.emit()
 
-    def location_configuration_finished(self, reconfigure_session=True):
+    def location_configuration_finished(self):
         '''Continue connect setup after location configuration is done.'''
-        if reconfigure_session:
-            try:
-                self.session.event_hub.disconnect(False)
-            except ftrack_api.exception.EventHubConnectionError:
-                # Maybe it wasn't connected yet.
-                self.logger.exception('Failed to disconnect from event hub.')
-                pass
-
-            self._session = self._setup_session()
+        # if reconfigure_session:
+        #     try:
+        #         self.session.event_hub.disconnect(False)
+        #     except ftrack_api.exception.EventHubConnectionError:
+        #         # Maybe it wasn't connected yet.
+        #         self.logger.exception('Failed to disconnect from event hub.')
+        #         pass
+        #
+        #     self._session = self._setup_session()
 
         ftrack_api.plugin.discover(self.pluginHookPaths, [self.session])
 
