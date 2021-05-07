@@ -255,11 +255,11 @@ class Actions(QtWidgets.QWidget):
         which was added in a ftrack server version 3.2.x. Check for the
         metadata attribute on the dynamic class.
         '''
-        userHasMetadata = any(
-            attribute.name == 'metadata'
-            for attribute in self._session.types['User'].attributes
-        )
-        return userHasMetadata
+        # userHasMetadata = any(
+        #     attribute.name == 'metadata'
+        #     for attribute in self._session.types['User'].attributes
+        # )
+        # return userHasMetadata
 
     def _getCurrentUserId(self):
         '''Return current user id.'''

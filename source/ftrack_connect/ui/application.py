@@ -8,7 +8,7 @@ import requests.exceptions
 import uuid
 import logging
 import weakref
-
+import functools
 import appdirs
 
 from Qt import QtCore, QtWidgets, QtGui
@@ -27,11 +27,9 @@ from ftrack_connect.ui.widget import uncaught_error as _uncaught_error
 from ftrack_connect.ui.widget import tab_widget as _tab_widget
 from ftrack_connect.ui.widget import login as _login
 from ftrack_connect.ui.widget import about as _about
-from ftrack_connect.error import NotUniqueError as _NotUniqueError
 from ftrack_connect.ui import login_tools as _login_tools
 from ftrack_connect.ui.widget import configure_scenario as _scenario_widget
 import ftrack_connect.ui.config
-
 
 
 class ConnectWidget(QtWidgets.QWidget):
@@ -64,8 +62,9 @@ class ConnectWidget(QtWidgets.QWidget):
     def _return_widget(self, event):
         return self
 
-    def register(self, priority):
-        '''register a new connect widget with given **priority**.'''
+    def _register(self, event, priority):
+        self._session = event['data']['session']
+
         self.session.event_hub.subscribe(
             'topic={0} '
             'and source.user.username={1}'.format(
@@ -73,6 +72,13 @@ class ConnectWidget(QtWidgets.QWidget):
             ),
             self._return_widget,
             priority=priority
+        )
+
+    def register(self, priority):
+        '''register a new connect widget with given **priority**.'''
+        self.session.event_hub.subscribe(
+            'topic=ftrack.api.session.ready',
+            functools.partial(self._register, priority=priority)
         )
 
 
