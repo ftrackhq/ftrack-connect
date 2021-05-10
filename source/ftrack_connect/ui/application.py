@@ -583,6 +583,8 @@ class Application(QtWidgets.QMainWindow):
         self.tray.setIcon(self.logoIcon)
 
     def _initialiseMenuBar(self):
+        '''Initialise and add connect widget to widgets menu.'''
+
         self.menu_bar = QtWidgets.QMenuBar()
         self.setMenuWidget(self.menu_bar)
         widget_menu = self.menu_bar.addMenu('widgets')
@@ -613,7 +615,7 @@ class Application(QtWidgets.QMainWindow):
         return widgets
 
     def _save_widget_preferences(self, plugin_name, state):
-        '''Save API credentials to storage.'''
+        '''Save widget preferences to storage.'''
         # Clear QSettings since they should not be used any more.
         self._clear_qsettings()
 
@@ -629,7 +631,6 @@ class Application(QtWidgets.QMainWindow):
             json_config['id'] = str(uuid.uuid4())
         json_config.setdefault('widgets', {})
         json_config['widgets'][plugin_name] = state
-        self.logger.info('SAVING PREFS {}'.format(json_config))
         ftrack_connect.ui.config.write_json_config(json_config)
 
     def _createTrayMenu(self):
@@ -675,7 +676,7 @@ class Application(QtWidgets.QMainWindow):
         return menu
 
     def _creteConnectWidgetMenu(self, entry,  stored_state):
-        self.logger.info('Creating menu for {} with status {}'.format(entry, stored_state))
+        '''create widget menu off plugin *entry* and *stored_state* in preferences store.'''
         widget_menu_action = QtWidgets.QAction(entry.getName(), self)
         widget_menu_action.setData(entry)
         widget_menu_action.setCheckable(True)
@@ -711,6 +712,7 @@ class Application(QtWidgets.QMainWindow):
                 )
 
     def _setConnectWidgetState(self, item, state):
+        '''Set plugin *item* as give visible *state*'''
         plugin_exists = self.plugins.get(item.getIdentifier())
         if not plugin_exists:
             self.plugins[item.getIdentifier()] = item
@@ -824,9 +826,6 @@ class Application(QtWidgets.QMainWindow):
 
         index = self.tabPanel.indexOf(plugin)
         self.tabPanel.removeTab(index)
-
-        # plugin.deleteLater()
-        # del self.plugins[identifier]
 
     def focus(self):
         '''Focus and bring the window to top.'''

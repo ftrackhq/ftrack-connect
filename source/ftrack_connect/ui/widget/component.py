@@ -27,7 +27,12 @@ class Component(QtWidgets.QWidget):
 
         self.layout().addWidget(self.componentNameEdit)
 
-        self.removeAction = QtWidgets.QAction('Remove', self.componentNameEdit)
+        # TODO: CHECK WHY THEME IS NOT CORRECTLY APPLIED
+        removeIcon = QtGui.QIcon(
+            QtGui.QPixmap(':/ftrack/image/light/trash')
+        )
+
+        self.removeAction = QtWidgets.QAction(removeIcon, 'Remove', self.componentNameEdit)
         self.removeAction.setObjectName('component-remove-action')
         self.removeAction.setStatusTip('Remove component.')
         self.componentNameEdit.addAction(
