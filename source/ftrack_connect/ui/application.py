@@ -308,18 +308,10 @@ class Application(QtWidgets.QMainWindow):
         if hasattr(self, '_hub_thread'):
             self._hub_thread.cleanup()
 
-        if plugin_paths is None:
-            plugin_paths = self.pluginHookPaths
-
-            plugin_paths.extend(
-                os.environ.get(
-                    'FTRACK_EVENT_PLUGIN_PATH', ''
-                ).split(os.pathsep)
-            )
         try:
             session = ftrack_api.Session(
                 auto_connect_event_hub=True,
-                plugin_paths=plugin_paths
+                plugin_paths=plugin_paths or []
             )
         except Exception as error:
             raise ftrack_connect.error.ParseError(error)
@@ -511,7 +503,6 @@ class Application(QtWidgets.QMainWindow):
             ),
             lambda event : True
         )
-        self.session._configure_locations()
 
     def _discover_hook_paths(self):
         '''Return a list of paths to pass to ftrack_api.Session()'''
@@ -700,7 +691,7 @@ class Application(QtWidgets.QMainWindow):
         for response in responses:
             stored_state = True
             try:
-                stored_state = widgets.get(response.getName(), stored_state)
+                stored_state = widgets.get(response.getIdentifier(), stored_state)
                 self._creteConnectWidgetMenu(response, stored_state)
                 self._setConnectWidgetState(response, stored_state)
 
@@ -723,7 +714,7 @@ class Application(QtWidgets.QMainWindow):
         elif state is True:
             self.addPlugin(item)
 
-        self._save_widget_preferences(item.getName(), state)
+        self._save_widget_preferences(item.getIdentifier(), state)
 
     def _manage_custom_widget(self):
         action = self.sender()
@@ -790,16 +781,14 @@ class Application(QtWidgets.QMainWindow):
         if name is None:
             name = plugin.getName()
 
-        if identifier is None:
-            identifier = plugin.getIdentifier()
-
-        if identifier in self.plugins:
-            self.logger.warning(
-                'An existing plugin has already been '
-                'registered with identifier {0}, it will be replaced'.format(identifier)
-            )
-
-        self.plugins[identifier] = plugin
+        # if identifier is None:
+        #     identifier = plugin.getIdentifier()
+        # 
+        # if identifier in self.plugins:
+        #     self.logger.warning(
+        #         'An existing plugin has already been '
+        #         'registered with identifier {0}, it will be replaced'.format(identifier)
+        #     )
 
         icon = QtGui.QIcon(plugin.icon)
         self.tabPanel.addTab(plugin, icon, name)
