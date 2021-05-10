@@ -69,6 +69,10 @@ class AssetsPublisher(QtWidgets.QWidget):
         layout.addWidget(self.browser,  stretch=1)
         self.browser.dataSelected.connect(self._onDataSelected)
 
+        self.reset_button = QtWidgets.QPushButton('Clear list')
+        layout.addWidget(self.reset_button)
+        self.reset_button.hide()
+
         # Create a components list widget.
         # Now used as asset versions
         self.componentsList = _components_list.ComponentsList()
@@ -103,6 +107,9 @@ class AssetsPublisher(QtWidgets.QWidget):
             publishButton, alignment=QtCore.Qt.AlignCenter, stretch=0
         )
 
+        # Connect reset button
+        self.reset_button.clicked.connect(self.clear)
+
     def setEntity(self, entity):
         '''Set current entity.'''
         self.entitySelector.setEntity(entity)
@@ -112,8 +119,10 @@ class AssetsPublisher(QtWidgets.QWidget):
         # self.previewSelector.setItems(self.componentsList.items())
         if self.componentsList.count():
             self.componentsList.show()
+            self.reset_button.show()
         else:
             self.componentsList.hide()
+            self.reset_button.hide()
 
     def _onDataSelected(self, filePath):
         '''Callback for Browser file selected signal.'''
@@ -127,7 +136,7 @@ class AssetsPublisher(QtWidgets.QWidget):
         # self.versionDescription.clear()
         self.componentsList.clearItems()
         # self.thumbnailDropZone.clear()
-        self.entitySelector.setEntity(None)
+        # self.entitySelector.setEntity(None)
 
     def get_assets(self, entity):
         assets = []
