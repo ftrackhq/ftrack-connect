@@ -36,9 +36,18 @@ class ConnectWidgetPlugin(object):
     topic = 'ftrack.connect.plugin.connect-widget'
 
     def __init__(self, connect_widget):
+        '''Initialise class with non initialised connect_widget.'''
+        if not isinstance(connect_widget, type):
+            raise Exception(
+                'Widget class {} should be non initialised'.format(
+                    connect_widget
+                )
+            )
+
         self._connect_widget = connect_widget
 
     def _return_widget(self, event):
+        '''Return stored widget class.'''
         return self._connect_widget
 
     def register(self, session, priority):
@@ -68,6 +77,7 @@ class ConnectWidget(QtWidgets.QWidget):
         return self._session
 
     def __init__(self, session, parent=None):
+        '''Initialise class with ftrack *session* and *parent* widget.'''
         super(ConnectWidget, self).__init__(parent=parent)
         self._session = session
 
@@ -702,8 +712,15 @@ class Application(QtWidgets.QMainWindow):
         widgets = self._get_widget_preferences()
 
         for response in responses:
+
             stored_state = True
             WidgetPlugin = response(self.session)
+
+            if not isinstance(WidgetPlugin, ConnectWidget):
+                self.logger.warning(
+                    'Widget {} is not a valid ConnectWidget'.format(response)
+                )
+                continue
             try:
                 stored_state = widgets.get(WidgetPlugin.getIdentifier(), stored_state)
                 self._creteConnectWidgetMenu(WidgetPlugin, stored_state)
