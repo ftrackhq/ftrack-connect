@@ -705,7 +705,7 @@ class Application(QtWidgets.QMainWindow):
             stored_state = True
             WidgetPlugin = response(self.session)
             try:
-                stored_state = widgets.get(WidgetPlugin.getName(), stored_state)
+                stored_state = widgets.get(WidgetPlugin.getIdentifier(), stored_state)
                 self._creteConnectWidgetMenu(WidgetPlugin, stored_state)
                 self._setConnectWidgetState(WidgetPlugin, stored_state)
 
@@ -728,7 +728,7 @@ class Application(QtWidgets.QMainWindow):
         elif state is True:
             self.addPlugin(item)
 
-        self._save_widget_preferences(item.getName(), state)
+        self._save_widget_preferences(item.getIdentifier(), state)
 
     def _manage_custom_widget(self):
         action = self.sender()
@@ -798,12 +798,12 @@ class Application(QtWidgets.QMainWindow):
         if identifier is None:
             identifier = plugin.getIdentifier()
 
-        if identifier in self.plugins:
-            self.logger.warning(
-                'An existing plugin has already been '
-                'registered with identifier {0}, it will be replaced'.format(identifier)
-            )
-
+        # if identifier in self.plugins:
+        #     self.logger.warning(
+        #         'An existing plugin has already been '
+        #         'registered with identifier {0}, it will be replaced'.format(identifier)
+        #     )
+        #
         self.plugins[identifier] = plugin
 
         icon = QtGui.QIcon(plugin.icon)
