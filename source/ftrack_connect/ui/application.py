@@ -815,12 +815,6 @@ class Application(QtWidgets.QMainWindow):
         if identifier is None:
             identifier = plugin.getIdentifier()
 
-        # if identifier in self.plugins:
-        #     self.logger.warning(
-        #         'An existing plugin has already been '
-        #         'registered with identifier {0}, it will be replaced'.format(identifier)
-        #     )
-        #
         self.plugins[identifier] = plugin
 
         icon = QtGui.QIcon(plugin.icon)
