@@ -700,7 +700,6 @@ class Application(QtWidgets.QMainWindow):
 
     def _discoverConnectWidget(self):
         '''Find and load connect widgets in search paths.'''
-        #: TODO: Add discover functionality and search paths.
 
         event = ftrack_api.event.base.Event(
             topic = ConnectWidgetPlugin.topic
@@ -711,25 +710,25 @@ class Application(QtWidgets.QMainWindow):
         )
         widgets = self._get_widget_preferences()
 
-        for response in responses:
+        for ResponsePlugin in responses:
 
             stored_state = True
-            WidgetPlugin = response(self.session)
+            widget_plugin = ResponsePlugin(self.session)
 
-            if not isinstance(WidgetPlugin, ConnectWidget):
+            if not isinstance(widget_plugin, ConnectWidget):
                 self.logger.warning(
-                    'Widget {} is not a valid ConnectWidget'.format(response)
+                    'Widget {} is not a valid ConnectWidget'.format(widget_plugin)
                 )
                 continue
             try:
-                stored_state = widgets.get(WidgetPlugin.getIdentifier(), stored_state)
-                self._creteConnectWidgetMenu(WidgetPlugin, stored_state)
-                self._setConnectWidgetState(WidgetPlugin, stored_state)
+                stored_state = widgets.get(widget_plugin.getIdentifier(), stored_state)
+                self._creteConnectWidgetMenu(widget_plugin, stored_state)
+                self._setConnectWidgetState(widget_plugin, stored_state)
 
             except Exception:
                 self.logger.warning(
                     'Tab Plugin {} could not be loaded'.format(
-                        WidgetPlugin.getName()
+                        widget_plugin.getName()
                     )
                 )
 
