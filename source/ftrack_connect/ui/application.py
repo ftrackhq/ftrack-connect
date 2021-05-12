@@ -703,15 +703,16 @@ class Application(QtWidgets.QMainWindow):
 
         for response in responses:
             stored_state = True
+            WidgetPlugin = response(self.session)
             try:
-                stored_state = widgets.get(response.getName(), stored_state)
-                self._creteConnectWidgetMenu(response, stored_state)
-                self._setConnectWidgetState(response, stored_state)
+                stored_state = widgets.get(WidgetPlugin.getName(), stored_state)
+                self._creteConnectWidgetMenu(WidgetPlugin, stored_state)
+                self._setConnectWidgetState(WidgetPlugin, stored_state)
 
             except Exception:
                 self.logger.warning(
                     'Tab Plugin {} could not be loaded'.format(
-                        response.getName()
+                        WidgetPlugin.getName()
                     )
                 )
 
