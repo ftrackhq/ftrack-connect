@@ -102,8 +102,13 @@ class Application(QtWidgets.QMainWindow):
                 'No system tray located.'
             )
 
+        if theme == 'dark':
+            icon = ':/ftrack/image/default/ftrackLogoWhite'
+        else:
+            icon = ':/ftrack/image/default/ftrackLogoGrey'
+
         self.logoIcon = QtGui.QIcon(
-            QtGui.QPixmap(':/ftrack/image/default/ftrackLogoWhite')
+            QtGui.QPixmap(icon)
         )
 
         self._login_server_thread = None
@@ -539,7 +544,9 @@ class Application(QtWidgets.QMainWindow):
             self.trayMenu
         )
 
-        self.tray.setIcon(self.logoIcon)
+        self.tray.setIcon(
+            QtGui.QPixmap(':/ftrack/image/default/ftrackLogoWhite')
+        )
         self.tray.show()
 
     def _createTrayMenu(self):
