@@ -8,7 +8,7 @@ import requests.exceptions
 import uuid
 import logging
 import weakref
-
+import functools
 import appdirs
 
 from Qt import QtCore, QtWidgets, QtGui
@@ -27,16 +27,34 @@ from ftrack_connect.ui.widget import uncaught_error as _uncaught_error
 from ftrack_connect.ui.widget import tab_widget as _tab_widget
 from ftrack_connect.ui.widget import login as _login
 from ftrack_connect.ui.widget import about as _about
-from ftrack_connect.error import NotUniqueError as _NotUniqueError
 from ftrack_connect.ui import login_tools as _login_tools
 from ftrack_connect.ui.widget import configure_scenario as _scenario_widget
 import ftrack_connect.ui.config
 
 
+class ConnectWidgetPlugin(object):
+    topic = 'ftrack.connect.plugin.connect-widget'
+
+    def __init__(self, connect_widget):
+        self._connect_widget = connect_widget
+
+    def _return_widget(self, event):
+        return self._connect_widget
+
+    def register(self, session, priority):
+        '''register a new connect widget with given **priority**.'''
+        session.event_hub.subscribe(
+            'topic={0} '
+            'and source.user.username={1}'.format(
+                self.topic, session.api_user
+            ),
+            self._return_widget,
+            priority=priority
+        )
+
 
 class ConnectWidget(QtWidgets.QWidget):
     '''Base widget for ftrack connect application plugin.'''
-    topic = 'ftrack.connect.plugin.connect-widget'
     icon = None
     #: Signal to emit to request focus of this plugin in application.
     requestApplicationFocus = QtCore.Signal(object)
@@ -60,20 +78,6 @@ class ConnectWidget(QtWidgets.QWidget):
     def getIdentifier(self):
         '''Return identifier for widget.'''
         return self.getName().lower().replace(' ', '.')
-
-    def _return_widget(self, event):
-        return self
-
-    def register(self, priority):
-        '''register a new connect widget with given **priority**.'''
-        self.session.event_hub.subscribe(
-            'topic={0} '
-            'and source.user.username={1}'.format(
-                self.topic, self.session.api_user
-            ),
-            self._return_widget,
-            priority=priority
-        )
 
 
 class PluginWarning(ConnectWidget):
@@ -689,7 +693,7 @@ class Application(QtWidgets.QMainWindow):
         #: TODO: Add discover functionality and search paths.
 
         event = ftrack_api.event.base.Event(
-            topic = ConnectWidget.topic
+            topic = ConnectWidgetPlugin.topic
         )
 
         responses = self.session.event_hub.publish(
