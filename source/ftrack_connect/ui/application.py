@@ -36,9 +36,18 @@ class ConnectWidgetPlugin(object):
     topic = 'ftrack.connect.plugin.connect-widget'
 
     def __init__(self, connect_widget):
+        '''Initialise class with non initialised connect_widget.'''
+        if not isinstance(connect_widget, type):
+            raise Exception(
+                'Widget class {} should be non initialised'.format(
+                    connect_widget
+                )
+            )
+
         self._connect_widget = connect_widget
 
     def _return_widget(self, event):
+        '''Return stored widget class.'''
         return self._connect_widget
 
     def register(self, session, priority):
@@ -68,6 +77,7 @@ class ConnectWidget(QtWidgets.QWidget):
         return self._session
 
     def __init__(self, session, parent=None):
+        '''Initialise class with ftrack *session* and *parent* widget.'''
         super(ConnectWidget, self).__init__(parent=parent)
         self._session = session
 
@@ -690,7 +700,6 @@ class Application(QtWidgets.QMainWindow):
 
     def _discoverConnectWidget(self):
         '''Find and load connect widgets in search paths.'''
-        #: TODO: Add discover functionality and search paths.
 
         event = ftrack_api.event.base.Event(
             topic = ConnectWidgetPlugin.topic
@@ -701,18 +710,25 @@ class Application(QtWidgets.QMainWindow):
         )
         widgets = self._get_widget_preferences()
 
-        for response in responses:
+        for ResponsePlugin in responses:
+
             stored_state = True
-            WidgetPlugin = response(self.session)
+            widget_plugin = ResponsePlugin(self.session)
+
+            if not isinstance(widget_plugin, ConnectWidget):
+                self.logger.warning(
+                    'Widget {} is not a valid ConnectWidget'.format(widget_plugin)
+                )
+                continue
             try:
-                stored_state = widgets.get(WidgetPlugin.getIdentifier(), stored_state)
-                self._creteConnectWidgetMenu(WidgetPlugin, stored_state)
-                self._setConnectWidgetState(WidgetPlugin, stored_state)
+                stored_state = widgets.get(widget_plugin.getIdentifier(), stored_state)
+                self._creteConnectWidgetMenu(widget_plugin, stored_state)
+                self._setConnectWidgetState(widget_plugin, stored_state)
 
             except Exception:
                 self.logger.warning(
                     'Tab Plugin {} could not be loaded'.format(
-                        WidgetPlugin.getName()
+                        widget_plugin.getName()
                     )
                 )
 
@@ -798,12 +814,6 @@ class Application(QtWidgets.QMainWindow):
         if identifier is None:
             identifier = plugin.getIdentifier()
 
-        # if identifier in self.plugins:
-        #     self.logger.warning(
-        #         'An existing plugin has already been '
-        #         'registered with identifier {0}, it will be replaced'.format(identifier)
-        #     )
-        #
         self.plugins[identifier] = plugin
 
         icon = QtGui.QIcon(plugin.icon)
