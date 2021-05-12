@@ -29,7 +29,7 @@ def read_json_config():
     config = None
 
     if os.path.isfile(config_file):
-        logger.info(u'Reading config from {0}'.format(config_file))
+        logger.debug(u'Reading config from {0}'.format(config_file))
 
         with open(config_file, 'r') as file:
             try:

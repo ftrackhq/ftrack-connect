@@ -11,6 +11,7 @@ from Qt import QtCore, QtWidgets, QtGui
 
 import ftrack_api
 from ftrack_connect.config import get_log_directory
+
 import ftrack_connect.util
 
 
@@ -44,6 +45,7 @@ class AboutDialog(QtWidgets.QDialog):
 
         layout.addSpacing(25)
 
+
         self.debugButton = QtWidgets.QPushButton('More info')
         self.debugButton.clicked.connect(self._onDebugButtonClicked)
 
@@ -70,6 +72,12 @@ class AboutDialog(QtWidgets.QDialog):
         layout.addWidget(self.debugTextEdit)
 
     def _onDebugButtonClicked(self):
+        '''Handle debug button clicked.'''
+        self.debugButton.hide()
+        self.debugTextEdit.show()
+        self.adjustSize()
+
+    def _onWidgetButtonClicked(self):
         '''Handle debug button clicked.'''
         self.debugButton.hide()
         self.debugTextEdit.show()
@@ -143,7 +151,7 @@ class AboutDialog(QtWidgets.QDialog):
         )
         messageBox.exec_()
 
-    def setInformation(self, versionData, user, server):
+    def setInformation(self, versionData, user, server, widget_plugins):
         '''Set displayed *versionData*, *user*, *server*.'''
         core = [plugin for plugin in versionData if plugin.get('core')]
         plugins = [
@@ -185,6 +193,8 @@ class AboutDialog(QtWidgets.QDialog):
         )
 
         if plugins:
+            # deduplicate list of dictionary.
+            plugins = [dict(t) for t in {tuple(d.items()) for d in plugins}]
             pluginVersions = ''
             for _plugin in plugins:
                 pluginVersions += itemTemplate.format(
