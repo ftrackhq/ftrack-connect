@@ -713,7 +713,12 @@ class Application(QtWidgets.QMainWindow):
         for ResponsePlugin in responses:
 
             stored_state = True
-            widget_plugin = ResponsePlugin(self.session)
+            try:
+                widget_plugin = ResponsePlugin(self.session)
+
+            except Exception as error:
+                self.logger.error(str(error))
+                continue
 
             if not isinstance(widget_plugin, ConnectWidget):
                 self.logger.warning(
