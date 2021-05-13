@@ -581,7 +581,9 @@ class Application(QtWidgets.QMainWindow):
         self.tray.setContextMenu(
             self.trayMenu
         )
-        self.tray.setIcon(self.logoIcon)
+        self.tray.setIcon(
+            QtGui.QPixmap(':/ftrack/image/default/ftrackLogoWhite')
+        )
 
     def _initialiseMenuBar(self):
         '''Initialise and add connect widget to widgets menu.'''
