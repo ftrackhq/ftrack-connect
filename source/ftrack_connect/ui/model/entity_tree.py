@@ -238,6 +238,11 @@ class Project(Context):
             ':/ftrack/image/{}/project'.format(self.connect_theme)
         )
 
+    @property
+    def name(self):
+        '''Return name of item.'''
+        return self.entity.get('full_name')
+
 
 class EntityTreeModel(QtCore.QAbstractItemModel):
     '''Model representing entity tree.'''
