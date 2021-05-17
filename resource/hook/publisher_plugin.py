@@ -171,6 +171,5 @@ def register(session, **kw):
         )
         return
 
-    publisher = Publisher(session)
-    publisher.register(priority=20)
-    logger.debug('Plugin registered')
+    plugin = ftrack_connect.ui.application.ConnectWidgetPlugin(Publisher)
+    plugin.register(session, priority=20)
