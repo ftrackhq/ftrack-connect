@@ -5,6 +5,7 @@ import logging
 
 from Qt import QtWidgets
 from Qt import QtCore
+from Qt import QtGui
 
 from ftrack_api import exception
 from ftrack_api import event
@@ -69,6 +70,9 @@ class Publisher(QtWidgets.QWidget):
         self.componentsList.itemsChanged.connect(
             self._onComponentListItemsChanged
         )
+        verticalSpacer = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        layout.addItem(verticalSpacer)
+
         layout.addWidget(
             self.componentsList, stretch=1
         )
