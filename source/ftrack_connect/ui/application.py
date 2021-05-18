@@ -27,6 +27,7 @@ from ftrack_connect.ui.widget import uncaught_error as _uncaught_error
 from ftrack_connect.ui.widget import tab_widget as _tab_widget
 from ftrack_connect.ui.widget import login as _login
 from ftrack_connect.ui.widget import about as _about
+from ftrack_connect.error import NotUniqueError as _NotUniqueError
 from ftrack_connect.ui import login_tools as _login_tools
 from ftrack_connect.ui.widget import configure_scenario as _scenario_widget
 import ftrack_connect.ui.config
@@ -594,7 +595,9 @@ class Application(QtWidgets.QMainWindow):
         self.tray.setContextMenu(
             self.trayMenu
         )
-        self.tray.setIcon(self.logoIcon)
+        self.tray.setIcon(
+            QtGui.QPixmap(':/ftrack/image/default/ftrackLogoWhite')
+        )
 
     def _initialiseMenuBar(self):
         '''Initialise and add connect widget to widgets menu.'''
