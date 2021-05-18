@@ -160,7 +160,7 @@ class Application(QtWidgets.QMainWindow):
         self.plugins = {}
 
         self.setObjectName('ftrack-connect-window')
-        self.setWindowTitle('ftrack connect')
+        self.setWindowTitle('ftrack Connect')
         self.resize(450, 700)
         self.move(50, 50)
 
