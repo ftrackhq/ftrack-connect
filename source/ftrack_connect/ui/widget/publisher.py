@@ -57,7 +57,6 @@ class Publisher(QtWidgets.QWidget):
         self._entity = None
 
         layout = QtWidgets.QVBoxLayout()
-
         self.setLayout(layout)
 
         self.browser = _data_drop_zone.DataDropZone()
@@ -70,7 +69,7 @@ class Publisher(QtWidgets.QWidget):
         self.componentsList.itemsChanged.connect(
             self._onComponentListItemsChanged
         )
-        verticalSpacer = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        verticalSpacer = QtWidgets.QSpacerItem(0, 0, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         layout.addItem(verticalSpacer)
 
         layout.addWidget(
