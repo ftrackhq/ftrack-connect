@@ -117,7 +117,7 @@ def main(arguments=None):
     application.setQuitOnLastWindowClosed(False)
 
     # Enable ctrl+c to quit application when started from command line.
-    signal.signal(signal.SIGINT, signal.SIG_DFL)
+    signal.signal(signal.SIGINT, lambda sig, _: application.quit())
 
     # Construct main connect window and apply theme.
     connectWindow = ftrack_connect.ui.application.Application(
