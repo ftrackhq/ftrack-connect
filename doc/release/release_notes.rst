@@ -8,6 +8,15 @@
 Release Notes
 *************
 
+.. release:: 1.1.10
+    :date: 2021-05-21
+
+    .. change:: fixed
+        :tags: doc
+
+        Provide requirement file for RTD builds.
+
+
 .. release:: 1.1.9
     :date: 2021-03-11
 
