@@ -9,7 +9,7 @@ from Qt import QtGui
 
 from ftrack_api import exception
 from ftrack_api import event
-
+from ftrack_api.symbol import ORIGIN_LOCATION_ID
 
 from ftrack_connect.ui.widget import data_drop_zone as _data_drop_zone
 from ftrack_connect.ui.widget import components_list as _components_list
@@ -282,8 +282,8 @@ class Publisher(QtWidgets.QWidget):
             )
             self.session.commit()
 
-            origin_location = self.session.query(
-                'Location where name is "ftrack.origin"'
+            origin_location = self.session.get(
+                'Location' , ORIGIN_LOCATION_ID
             )
 
             for componentData in components:

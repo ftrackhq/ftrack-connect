@@ -208,8 +208,7 @@ class Context(Item):
         children = []
         entities = self._session.query(
             (
-                'select name, object_type_id, object_type.name, '
-                'object_type.is_leaf, object_type.icon from TypedContext '
+                'TypedContext '
                 'where parent_id is {0}'
             ).format(self.entity['id'])
         )
