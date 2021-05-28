@@ -3,6 +3,7 @@
 #             Copyright (c) 2014 Martin Pengelly-Phillips
 # :notice: Derived from Riffle (https://github.com/4degrees/riffle)
 
+from functools import lru_cache
 from Qt import QtWidgets, QtCore, QtGui
 
 import ftrack_connect.worker
@@ -152,6 +153,9 @@ class Item(object):
         # Enable children fetching
         self._fetched = False
 
+    def __del__(self):
+        self.cache_clear() 
+
 
 class Root(Item):
     '''Represent root.'''
@@ -171,6 +175,7 @@ class Root(Item):
         '''Return type of item as string.'''
         return 'Root'
 
+    @lru_cache(maxsize=24)
     def _fetchChildren(self):
         '''Fetch and return new child items.'''
         children = []
@@ -203,6 +208,7 @@ class Context(Item):
             )
         )
 
+    @lru_cache(maxsize=24)
     def _fetchChildren(self):
         '''Fetch and return new child items.'''
         children = []
@@ -394,7 +400,8 @@ class EntityTreeModel(QtCore.QAbstractItemModel):
             item = index.internalPointer()
 
         return item.canFetchMore()
-
+        
+    @lru_cache(maxsize=24)
     def fetchMore(self, index):
         '''Fetch additional data under *index*.
 

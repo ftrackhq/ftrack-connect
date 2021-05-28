@@ -5,7 +5,7 @@
 import ftrack_connect.asynchronous
 import ftrack_connect.session
 from ftrack_connect.ui.widget import item_selector as _item_selector
-
+from functools import lru_cache
 
 class AssetTypeSelector(_item_selector.ItemSelector):
     '''Asset type selector widget.'''
@@ -19,7 +19,8 @@ class AssetTypeSelector(_item_selector.ItemSelector):
             **kwargs
         )
         self.loadAssetTypes()
-
+    
+    @lru_cache(maxsize=24)
     @ftrack_connect.asynchronous.asynchronous
     def loadAssetTypes(self):
         '''Load asset types and add to selector.'''
@@ -29,3 +30,6 @@ class AssetTypeSelector(_item_selector.ItemSelector):
             key=lambda assetType: assetType['name']
         )
         self.setItems(assetTypes)
+
+    def __del__(self):
+        self.cache_clear() 
