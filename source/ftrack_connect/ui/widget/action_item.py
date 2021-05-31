@@ -91,6 +91,7 @@ class ActionItem(QtWidgets.QWidget):
 
         self._textLabel = QtWidgets.QLabel(self)
         self._textLabel.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignTop)
+        self._textLabel.setContentsMargins(0,5,0,0)
         self._textLabel.setWordWrap(True)
         self._textLabel.setFixedSize(QtCore.QSize(75, 55))
         layout.addWidget(self._textLabel)
