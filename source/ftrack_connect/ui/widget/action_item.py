@@ -52,7 +52,7 @@ class ActionItem(QtWidgets.QWidget):
         )
 
         self.setMouseTracking(True)
-        self.setFixedSize(QtCore.QSize(75, 75))
+        self.setFixedSize(QtCore.QSize(75, 105))
         layout = QtWidgets.QVBoxLayout()
         layout.setAlignment(QtCore.Qt.AlignCenter)
         layout.setSpacing(0)
@@ -92,7 +92,7 @@ class ActionItem(QtWidgets.QWidget):
         self._textLabel = QtWidgets.QLabel(self)
         self._textLabel.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignTop)
         self._textLabel.setWordWrap(True)
-        self._textLabel.setFixedSize(QtCore.QSize(75, 35))
+        self._textLabel.setFixedSize(QtCore.QSize(75, 55))
         layout.addWidget(self._textLabel)
 
         self.setText(self._label)
