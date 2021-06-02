@@ -451,6 +451,7 @@ class Application(QtWidgets.QMainWindow):
                 )
                 self.setCentralWidget(scenario_widget)
                 self.focus()
+                self.loginSuccessSignal.emit()
                 return
 
         # No change so build if needed
