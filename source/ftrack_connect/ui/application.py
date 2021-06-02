@@ -8,7 +8,7 @@ import requests.exceptions
 import uuid
 import logging
 import weakref
-
+import functools
 import appdirs
 
 from Qt import QtCore, QtWidgets, QtGui
@@ -31,12 +31,40 @@ from ftrack_connect.error import NotUniqueError as _NotUniqueError
 from ftrack_connect.ui import login_tools as _login_tools
 from ftrack_connect.ui.widget import configure_scenario as _scenario_widget
 import ftrack_connect.ui.config
+class ConnectWidgetPlugin(object):
+    topic = 'ftrack.connect.plugin.connect-widget'
+
+    def __init__(self, connect_widget):
+        '''Initialise class with non initialised connect_widget.'''
+        if not isinstance(connect_widget, type):
+            raise Exception(
+                'Widget class {} should be non initialised'.format(
+                    connect_widget
+                )
+            )
+
+        self._connect_widget = connect_widget
+
+    def _return_widget(self, event):
+        '''Return stored widget class.'''
+        return self._connect_widget
+
+    def register(self, session, priority):
+        '''register a new connect widget with given **priority**.'''
+        session.event_hub.subscribe(
+            'topic={0} '
+            'and source.user.username={1}'.format(
+                self.topic, session.api_user
+            ),
+            self._return_widget,
+            priority=priority
+        )
 
 
 
 class ConnectWidget(QtWidgets.QWidget):
     '''Base widget for ftrack connect application plugin.'''
-    topic = 'ftrack.connect.plugin.connect-widget'
+
     icon = None
     #: Signal to emit to request focus of this plugin in application.
     requestApplicationFocus = QtCore.Signal(object)
@@ -50,6 +78,7 @@ class ConnectWidget(QtWidgets.QWidget):
         return self._session
 
     def __init__(self, session, parent=None):
+        '''Initialise class with ftrack *session* and *parent* widget.'''
         super(ConnectWidget, self).__init__(parent=parent)
         self._session = session
 
@@ -61,19 +90,7 @@ class ConnectWidget(QtWidgets.QWidget):
         '''Return identifier for widget.'''
         return self.getName().lower().replace(' ', '.')
 
-    def _return_widget(self, event):
-        return self
 
-    def register(self, priority):
-        '''register a new connect widget with given **priority**.'''
-        self.session.event_hub.subscribe(
-            'topic={0} '
-            'and source.user.username={1}'.format(
-                self.topic, self.session.api_user
-            ),
-            self._return_widget,
-            priority=priority
-        )
 
 
 class PluginWarning(ConnectWidget):
@@ -145,7 +162,7 @@ class Application(QtWidgets.QMainWindow):
         self.plugins = {}
 
         self.setObjectName('ftrack-connect-window')
-        self.setWindowTitle('ftrack connect')
+        self.setWindowTitle('ftrack Connect')
         self.resize(450, 700)
         self.move(50, 50)
 
@@ -308,6 +325,7 @@ class Application(QtWidgets.QMainWindow):
         if hasattr(self, '_hub_thread'):
             self._hub_thread.cleanup()
 
+
         try:
             session = ftrack_api.Session(
                 auto_connect_event_hub=True,
@@ -428,6 +446,7 @@ class Application(QtWidgets.QMainWindow):
                 )
                 self.setCentralWidget(scenario_widget)
                 self.focus()
+                self.loginSuccessSignal.emit()
                 return
 
         # No change so build if needed
@@ -436,6 +455,8 @@ class Application(QtWidgets.QMainWindow):
 
     def location_configuration_finished(self):
         '''Continue connect setup after location configuration is done.'''
+
+
         ftrack_api.plugin.discover(self.pluginHookPaths, [self.session])
 
         try:
@@ -493,6 +514,7 @@ class Application(QtWidgets.QMainWindow):
             ),
             lambda event : True
         )
+
 
     def _discover_hook_paths(self):
         '''Return a list of paths to pass to ftrack_api.Session()'''
@@ -561,14 +583,16 @@ class Application(QtWidgets.QMainWindow):
         self.tray.setContextMenu(
             self.trayMenu
         )
-        self.tray.setIcon(self.logoIcon)
+        self.tray.setIcon(
+            QtGui.QPixmap(':/ftrack/image/default/ftrackLogoWhite')
+        )
 
     def _initialiseMenuBar(self):
         '''Initialise and add connect widget to widgets menu.'''
 
         self.menu_bar = QtWidgets.QMenuBar()
         self.setMenuWidget(self.menu_bar)
-        widget_menu = self.menu_bar.addMenu('widgets')
+        widget_menu = self.menu_bar.addMenu('Widgets')
         self.menu_widget = widget_menu
         self.menu_bar.setVisible(False)
 
@@ -667,10 +691,10 @@ class Application(QtWidgets.QMainWindow):
 
     def _discoverConnectWidget(self):
         '''Find and load connect widgets in search paths.'''
-        #: TODO: Add discover functionality and search paths.
+
 
         event = ftrack_api.event.base.Event(
-            topic = ConnectWidget.topic
+            topic = ConnectWidgetPlugin.topic
         )
 
         responses = self.session.event_hub.publish(
@@ -678,17 +702,30 @@ class Application(QtWidgets.QMainWindow):
         )
         widgets = self._get_widget_preferences()
 
-        for response in responses:
+        for ResponsePlugin in responses:
+
             stored_state = True
             try:
-                stored_state = widgets.get(response.getIdentifier(), stored_state)
-                self._creteConnectWidgetMenu(response, stored_state)
-                self._setConnectWidgetState(response, stored_state)
+                widget_plugin = ResponsePlugin(self.session)
+
+            except Exception as error:
+                self.logger.error(str(error))
+                continue
+
+            if not isinstance(widget_plugin, ConnectWidget):
+                self.logger.warning(
+                    'Widget {} is not a valid ConnectWidget'.format(widget_plugin)
+                )
+                continue
+            try:
+                stored_state = widgets.get(widget_plugin.getIdentifier(), stored_state)
+                self._creteConnectWidgetMenu(widget_plugin, stored_state)
+                self._setConnectWidgetState(widget_plugin, stored_state)
 
             except Exception:
                 self.logger.warning(
                     'Tab Plugin {} could not be loaded'.format(
-                        response.getName()
+                        widget_plugin.getName()
                     )
                 )
 
@@ -771,14 +808,10 @@ class Application(QtWidgets.QMainWindow):
         if name is None:
             name = plugin.getName()
 
-        # if identifier is None:
-        #     identifier = plugin.getIdentifier()
-        # 
-        # if identifier in self.plugins:
-        #     self.logger.warning(
-        #         'An existing plugin has already been '
-        #         'registered with identifier {0}, it will be replaced'.format(identifier)
-        #     )
+        if identifier is None:
+            identifier = plugin.getIdentifier()
+
+        self.plugins[identifier] = plugin
 
         icon = QtGui.QIcon(plugin.icon)
         self.tabPanel.addTab(plugin, icon, name)

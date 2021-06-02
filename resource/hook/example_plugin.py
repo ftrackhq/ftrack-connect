@@ -36,6 +36,5 @@ def register(session, **kw):
         return
 
     # #  Uncomment to register plugin
-    # example = ExamplePlugin(session)
-    # example.register(priority=10)
-    # logger.debug('Plugin registered')
+    # plugin = ftrack_connect.ui.application.ConnectWidgetPlugin(ExamplePlugin)
+    # plugin.register(session, priority=10)

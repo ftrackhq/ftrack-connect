@@ -31,7 +31,7 @@ class PublisherBlockingOverlay(
 
 class Publisher(ftrack_connect.ui.application.ConnectWidget):
     '''Base widget for ftrack connect publisher plugin.'''
-    icon = ':ftrack/image/default/ftrackLogoColor'
+
     #: Signal to emit when the entity is changed.
     entityChanged = QtCore.Signal(object)
 
@@ -171,6 +171,5 @@ def register(session, **kw):
         )
         return
 
-    publisher = Publisher(session)
-    publisher.register(priority=20)
-    logger.debug('Plugin registered')
+    plugin = ftrack_connect.ui.application.ConnectWidgetPlugin(Publisher)
+    plugin.register(session, priority=20)

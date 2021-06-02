@@ -13,7 +13,6 @@ logger = logging.getLogger('ftrack_connect.plugin.actions')
 
 class Launch(ftrack_connect.ui.application.ConnectWidget):
     '''Base widget for ftrack connect actions plugin.'''
-    icon = ':ftrack/image/default/ftrackLogoColor'
 
     def __init__(self, session, parent=None):
         '''Instantiate the actions widget.'''
@@ -37,6 +36,5 @@ def register(session, **kw):
         )
         return
 
-    publisher = Launch(session)
-    publisher.register(priority=10)
-    logger.debug('Plugin registered')
+    plugin = ftrack_connect.ui.application.ConnectWidgetPlugin(Launch)
+    plugin.register(session, priority=10)

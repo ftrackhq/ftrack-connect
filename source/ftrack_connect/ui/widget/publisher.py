@@ -5,6 +5,7 @@ import logging
 
 from Qt import QtWidgets
 from Qt import QtCore
+from Qt import QtGui
 
 from ftrack_api import exception
 from ftrack_api import event
@@ -56,7 +57,6 @@ class Publisher(QtWidgets.QWidget):
         self._entity = None
 
         layout = QtWidgets.QVBoxLayout()
-
         self.setLayout(layout)
 
         self.browser = _data_drop_zone.DataDropZone()
@@ -69,6 +69,9 @@ class Publisher(QtWidgets.QWidget):
         self.componentsList.itemsChanged.connect(
             self._onComponentListItemsChanged
         )
+        verticalSpacer = QtWidgets.QSpacerItem(0, 0, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        layout.addItem(verticalSpacer)
+
         layout.addWidget(
             self.componentsList, stretch=1
         )
