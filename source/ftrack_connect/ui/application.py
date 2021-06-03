@@ -325,12 +325,6 @@ class Application(QtWidgets.QMainWindow):
 
         if plugin_paths is None:
             plugin_paths = self.pluginHookPaths
-
-            plugin_paths.extend(
-                os.environ.get(
-                    'FTRACK_EVENT_PLUGIN_PATH', ''
-                ).split(os.pathsep)
-            )
         try:
             session = ftrack_api.Session(
                 auto_connect_event_hub=True,
@@ -470,7 +464,7 @@ class Application(QtWidgets.QMainWindow):
 
             self._session = self._setup_session()
 
-        ftrack_api.plugin.discover(self.pluginHookPaths, [self.session])
+        # ftrack_api.plugin.discover(self.pluginHookPaths, [self.session])
 
         try:
             self.configureConnectAndDiscoverPlugins()
@@ -743,9 +737,6 @@ class Application(QtWidgets.QMainWindow):
 
     def _setConnectWidgetState(self, item, state):
         '''Set plugin *item* as give visible *state*'''
-        plugin_exists = self.plugins.get(item.getIdentifier())
-        if not plugin_exists:
-            self.plugins[item.getIdentifier()] = item
 
         if state is False:
             self.removePlugin(item.getIdentifier())
@@ -823,7 +814,9 @@ class Application(QtWidgets.QMainWindow):
         if identifier is None:
             identifier = plugin.getIdentifier()
 
-        self.plugins[identifier] = plugin
+        plugin_exists = self.plugins.get(plugin.getIdentifier())
+        if not plugin_exists:
+            self.plugins[plugin.getIdentifier()] = plugin
 
         icon = QtGui.QIcon(plugin.icon)
         self.tabPanel.addTab(plugin, icon, name)
