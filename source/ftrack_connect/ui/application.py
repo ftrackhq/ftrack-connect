@@ -798,7 +798,7 @@ class Application(QtWidgets.QMainWindow):
         '''Hide application upon *widget* request.'''
         self.hide()
 
-    def addPlugin(self, plugin, name=None, identifier=None):
+    def addPlugin(self, plugin, name=None):
         '''Add *plugin* in new tab with *name* and *identifier*.
 
         *plugin* should be an instance of :py:class:`ApplicationPlugin`.
@@ -812,9 +812,6 @@ class Application(QtWidgets.QMainWindow):
         '''
         if name is None:
             name = plugin.getName()
-
-        if identifier is None:
-            identifier = plugin.getIdentifier()
 
         icon = QtGui.QIcon(plugin.icon)
         self.tabPanel.addTab(plugin, icon, name)
