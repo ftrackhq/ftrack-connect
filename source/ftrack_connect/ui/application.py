@@ -462,7 +462,7 @@ class Application(QtWidgets.QMainWindow):
                 self.logger.exception('Failed to disconnect from event hub.')
                 pass
 
-            self._session = self._setup_session()
+        self._session = self._setup_session()
 
         try:
             self.configureConnectAndDiscoverPlugins()
@@ -483,7 +483,6 @@ class Application(QtWidgets.QMainWindow):
             }
         )
         results = self.session.event_hub.publish(event, synchronous=True)
-
         problems = [
             problem for problem in results if isinstance(problem, str)
         ]
