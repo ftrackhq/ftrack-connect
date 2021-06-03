@@ -464,8 +464,6 @@ class Application(QtWidgets.QMainWindow):
 
             self._session = self._setup_session()
 
-        # ftrack_api.plugin.discover(self.pluginHookPaths, [self.session])
-
         try:
             self.configureConnectAndDiscoverPlugins()
         except Exception as error:
@@ -485,6 +483,7 @@ class Application(QtWidgets.QMainWindow):
             }
         )
         results = self.session.event_hub.publish(event, synchronous=True)
+
         problems = [
             problem for problem in results if isinstance(problem, str)
         ]
@@ -560,15 +559,15 @@ class Application(QtWidgets.QMainWindow):
 
     def _gatherPluginHooks(self, path):
         '''Return plugin hooks from *path*.'''
-        paths = []
+        paths = set()
         self.logger.debug(u'Searching {0!r} for plugin hooks.'.format(path))
 
         if os.path.isdir(path):
             for candidate in os.listdir(path):
-                candidatePath = os.path.join(path, candidate)
-                if os.path.isdir(candidatePath):
-                    paths.append(
-                        os.path.join(candidatePath, 'hook')
+                candidate_path = os.path.join(path, candidate)
+                if os.path.isdir(candidate_path):
+                    paths.add(
+                        os.path.join(candidate_path, 'hook')
                     )
 
         self.logger.debug(

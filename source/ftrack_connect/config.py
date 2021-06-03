@@ -62,7 +62,7 @@ def configure_logging(logger_name, level=None, format=None, extra_modules=None):
     extra_modules = extra_modules or []
 
     # Cast to list in case is a tuple.
-    modules = ['ftrack_api', 'FTrackCore', 'urllib3', 'requests']
+    modules = ['ftrack_api', 'urllib3', 'requests']
     modules.extend(list(extra_modules))
 
     logging_settings = {
