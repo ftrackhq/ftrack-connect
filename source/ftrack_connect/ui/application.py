@@ -746,7 +746,7 @@ class Application(QtWidgets.QMainWindow):
         elif state is False:
             self.removePlugin(item)
 
-        self._save_widget_preferences(item.getIdentifier(), state)
+        self._save_widget_preferences(identifier, state)
 
     def _manage_custom_widget(self):
         action = self.sender()
