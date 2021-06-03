@@ -740,10 +740,9 @@ class Application(QtWidgets.QMainWindow):
         if not self.plugins.get(identifier):
             self.plugins[identifier] = item
 
-        if state is True:
+        if state:
             self.addPlugin(item)
-
-        elif state is False:
+        else:
             self.removePlugin(item)
 
         self._save_widget_preferences(identifier, state)
