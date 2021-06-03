@@ -726,21 +726,25 @@ class Application(QtWidgets.QMainWindow):
                 self._creteConnectWidgetMenu(widget_plugin, stored_state)
                 self._setConnectWidgetState(widget_plugin, stored_state)
 
-            except Exception:
+            except Exception as error:
                 self.logger.warning(
-                    'Tab Plugin {} could not be loaded'.format(
-                        widget_plugin.getName()
+                    'Connect Widget Plugin "{}" could not be loaded. Reason: {}'.format(
+                        widget_plugin.getName(), str(error)
                     )
                 )
 
     def _setConnectWidgetState(self, item, state):
         '''Set plugin *item* as give visible *state*'''
 
-        if state is False:
-            self.removePlugin(item.getIdentifier())
+        identifier = item.getIdentifier()
+        if not self.plugins.get(identifier):
+            self.plugins[identifier] = item
 
-        elif state is True:
+        if state is True:
             self.addPlugin(item)
+
+        elif state is False:
+            self.removePlugin(item)
 
         self._save_widget_preferences(item.getIdentifier(), state)
 
@@ -814,12 +818,6 @@ class Application(QtWidgets.QMainWindow):
 
         plugin_exists = self.plugins.get(identifier)
 
-        if not plugin_exists:
-            self.plugins[identifier] = plugin
-        else:
-            self.logger.warning('Plugin {} already registered.'.format(identifier))
-            return
-
         icon = QtGui.QIcon(plugin.icon)
         self.tabPanel.addTab(plugin, icon, name)
 
@@ -831,19 +829,22 @@ class Application(QtWidgets.QMainWindow):
             self._onWidgetRequestApplicationClose
         )
 
-    def removePlugin(self, identifier):
+    def removePlugin(self, plugin):
         '''Remove plugin registered with *identifier*.
 
         Raise :py:exc:`KeyError` if no plugin with *identifier* has been added.
 
         '''
-        plugin = self.plugins.get(identifier)
-        if plugin is None:
-            raise KeyError(
+        identifier = plugin.getIdentifier()
+        registered_plugin = self.plugins.get(identifier)
+
+        if registered_plugin is None:
+            self.logger.warning(
                 'No plugin registered with identifier "{0}".'.format(identifier)
             )
+            return
 
-        index = self.tabPanel.indexOf(plugin)
+        index = self.tabPanel.indexOf(registered_plugin)
         self.tabPanel.removeTab(index)
 
     def focus(self):
