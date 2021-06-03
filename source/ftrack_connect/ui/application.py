@@ -812,9 +812,13 @@ class Application(QtWidgets.QMainWindow):
         if identifier is None:
             identifier = plugin.getIdentifier()
 
-        plugin_exists = self.plugins.get(plugin.getIdentifier())
+        plugin_exists = self.plugins.get(identifier)
+
         if not plugin_exists:
-            self.plugins[plugin.getIdentifier()] = plugin
+            self.plugins[identifier] = plugin
+        else:
+            self.logger.warning('Plugin {} already registered.'.format(identifier))
+            return
 
         icon = QtGui.QIcon(plugin.icon)
         self.tabPanel.addTab(plugin, icon, name)
