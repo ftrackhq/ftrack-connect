@@ -875,14 +875,9 @@ class Application(QtWidgets.QMainWindow):
     def setAlwaysOnTop(self, _state):
         '''Set the application window to be on top'''
         if _state:
-            self.setWindowFlags(
-                QtCore.Qt.Window |
-                QtCore.Qt.WindowStaysOnTopHint
-            )
+            self.setWindowFlags(self.windowFlags() | QtCore.Qt.WindowStaysOnTopHint)
         else:
-            self.setWindowFlags(
-                QtCore.Qt.Window
-            )
+            self.setWindowFlags(self.windowFlags() & ~QtCore.Qt.WindowStaysOnTopHint)
         self.focus()
 
     def showAbout(self):
