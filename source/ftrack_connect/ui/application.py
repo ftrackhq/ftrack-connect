@@ -680,8 +680,16 @@ class Application(QtWidgets.QMainWindow):
             triggered=self.showAbout
         )
 
+        alwaysOnTopAction = QtWidgets.QAction(
+            'Always on top', self
+        )
+        alwaysOnTopAction.setCheckable(True)
+        alwaysOnTopAction.triggered[bool].connect(self.setAlwaysOnTop)
+
         menu.addAction(aboutAction)
+        menu.addSeparator()
         menu.addAction(focusAction)
+        menu.addAction(alwaysOnTopAction)
         menu.addSeparator()
 
         menu.addAction(openPluginDirectoryAction)
@@ -856,6 +864,14 @@ class Application(QtWidgets.QMainWindow):
         self.activateWindow()
         self.show()
         self.raise_()
+
+    def setAlwaysOnTop(self, _state):
+        '''Set the application window to be on top'''
+        if _state:
+            self.setWindowFlags(self.windowFlags() | QtCore.Qt.WindowStaysOnTopHint)
+        else:
+            self.setWindowFlags(self.windowFlags() & ~QtCore.Qt.WindowStaysOnTopHint)
+        self.focus()
 
     def showAbout(self):
         '''Display window with about information.'''
