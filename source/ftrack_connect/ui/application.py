@@ -325,12 +325,6 @@ class Application(QtWidgets.QMainWindow):
 
         if plugin_paths is None:
             plugin_paths = self.pluginHookPaths
-
-            plugin_paths.extend(
-                os.environ.get(
-                    'FTRACK_EVENT_PLUGIN_PATH', ''
-                ).split(os.pathsep)
-            )
         try:
             session = ftrack_api.Session(
                 auto_connect_event_hub=True,
@@ -468,9 +462,7 @@ class Application(QtWidgets.QMainWindow):
                 self.logger.exception('Failed to disconnect from event hub.')
                 pass
 
-            self._session = self._setup_session()
-
-        ftrack_api.plugin.discover(self.pluginHookPaths, [self.session])
+        self._session = self._setup_session()
 
         try:
             self.configureConnectAndDiscoverPlugins()
@@ -566,15 +558,15 @@ class Application(QtWidgets.QMainWindow):
 
     def _gatherPluginHooks(self, path):
         '''Return plugin hooks from *path*.'''
-        paths = []
+        paths = set()
         self.logger.debug(u'Searching {0!r} for plugin hooks.'.format(path))
 
         if os.path.isdir(path):
             for candidate in os.listdir(path):
-                candidatePath = os.path.join(path, candidate)
-                if os.path.isdir(candidatePath):
-                    paths.append(
-                        os.path.join(candidatePath, 'hook')
+                candidate_path = os.path.join(path, candidate)
+                if os.path.isdir(candidate_path):
+                    paths.add(
+                        os.path.join(candidate_path, 'hook')
                     )
 
         self.logger.debug(
@@ -742,26 +734,26 @@ class Application(QtWidgets.QMainWindow):
                 self._creteConnectWidgetMenu(widget_plugin, stored_state)
                 self._setConnectWidgetState(widget_plugin, stored_state)
 
-            except Exception:
+            except Exception as error:
                 self.logger.warning(
-                    'Tab Plugin {} could not be loaded'.format(
-                        widget_plugin.getName()
+                    'Connect Widget Plugin "{}" could not be loaded. Reason: {}'.format(
+                        widget_plugin.getName(), str(error)
                     )
                 )
 
     def _setConnectWidgetState(self, item, state):
         '''Set plugin *item* as give visible *state*'''
-        plugin_exists = self.plugins.get(item.getIdentifier())
-        if not plugin_exists:
-            self.plugins[item.getIdentifier()] = item
 
-        if state is False:
-            self.removePlugin(item.getIdentifier())
+        identifier = item.getIdentifier()
+        if not self.plugins.get(identifier):
+            self.plugins[identifier] = item
 
-        elif state is True:
+        if state:
             self.addPlugin(item)
+        else:
+            self.removePlugin(item)
 
-        self._save_widget_preferences(item.getIdentifier(), state)
+        self._save_widget_preferences(identifier, state)
 
     def _manage_custom_widget(self):
         action = self.sender()
@@ -813,7 +805,7 @@ class Application(QtWidgets.QMainWindow):
         '''Hide application upon *widget* request.'''
         self.hide()
 
-    def addPlugin(self, plugin, name=None, identifier=None):
+    def addPlugin(self, plugin, name=None):
         '''Add *plugin* in new tab with *name* and *identifier*.
 
         *plugin* should be an instance of :py:class:`ApplicationPlugin`.
@@ -828,11 +820,6 @@ class Application(QtWidgets.QMainWindow):
         if name is None:
             name = plugin.getName()
 
-        if identifier is None:
-            identifier = plugin.getIdentifier()
-
-        self.plugins[identifier] = plugin
-
         icon = QtGui.QIcon(plugin.icon)
         self.tabPanel.addTab(plugin, icon, name)
 
@@ -844,19 +831,22 @@ class Application(QtWidgets.QMainWindow):
             self._onWidgetRequestApplicationClose
         )
 
-    def removePlugin(self, identifier):
+    def removePlugin(self, plugin):
         '''Remove plugin registered with *identifier*.
 
         Raise :py:exc:`KeyError` if no plugin with *identifier* has been added.
 
         '''
-        plugin = self.plugins.get(identifier)
-        if plugin is None:
-            raise KeyError(
+        identifier = plugin.getIdentifier()
+        registered_plugin = self.plugins.get(identifier)
+
+        if registered_plugin is None:
+            self.logger.warning(
                 'No plugin registered with identifier "{0}".'.format(identifier)
             )
+            return
 
-        index = self.tabPanel.indexOf(plugin)
+        index = self.tabPanel.indexOf(registered_plugin)
         self.tabPanel.removeTab(index)
 
     def focus(self):
