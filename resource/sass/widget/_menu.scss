@@ -20,3 +20,7 @@ QMenu::item:selected:enabled {
 QMenu::item:pressed:enabled {
     background: darken($white, 10%);
 }
+
+QMenu::item:unchecked {
+    margin-left: -10px;
+}

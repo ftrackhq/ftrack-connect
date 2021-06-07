@@ -591,13 +591,6 @@ class Application(QtWidgets.QMainWindow):
         '''Initialise and add application icon to system tray.'''
         self.trayMenu = self._createTrayMenu()
 
-        # negate the margin of the checkbox when its not checked
-        self.trayMenu.setStyleSheet("""
-        QMenu::item:unchecked {
-            margin-left: -10px;
-        }
-        """)
-
         self.tray = QtWidgets.QSystemTrayIcon(self)
 
         self.tray.setContextMenu(
