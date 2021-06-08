@@ -40,6 +40,8 @@ class Publisher(QtWidgets.QWidget):
     #: Signal to emit when an asset is created.
     assetCreated = QtCore.Signal(object)
 
+    excluded_locations = ['ftrack.origin', 'ftrack.review']
+
     @property
     def session(self):
         '''Return current session.'''
@@ -112,6 +114,20 @@ class Publisher(QtWidgets.QWidget):
         self.versionDescription = QtWidgets.QTextEdit()
         formLayout.addRow('Description', self.versionDescription)
 
+        # add location selector
+        self.locationSelector = QtWidgets.QComboBox()
+        locations = self.session.query('Location').all()
+        for location in locations:
+            if (
+                    (location.accessor and location.structure) and
+                    location['name'] not in self.excluded_locations
+            ):
+                self.locationSelector.addItem(location['name'], location)
+
+        self.locationSelector.setCurrentText(self.session.pick_location()['name'])
+
+        formLayout.addRow('Location ', self.locationSelector)
+
         publishButton = QtWidgets.QPushButton(text='Publish')
         publishButton.setObjectName('primary')
         publishButton.clicked.connect(self.publish)
@@ -119,6 +135,7 @@ class Publisher(QtWidgets.QWidget):
         layout.addWidget(
             publishButton, alignment=QtCore.Qt.AlignCenter, stretch=0
         )
+
 
     def setEntity(self, entity):
         '''Set current entity.'''
@@ -171,7 +188,9 @@ class Publisher(QtWidgets.QWidget):
             taskId = entity['id']
             entity = entity['parent']
 
-        componentLocation = self.session.pick_location()
+        componentLocation = self.locationSelector.itemData(
+            self.locationSelector.currentIndex()
+        )
 
         components = []
         for component in self.componentsList.items():
