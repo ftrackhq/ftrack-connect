@@ -773,7 +773,8 @@ class Application(QtWidgets.QMainWindow):
         plugin.
 
         '''
-        plugin = event['data']['plugin']
+        #plugin = event['data']['plugin']
+        plugin = 'assetspublisher'
         action = event['data']['action']
 
         try:

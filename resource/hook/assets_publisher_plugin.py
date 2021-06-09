@@ -170,7 +170,6 @@ def register(session, **kw):
             'ftrack_api.Session instance.'.format(session)
         )
         return
-
-    publisher = AssetsPublisher(session)
-    publisher.register(priority=20)
+    plugin = ftrack_connect.ui.application.ConnectWidgetPlugin(AssetsPublisher)
+    plugin.register(session, priority=10)
     logger.debug('Plugin registered')
