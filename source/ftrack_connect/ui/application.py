@@ -8,7 +8,7 @@ import requests.exceptions
 import uuid
 import logging
 import weakref
-
+import functools
 import appdirs
 
 from Qt import QtCore, QtWidgets, QtGui
@@ -33,10 +33,38 @@ from ftrack_connect.ui.widget import configure_scenario as _scenario_widget
 import ftrack_connect.ui.config
 
 
+class ConnectWidgetPlugin(object):
+    topic = 'ftrack.connect.plugin.connect-widget'
+
+    def __init__(self, connect_widget):
+        '''Initialise class with non initialised connect_widget.'''
+        if not isinstance(connect_widget, type):
+            raise Exception(
+                'Widget class {} should be non initialised'.format(
+                    connect_widget
+                )
+            )
+
+        self._connect_widget = connect_widget
+
+    def _return_widget(self, event):
+        '''Return stored widget class.'''
+        return self._connect_widget
+
+    def register(self, session, priority):
+        '''register a new connect widget with given **priority**.'''
+        session.event_hub.subscribe(
+            'topic={0} '
+            'and source.user.username={1}'.format(
+                self.topic, session.api_user
+            ),
+            self._return_widget,
+            priority=priority
+        )
+
 
 class ConnectWidget(QtWidgets.QWidget):
     '''Base widget for ftrack connect application plugin.'''
-    topic = 'ftrack.connect.plugin.connect-widget'
     icon = None
     #: Signal to emit to request focus of this plugin in application.
     requestApplicationFocus = QtCore.Signal(object)
@@ -50,6 +78,7 @@ class ConnectWidget(QtWidgets.QWidget):
         return self._session
 
     def __init__(self, session, parent=None):
+        '''Initialise class with ftrack *session* and *parent* widget.'''
         super(ConnectWidget, self).__init__(parent=parent)
         self._session = session
 
@@ -60,20 +89,6 @@ class ConnectWidget(QtWidgets.QWidget):
     def getIdentifier(self):
         '''Return identifier for widget.'''
         return self.getName().lower().replace(' ', '.')
-
-    def _return_widget(self, event):
-        return self
-
-    def register(self, priority):
-        '''register a new connect widget with given **priority**.'''
-        self.session.event_hub.subscribe(
-            'topic={0} '
-            'and source.user.username={1}'.format(
-                self.topic, self.session.api_user
-            ),
-            self._return_widget,
-            priority=priority
-        )
 
 
 class PluginWarning(ConnectWidget):
@@ -145,7 +160,7 @@ class Application(QtWidgets.QMainWindow):
         self.plugins = {}
 
         self.setObjectName('ftrack-connect-window')
-        self.setWindowTitle('ftrack connect')
+        self.setWindowTitle('ftrack Connect')
         self.resize(450, 700)
         self.move(50, 50)
 
@@ -310,12 +325,6 @@ class Application(QtWidgets.QMainWindow):
 
         if plugin_paths is None:
             plugin_paths = self.pluginHookPaths
-
-            plugin_paths.extend(
-                os.environ.get(
-                    'FTRACK_EVENT_PLUGIN_PATH', ''
-                ).split(os.pathsep)
-            )
         try:
             session = ftrack_api.Session(
                 auto_connect_event_hub=True,
@@ -436,6 +445,7 @@ class Application(QtWidgets.QMainWindow):
                 )
                 self.setCentralWidget(scenario_widget)
                 self.focus()
+                self.loginSuccessSignal.emit()
                 return
 
         # No change so build if needed
@@ -452,9 +462,7 @@ class Application(QtWidgets.QMainWindow):
                 self.logger.exception('Failed to disconnect from event hub.')
                 pass
 
-            self._session = self._setup_session()
-
-        ftrack_api.plugin.discover(self.pluginHookPaths, [self.session])
+        self._session = self._setup_session()
 
         try:
             self.configureConnectAndDiscoverPlugins()
@@ -550,15 +558,15 @@ class Application(QtWidgets.QMainWindow):
 
     def _gatherPluginHooks(self, path):
         '''Return plugin hooks from *path*.'''
-        paths = []
+        paths = set()
         self.logger.debug(u'Searching {0!r} for plugin hooks.'.format(path))
 
         if os.path.isdir(path):
             for candidate in os.listdir(path):
-                candidatePath = os.path.join(path, candidate)
-                if os.path.isdir(candidatePath):
-                    paths.append(
-                        os.path.join(candidatePath, 'hook')
+                candidate_path = os.path.join(path, candidate)
+                if os.path.isdir(candidate_path):
+                    paths.add(
+                        os.path.join(candidate_path, 'hook')
                     )
 
         self.logger.debug(
@@ -580,14 +588,16 @@ class Application(QtWidgets.QMainWindow):
         self.tray.setContextMenu(
             self.trayMenu
         )
-        self.tray.setIcon(self.logoIcon)
+        self.tray.setIcon(
+            QtGui.QPixmap(':/ftrack/image/default/ftrackLogoWhite')
+        )
 
     def _initialiseMenuBar(self):
         '''Initialise and add connect widget to widgets menu.'''
 
         self.menu_bar = QtWidgets.QMenuBar()
         self.setMenuWidget(self.menu_bar)
-        widget_menu = self.menu_bar.addMenu('widgets')
+        widget_menu = self.menu_bar.addMenu('Widgets')
         self.menu_widget = widget_menu
         self.menu_bar.setVisible(False)
 
@@ -662,8 +672,16 @@ class Application(QtWidgets.QMainWindow):
             triggered=self.showAbout
         )
 
+        alwaysOnTopAction = QtWidgets.QAction(
+            'Always on top', self
+        )
+        alwaysOnTopAction.setCheckable(True)
+        alwaysOnTopAction.triggered[bool].connect(self.setAlwaysOnTop)
+
         menu.addAction(aboutAction)
+        menu.addSeparator()
         menu.addAction(focusAction)
+        menu.addAction(alwaysOnTopAction)
         menu.addSeparator()
 
         menu.addAction(openPluginDirectoryAction)
@@ -686,10 +704,9 @@ class Application(QtWidgets.QMainWindow):
 
     def _discoverConnectWidget(self):
         '''Find and load connect widgets in search paths.'''
-        #: TODO: Add discover functionality and search paths.
 
         event = ftrack_api.event.base.Event(
-            topic = ConnectWidget.topic
+            topic = ConnectWidgetPlugin.topic
         )
 
         responses = self.session.event_hub.publish(
@@ -697,33 +714,46 @@ class Application(QtWidgets.QMainWindow):
         )
         widgets = self._get_widget_preferences()
 
-        for response in responses:
+        for ResponsePlugin in responses:
+
             stored_state = True
             try:
-                stored_state = widgets.get(response.getName(), stored_state)
-                self._creteConnectWidgetMenu(response, stored_state)
-                self._setConnectWidgetState(response, stored_state)
+                widget_plugin = ResponsePlugin(self.session)
 
-            except Exception:
+            except Exception as error:
+                self.logger.error(str(error))
+                continue
+
+            if not isinstance(widget_plugin, ConnectWidget):
                 self.logger.warning(
-                    'Tab Plugin {} could not be loaded'.format(
-                        response.getName()
+                    'Widget {} is not a valid ConnectWidget'.format(widget_plugin)
+                )
+                continue
+            try:
+                stored_state = widgets.get(widget_plugin.getIdentifier(), stored_state)
+                self._creteConnectWidgetMenu(widget_plugin, stored_state)
+                self._setConnectWidgetState(widget_plugin, stored_state)
+
+            except Exception as error:
+                self.logger.warning(
+                    'Connect Widget Plugin "{}" could not be loaded. Reason: {}'.format(
+                        widget_plugin.getName(), str(error)
                     )
                 )
 
     def _setConnectWidgetState(self, item, state):
         '''Set plugin *item* as give visible *state*'''
-        plugin_exists = self.plugins.get(item.getIdentifier())
-        if not plugin_exists:
-            self.plugins[item.getIdentifier()] = item
 
-        if state is False:
-            self.removePlugin(item.getIdentifier())
+        identifier = item.getIdentifier()
+        if not self.plugins.get(identifier):
+            self.plugins[identifier] = item
 
-        elif state is True:
+        if state:
             self.addPlugin(item)
+        else:
+            self.removePlugin(item)
 
-        self._save_widget_preferences(item.getName(), state)
+        self._save_widget_preferences(identifier, state)
 
     def _manage_custom_widget(self):
         action = self.sender()
@@ -775,7 +805,7 @@ class Application(QtWidgets.QMainWindow):
         '''Hide application upon *widget* request.'''
         self.hide()
 
-    def addPlugin(self, plugin, name=None, identifier=None):
+    def addPlugin(self, plugin, name=None):
         '''Add *plugin* in new tab with *name* and *identifier*.
 
         *plugin* should be an instance of :py:class:`ApplicationPlugin`.
@@ -790,17 +820,6 @@ class Application(QtWidgets.QMainWindow):
         if name is None:
             name = plugin.getName()
 
-        if identifier is None:
-            identifier = plugin.getIdentifier()
-
-        if identifier in self.plugins:
-            self.logger.warning(
-                'An existing plugin has already been '
-                'registered with identifier {0}, it will be replaced'.format(identifier)
-            )
-
-        self.plugins[identifier] = plugin
-
         icon = QtGui.QIcon(plugin.icon)
         self.tabPanel.addTab(plugin, icon, name)
 
@@ -812,19 +831,22 @@ class Application(QtWidgets.QMainWindow):
             self._onWidgetRequestApplicationClose
         )
 
-    def removePlugin(self, identifier):
+    def removePlugin(self, plugin):
         '''Remove plugin registered with *identifier*.
 
         Raise :py:exc:`KeyError` if no plugin with *identifier* has been added.
 
         '''
-        plugin = self.plugins.get(identifier)
-        if plugin is None:
-            raise KeyError(
+        identifier = plugin.getIdentifier()
+        registered_plugin = self.plugins.get(identifier)
+
+        if registered_plugin is None:
+            self.logger.warning(
                 'No plugin registered with identifier "{0}".'.format(identifier)
             )
+            return
 
-        index = self.tabPanel.indexOf(plugin)
+        index = self.tabPanel.indexOf(registered_plugin)
         self.tabPanel.removeTab(index)
 
     def focus(self):
@@ -832,6 +854,14 @@ class Application(QtWidgets.QMainWindow):
         self.activateWindow()
         self.show()
         self.raise_()
+
+    def setAlwaysOnTop(self, state):
+        '''Set the application window to be on top'''
+        if state:
+            self.setWindowFlags(self.windowFlags() | QtCore.Qt.WindowStaysOnTopHint)
+        else:
+            self.setWindowFlags(self.windowFlags() & ~QtCore.Qt.WindowStaysOnTopHint)
+        self.focus()
 
     def showAbout(self):
         '''Display window with about information.'''

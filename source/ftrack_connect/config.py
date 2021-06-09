@@ -41,7 +41,7 @@ def configure_logging(logger_name, level=None, format=None, extra_modules=None):
     '''
 
     # Provide default values for level and format.
-    format = format or '%(levelname)s - %(threadName)s - %(asctime)s - %(name)s - %(message)s'
+    format = format or '%(levelname)s - %(threadName)s - %(asctime)s - %(lineno)s - %(name)s - %(message)s'
     level = level or logging.INFO
 
     log_directory = get_log_directory()
@@ -62,7 +62,7 @@ def configure_logging(logger_name, level=None, format=None, extra_modules=None):
     extra_modules = extra_modules or []
 
     # Cast to list in case is a tuple.
-    modules = ['ftrack_api', 'FTrackCore', 'urllib3', 'requests']
+    modules = ['ftrack_api', 'urllib3', 'requests']
     modules.extend(list(extra_modules))
 
     logging_settings = {
