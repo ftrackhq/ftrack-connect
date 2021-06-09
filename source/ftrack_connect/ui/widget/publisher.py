@@ -116,15 +116,18 @@ class Publisher(QtWidgets.QWidget):
 
         # add location selector
         self.locationSelector = QtWidgets.QComboBox()
-        locations = self.session.query('Location').all()
-        for location in locations:
+        self.all_locations = self.session.query('Location').all()
+
+        for index, location in enumerate(self.all_locations):
             if (
                     (location.accessor and location.structure) and
                     location['name'] not in self.excluded_locations
             ):
-                self.locationSelector.addItem(location['name'], location)
+                self.locationSelector.insertItem(index, location['name'], location)
+                self.locationSelector.setItemData(index, "{}".format(location['description']), QtCore.Qt.ToolTipRole)
 
-        self.locationSelector.setCurrentText(self.session.pick_location()['name'])
+        current_location_index = self.locationSelector.findText(self.session.pick_location()['name'])
+        self.locationSelector.setCurrentIndex(current_location_index)
 
         formLayout.addRow('Location ', self.locationSelector)
 
