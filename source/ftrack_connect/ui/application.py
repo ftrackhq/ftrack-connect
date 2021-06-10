@@ -524,9 +524,9 @@ class Application(QtWidgets.QMainWindow):
     def _discover_hook_paths(self):
         '''Return a list of paths to pass to ftrack_api.Session()'''
 
-        plugin_paths = set()
+        plugin_paths = []
 
-        plugin_paths.update(
+        plugin_paths.extend(
             self._gatherPluginHooks(
                 self.defaultPluginDirectory
             )
@@ -535,14 +535,15 @@ class Application(QtWidgets.QMainWindow):
         for apiPluginPath in (
             os.environ.get('FTRACK_EVENT_PLUGIN_PATH', '').split(os.pathsep)
         ):
-            plugin_paths.add(
+            if apiPluginPath not in plugin_paths:
+                plugin_paths.append(
                     os.path.expandvars(apiPluginPath)
-            )
+                )
 
         for connectPluginPath in (
             os.environ.get('FTRACK_CONNECT_PLUGIN_PATH', '').split(os.pathsep)
         ):
-            plugin_paths.update(
+            plugin_paths.extend(
                 self._gatherPluginHooks(
                     os.path.expandvars(connectPluginPath)
                 )
@@ -558,16 +559,18 @@ class Application(QtWidgets.QMainWindow):
 
     def _gatherPluginHooks(self, path):
         '''Return plugin hooks from *path*.'''
-        paths = set()
+        paths = []
         self.logger.debug(u'Searching {0!r} for plugin hooks.'.format(path))
 
         if os.path.isdir(path):
             for candidate in os.listdir(path):
                 candidate_path = os.path.join(path, candidate)
                 if os.path.isdir(candidate_path):
-                    paths.add(
-                        os.path.join(candidate_path, 'hook')
-                    )
+                    full_hook_path = os.path.join(candidate_path, 'hook')
+                    if full_hook_path not in paths:
+                        paths.append(
+                            full_hook_path
+                        )
 
         self.logger.debug(
             u'Found {0!r} plugin hooks in {1!r}.'.format(paths, path)
