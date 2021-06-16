@@ -825,7 +825,6 @@ class Application(QtWidgets.QMainWindow):
             responses = self.session.event_hub.publish(
                 event, synchronous=True
             )
-            self.logger.info('debug-info {}'.format(responses))
 
             for response in responses:
                 if isinstance(response, dict):
