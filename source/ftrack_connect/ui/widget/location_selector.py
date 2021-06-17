@@ -11,7 +11,10 @@ class LocationSelector(QtWidgets.QGroupBox):
         self.description.setText(location.get('description', 'No Description Provided'))
 
     def reset(self):
-        current_location_index = self.locationSelector.findText(self.session.pick_location()['name'])
+        current_location = self.session.pick_location()
+        current_location_index = self.locationSelector.findText(
+            current_location.get('label', current_location['name'])
+        )
         self.locationSelector.setCurrentIndex(current_location_index)
 
     @property
@@ -26,6 +29,8 @@ class LocationSelector(QtWidgets.QGroupBox):
 
     def __init__(self, parent=None, session=None):
         super(LocationSelector, self).__init__(parent=parent)
+        self._session = session
+
         self.setTitle('Location selector')
         self.setFlat(False)
         self.setCheckable(False)
@@ -34,10 +39,6 @@ class LocationSelector(QtWidgets.QGroupBox):
         self.setLayout(self.main_layout)
         self.description = QtWidgets.QLabel()
         self.description.setWordWrap(True)
-        # self.description.setDisabled(True)
-
-        self.layout().addWidget(self.description)
-        self._session = session
 
         # add location selector
         self.locationSelector = QtWidgets.QComboBox()
@@ -48,10 +49,10 @@ class LocationSelector(QtWidgets.QGroupBox):
                 (location.accessor and location.structure) and
                 location['name'] not in self.excluded_locations
             ):
-
-                self.locationSelector.insertItem(index, location['name'], location)
+                self.locationSelector.insertItem(index, location.get('label', location['name']), location)
                 self.description.setText(location['description'])
 
-        self.reset()
         self.main_layout.addWidget(self.locationSelector)
+        self.layout().addWidget(self.description)
 
+        self.reset()

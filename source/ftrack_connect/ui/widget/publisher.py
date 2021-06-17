@@ -122,6 +122,8 @@ class Publisher(QtWidgets.QWidget):
 
         self.location_selector = location_selector.LocationSelector(session=self.session)
         self.advance_options_grp.addWidget(self.location_selector)
+        self.advance_options_grp.clicked.connect(self.location_selector.reset)
+
         self.layout().addWidget(self.advance_options_grp)
 
         publishButton = QtWidgets.QPushButton(text='Publish')
