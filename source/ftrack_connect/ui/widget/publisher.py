@@ -18,6 +18,7 @@ from ftrack_connect.ui.widget import thumbnail_drop_zone as _thumbnail_drop_zone
 from ftrack_connect.ui.widget import asset_options as _asset_options
 from ftrack_connect.ui.widget import entity_selector
 from ftrack_connect.ui.widget import location_selector
+from ftrack_connect.ui.widget import advance_option_group
 
 import ftrack_connect.asynchronous
 import ftrack_connect.error
@@ -116,8 +117,12 @@ class Publisher(QtWidgets.QWidget):
         formLayout.addRow('Description', self.versionDescription)
 
         # add location selector
+
+        self.advance_options_grp = advance_option_group.AdvanceOptionGroup()
+
         self.location_selector = location_selector.LocationSelector(session=self.session)
-        formLayout.addRow('Location ', self.location_selector)
+        self.advance_options_grp.addWidget(self.location_selector)
+        self.layout().addWidget(self.advance_options_grp)
 
         publishButton = QtWidgets.QPushButton(text='Publish')
         publishButton.setObjectName('primary')
