@@ -17,6 +17,7 @@ from ftrack_connect.ui.widget import item_selector as _item_selector
 from ftrack_connect.ui.widget import thumbnail_drop_zone as _thumbnail_drop_zone
 from ftrack_connect.ui.widget import asset_options as _asset_options
 from ftrack_connect.ui.widget import entity_selector
+from ftrack_connect.ui.widget import location_selector
 
 import ftrack_connect.asynchronous
 import ftrack_connect.error
@@ -115,21 +116,8 @@ class Publisher(QtWidgets.QWidget):
         formLayout.addRow('Description', self.versionDescription)
 
         # add location selector
-        self.locationSelector = QtWidgets.QComboBox()
-        self.all_locations = self.session.query('Location').all()
-
-        for index, location in enumerate(self.all_locations):
-            if (
-                    (location.accessor and location.structure) and
-                    location['name'] not in self.excluded_locations
-            ):
-                self.locationSelector.insertItem(index, location['name'], location)
-                self.locationSelector.setItemData(index, "{}".format(location['description']), QtCore.Qt.ToolTipRole)
-
-        current_location_index = self.locationSelector.findText(self.session.pick_location()['name'])
-        self.locationSelector.setCurrentIndex(current_location_index)
-
-        formLayout.addRow('Location ', self.locationSelector)
+        self.location_selector = location_selector.LocationSelector(session=self.session)
+        formLayout.addRow('Location ', self.location_selector)
 
         publishButton = QtWidgets.QPushButton(text='Publish')
         publishButton.setObjectName('primary')
@@ -191,9 +179,7 @@ class Publisher(QtWidgets.QWidget):
             taskId = entity['id']
             entity = entity['parent']
 
-        componentLocation = self.locationSelector.itemData(
-            self.locationSelector.currentIndex()
-        )
+        componentLocation = self.location_selector.selected_location
 
         components = []
         for component in self.componentsList.items():
@@ -216,6 +202,9 @@ class Publisher(QtWidgets.QWidget):
             previewPath=previewPath,
             thumbnailFilePath=thumbnailFilePath
         )
+
+        # re set location to default
+        self.location_selector.reset()
 
     def _cleanupFailedPublish(self, version=None):
         '''Clean up after a failed publish.'''
