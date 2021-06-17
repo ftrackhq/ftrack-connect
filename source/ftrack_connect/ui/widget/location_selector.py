@@ -1,7 +1,7 @@
 from Qt import QtCore, QtWidgets, QtGui
 
 
-class LocationSelector(QtWidgets.QWidget):
+class LocationSelector(QtWidgets.QGroupBox):
 
     excluded_locations = ['ftrack.origin', 'ftrack.review']
 
@@ -26,6 +26,9 @@ class LocationSelector(QtWidgets.QWidget):
 
     def __init__(self, parent=None, session=None):
         super(LocationSelector, self).__init__(parent=parent)
+        self.setTitle('Location selector')
+        self.setFlat(False)
+        self.setCheckable(False)
 
         self.main_layout = QtWidgets.QVBoxLayout()
         self.setLayout(self.main_layout)
