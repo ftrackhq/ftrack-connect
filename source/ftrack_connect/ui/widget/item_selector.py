@@ -102,7 +102,8 @@ class ItemSelector(QtWidgets.QComboBox):
         self.clear()
 
         # Add default empty item
-        self.addItem(str(self._emptyLabel), None)
+        if self._emptyLabel:
+            self.addItem(str(self._emptyLabel), None)
 
         for item in items:
             label = item.get(self._labelField) or self._defaultLabel

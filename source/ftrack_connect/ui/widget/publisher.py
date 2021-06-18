@@ -121,7 +121,7 @@ class Publisher(QtWidgets.QWidget):
         self.advance_options_grp = advance_option_group.AdvanceOptionGroup()
 
         self.location_selector = location_selector.LocationSelector(session=self.session)
-        self.advance_options_grp.addWidget(self.location_selector)
+        self.advance_options_grp.addRow('Location', self.location_selector)
         self.advance_options_grp.clicked.connect(self.location_selector.reset)
 
         self.layout().addWidget(self.advance_options_grp)

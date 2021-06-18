@@ -15,17 +15,18 @@ class AdvanceOptionGroup(QtWidgets.QGroupBox):
         self.setFlat(True)
         self.setChecked(False)
         main_layout = QtWidgets.QVBoxLayout()
+
         self.setLayout(main_layout)
 
         self.content = QtWidgets.QWidget()
-        self.content_layout = QtWidgets.QVBoxLayout()
+        self.content_layout = QtWidgets.QFormLayout()
         self.content.setLayout(self.content_layout)
         main_layout.addWidget(self.content)
         self.clicked.connect(self.collapse)
         self.clicked.emit()
 
-    def addWidget(self, widget):
-        self.content_layout.addWidget(widget)
+    def addRow(self, name, widget):
+        self.content_layout.addRow(name, widget)
 
 
 
