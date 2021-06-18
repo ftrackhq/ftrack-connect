@@ -1,8 +1,10 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2016 ftrack
 
+import os
 import logging
 import ftrack_api
+import lucidity
 
 
 class Parser(object):
@@ -11,6 +13,8 @@ class Parser(object):
     The resolver supports resolving locations implemented in ftrack-python-api.
 
     '''
+
+    template = '{asset_name}_{asset_type}.{filetype}'
 
     def __init__(self, session):
         '''Instansiate with *session* and *filter_locations*.
@@ -30,22 +34,22 @@ class Parser(object):
 
     def __call__(self, event):
         '''Resolve path for *event*.'''
-        event['data']['file_path']
-        return dict(path=path)
+        resource = event['data']['component_data']['resourceIdentifier']
+        filename = os.path.basename(resource)
+        parser = lucidity.Template('filename', self.template, anchor=lucidity.Template.ANCHOR_END)
+        data = parser.parse(filename)
+        print('PARSED DATA {}'.format(data))
+        return dict(data=data)
 
 
 def register(session, **kw):
     '''Register hooks.'''
 
-    logger = logging.getLogger(
-        'ftrack_connect.resolver.register'
-    )
-
     # Validate that session is an instance of ftrack_api.session.Session. If
     # not, assume that register is being called from an old or incompatible API
     # and return without doing anything.
     if not isinstance(session, ftrack_api.Session):
-        logger.debug(
+        logging.debug(
             'Not subscribing plugin as passed argument {0!r} is not an '
             'ftrack.Registry instance.'.format(session)
         )
@@ -55,9 +59,9 @@ def register(session, **kw):
         session=session,
     )
 
-    logger.info('Subscribing to topic ftrack.location.request-resolve')
+    logging.info('Subscribing to topic ftrack-connect.publish.parse-file-name')
     session.event_hub.subscribe(
-        u'topic=ftrack-connect.parse-file-name'
+        u'topic=ftrack-connect.publish.parse-file-name '
         u'and source.user.username="{0}"'.format(
             session.api_user
         ),

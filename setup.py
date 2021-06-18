@@ -268,6 +268,7 @@ configuration = dict(
         'requests >= 2, <3',
         'lowdown >= 0.1.0, < 1',
         'Qt.py >=1.0.0, < 2',
+        'lucidity >= 1.6.0'
     ],
     tests_require=[
         'pytest >= 2.3.5, < 3'

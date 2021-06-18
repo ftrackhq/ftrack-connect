@@ -124,6 +124,30 @@ class Publisher(QtWidgets.QWidget):
         '''Set current entity.'''
         self.entitySelector.setEntity(entity)
 
+    def _parse_component_name(self, component_data):
+        self.logger.info(component_data)
+
+        result = self.session.event_hub.publish(
+            event.base.Event(
+                'ftrack-connect.publish.parse-file-name',
+                data=dict(
+                    component_data=component_data,
+                )
+            ),
+            synchronous=True
+        )
+
+        self.logger.info('PARSE RESULT {}'.format(result))
+        if not result:
+            return
+
+        asset_name = result['asset_name']
+        asset_type = result['asset_type']
+        filetype = result['filetype']
+
+
+
+
     def _onComponentListItemsChanged(self):
         '''Callback for component changed signal.'''
         self.previewSelector.setItems(self.componentsList.items())
@@ -131,6 +155,10 @@ class Publisher(QtWidgets.QWidget):
             self.componentsList.show()
         else:
             self.componentsList.hide()
+
+        latest_component = self.componentsList.items()[-1]
+        self._parse_component_name(latest_component)
+
 
     def _onDataSelected(self, filePath):
         '''Callback for Browser file selected signal.'''
