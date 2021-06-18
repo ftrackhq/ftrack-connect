@@ -29,7 +29,7 @@ class LocationSelector(_item_selector.ItemSelector):
     def __init__(self, *args, **kwargs):
         '''Instantiate the asset type selector.'''
         self.default_icon = QtGui.QIcon(
-            QtGui.QPixmap(':ftrack/image/light/object_type/info')
+            QtGui.QPixmap(':ftrack/image/light/object_type/info-outline')
         )
 
         super(LocationSelector, self).__init__(

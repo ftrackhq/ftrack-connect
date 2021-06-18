@@ -70,16 +70,23 @@ class Publisher(ftrack_connect.ui.application.ConnectWidget):
     def _onPublishFinished(self, success):
         '''Callback for publish finished signal.'''
         self.busyOverlay.hide()
+        selected_location = self.publishView.location_selector.selected_location
+        location_name = selected_location.get('label', selected_location['name'])
         if success:
             self.blockingOverlay.setMessage(
-                'Publish finished!\n \n'
+                'Publish to location "{}" finished!\n \n'
                 'Select another task in ftrack or continue to publish using '
-                'current task.'
+                'current task.'.format(location_name)
             )
+
             self.blockingOverlay.confirmButton.show()
             self.blockingOverlay.show()
 
             ftrack_connect.usage.send_event('PUBLISHED-FROM-CONNECT')
+
+        # reset publish location
+        self.publishView.location_selector.reset()
+
 
 
     def _onEntityChanged(self):

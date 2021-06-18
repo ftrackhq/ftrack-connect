@@ -138,11 +138,11 @@ class BuildResources(Command):
             print('running : {}'.format(cmd))
             subprocess.check_call(cmd)
 
-        except (subprocess.CalledProcessError, OSError):
+        except (subprocess.CalledProcessError, OSError) as error:
             raise RuntimeError(
                 'Error compiling resource.py using pyside-rcc. Possibly '
                 'pyside-rcc could not be found. You might need to manually add '
-                'it to your PATH. See README for more information.'
+                'it to your PATH. See README for more information. {}'.format(error)
             )
 
         self._replace_imports_()

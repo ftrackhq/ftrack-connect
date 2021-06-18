@@ -210,9 +210,6 @@ class Publisher(QtWidgets.QWidget):
             thumbnailFilePath=thumbnailFilePath
         )
 
-        # re set location to default
-        self.location_selector.reset()
-
     def _cleanupFailedPublish(self, version=None):
         '''Clean up after a failed publish.'''
         try:

@@ -12,7 +12,7 @@ QGroupBox::indicator::unchecked {
 }
 
 QGroupBox::indicator:unchecked:hover {
-    image: theme-image('menu');
+    image: theme-image('apps');
 }
 
 QGroupBox::indicator:unchecked:pressed {
@@ -20,13 +20,13 @@ QGroupBox::indicator:unchecked:pressed {
 }
 
 QGroupBox::indicator::checked {
-    image: theme-image('play');
+    image: theme-image('apps');
 }
 
 QGroupBox::indicator:checked:hover {
-    image: theme-image('play');
+    image: theme-image('menu');
 }
 
 QGroupBox::indicator:checked:pressed {
-    image: theme-image('play');
+    image: theme-image('apps');
 }
