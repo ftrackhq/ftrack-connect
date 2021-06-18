@@ -8,7 +8,7 @@ import requests.exceptions
 import uuid
 import logging
 import weakref
-import functools
+from operator import itemgetter
 import appdirs
 
 from Qt import QtCore, QtWidgets, QtGui
@@ -837,8 +837,10 @@ class Application(QtWidgets.QMainWindow):
                 error
             )
 
+        sorted_version_data = sorted(versionData, key=itemgetter('name'))
+
         aboutDialog.setInformation(
-            versionData=versionData,
+            versionData=sorted_version_data,
             server=os.environ.get('FTRACK_SERVER', 'Not set'),
             user=self.session.api_user,
             widget_plugins=self.plugins
