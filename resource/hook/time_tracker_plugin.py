@@ -912,8 +912,12 @@ class TimeTracker(ftrack_connect.ui.application.ConnectWidget):
     def _onCommitTime(self, time):
         '''Commit *time* value to backend..'''
         if self._activeEntity:
-            timelog = self.user.stop_timer()
-            self.session.commit()
+            try:
+                timelog = self.user.stop_timer()
+            except Exception as error:
+                self.logger.debug(str(error))
+            else:
+                self.session.commit()
 
 
 def register(session, **kw):
