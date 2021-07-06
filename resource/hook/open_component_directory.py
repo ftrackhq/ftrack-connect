@@ -65,7 +65,7 @@ class OpenComponentDirectoryAction(object):
                 )
             self.logger.info(
                 'Location is only in api: {0!r}'.format(
-                    legacy_location
+                    location
                 )
             )
         return path
