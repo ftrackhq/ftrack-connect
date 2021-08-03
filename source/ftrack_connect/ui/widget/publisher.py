@@ -200,6 +200,7 @@ class Publisher(QtWidgets.QWidget):
         try:
             if version:
                 self.session.delete(version)
+                self.session.commit()
 
         except exception.OperationError:
             self.logger.exception(
@@ -321,8 +322,6 @@ class Publisher(QtWidgets.QWidget):
             if thumbnailFilePath:
                 version.create_thumbnail(thumbnailFilePath)
 
-            # TODO: check this does not apply anymore.
-            # version['is_published'] = True
             self.session.commit()
 
             self.publishFinished.emit(True)
@@ -332,5 +331,5 @@ class Publisher(QtWidgets.QWidget):
             self.logger.exception(u'Failed to publish: {0}'.format(error))
             self.publishFinished.emit(False)
             self._cleanupFailedPublish(version=version)
-
+            self.session.reset()
             raise
