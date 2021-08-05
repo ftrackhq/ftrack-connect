@@ -331,5 +331,5 @@ class Publisher(QtWidgets.QWidget):
             self.logger.exception(u'Failed to publish: {0}'.format(error))
             self.publishFinished.emit(False)
             self._cleanupFailedPublish(version=version)
-            self.session.reset()
+            self.session.rollback()
             raise
