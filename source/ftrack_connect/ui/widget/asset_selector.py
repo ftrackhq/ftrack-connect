@@ -36,9 +36,13 @@ class AssetSelector(_item_selector.ItemSelector):
             if entity.entity_type == 'Task':
                 entity = entity['parent']
 
-            assets = entity['assets']
+            assets = entity.session.query(
+                'select name from Asset where parent.id is {}'.format(entity['id'])
+            ).all()
+
             self.logger.debug('Loaded {0} assets'.format(len(assets)))
             assets = sorted(assets, key=lambda asset: asset['name'])
+
         except AttributeError:
             self.logger.warning(
                 'Unable to fetch assets for entity: {0}'.format(entity)
