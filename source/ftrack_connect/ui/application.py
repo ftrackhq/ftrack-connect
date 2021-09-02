@@ -8,7 +8,7 @@ import requests.exceptions
 import uuid
 import logging
 import weakref
-import functools
+from operator import itemgetter
 import appdirs
 
 from Qt import QtCore, QtWidgets, QtGui
@@ -176,9 +176,6 @@ class Application(QtWidgets.QMainWindow):
         self.login()
 
     def _post_login_settings(self):
-
-        if self.menu_bar:
-            self.menu_bar.setVisible(True)
 
         if self.tray:
             self.tray.show()
@@ -524,9 +521,9 @@ class Application(QtWidgets.QMainWindow):
     def _discover_hook_paths(self):
         '''Return a list of paths to pass to ftrack_api.Session()'''
 
-        plugin_paths = set()
+        plugin_paths = []
 
-        plugin_paths.update(
+        plugin_paths.extend(
             self._gatherPluginHooks(
                 self.defaultPluginDirectory
             )
@@ -535,14 +532,15 @@ class Application(QtWidgets.QMainWindow):
         for apiPluginPath in (
             os.environ.get('FTRACK_EVENT_PLUGIN_PATH', '').split(os.pathsep)
         ):
-            plugin_paths.add(
+            if apiPluginPath not in plugin_paths:
+                plugin_paths.append(
                     os.path.expandvars(apiPluginPath)
-            )
+                )
 
         for connectPluginPath in (
             os.environ.get('FTRACK_CONNECT_PLUGIN_PATH', '').split(os.pathsep)
         ):
-            plugin_paths.update(
+            plugin_paths.extend(
                 self._gatherPluginHooks(
                     os.path.expandvars(connectPluginPath)
                 )
@@ -558,16 +556,18 @@ class Application(QtWidgets.QMainWindow):
 
     def _gatherPluginHooks(self, path):
         '''Return plugin hooks from *path*.'''
-        paths = set()
+        paths = []
         self.logger.debug(u'Searching {0!r} for plugin hooks.'.format(path))
 
         if os.path.isdir(path):
             for candidate in os.listdir(path):
                 candidate_path = os.path.join(path, candidate)
                 if os.path.isdir(candidate_path):
-                    paths.add(
-                        os.path.join(candidate_path, 'hook')
-                    )
+                    full_hook_path = os.path.join(candidate_path, 'hook')
+                    if full_hook_path not in paths:
+                        paths.append(
+                            full_hook_path
+                        )
 
         self.logger.debug(
             u'Found {0!r} plugin hooks in {1!r}.'.format(paths, path)
@@ -600,48 +600,6 @@ class Application(QtWidgets.QMainWindow):
         widget_menu = self.menu_bar.addMenu('Widgets')
         self.menu_widget = widget_menu
         self.menu_bar.setVisible(False)
-
-    def _get_widget_preferences(self):
-        '''Return a dict with API credentials from storage.'''
-        widgets = {}
-
-        # Read from json config file.
-        json_config = ftrack_connect.ui.config.read_json_config()
-        if json_config:
-            try:
-                widgets = json_config['widgets']
-            except Exception:
-                self.logger.debug(
-                    u'No widget preferences were found in config: {0}.'.format(
-                        json_config
-                    )
-                )
-
-        # Fallback on old QSettings.
-        if not json_config and not widgets:
-            settings = QtCore.QSettings()
-            settings.value('widgets', {})
-
-        return widgets
-
-    def _save_widget_preferences(self, plugin_name, state):
-        '''Save widget preferences to storage.'''
-        # Clear QSettings since they should not be used any more.
-        self._clear_qsettings()
-
-        # Save the credentials.
-        json_config = ftrack_connect.ui.config.read_json_config()
-
-        if not json_config:
-            json_config = {}
-
-        # Add a unique id to the config that can be used to identify this
-        # machine.
-        if not 'id' in json_config:
-            json_config['id'] = str(uuid.uuid4())
-        json_config.setdefault('widgets', {})
-        json_config['widgets'][plugin_name] = state
-        ftrack_connect.ui.config.write_json_config(json_config)
 
     def _createTrayMenu(self):
         '''Return a menu for system tray.'''
@@ -693,15 +651,6 @@ class Application(QtWidgets.QMainWindow):
 
         return menu
 
-    def _creteConnectWidgetMenu(self, entry,  stored_state):
-        '''create widget menu off plugin *entry* and *stored_state* in preferences store.'''
-        widget_menu_action = QtWidgets.QAction(entry.getName(), self)
-        widget_menu_action.setData(entry)
-        widget_menu_action.setCheckable(True)
-        widget_menu_action.setChecked(stored_state)
-        widget_menu_action.changed.connect(self._manage_custom_widget)
-        self.menu_widget.addAction(widget_menu_action)
-
     def _discoverConnectWidget(self):
         '''Find and load connect widgets in search paths.'''
 
@@ -712,11 +661,9 @@ class Application(QtWidgets.QMainWindow):
         responses = self.session.event_hub.publish(
             event, synchronous=True
         )
-        widgets = self._get_widget_preferences()
 
         for ResponsePlugin in responses:
 
-            stored_state = True
             try:
                 widget_plugin = ResponsePlugin(self.session)
 
@@ -730,9 +677,14 @@ class Application(QtWidgets.QMainWindow):
                 )
                 continue
             try:
-                stored_state = widgets.get(widget_plugin.getIdentifier(), stored_state)
-                self._creteConnectWidgetMenu(widget_plugin, stored_state)
-                self._setConnectWidgetState(widget_plugin, stored_state)
+                identifier = widget_plugin.getIdentifier()
+                if not self.plugins.get(identifier):
+                    self.plugins[identifier] = widget_plugin
+                else:
+                    self.logger.debug('Widget {} already registered'.format(identifier))
+                    continue
+
+                self.addPlugin(widget_plugin)
 
             except Exception as error:
                 self.logger.warning(
@@ -740,26 +692,6 @@ class Application(QtWidgets.QMainWindow):
                         widget_plugin.getName(), str(error)
                     )
                 )
-
-    def _setConnectWidgetState(self, item, state):
-        '''Set plugin *item* as give visible *state*'''
-
-        identifier = item.getIdentifier()
-        if not self.plugins.get(identifier):
-            self.plugins[identifier] = item
-
-        if state:
-            self.addPlugin(item)
-        else:
-            self.removePlugin(item)
-
-        self._save_widget_preferences(identifier, state)
-
-    def _manage_custom_widget(self):
-        action = self.sender()
-        state = action.isChecked()
-        item = action.data()
-        self._setConnectWidgetState(item, state)
 
     def _routeEvent(self, event):
         '''Route websocket *event* to publisher plugin.
@@ -894,7 +826,6 @@ class Application(QtWidgets.QMainWindow):
             responses = self.session.event_hub.publish(
                 event, synchronous=True
             )
-            self.logger.info('debug-info {}'.format(responses))
 
             for response in responses:
                 if isinstance(response, dict):
@@ -907,8 +838,10 @@ class Application(QtWidgets.QMainWindow):
                 error
             )
 
+        sorted_version_data = sorted(versionData, key=itemgetter('name'))
+
         aboutDialog.setInformation(
-            versionData=versionData,
+            versionData=sorted_version_data,
             server=os.environ.get('FTRACK_SERVER', 'Not set'),
             user=self.session.api_user,
             widget_plugins=self.plugins
