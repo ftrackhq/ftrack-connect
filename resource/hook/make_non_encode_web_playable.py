@@ -128,7 +128,7 @@ def callback(event, session):
     version.create_thumbnail(thumbnail_path)
 
     session.commit()
-    logger.info('make-reviewable hook completed.')
+    logger.info('make-non-encode-web-reviewable hook completed.')
 
 
 def subscribe(session):
@@ -159,4 +159,4 @@ def register(session, **kw):
         return
 
     subscribe(session)
-    logger.debug('Plugin registered')
+    logger.debug('Plugin Make non encode web playable registered')

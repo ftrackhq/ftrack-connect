@@ -68,5 +68,5 @@ def register(session, **kw):
         )
         return
 
-    subscribe(session)
-    logger.debug('Plugin registered')
+    # subscribe(session)
+    # logger.debug('Plugin registered')
