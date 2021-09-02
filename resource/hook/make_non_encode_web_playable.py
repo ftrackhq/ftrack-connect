@@ -8,27 +8,57 @@ import logging
 import tempfile
 import subprocess
 import ftrack_api.session
+import shutil
 
+log_path = tempfile.gettempdir()
+log_file_path = os.path.join(log_path, 'ftrack_non_encode_web_playable.log')
+print('saving logs to {}'.format(log_file_path))
+
+# formatter
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+# log debug file.
+fh = logging.FileHandler(log_file_path)
+fh.setLevel(logging.DEBUG)
+fh.setFormatter(formatter)
+
+# console info.
+ch = logging.StreamHandler()
+ch.setLevel(logging.INFO)
+ch.setFormatter(formatter)
+
+# setup logger.
 logger = logging.getLogger('ftrack.connect.publish.make-non-encode-web-playable')
+logger.addHandler(fh)
+logger.addHandler(ch)
+
 
 #change these to match full path to the exact executables.
-ffmpeg_cmd = 'ffmpeg'
-ffprobe_cmd = 'ffprobe'
+ffmpeg_cmd = shutil.which('ffmpeg')
+ffprobe_cmd = shutil.which('ffprobe')
 
+if not ffmpeg_cmd:
+    msg = 'ffmpeg executable not fund in $PATH'
+    logger.error(msg)
+    raise IOError(msg)
+
+if not ffprobe_cmd:
+    msg = 'ffprobe executable not fund in $PATH'
+    logger.error(msg)
+    raise IOError(msg)
 
 def exec_cmd(cmd):
     '''execute the provided *cmd*'''
+    logger.debug('Running command {}'.format(cmd))
     process = subprocess.Popen(
         cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE
     )
     (stdout, stderr) = process.communicate()
 
     if process.returncode:
-        print 'Subprocess failed, dumping output:'
-        print '--------------- %s -----------------' % cmd[0]
-        print stderr
-        print '--------------------------------------'
-        raise EnvironmentError('Subprocess failed: %s' % cmd[0])
+        msg =  'Error "{}" while running:'.format(stderr, cmd[0])
+        logger.error(msg)
+        raise IOError('Subprocess failed:{}'.format(msg))
 
     return stdout
 
@@ -36,6 +66,7 @@ def exec_cmd(cmd):
 def generate_thumbnail(filepath):
     '''generate thumbnail from the given *filepath*'''
     destination = tempfile.NamedTemporaryFile(suffix='.jpg').name
+    logger.info('Saving thumbnail in {}'.format(destination))
 
     cmd = [
         ffmpeg_cmd, '-v', 'error', '-i', filepath, '-filter:v',
@@ -54,12 +85,13 @@ def get_info(filepath):
     cmd += ['-show_format']
     cmd += ['-show_streams']
     cmd += [filepath]
+    
     result = exec_cmd(cmd)
 
     try:
         result = json.loads(result)
-    except Exception:
-        raise IOError('ffprobe failed')
+    except Exception as error:
+        raise IOError('ffprobe failed with {}'.format(str(error)))
 
     try:
         streams = result.get('streams', {})
@@ -82,8 +114,9 @@ def get_info(filepath):
         'frameIn': 0,
         'frameOut': frameOut,
         'frameRate': frameRate,
+        'location': 'byjus-review-location'
     }
-
+    logger.debug('get_info result {}'.format(meta))
     return meta
     
 
@@ -96,10 +129,6 @@ def callback(event, session):
     event.stop()
 
     # run new event
-    server_location = session.query(
-        'Location where name is "ftrack.server"'
-    ).one()
-
     versionId = event['data']['versionId']
     path = event['data']['path']
 
@@ -112,15 +141,10 @@ def callback(event, session):
             '"{0}" is not a valid filepath.'.format(path)
         )
 
-    # publish the file for review without re encoding.
-    component = version.create_component(
-        path=path,
-        data={
-            'name': 'ftrackreview-mp4'
-        },
-        location=server_location
-    )
+    # change name of component and update metadata to enable review.
+    component = session.get('Component', version['components'][0]['id'])
     metadata = get_info(path)
+    component['name'] = 'ftrackreview-mp4'
     component['metadata']['ftr_meta'] = json.dumps(metadata)
 
     # generate and publish thumbnail
@@ -128,13 +152,13 @@ def callback(event, session):
     version.create_thumbnail(thumbnail_path)
 
     session.commit()
-    logger.info('make-non-encode-web-reviewable hook completed.')
+    logger.info('make-reviewable hook completed for {}'.format(version))
 
 
 def subscribe(session):
     '''Subscribe to events.'''
     topic = 'ftrack.connect.publish.make-web-playable'
-    logger.info('Subscribing to event topic: {0!r}'.format(topic))
+    logger.debug('Subscribing to event topic: {0!r}'.format(topic))
 
     # add new make web playable without encoding
     session.event_hub.subscribe(
@@ -159,4 +183,4 @@ def register(session, **kw):
         return
 
     subscribe(session)
-    logger.debug('Plugin Make non encode web playable registered')
+    logger.debug('Non encode web playable plugin registered')
