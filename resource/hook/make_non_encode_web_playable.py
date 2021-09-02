@@ -152,7 +152,7 @@ def callback(event, session):
     version.create_thumbnail(thumbnail_path)
 
     session.commit()
-    logger.info('make-reviewable hook completed for {}'.format(version))
+    logger.info('make-non-encode-web-reviewable hook completed for {}'.format(version))
 
 
 def subscribe(session):
