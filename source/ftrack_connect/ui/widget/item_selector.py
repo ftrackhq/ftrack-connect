@@ -26,16 +26,16 @@ class ItemSelector(QtWidgets.QComboBox):
         '''
         super(ItemSelector, self).__init__(*args, **kwargs)
 
-
-
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.setEditable(True)
         self.completer = QtWidgets.QCompleter(self)
 
         self._session = session
+
         # Set style delegate to allow styling of combobox menu via Qt Stylesheet
         itemDelegate = QtWidgets.QStyledItemDelegate()
         self.setItemDelegate(itemDelegate)
+
         self.completer.setCompletionMode(QtWidgets.QCompleter.UnfilteredPopupCompletion)
 
         self.pFilterModel = QtCore.QSortFilterProxyModel(self)
@@ -52,7 +52,6 @@ class ItemSelector(QtWidgets.QComboBox):
         self._emptyLabel = emptyLabel
 
         self.currentIndexChanged.connect(self._onCurrentIndexChanged)
-
         self.model = QtGui.QStandardItemModel()
         self.setModel(self.model)
 
