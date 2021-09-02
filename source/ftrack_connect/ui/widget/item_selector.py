@@ -29,15 +29,11 @@ class ItemSelector(QtWidgets.QComboBox):
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.setEditable(True)
         self.completer = QtWidgets.QCompleter(self)
+        self.completer.popup().setObjectName("completerPopup")
 
         self._session = session
 
-        # Set style delegate to allow styling of combobox menu via Qt Stylesheet
-        itemDelegate = QtWidgets.QStyledItemDelegate()
-        self.setItemDelegate(itemDelegate)
-
         self.completer.setCompletionMode(QtWidgets.QCompleter.UnfilteredPopupCompletion)
-
         self.pFilterModel = QtCore.QSortFilterProxyModel(self)
         self.pFilterModel.setFilterCaseSensitivity(QtCore.Qt.CaseInsensitive)
 
@@ -53,8 +49,11 @@ class ItemSelector(QtWidgets.QComboBox):
 
         self.currentIndexChanged.connect(self._onCurrentIndexChanged)
         self.model = QtGui.QStandardItemModel()
-        self.setModel(self.model)
+        self.itemDelegate = QtWidgets.QStyledItemDelegate()
+        self.setItemDelegate(self.itemDelegate)
 
+        self.setModel(self.model)
+        # Set style delegate to allow styling of combobox menu via Qt Stylesheet
         self.setItems()
 
     def _onCurrentIndexChanged(self):
@@ -121,7 +120,8 @@ class ItemSelector(QtWidgets.QComboBox):
         self.clear()
 
         # Add default empty item
-        self.addItem(str(self._emptyLabel), None)
+        self.lineEdit().setPlaceholderText(self._emptyLabel)
+        # self.addItem(str(self._emptyLabel), None)
 
         for item in items:
             label = item.get(self._labelField) or self._defaultLabel
@@ -134,6 +134,7 @@ class ItemSelector(QtWidgets.QComboBox):
         super(ItemSelector, self).setModel( model )
         self.pFilterModel.setSourceModel( model )
         self.completer.setModel(self.pFilterModel)
+        self.completer.popup().setItemDelegate(self.itemDelegate)
 
     def setModelColumn( self, column ):
         self.completer.setCompletionColumn( column )
