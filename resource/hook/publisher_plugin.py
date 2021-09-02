@@ -171,5 +171,5 @@ def register(session, **kw):
         )
         return
 
-    plugin = ftrack_connect.ui.application.ConnectWidgetPlugin(Publisher)
-    plugin.register(session, priority=20)
+    # plugin = ftrack_connect.ui.application.ConnectWidgetPlugin(Publisher)
+    # plugin.register(session, priority=20)
