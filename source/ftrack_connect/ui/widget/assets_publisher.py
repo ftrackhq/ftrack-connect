@@ -64,7 +64,6 @@ class AssetsPublisher(QtWidgets.QWidget):
         layout.addWidget(self.context_label)
         layout.addWidget(self.entitySelector)
 
-
         self.browser = _data_drop_zone.DataDropZone()
         layout.addWidget(self.browser,  stretch=1)
         self.browser.dataSelected.connect(self._onDataSelected)
@@ -144,7 +143,10 @@ class AssetsPublisher(QtWidgets.QWidget):
             if entity.entity_type == 'Task':
                 entity = entity['parent']
 
-            assets = entity['assets']
+            assets = self.session.query(
+                'select name, id from Asset where parent.id is "{}"'.format(entity['id'])
+            ).all()
+
         except AttributeError:
             self.logger.warning(
                 'Unable to fetch assets for entity: {0}'.format(entity)
@@ -239,7 +241,7 @@ class AssetsPublisher(QtWidgets.QWidget):
     ):
         asset_version = None
 
-        # self.publishStarted.emit()
+        self.publishStarted.emit()
 
         try:
             if not asset_type:
