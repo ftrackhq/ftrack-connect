@@ -25,12 +25,12 @@ class ItemSelector(QtWidgets.QComboBox):
 
         '''
         super(ItemSelector, self).__init__(*args, **kwargs)
+        self.itemDelegate = QtWidgets.QStyledItemDelegate()
 
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.setEditable(True)
         self.completer = QtWidgets.QCompleter(self)
-        self.completer.popup().setObjectName("completerPopup")
-
+        self.completer.setFilterMode(QtCore.Qt.MatchContains)
         self._session = session
 
         self.completer.setCompletionMode(QtWidgets.QCompleter.UnfilteredPopupCompletion)
@@ -38,6 +38,8 @@ class ItemSelector(QtWidgets.QComboBox):
         self.pFilterModel.setFilterCaseSensitivity(QtCore.Qt.CaseInsensitive)
 
         self.completer.setPopup(self.view())
+        self.completer.popup().setObjectName("completerPopup")
+
         self.setCompleter(self.completer)
         self.lineEdit().textEdited[str].connect(self.pFilterModel.setFilterFixedString)
         self.completer.activated.connect(self.setTextIfCompleterIsClicked)
@@ -49,8 +51,6 @@ class ItemSelector(QtWidgets.QComboBox):
 
         self.currentIndexChanged.connect(self._onCurrentIndexChanged)
         self.model = QtGui.QStandardItemModel()
-        self.itemDelegate = QtWidgets.QStyledItemDelegate()
-        self.setItemDelegate(self.itemDelegate)
 
         self.setModel(self.model)
         # Set style delegate to allow styling of combobox menu via Qt Stylesheet
@@ -120,8 +120,8 @@ class ItemSelector(QtWidgets.QComboBox):
         self.clear()
 
         # Add default empty item
-        self.lineEdit().setPlaceholderText(self._emptyLabel)
-        # self.addItem(str(self._emptyLabel), None)
+        # self.lineEdit().setPlaceholderText(self._emptyLabel)
+        self.addItem(str(self._emptyLabel), None)
 
         for item in items:
             label = item.get(self._labelField) or self._defaultLabel
@@ -130,24 +130,28 @@ class ItemSelector(QtWidgets.QComboBox):
         # Re-select previously selected item
         self.selectItem(currentItem)
 
-    def setModel( self, model ):
+    def setDelegate(self):
+        self.setItemDelegate(self.itemDelegate)
+        self.completer.popup().setItemDelegate(self.itemDelegate)
+
+    def setModel(self, model):
         super(ItemSelector, self).setModel( model )
         self.pFilterModel.setSourceModel( model )
         self.completer.setModel(self.pFilterModel)
-        self.completer.popup().setItemDelegate(self.itemDelegate)
+        self.setDelegate()
 
-    def setModelColumn( self, column ):
+    def setModelColumn(self, column):
         self.completer.setCompletionColumn( column )
         self.pFilterModel.setFilterKeyColumn( column )
         super(ItemSelector, self).setModelColumn( column )
 
-    def view( self ):
+    def view(self):
         return self.completer.popup()
 
-    def index( self ):
+    def index(self):
         return self.currentIndex()
 
     def setTextIfCompleterIsClicked(self, text):
-      if text:
-        index = self.findText(text)
-        self.setCurrentIndex(index)
+        if text:
+            index = self.findText(text)
+            self.setCurrentIndex(index)
