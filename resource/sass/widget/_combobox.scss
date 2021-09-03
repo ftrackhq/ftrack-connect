@@ -1,4 +1,5 @@
 /** Combo Box. */
+
 QComboBox::drop-down {
     subcontrol-origin: padding;
     subcontrol-position: top right;
@@ -34,3 +35,17 @@ QComboBox QAbstractItemView::item:selected {
 QComboBox[ftrackCurrentIndexIsDefault="true"] {
     color: $text-color-light;
 }
+
+//// https://forum.qt.io/topic/113626/qcompleter-style-problems/9
+//// https://programmerclick.com/article/85981525069/
+//// https://forum.qt.io/topic/26703/solved-stylize-using-css-and-editable-qcombobox-s-completions-list-view
+//// https://forum.qt.io/topic/78473/style-combobox-item/7
+//// https://www.pythonguis.com/tutorials/widget-search-bar/
+//// https://www.francescmm.com/customization-of-a-qcompleter/
+//// https://github.com/ColinDuquesnoy/QDarkStyleSheet/blob/master/qdarkstyle/qss/_styles.scss
+//// https://forum.qt.io/topic/116629/how-to-get-the-text-of-a-complete-in-a-combobox
+//
+//
+//QComboBox:!editable:on, QComboBox::drop-down:editable:on {
+//  background-color: red;
+//}
