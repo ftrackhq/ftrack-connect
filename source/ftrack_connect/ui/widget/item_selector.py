@@ -26,7 +26,8 @@ class ItemSelector(QtWidgets.QComboBox):
         '''
         super(ItemSelector, self).__init__(*args, **kwargs)
         self.itemDelegate = QtWidgets.QStyledItemDelegate()
-
+        view = QtWidgets.QListView()
+        self.setView(view)
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.setEditable(True)
         self.completer = QtWidgets.QCompleter(self)
