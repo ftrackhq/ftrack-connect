@@ -262,7 +262,7 @@ configuration = dict(
         'clique==1.6.1',
         'PySide2 >=5, <6',
         'Riffle >= 1.0.1',
-        'ftrack-python-api ==2.2.0rc1',
+        'ftrack-python-api',
         'arrow >= 0.4.6, < 1',
         'appdirs >= 1.4, < 1.5',
         'requests >= 2, <3',
