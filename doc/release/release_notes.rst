@@ -10,6 +10,11 @@ Release Notes
 
 .. release:: Upcoming
 
+    .. change:: new
+        :tags: API
+
+        Restore ftrack_connect.application module to provide environment variable helper methods.
+
     .. change:: new:
         :tags: Ui
 
