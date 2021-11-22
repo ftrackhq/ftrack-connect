@@ -66,7 +66,9 @@ class CreateFolderStructure(BaseAction):
 
     def create_structure(self, entities):
         filtered_entities = self._filter_entities(entities)
-        path_results = self.location.get_filesystem_paths(filtered_entities)
+        leafs = [entity['descendants'][-1] for entity in filtered_entities]
+        print(leafs)
+        path_results = self.location.get_filesystem_paths(leafs)
         for path_result in path_results:
             if not os.path.exists(path_result):
                 os.makedirs(path_result)
