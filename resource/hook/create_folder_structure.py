@@ -3,11 +3,12 @@ import ftrack_api
 import logging
 from ftrack_action_handler.action import BaseAction
 
-
 class CreateFolderStructure(BaseAction):
     label = 'create fodler structire'
     identifier = 'com.ftrack.test.create_folder_structure'
     description = 'Create Folder Structure on location'
+    api_min_version =  ['2','3','1']
+
     skip_entities = [
         'AssetVersion', 
         'Asset', 
@@ -15,11 +16,6 @@ class CreateFolderStructure(BaseAction):
         'FileComponent', 
         'SequenceComponent'
     ]
-    api_min_version =  ['2','3','1']
-
-    def __init__(self, session):
-        super(CreateFolderStructure, self).__init__(session)
-        self.location = self.session.pick_location()
 
     def _ensure_api_version(self):
         if ftrack_api.__version__.split('.')[0:3] >= self.api_min_version:
@@ -31,6 +27,10 @@ class CreateFolderStructure(BaseAction):
         )
         return False
 
+    def __init__(self, session):
+        super(CreateFolderStructure, self).__init__(session)
+        self.location = self.session.pick_location()
+
     def validate_selection(self, entities):
         '''Utility method to check *entities* validity.
 
@@ -39,7 +39,11 @@ class CreateFolderStructure(BaseAction):
         if not entities:
             return False
 
-        return True
+        all_states = []
+        for entity_type, entity_id in entities:
+            all_states.append(entity_type not in self.skip_entities)
+                
+        return all(all_states)
 
     def discover(self, session, entities, event):
         '''Return True if the action can be discovered.
@@ -57,7 +61,6 @@ class CreateFolderStructure(BaseAction):
         for entity in entities:
             if entity.entity_type not in self.skip_entities:
                 valid_entities.append(entity)
-        print(valid_entities)
         return valid_entities
                 
 
