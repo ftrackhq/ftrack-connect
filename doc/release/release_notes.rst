@@ -11,6 +11,11 @@ Release Notes
 .. release:: Upcoming
 
     .. change:: new
+        :tag: Actions
+
+        Provide "Create folder structure" action to create structures in Location. 
+
+    .. change:: new
         :tags: API
 
         Restore ftrack_connect.application module to provide environment variable helper methods.
