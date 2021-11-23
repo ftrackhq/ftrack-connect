@@ -36,19 +36,19 @@ class CreateFolderStructure(BaseAction):
     ]
 
     def is_supported(self):
-        '''check if the action is supported by the current api version'''
+        '''Check if the action is supported by the current api version.'''
         if ftrack_api.__version__.split('.')[0:3] >= self.api_min_version:
            return True
 
         self.logger.warning(
             'Feature not supported by your current api version : {},'
-            'you need api >= 2.3.1'.format(ftrack_api.__version__)
+            'you need api >= 2.3.1 .'.format(ftrack_api.__version__)
         )
 
         return False
 
     def __init__(self, session):
-        '''initialise action with *session*'''
+        '''Initialise action with *session*.'''
         super(CreateFolderStructure, self).__init__(session)
         self.location = self.session.pick_location()
 
@@ -76,7 +76,7 @@ class CreateFolderStructure(BaseAction):
         return self.validate_selection(entities)
 
     def _filter_entities(self, entities):
-        '''Return filtered *entities* based on supported types
+        '''Return filtered *entities* based on supported types.
         
         Filter out unsupported entity types to build folders from.
 
@@ -89,7 +89,7 @@ class CreateFolderStructure(BaseAction):
                 
     @_async
     def create_structure(self, entities):
-        '''Create folder structure based on provided *entities*'''
+        '''Create folder structure based on provided *entities*.'''
 
         filtered_entities = self._filter_entities(entities)
         leafs = [
