@@ -1,7 +1,21 @@
 import os
+import itertools
 import ftrack_api
 import logging
+import threading
+
 from ftrack_action_handler.action import BaseAction
+
+
+def asyncFn(fn):
+    '''Run *fn* asynchronously.'''
+
+    def wrapper(*args, **kwargs):
+        thread = threading.Thread(target=fn, args=args, kwargs=kwargs)
+        thread.start()
+
+    return wrapper
+
 
 class CreateFolderStructure(BaseAction):
     label = 'create fodler structire'
@@ -39,12 +53,9 @@ class CreateFolderStructure(BaseAction):
         if not entities:
             return False
 
-        all_states = []
-        for entity_type, entity_id in entities:
-            all_states.append(entity_type not in self.skip_entities)
-                
-        return all(all_states)
+        return True
 
+    
     def discover(self, session, entities, event):
         '''Return True if the action can be discovered.
 
@@ -63,15 +74,34 @@ class CreateFolderStructure(BaseAction):
                 valid_entities.append(entity)
         return valid_entities
                 
-
+    @asyncFn
     def create_structure(self, entities):
         filtered_entities = self._filter_entities(entities)
-        leafs = [entity['descendants'][-1] for entity in filtered_entities]
-        print(leafs)
-        path_results = self.location.get_filesystem_paths(leafs)
+        leafs = [
+            list(entity['descendants']) 
+            if len(entity['descendants']) > 0 
+            else entity 
+            for entity in filtered_entities 
+        ]
+        combined = list(itertools.chain.from_iterable(leafs))
+        valid_entities = self._filter_entities(combined)
+        path_results = self.location.get_filesystem_paths(valid_entities)
+
         for path_result in path_results:
             if not os.path.exists(path_result):
+                self.logger.info(
+                    'creating folder : {} in location {}'.format(
+                        path_result, self.location['name']
+                    )
+                )
                 os.makedirs(path_result)
+            else:
+                self.logger.info(
+                    '{} folder already exist in location {}' .format(
+                        path_result,  
+                        self.location['name']
+                    )
+                )
 
     def launch(self, session, entities, event):
         '''Return result of running action.'''
