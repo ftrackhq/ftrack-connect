@@ -1,3 +1,6 @@
+# :coding: utf-8
+# :copyright: Copyright (c) 2014 ftrack
+
 import os
 import itertools
 import ftrack_api
@@ -7,7 +10,7 @@ import threading
 from ftrack_action_handler.action import BaseAction
 
 
-def asyncFn(fn):
+def _async(fn):
     '''Run *fn* asynchronously.'''
 
     def wrapper(*args, **kwargs):
@@ -23,6 +26,7 @@ class CreateFolderStructure(BaseAction):
     description = 'Create Folder Structure on location'
     api_min_version =  ['2','3','1']
 
+    # Do not consider building paths for these entities.
     skip_entities = [
         'AssetVersion', 
         'Asset', 
@@ -31,17 +35,20 @@ class CreateFolderStructure(BaseAction):
         'SequenceComponent'
     ]
 
-    def _ensure_api_version(self):
+    def is_supported(self):
+        '''check if the action is supported by the current api version'''
         if ftrack_api.__version__.split('.')[0:3] >= self.api_min_version:
            return True
 
         self.logger.warning(
-            'Feature not supported by your current api version : {}'
-            'you need api >= 2.3.1'
+            'Feature not supported by your current api version : {},'
+            'you need api >= 2.3.1'.format(ftrack_api.__version__)
         )
+
         return False
 
     def __init__(self, session):
+        '''initialise action with *session*'''
         super(CreateFolderStructure, self).__init__(session)
         self.location = self.session.pick_location()
 
@@ -62,20 +69,23 @@ class CreateFolderStructure(BaseAction):
         Check if the current selection can discover this action.
 
         '''
-        if not self._ensure_api_version():
+        if not self.is_supported():
             return False
 
         return self.validate_selection(entities)
 
     def _filter_entities(self, entities):
+        '''return filtered *entities* based on supported types'''
         valid_entities = []
         for entity in entities:
             if entity.entity_type not in self.skip_entities:
                 valid_entities.append(entity)
         return valid_entities
                 
-    @asyncFn
+    @_async
     def create_structure(self, entities):
+        '''create folder structure based on provided *entities*'''
+
         filtered_entities = self._filter_entities(entities)
         leafs = [
             list(entity['descendants']) 
@@ -83,9 +93,9 @@ class CreateFolderStructure(BaseAction):
             else entity 
             for entity in filtered_entities 
         ]
-        combined = list(itertools.chain.from_iterable(leafs))
-        valid_entities = self._filter_entities(combined)
-        path_results = self.location.get_filesystem_paths(valid_entities)
+        merged_leafs = list(itertools.chain.from_iterable(leafs))
+        valid_leaf_entities = self._filter_entities(merged_leafs)
+        path_results = self.location.get_filesystem_paths(valid_leaf_entities)
 
         for path_result in path_results:
             if not os.path.exists(path_result):
