@@ -56,6 +56,7 @@ class CreateFolderStructure(BaseAction):
         '''Utility method to check *entities* validity.
 
         Return True if the selection is valid.
+
         '''
         if not entities:
             return False
@@ -75,7 +76,11 @@ class CreateFolderStructure(BaseAction):
         return self.validate_selection(entities)
 
     def _filter_entities(self, entities):
-        '''return filtered *entities* based on supported types'''
+        '''Return filtered *entities* based on supported types
+        
+        Filter out unsupported entity types to build folders from.
+
+        '''
         valid_entities = []
         for entity in entities:
             if entity.entity_type not in self.skip_entities:
@@ -84,7 +89,7 @@ class CreateFolderStructure(BaseAction):
                 
     @_async
     def create_structure(self, entities):
-        '''create folder structure based on provided *entities*'''
+        '''Create folder structure based on provided *entities*'''
 
         filtered_entities = self._filter_entities(entities)
         leafs = [
@@ -118,7 +123,9 @@ class CreateFolderStructure(BaseAction):
         data, event = self._translate_event(self.session, event)
         _resolved_entities = []
         for datum in data:
-            _resolved_entities.append(self.session.get(datum[0], datum[1]))
+            _resolved_entities.append(
+                self.session.get(datum[0], datum[1])
+            )
         self.create_structure(_resolved_entities)
         return True
 
