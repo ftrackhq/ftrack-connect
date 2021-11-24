@@ -15,6 +15,11 @@ Release Notes
 
         Restore ftrack_connect.application module to provide environment variable helper methods.
 
+        .. note:
+
+            We provide for backward compatibility the method **prependPath** and **appendPath**, these will likely be deprated at a later stage.
+            The use of newer methods **prepend_path** and **append_path** in the same module are preferred.
+
 
 .. release:: 2.0.0-rc-3
     :date: 2021-09-23
@@ -84,7 +89,7 @@ Release Notes
     .. change:: changed
         :tags: Ui
 
-        Move to Pyside2.
+        Move to `Pyside2 <https://pypi.org/project/PySide2/>`_.
 
     .. change:: changed
         :tags: API
@@ -99,12 +104,12 @@ Release Notes
     .. change:: new
         :tags: Ui
 
-        Replace QtExt with Qt.py module.
+        Replace `QtExt <https://bitbucket.org/ftrack/qtext>`_ with `Qt.py <https://github.com/mottosso/Qt.py>`_ module.
 
     .. change:: changed
         :tags: changed
 
-        Move connector integration codebase to separate repository.
+        Move connector integration codebase to `separate repository <https://bitbucket.org/ftrack/ftrack-connector-legacy>`_
 
     .. change:: new
         :tags: Setup
@@ -116,9 +121,15 @@ Release Notes
 
         Standalone installation does not correctly inject dependencies at application startup.
 
+    .. change:: changed
+        :tags: code
+
+        Port code to python3.
+        
+
 .. note:: 
 
-    This is the last version supporting `ftrack-python-legacy-api` and related modules and integrations.
+    This is the last version supporting `ftrack-python-legacy-api` / python 2.X and related modules and integrations.
 
 
 .. release:: 1.1.9
