@@ -116,6 +116,11 @@ Release Notes
 
         Standalone installation does not correctly inject dependencies at application startup.
 
+.. note:: 
+
+    This is the last version supporting `ftrack-python-legacy-api` and related modules and integrations.
+
+
 .. release:: 1.1.9
     :date: 2021-03-11
 
