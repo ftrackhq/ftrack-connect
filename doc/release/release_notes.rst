@@ -15,7 +15,7 @@ Release Notes
 
         Restore ftrack_connect.application module to provide environment variable helper methods.
 
-        .. note:
+        .. note::
 
             We provide for backward compatibility the method **prependPath** and **appendPath**, these will likely be deprated at a later stage.
             The use of newer methods **prepend_path** and **append_path** in the same module are preferred.
@@ -127,9 +127,9 @@ Release Notes
         Port code to python3.
         
 
-.. note:: 
+.. warning:: 
 
-    This is the last version supporting `ftrack-python-legacy-api` / python 2.X and related modules and integrations.
+    This is the last version supporting `ftrack-python-legacy-api <https://bitbucket.org/ftrack/ftrack-python-legacy-api>`_ / python 2.X and related modules and integrations.
 
 
 .. release:: 1.1.9
