@@ -15,10 +15,71 @@ Release Notes
 
         Restore ftrack_connect.application module to provide environment variable helper methods.
 
-    .. change:: new:
+
+.. release:: 2.0.0-rc-3
+    :date: 2021-09-23
+
+    .. change:: changed
+        :tags: Setup
+
+        Use latest api release version.
+
+    .. change:: fixed
+        :tags: API
+
+        Cannot publish after a failed publish, and need to restart connect.
+
+
+.. release:: 2.0.0-rc-2
+    :date: 2021-07-13
+
+    .. change:: changed
+        :tags: Documentation
+
+        Update with latest images.
+
+.. release:: 2.0.0-rc-1
+    :date: 2021-06-18
+
+    .. change:: changed
+        :tags: UI
+
+        Integrations are returned sorted by name in About page.
+
+    .. change:: changed
+        :tags: ConnectWidetPlugin
+
+        Improve error handling.
+
+.. release:: 2.0.0-beta-4
+    :date: 2021-06-07
+
+    .. change:: new
+        :tags: UI
+
+        Allow connect to be always on top of other windows.
+
+
+.. release:: 2.0.0-beta-3
+    :date: 2021-05-21
+
+    .. change:: changed
+        :tags: API
+
+        Review COnnectWidgetPlugin base classes.
+
+
+.. release:: 2.0.0-beta-2
+    :date: 2021-03-18
+
+    .. change:: new
         :tags: Ui
 
         Provide ability to extend connect through ConnectWidgets plugins.
+
+
+.. release:: 2.0.0-beta-1
+    :date: 2021-03-11
 
     .. change:: changed
         :tags: Ui
