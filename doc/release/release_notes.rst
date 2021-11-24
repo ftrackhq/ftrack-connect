@@ -17,7 +17,7 @@ Release Notes
 
         .. note::
 
-            We provide for backward compatibility the method **prependPath** and **appendPath**, these will likely be deprated at a later stage.
+            We provide for backward compatibility the method **prependPath** and **appendPath**, but these will likely be deprated at a later stage.
             The use of newer methods **prepend_path** and **append_path** in the same module are preferred.
 
 
