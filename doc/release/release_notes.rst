@@ -66,7 +66,7 @@ Release Notes
     .. change:: changed
         :tags: API
 
-        Review COnnectWidgetPlugin base classes.
+        Review ConnectWidgetPlugin base classes.
 
 
 .. release:: 2.0.0-beta-2
