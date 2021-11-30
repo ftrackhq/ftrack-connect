@@ -10,6 +10,11 @@ Release Notes
 
 .. release:: Upcoming
 
+    .. change:: changed
+        :tags: UX
+
+        Consolidate font using Roboto.
+
     .. change:: new
         :tags: API
 
