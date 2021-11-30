@@ -38,7 +38,7 @@
     </qresource>
 
     <qresource prefix='ftrack/font'>
-        <file alias='main'>font/open_sans_regular.ttf</file>
+        <file alias='main'>font/Roboto-Regular.ttf</file>
     </qresource>
 
     <qresource prefix='ftrack/image/light'>
