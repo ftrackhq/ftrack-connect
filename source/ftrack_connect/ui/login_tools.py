@@ -40,7 +40,7 @@ class LoginServerHandler(BaseHTTPRequestHandler):
 
                         h1 {{
                             font-size: 20px;
-                            font-weight: normal;
+                            font-weight: bold;
                             margin: 20px 0;
                         }}
 

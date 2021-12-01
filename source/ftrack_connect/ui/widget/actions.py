@@ -238,7 +238,7 @@ class Actions(QtWidgets.QWidget):
         else:
             self._allLabel.setAlignment(QtCore.Qt.AlignCenter)
             self._allLabel.setText(
-                '<h2 style="font-weight: normal">No actions found</h2>'
+                '<h2 style="font-weight: bold">No actions found</h2>'
                 '<p>Try another selection or add some actions.</p>'
             )
 

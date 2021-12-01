@@ -9,7 +9,7 @@ QLabel#login-label {
 
 QLabel#regular-label {
     font-size: 15px;
-    font-weight: light;
+    font-weight: normal;
 }
 
 
@@ -20,7 +20,7 @@ QLabel#regular-label {
 QLabel#lead-label {
     font-size: 13px;
     color: $text-color-drop-zone;
-    font-weight: light;
+    font-weight: normal;
 }
 QPixmap{
     image: theme-image('ftrackLogoLabelDark');
