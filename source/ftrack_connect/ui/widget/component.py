@@ -5,9 +5,11 @@ import os
 import uuid
 
 from Qt import QtWidgets, QtCore, QtGui
+import qtawesome as qta
 
 import ftrack_connect.ui.widget.line_edit
 import ftrack_connect.ui.widget.label
+
 
 
 class Component(QtWidgets.QWidget):
@@ -27,11 +29,7 @@ class Component(QtWidgets.QWidget):
 
         self.layout().addWidget(self.componentNameEdit)
 
-        # TODO: CHECK WHY THEME IS NOT CORRECTLY APPLIED
-        removeIcon = QtGui.QIcon(
-            QtGui.QPixmap(':/ftrack/image/light/trash')
-        )
-
+        removeIcon = qta.icon('mdi6.trash-can')
         self.removeAction = QtWidgets.QAction(removeIcon, 'Remove', self.componentNameEdit)
         self.removeAction.setObjectName('component-remove-action')
         self.removeAction.setStatusTip('Remove component.')

@@ -5,6 +5,8 @@ import webbrowser
 
 from Qt import QtWidgets, QtCore, QtSvg, QtGui
 
+import qtawesome as qta
+
 import ftrack_api.exception
 
 
@@ -37,16 +39,9 @@ class ConfigureScenario(QtWidgets.QWidget):
 
         layout.addSpacing(100)
 
-        svg_renderer = QtSvg.QSvgRenderer(':ftrack/image/default/cloud-done')
-        image = QtGui.QImage(50, 50, QtGui.QImage.Format_ARGB32)
 
-        # Set the ARGB to 0 to prevent rendering artifacts.
-        image.fill(0x00000000)
-
-        svg_renderer.render(QtGui.QPainter(image))
-
-        icon = QtWidgets.QLabel()
-        icon.setPixmap(QtGui.QPixmap.fromImage(image))
+        cloudIcon = qta.icon('mdi6.cloud_done')
+        icon = QtWidgets.QLabel(cloudIcon)
         icon.setAlignment(QtCore.Qt.AlignCenter)
         icon.setObjectName('icon-label')
         layout.addWidget(icon)
