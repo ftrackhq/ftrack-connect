@@ -127,6 +127,14 @@ def main(arguments=None):
     if namespace.silent:
         connectWindow.hide()
 
+
+    # Fix for Windows where font size is incorrect for some widgets. For some
+
+    # reason, resetting the font here solves the sizing issue.
+
+    font = application.font()
+    application.setFont(font)
+
     return application.exec_()
 
 
