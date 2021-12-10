@@ -10,6 +10,11 @@ Release Notes
 
 .. release:: Upcoming
 
+    .. change:: changed
+        :tags: Logging
+
+        Improve logging readability.
+
     .. change:: new
         :tags: API
 
