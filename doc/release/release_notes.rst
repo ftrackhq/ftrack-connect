@@ -15,6 +15,11 @@ Release Notes
 
         Consolidate font using Roboto.
 
+    .. change:: changed
+        :tags: Logging
+
+        Improve logging readability.
+
     .. change:: new
         :tags: API
 
