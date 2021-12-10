@@ -12,7 +12,6 @@ QLabel#regular-label {
     font-weight: light;
 }
 
-
 * {
     font-family: $font-family-base;
 }
@@ -22,6 +21,6 @@ QLabel#lead-label {
     color: $text-color-drop-zone;
     font-weight: light;
 }
-// QPixmap{
-//     image: theme-image('ftrackLogoLabelDark');
-// }
+ QPixmap{
+     image: theme-image('ftrackLogoLabelDark');
+ }

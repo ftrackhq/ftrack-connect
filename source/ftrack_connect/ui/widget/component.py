@@ -29,8 +29,8 @@ class Component(QtWidgets.QWidget):
 
         self.layout().addWidget(self.componentNameEdit)
 
-        removeIcon = qta.icon('mdi6.trash-can')
-        self.removeAction = QtWidgets.QAction(removeIcon, 'Remove', self.componentNameEdit)
+        remove_icon = qta.icon('mdi6.trash-can')
+        self.removeAction = QtWidgets.QAction(remove_icon, 'Remove', self.componentNameEdit)
         self.removeAction.setObjectName('component-remove-action')
         self.removeAction.setStatusTip('Remove component.')
         self.componentNameEdit.addAction(
