@@ -198,6 +198,7 @@ class Context(Item):
     def icon(self):
         '''Return icon.'''
         icon = self.entity.get('object_type', {}).get('icon', 'file-alert')
+        print('looking for icon : {}'.format(icon))
         try:
             return qta.icon('ftrack.{}'.format(icon))
         except:
@@ -234,9 +235,7 @@ class Project(Context):
     @property
     def icon(self):
         '''Return icon.'''
-        return QtGui.QIcon(
-            ':/ftrack/image/{}/project'.format(self.connect_theme)
-        )
+        return qta.icon('ftrack.project')
 
     @property
     def name(self):
