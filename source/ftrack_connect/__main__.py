@@ -119,6 +119,8 @@ def main(arguments=None):
     # Enable ctrl+c to quit application when started from command line.
     signal.signal(signal.SIGINT, lambda sig, _: application.quit())
 
+    qtawesome_style = getattr(qtawesome, namespace.theme)
+    qtawesome_style(application)
     # Construct main connect window and apply theme.
     connectWindow = ftrack_connect.ui.application.Application(
         theme=namespace.theme
