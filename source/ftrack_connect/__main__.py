@@ -8,12 +8,13 @@ import sys
 import signal
 import os
 import pkg_resources
-
+import qtawesome
 bindings = ['PySide2']
 os.environ.setdefault('QT_PREFERRED_BINDING', os.pathsep.join(bindings))
 
 from Qt import QtWidgets, QtCore
 
+from ftrack_connect import load_icons
 import ftrack_connect.config
 import ftrack_connect.singleton
 
@@ -111,7 +112,6 @@ def main(arguments=None):
     # Construct global application.
 
     application = QtWidgets.QApplication([])
-
     application.setOrganizationName('ftrack')
     application.setOrganizationDomain('ftrack.com')
     application.setQuitOnLastWindowClosed(False)
@@ -131,6 +131,9 @@ def main(arguments=None):
     # reason, resetting the font here solves the sizing issue.
     font = application.font()
     application.setFont(font)
+
+    icon_fonts = os.path.join(os.path.dirname(__file__), 'fonts')
+    load_icons(icon_fonts)
 
     return application.exec_()
 
