@@ -250,7 +250,7 @@
 "help": "0x11a",
 "project": "0x11b",
 "asset": "0x11c",
-"asset_build": "0x11c",
+"asset-build": "0x11c",
 "shot": "0x11d",
 "output": "0x11e",
 "input": "0x11f",
