@@ -34,13 +34,13 @@ class LoginServerHandler(BaseHTTPRequestHandler):
                         body {{
                             max-width: 400px;
                             margin: 30px auto;
-                            font-family: 'Open Sans', 'Droid Sans', Arial, Helvetica, sans-serif;
+                            font-family: 'Roboto', 'Open Sans', 'Droid Sans', Arial, Helvetica, sans-serif;
                             text-align: center;
                         }}
 
                         h1 {{
                             font-size: 20px;
-                            font-weight: bold;
+                            font-weight: medium;
                             margin: 20px 0;
                         }}
 
