@@ -199,9 +199,9 @@ class Context(Item):
         '''Return icon.'''
         icon = self.entity.get('object_type', {}).get('icon', 'file-alert')
         try:
-            return qta.icon('mdi.{}'.format(icon.replace('_', '-')))
+            return qta.icon('ftrack.{}'.format(icon))
         except:
-            return qta.icon('mdi.file-alert')
+            return qta.icon('mdi.{}'.format(icon.replace('_', '-')))
 
     def _fetchChildren(self):
         '''Fetch and return new child items.'''
