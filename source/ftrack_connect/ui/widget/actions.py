@@ -1,15 +1,15 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
-
+import os
 import json
 import time
 import logging
 import functools
+import qtawesome as qta
 
 from Qt import QtCore
 from Qt import QtWidgets
 import ftrack_api.event.base
-
 import ftrack_connect.asynchronous
 import ftrack_connect.error
 import ftrack_connect.session
