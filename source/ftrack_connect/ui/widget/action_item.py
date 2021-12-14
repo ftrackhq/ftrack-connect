@@ -2,7 +2,7 @@
 # :copyright: Copyright (c) 2015 ftrack
 
 from Qt import QtCore, QtWidgets, QtGui
-
+import qtawesome as qta
 import logging
 
 import ftrack_api.event.base
@@ -126,9 +126,10 @@ class ActionItem(QtWidgets.QWidget):
 
     def enterEvent(self, event):
         '''Show hover icon on mouse enter.'''
-        self._iconLabel.loadResource(
-            '{0}{1}'.format(':/ftrack/image/light/', self._hoverIcon)
-        )
+        # self._iconLabel.loadResource(
+        #     '{0}{1}'.format(':/ftrack/image/light/', self._hoverIcon)
+        # )
+        self._iconLabel.setIcon(qta.icon('mdi.{}'.format(self._hoverIcon)))
 
     def leaveEvent(self, event):
         '''Reset action icon on mouse leave.'''

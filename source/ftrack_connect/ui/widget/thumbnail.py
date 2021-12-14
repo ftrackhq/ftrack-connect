@@ -129,7 +129,17 @@ class ActionIcon(Base):
 
             * A URL to load the image from starting with 'http'.
         '''
-        if icon and icon[:4] == 'http':
+        if icon and isinstance(icon, QtGui.QIcon):
+            super(ActionIcon, self).setPixmap(
+                icon.pixmap(
+                    QtCore.QSize(
+                        self.width(),
+                        self.height()
+                    )
+                )
+            )
+
+        elif icon and icon[:4] == 'http':
             self.load(icon)
         else:
             self.loadResource(':/ftrack/image/light/action')
