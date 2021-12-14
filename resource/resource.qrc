@@ -4,10 +4,8 @@
         <file alias='ftrackLogoGreyDark'>image/ftrack_icon_circle_dark.svg</file>
         <file alias='ftrackLogoColor'>image/ftrack_icon_circle_light.svg</file>
         <file alias='ftrackLogoWhite'>image/ftrack_icon_circle_white.svg</file>
-        <file alias='boxShadow'>image/box_shadow.png</file>
         <file alias='ftrackLogoLabel'>image/ftrack_logo_gray.svg</file>
         <file alias='ftrackLogoLabelDark'>image/ftrack_logo_dark.svg</file>
-        <file alias='cloud-done'>image/cloud_done.svg</file>
     </qresource>
 
     <qresource prefix='ftrack/style'>
@@ -18,17 +16,16 @@
     <qresource prefix='ftrack/font'>
         <file alias='regular'>font/Roboto-Regular.ttf</file>
         <file alias='medium'>font/Roboto-Medium.ttf</file>
+        <file alias='ftrack'>font/ftrack-icon.ttf</file>
     </qresource>
 
     <qresource prefix='ftrack/image/light'>
-        <file alias='boxShadow'>image/box_shadow.png</file>
         <file alias='ftrackLogoColor'>image/ftrack_icon_circle_light.svg</file>
         <file alias='ftrackLogoGreyDark'>image/ftrack_icon_circle_dark.svg</file>
         <file alias='ftrackLogoLabelDark'>image/ftrack_logo_dark.svg</file>
     </qresource>
 
     <qresource prefix='ftrack/image/dark'>
-        <file alias='boxShadow'>image/box_shadow_dark.png</file>
         <file alias='ftrackLogoColor'>image/ftrack_icon_circle_dark.svg</file>
         <file alias='ftrackLogoGrey'>image/ftrack_icon_circle_faded.svg</file>
         <file alias='ftrackLogoGreyDark'>image/ftrack_icon_circle_light.svg</file>
