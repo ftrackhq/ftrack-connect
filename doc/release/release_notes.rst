@@ -11,6 +11,11 @@ Release Notes
 .. release:: Upcoming
 
     .. change:: changed
+        :tags: UX
+
+        Consolidate font using Roboto.
+
+    .. change:: changed
         :tags: Logging
 
         Improve logging readability.
