@@ -93,6 +93,10 @@ class Actions(QtWidgets.QWidget):
         self._actions = []
 
         self._entitySelector = entity_selector.EntitySelector(self.session)
+        self._entitySelector.assignedContextSelector.setPlaceholderText(
+            'Browse contexts to discover more actions.'
+        )
+
         self._entitySelector.setFixedHeight(50)
         self._entitySelector.entityChanged.connect(
             self._onEntityChanged
