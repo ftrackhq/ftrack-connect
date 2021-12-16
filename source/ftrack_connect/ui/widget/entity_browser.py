@@ -46,7 +46,7 @@ class EntityBrowser(QtWidgets.QDialog):
         self.headerLayout = QtWidgets.QHBoxLayout()
 
         self.navigationBar = QtWidgets.QTabBar()
-        self.navigationBar.setIconSize(QtCore.QSize(15, 15))
+        self.navigationBar.setIconSize(QtCore.QSize(self.size()/2))
         self.navigationBar.setExpanding(False)
         self.navigationBar.setDrawBase(False)
         self.headerLayout.addWidget(self.navigationBar, stretch=1)
@@ -135,7 +135,6 @@ class EntityBrowser(QtWidgets.QDialog):
             0,
             QtWidgets.QHeaderView.Stretch
         )
-
 
         self.acceptButton.clicked.connect(self.accept)
         self.cancelButton.clicked.connect(self.reject)
