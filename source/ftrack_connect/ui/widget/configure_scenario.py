@@ -42,7 +42,7 @@ class ConfigureScenario(QtWidgets.QWidget):
         cloud_icon = qta.icon('ftrack.cloud-done')
         icon = QtWidgets.QLabel()
         icon.setPixmap(
-            cloud_icon.pixmap(QtCore.QSize(100, 100))
+            cloud_icon.pixmap(QtCore.QSize(self.width(), self.height()))
         )
 
         icon.setAlignment(QtCore.Qt.AlignCenter)
