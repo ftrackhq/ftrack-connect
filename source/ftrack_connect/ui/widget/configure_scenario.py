@@ -39,8 +39,7 @@ class ConfigureScenario(QtWidgets.QWidget):
 
         layout.addSpacing(100)
 
-
-        cloudIcon = qta.icon('mdi6.cloud_done')
+        cloudIcon = qta.icon('ftrack.cloud-done')
         icon = QtWidgets.QLabel(cloudIcon)
         icon.setAlignment(QtCore.Qt.AlignCenter)
         icon.setObjectName('icon-label')
