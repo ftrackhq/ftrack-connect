@@ -107,7 +107,8 @@ def main(arguments=None):
         QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_X11InitThreads)
 
     # Ensure support for highdpi
-    QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
+    QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
+    QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
 
     # Construct global application.
 
