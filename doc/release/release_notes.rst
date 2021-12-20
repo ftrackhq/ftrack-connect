@@ -13,6 +13,11 @@ Release Notes
     .. change:: changed
         :tags: UX
 
+        Update icon set to use font icons (material/ftrack icons) to ensure full hidpi support.
+
+    .. change:: changed
+        :tags: UX
+
         Consolidate font using Roboto.
 
     .. change:: changed

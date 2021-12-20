@@ -8,12 +8,13 @@ import sys
 import signal
 import os
 import pkg_resources
-
+import qtawesome
 bindings = ['PySide2']
 os.environ.setdefault('QT_PREFERRED_BINDING', os.pathsep.join(bindings))
 
 from Qt import QtWidgets, QtCore
 
+from ftrack_connect import load_icons
 import ftrack_connect.config
 import ftrack_connect.singleton
 
@@ -106,12 +107,12 @@ def main(arguments=None):
         QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_X11InitThreads)
 
     # Ensure support for highdpi
-    QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
+    QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
+    QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
 
     # Construct global application.
 
     application = QtWidgets.QApplication([])
-
     application.setOrganizationName('ftrack')
     application.setOrganizationDomain('ftrack.com')
     application.setQuitOnLastWindowClosed(False)
@@ -119,6 +120,8 @@ def main(arguments=None):
     # Enable ctrl+c to quit application when started from command line.
     signal.signal(signal.SIGINT, lambda sig, _: application.quit())
 
+    qtawesome_style = getattr(qtawesome, namespace.theme)
+    qtawesome_style(application)
     # Construct main connect window and apply theme.
     connectWindow = ftrack_connect.ui.application.Application(
         theme=namespace.theme
@@ -127,13 +130,15 @@ def main(arguments=None):
     if namespace.silent:
         connectWindow.hide()
 
-
     # Fix for Windows where font size is incorrect for some widgets. For some
 
     # reason, resetting the font here solves the sizing issue.
 
     font = application.font()
     application.setFont(font)
+
+    icon_fonts = os.path.join(os.path.dirname(__file__), 'fonts')
+    load_icons(icon_fonts)
 
     return application.exec_()
 
