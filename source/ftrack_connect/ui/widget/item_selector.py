@@ -40,6 +40,8 @@ class ItemSelector(QtWidgets.QComboBox):
 
         self.completer.setPopup(self.view())
         self.completer.popup().setObjectName("completerPopup")
+        self.completer.popup().setAttribute(QtCore.Qt.WA_TranslucentBackground, True)
+        # self.completer.popup().setAutofillBackground(False)
 
         self.setCompleter(self.completer)
         self.lineEdit().textEdited[str].connect(self.pFilterModel.setFilterFixedString)

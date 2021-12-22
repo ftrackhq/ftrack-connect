@@ -36,6 +36,15 @@ QComboBox[ftrackCurrentIndexIsDefault="true"] {
     color: $text-color-light;
 }
 
+QComboBox QListView#completerPopup
+{
+	border: 2px solid rgb(81, 81, 81);
+	padding: 1px;
+	border-radius: 15px;
+	outline: 0;
+	background: $input-background;
+}
+
 //// https://forum.qt.io/topic/113626/qcompleter-style-problems/9
 //// https://programmerclick.com/article/85981525069/
 //// https://forum.qt.io/topic/26703/solved-stylize-using-css-and-editable-qcombobox-s-completions-list-view
