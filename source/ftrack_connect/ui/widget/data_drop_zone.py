@@ -6,8 +6,49 @@ import os
 
 from Qt import QtCore
 from Qt import QtWidgets
+import qtawesome as qta
+
 import clique
 import riffle.browser
+from riffle.icon_factory import IconFactory, IconType
+
+
+class CustomIconFactory(IconFactory):
+
+    def icon(self, specification):
+        '''Return appropriate icon for *specification*.
+        *specification* should be either:
+            * An instance of :py:class:`riffle.model.Item`
+            * One of the defined icon types (:py:class:`IconType`)
+        '''
+        if isinstance(specification, riffle.model.Item):
+            specification = self.type(specification)
+
+        icon = None
+
+        if specification == IconType.Computer:
+            icon = qta.icon('ftrack.computer')
+
+        elif specification == IconType.Mount:
+            icon = qta.icon('ftrack.dns')
+
+        elif specification == IconType.Directory:
+            icon = qta.icon('ftrack.folder')
+
+        elif specification == IconType.File:
+            icon = qta.icon('ftrack.file')
+
+        elif specification == IconType.Collection:
+            icon = qta.icon('ftrack.content-copy')
+
+        return icon
+
+
+class CustomFilesystemBrowser(riffle.browser.FilesystemBrowser):
+
+    def _construct(self):
+        super(CustomFilesystemBrowser, self)._construct()
+        self._upButton.setIcon(qta.icon('mdi.chevron-up'))
 
 
 class DataDropZone(QtWidgets.QFrame):
@@ -56,7 +97,7 @@ class DataDropZone(QtWidgets.QFrame):
         '''Show browse dialog and emit dataSelected signal on file select.'''
         # Recreate browser on each browse to avoid issues where files are
         # removed and also get rid of any caching issues.
-        dialog = riffle.browser.FilesystemBrowser(parent=self)
+        dialog = CustomFilesystemBrowser(parent=self, iconFactory=CustomIconFactory())
         dialog.setMinimumSize(900, 500)
 
         if self._currentLocation:

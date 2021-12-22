@@ -2,6 +2,7 @@
 # :copyright: Copyright (c) 2015 ftrack
 
 from Qt import QtWidgets, QtCore, QtGui
+import qtawesome as qta
 
 from ftrack_connect.ui.widget import entity_path as _entity_path
 from ftrack_connect.ui.widget import entity_browser as _entity_browser
@@ -53,11 +54,12 @@ class EntitySelector(QtWidgets.QStackedWidget):
 
         self.entityPath = _entity_path.EntityPath()
         presentationWidget.layout().addWidget(self.entityPath)
+        cancel_button = qta.icon('ftrack.cancel')
 
         self.discardEntityButton = QtWidgets.QPushButton()
+        self.discardEntityButton.setIcon(cancel_button)
+
         self.discardEntityButton.setObjectName('entity-selector-remove-button')
-        self.discardEntityButton.setIconSize(QtCore.QSize(20, 20))
-        self.discardEntityButton.setFixedWidth(20)
         self.discardEntityButton.clicked.connect(
             self._onDiscardEntityButtonClicked
         )
