@@ -6,6 +6,7 @@ import os
 import subprocess
 import re
 import glob
+import shutil
 
 from pkg_resources import parse_version
 from setuptools import setup, find_packages, Command
@@ -42,6 +43,9 @@ RESOURCE_TARGET_PATH = os.path.join(
 
 README_PATH = os.path.join(os.path.dirname(__file__), 'README.rst')
 PACKAGES_PATH = os.path.join(os.path.dirname(__file__), 'source')
+
+FONTS_PATH = os.path.join(RESOURCE_PATH, 'font')
+FONTS_TAREGET_PATH = os.path.join(SOURCE_PATH, 'ftrack_connect', 'fonts')
 
 
 
@@ -87,6 +91,12 @@ class BuildResources(Command):
                 sys.stdout.write(line.replace(line, replace))
             else:
                 sys.stdout.write(line)
+
+    def _copy_fonts(self):
+        if os.path.exists(FONTS_TAREGET_PATH):
+            shutil.rmtree(FONTS_TAREGET_PATH)
+
+        shutil.copytree(FONTS_PATH, FONTS_TAREGET_PATH)
 
     def run(self):
         '''Run build.'''
@@ -146,6 +156,7 @@ class BuildResources(Command):
             )
 
         self._replace_imports_()
+        self._copy_fonts()
 
 
 class BuildEgg(BuildEggCommand):
@@ -228,7 +239,6 @@ version_template = '''
 __version__ = {version!r}
 '''
 
-
 # General configuration.
 configuration = dict(
     name='ftrack-connect',
@@ -240,6 +250,7 @@ configuration = dict(
     author_email='support@ftrack.com',
     license='Apache License (2.0)',
     packages=find_packages(PACKAGES_PATH),
+    include_package_data=True,
     use_scm_version={
         'write_to': 'source/ftrack_connect/_version.py',
         'write_to_template': version_template,
@@ -262,12 +273,13 @@ configuration = dict(
         'clique==1.6.1',
         'PySide2 >=5, <6',
         'Riffle >= 1.0.1',
-        'ftrack-python-api ==2.2.0rc1',
+        'ftrack-python-api',
         'arrow >= 0.4.6, < 1',
         'appdirs >= 1.4, < 1.5',
         'requests >= 2, <3',
         'lowdown >= 0.1.0, < 1',
         'Qt.py >=1.0.0, < 2',
+        'qtawesome'
     ],
     tests_require=[
         'pytest >= 2.3.5, < 3'
@@ -289,8 +301,8 @@ configuration = dict(
     data_files=[
         (
             'ftrack_connect_resource/hook',
-            glob.glob(os.path.join(RESOURCE_PATH, 'hook', '*.py'))
-        )
+            [os.path.relpath(path) for path in glob.glob(os.path.join(RESOURCE_PATH, 'hook', '*.py'))]
+        ),
     ],
     zip_safe=False,
     python_requires=">=3, <4.0"

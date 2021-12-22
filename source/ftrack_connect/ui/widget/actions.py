@@ -1,15 +1,15 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
-
+import os
 import json
 import time
 import logging
 import functools
+import qtawesome as qta
 
 from Qt import QtCore
 from Qt import QtWidgets
 import ftrack_api.event.base
-
 import ftrack_connect.asynchronous
 import ftrack_connect.error
 import ftrack_connect.session
@@ -93,6 +93,10 @@ class Actions(QtWidgets.QWidget):
         self._actions = []
 
         self._entitySelector = entity_selector.EntitySelector(self.session)
+        self._entitySelector.assignedContextSelector.setPlaceholderText(
+            'Browse contexts to discover more actions.'
+        )
+
         self._entitySelector.setFixedHeight(50)
         self._entitySelector.entityChanged.connect(
             self._onEntityChanged
@@ -238,7 +242,7 @@ class Actions(QtWidgets.QWidget):
         else:
             self._allLabel.setAlignment(QtCore.Qt.AlignCenter)
             self._allLabel.setText(
-                '<h2 style="font-weight: normal">No actions found</h2>'
+                '<h2 style="font-weight: medium">No actions found</h2>'
                 '<p>Try another selection or add some actions.</p>'
             )
 

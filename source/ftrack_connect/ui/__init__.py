@@ -9,3 +9,4 @@ from Qt import QtXml
 
 # Load UI resources such as icons.
 from . import resource as _resource
+

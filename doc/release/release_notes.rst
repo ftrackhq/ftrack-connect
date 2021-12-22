@@ -10,15 +10,101 @@ Release Notes
 
 .. release:: Upcoming
 
-    .. change:: new:
+    .. change:: changed
+        :tags: UX
+
+        Update icon set to use font icons (material/ftrack icons) to ensure full hidpi support.
+
+    .. change:: changed
+        :tags: UX
+
+        Consolidate font using Roboto.
+
+    .. change:: changed
+        :tags: Logging
+
+        Improve logging readability.
+
+    .. change:: new
+        :tags: API
+
+        Restore ftrack_connect.application module to provide environment variable helper methods.
+
+        .. note::
+
+            We provide for backward compatibility the method **prependPath** and **appendPath**, but these will likely be deprated at a later stage.
+            The use of newer methods **prepend_path** and **append_path** in the same module are preferred.
+
+
+.. release:: 2.0.0-rc-3
+    :date: 2021-09-23
+
+    .. change:: changed
+        :tags: Setup
+
+        Use latest api release version.
+
+    .. change:: fixed
+        :tags: API
+
+        Cannot publish after a failed publish, and need to restart connect.
+
+
+.. release:: 2.0.0-rc-2
+    :date: 2021-07-13
+
+    .. change:: changed
+        :tags: Documentation
+
+        Update with latest images.
+
+.. release:: 2.0.0-rc-1
+    :date: 2021-06-18
+
+    .. change:: changed
+        :tags: UI
+
+        Integrations are returned sorted by name in About page.
+
+    .. change:: changed
+        :tags: ConnectWidetPlugin
+
+        Improve error handling.
+
+.. release:: 2.0.0-beta-4
+    :date: 2021-06-07
+
+    .. change:: new
+        :tags: UI
+
+        Allow connect to be always on top of other windows.
+
+
+.. release:: 2.0.0-beta-3
+    :date: 2021-05-21
+
+    .. change:: changed
+        :tags: API
+
+        Review ConnectWidgetPlugin base classes.
+
+
+.. release:: 2.0.0-beta-2
+    :date: 2021-03-18
+
+    .. change:: new
         :tags: Ui
 
         Provide ability to extend connect through ConnectWidgets plugins.
 
+
+.. release:: 2.0.0-beta-1
+    :date: 2021-03-11
+
     .. change:: changed
         :tags: Ui
 
-        Move to Pyside2.
+        Move to `Pyside2 <https://pypi.org/project/PySide2/>`_.
 
     .. change:: changed
         :tags: API
@@ -33,12 +119,12 @@ Release Notes
     .. change:: new
         :tags: Ui
 
-        Replace QtExt with Qt.py module.
+        Replace `QtExt <https://bitbucket.org/ftrack/qtext>`_ with `Qt.py <https://github.com/mottosso/Qt.py>`_ module.
 
     .. change:: changed
         :tags: changed
 
-        Move connector integration codebase to separate repository.
+        Move connector integration codebase to `separate repository <https://bitbucket.org/ftrack/ftrack-connector-legacy>`_
 
     .. change:: new
         :tags: Setup
@@ -49,6 +135,17 @@ Release Notes
         :tags: Application launcher
 
         Standalone installation does not correctly inject dependencies at application startup.
+
+    .. change:: changed
+        :tags: code
+
+        Port code to python3.
+        
+
+.. warning:: 
+
+    This is the last version supporting `ftrack-python-legacy-api <https://bitbucket.org/ftrack/ftrack-python-legacy-api>`_ / python 2.X and related modules and integrations.
+
 
 .. release:: 1.1.9
     :date: 2021-03-11

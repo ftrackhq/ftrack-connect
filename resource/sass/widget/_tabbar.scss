@@ -19,7 +19,6 @@ QTabBar::tab {
     padding: 8px 10px;
     color: $gray;
     border-bottom: 2px solid $white;
-
 }
 
 QTabBar#application-tab-bar::tab:selected {
@@ -27,5 +26,4 @@ QTabBar#application-tab-bar::tab:selected {
     background-repeat: none;
     color: $text-color;
     border-bottom: 2px solid $brand-primary;
-
 }
