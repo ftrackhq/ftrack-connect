@@ -4,6 +4,15 @@
 from Qt import QtWidgets, QtCore, QtGui
 
 
+class MousePressedFilter(QtCore.QObject):
+    '''Event filter to show completer on click'''
+    def eventFilter(self, widget, event):
+        if event.type() == QtCore.QEvent.MouseButtonPress:
+            widget.parent().completer.complete()
+            return False
+        else:
+            return False
+
 class ItemSelector(QtWidgets.QComboBox):
     '''Item selector widget.'''
 
@@ -25,6 +34,8 @@ class ItemSelector(QtWidgets.QComboBox):
 
         '''
         super(ItemSelector, self).__init__(*args, **kwargs)
+        self.mouse_clicked_filter = MousePressedFilter()
+
         self.itemDelegate = QtWidgets.QStyledItemDelegate()
         view = QtWidgets.QListView()
         self.setView(view)
@@ -41,7 +52,6 @@ class ItemSelector(QtWidgets.QComboBox):
         self.completer.setPopup(self.view())
         self.completer.popup().setObjectName("completerPopup")
         self.completer.popup().setAttribute(QtCore.Qt.WA_TranslucentBackground, True)
-        # self.completer.popup().setAutofillBackground(False)
 
         self.setCompleter(self.completer)
         self.lineEdit().textEdited[str].connect(self.pFilterModel.setFilterFixedString)
@@ -54,9 +64,12 @@ class ItemSelector(QtWidgets.QComboBox):
 
         self.currentIndexChanged.connect(self._onCurrentIndexChanged)
         self.model = QtGui.QStandardItemModel()
+        self.lineEdit().installEventFilter(self.mouse_clicked_filter)
 
         self.setModel(self.model)
         # Set style delegate to allow styling of combobox menu via Qt Stylesheet
+        self.setDelegate()
+
         self.setItems()
 
     def _onCurrentIndexChanged(self):
@@ -141,7 +154,6 @@ class ItemSelector(QtWidgets.QComboBox):
         super(ItemSelector, self).setModel( model )
         self.pFilterModel.setSourceModel( model )
         self.completer.setModel(self.pFilterModel)
-        self.setDelegate()
 
     def setModelColumn(self, column):
         self.completer.setCompletionColumn( column )
