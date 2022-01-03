@@ -3,7 +3,6 @@
 
 
 import ftrack_connect.asynchronous
-import ftrack_connect.session
 from ftrack_connect.ui.widget import item_selector as _item_selector
 
 

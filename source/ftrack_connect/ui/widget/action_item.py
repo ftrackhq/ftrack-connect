@@ -9,7 +9,6 @@ import ftrack_api.event.base
 
 import ftrack_connect.asynchronous
 from ftrack_connect.ui.widget.thumbnail import ActionIcon
-import ftrack_connect.session
 
 
 class ActionItem(QtWidgets.QWidget):
