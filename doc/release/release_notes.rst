@@ -13,6 +13,11 @@ Release Notes
     .. change:: changed
         :tags: UX
 
+        Provide drop down menu with autocomplete and make them searchable.
+
+    .. change:: changed
+        :tags: UX
+
         Update icon set to use font icons (material/ftrack icons) to ensure full hidpi support.
 
     .. change:: changed
