@@ -588,9 +588,15 @@ class Application(QtWidgets.QMainWindow):
         self.tray.setContextMenu(
             self.trayMenu
         )
-        self.tray.setIcon(
-            QtGui.QPixmap(':/ftrack/image/default/ftrackLogoWhite')
-        )
+
+        if platform.system() != 'Darwin':
+            self.tray.setIcon(
+                QtGui.QPixmap(':/ftrack/image/default/ftrackLogoWhite')
+            )
+        else:
+            self.tray.setIcon(
+                QtGui.QPixmap(':/ftrack/image/default/ftrackLogoWhiteMac')
+            )
 
     def _initialiseMenuBar(self):
         '''Initialise and add connect widget to widgets menu.'''

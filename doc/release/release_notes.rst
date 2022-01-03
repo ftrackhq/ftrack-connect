@@ -10,6 +10,11 @@ Release Notes
 
 .. release:: Upcoming
 
+    .. change:: fixed
+        :tags: UX
+
+        Menubar icon smaller on Mac.
+
     .. change:: changed
         :tags: UX
 

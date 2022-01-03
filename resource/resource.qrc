@@ -4,6 +4,7 @@
         <file alias='ftrackLogoGreyDark'>image/ftrack_icon_circle_dark.svg</file>
         <file alias='ftrackLogoColor'>image/ftrack_icon_circle_light.svg</file>
         <file alias='ftrackLogoWhite'>image/ftrack_icon_circle_white.svg</file>
+        <file alias='ftrackLogoWhiteMac'>image/ftrack_logo_menu_bar_mac.svg</file>
         <file alias='ftrackLogoLabel'>image/ftrack_logo_gray.svg</file>
         <file alias='ftrackLogoLabelDark'>image/ftrack_logo_dark.svg</file>
     </qresource>
