@@ -45,7 +45,7 @@ README_PATH = os.path.join(os.path.dirname(__file__), 'README.rst')
 PACKAGES_PATH = os.path.join(os.path.dirname(__file__), 'source')
 
 FONTS_PATH = os.path.join(RESOURCE_PATH, 'font')
-FONTS_TAREGET_PATH = os.path.join(SOURCE_PATH, 'ftrack_connect', 'fonts')
+FONTS_TARGET_PATH = os.path.join(SOURCE_PATH, 'ftrack_connect', 'fonts')
 
 
 
@@ -93,10 +93,10 @@ class BuildResources(Command):
                 sys.stdout.write(line)
 
     def _copy_fonts(self):
-        if os.path.exists(FONTS_TAREGET_PATH):
-            shutil.rmtree(FONTS_TAREGET_PATH)
+        if os.path.exists(FONTS_TARGET_PATH):
+            shutil.rmtree(FONTS_TARGET_PATH)
 
-        shutil.copytree(FONTS_PATH, FONTS_TAREGET_PATH)
+        shutil.copytree(FONTS_PATH, FONTS_TARGET_PATH)
 
     def run(self):
         '''Run build.'''
