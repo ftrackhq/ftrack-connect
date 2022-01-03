@@ -67,8 +67,6 @@ class ItemSelector(QtWidgets.QComboBox):
         self.lineEdit().installEventFilter(self.mouse_clicked_filter)
 
         self.setModel(self.model)
-        # Set style delegate to allow styling of combobox menu via Qt Stylesheet
-        self.setDelegate()
 
         self.setItems()
 
@@ -135,9 +133,7 @@ class ItemSelector(QtWidgets.QComboBox):
         currentItem = self.currentItem()
         self.clear()
 
-        # Add default empty item
-        # self.lineEdit().setPlaceholderText(self._emptyLabel)
-        self.addItem(str(self._emptyLabel), None)
+        self.lineEdit().setPlaceholderText(self._emptyLabel)
 
         for item in items:
             label = item.get(self._labelField) or self._defaultLabel
@@ -154,6 +150,8 @@ class ItemSelector(QtWidgets.QComboBox):
         super(ItemSelector, self).setModel( model )
         self.pFilterModel.setSourceModel( model )
         self.completer.setModel(self.pFilterModel)
+        # Set style delegate to allow styling of combobox menu via Qt Stylesheet
+        self.setDelegate()
 
     def setModelColumn(self, column):
         self.completer.setCompletionColumn( column )
