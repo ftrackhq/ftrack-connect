@@ -4,7 +4,6 @@
 from Qt import QtWidgets, QtCore
 
 import ftrack_connect.asynchronous
-import ftrack_connect.session
 
 
 class EntityPath(QtWidgets.QLineEdit):

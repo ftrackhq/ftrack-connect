@@ -26,6 +26,11 @@ Release Notes
         Consolidate font using Roboto.
 
     .. change:: changed
+        :tags: API
+
+        Remove `ftrack_connect.session` utility class, and `shared_session` usage.
+
+    .. change:: changed
         :tags: Logging
 
         Improve logging readability.

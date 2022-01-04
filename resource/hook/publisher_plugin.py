@@ -79,7 +79,7 @@ class Publisher(ftrack_connect.ui.application.ConnectWidget):
             self.blockingOverlay.confirmButton.show()
             self.blockingOverlay.show()
 
-            ftrack_connect.usage.send_event('PUBLISHED-FROM-CONNECT')
+            ftrack_connect.usage.send_event(self.session, 'PUBLISHED-FROM-CONNECT')
 
 
     def _onEntityChanged(self):

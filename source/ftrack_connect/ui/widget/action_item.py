@@ -11,7 +11,6 @@ import ftrack_api.event.base
 from ftrack_connect import load_icons
 import ftrack_connect.asynchronous
 from ftrack_connect.ui.widget.thumbnail import ActionIcon
-import ftrack_connect.session
 
 # We need to force load the icons or ftrack.<icon> won't be available
 # not sure why is the case, likely due to be in threded function.
