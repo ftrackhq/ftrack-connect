@@ -29,6 +29,9 @@ class AssetNameValidator(QtGui.QValidator):
         assetTypeId = self.assetTypeSelector.currentItem()
         isValid = True
         for asset_id in self.assetSelector.items():
+            if not asset_id:
+                isValid = False
+                continue
             asset = self.session.get('Asset', asset_id)
             if (
                 asset['type']['id'] == assetTypeId
