@@ -10,6 +10,11 @@ Release Notes
 
 .. release:: Upcoming
 
+    .. change:: changed
+        :tags: UX
+
+        Provide placeholder text in context selectors.
+
     .. change:: fixed
         :tags: UX
 
