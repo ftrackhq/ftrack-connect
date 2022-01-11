@@ -83,6 +83,11 @@ class Publisher(QtWidgets.QWidget):
 
         # Add entity selector.
         self.entitySelector = EntitySelector(self.session)
+
+        self.entitySelector.assignedContextSelector.setPlaceholderText(
+            'Click Browse to select a context to publish to.'
+        )
+
         formLayout.addRow('Linked to', self.entitySelector)
 
         # Add asset options.

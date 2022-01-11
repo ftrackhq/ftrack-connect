@@ -94,7 +94,7 @@ class Actions(QtWidgets.QWidget):
 
         self._entitySelector = entity_selector.EntitySelector(self.session)
         self._entitySelector.assignedContextSelector.setPlaceholderText(
-            'Browse contexts to discover more actions.'
+            'Click Browse to discover more actions.'
         )
 
         self._entitySelector.setFixedHeight(50)
