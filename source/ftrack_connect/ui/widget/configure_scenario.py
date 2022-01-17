@@ -122,8 +122,8 @@ class ConfigureScenario(QtWidgets.QWidget):
         label.setObjectName('green-link')
         label.setText(
             '<a style="color: #935BA2;" '
-            'href="{0}/doc/using/managing_versions/storage_scenario.html"> '
-            'Learn more about storage scenarios.'.format(session.server_url)
+            'href="https://help.ftrack.com/en/articles/1040436-configuring-file-storage"> '
+            'Learn more about storage scenarios.'
         )
         label.setAlignment(QtCore.Qt.AlignCenter)
         label.setOpenExternalLinks(True)

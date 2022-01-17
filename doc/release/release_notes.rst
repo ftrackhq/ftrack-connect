@@ -10,6 +10,11 @@ Release Notes
 
 .. release:: Upcoming
 
+    .. change:: fixed
+        :tags: API
+
+        Storage scenario help points to dead link.
+
     .. change:: changed
         :tags: UX
 

@@ -167,6 +167,7 @@ class Actions(QtWidgets.QWidget):
         # Send usage event in the main thread to prevent X server threading
         # related crashes on Linux.
         ftrack_connect.usage.send_event(
+            self.session,
             'LAUNCHED-ACTION',
             metadata,
             asynchronous=False
