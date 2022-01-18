@@ -132,6 +132,8 @@ def main(arguments=None):
     font = application.font()
     application.setFont(font)
 
+    application.aboutToQuit.connect(connectWindow.emitConnectUsage)
+
     return application.exec_()
 
 
