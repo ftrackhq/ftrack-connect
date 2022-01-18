@@ -121,6 +121,7 @@ class Application(QtWidgets.QMainWindow):
     loginSuccessSignal = QtCore.Signal()
 
     def emitConnectUsage(self):
+        '''Emit data to intercom to track Connect data usage'''
         connect_stopped_time = time.time() 
 
         metadata = {
