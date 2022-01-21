@@ -133,9 +133,9 @@ class Application(QtWidgets.QMainWindow):
 
         ftrack_connect.usage.send_event(
             self.session,
-            'LAUNCHED-ACTION',
+            'STARTED-CONNECT',
             metadata,
-            asynchronous=True
+            asynchronous=False
         )
 
     @property
