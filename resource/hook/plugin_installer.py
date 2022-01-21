@@ -122,33 +122,40 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         if not data:
             return
 
+        # add full source path
+
+        stored_item = self.plugin_is_available(data)
         data['path'] = os.path.abspath(file_path)
 
-        is_available = self.plugin_is_available(data)
-        if not is_available[0]:
-            # add full sourcepath
+        item = QtWidgets.QListWidgetItem(data['name'])
+        item.setData(ROLES.PLUGIN_DATA, data)
+        item.setData(ROLES.PLUGIN_STATUS, status)
+        item.setIcon(STATUS_ICONS[status])
 
-            item = QtWidgets.QListWidgetItem(data['name'])
-            item.setData(ROLES.PLUGIN_DATA, data)
-            item.setData(ROLES.PLUGIN_STATUS, status)
-            item.setIcon(STATUS_ICONS[status])
+        if not stored_item:
+            # add new plugin
+            print('Adding new {}'.format(data))
+
             self.plugin_list.addItem(item)
             return
 
-        plugin_data = is_available[0]
-        plugin_status = is_available[1]
+        stored_data = stored_item.data(ROLES.PLUGIN_DATA)
+        stored_status = stored_item.data(ROLES.PLUGIN_STATUS)
 
-        # if data['statys'] == STATUSES.NEW:
+        if stored_status == STATUSES.NEW and status == STATUSES.NEW:
+            print('{} version {} Already available'.format(data['name'], data['version']))
+            return
+
+        if stored_status == STATUSES.INSTALLED and status == STATUSES.NEW:
+            # handle update
+            print('updating : {} with {}'.format(stored_data, data))
+            stored_item.setIcon(STATUS_ICONS[STATUSES.UPDATE])
 
     def plugin_is_available(self, plugin_data):
-        print('checking for plugin : {}'.format(plugin_data))
         found = self.plugin_list.findItems(plugin_data['name'], QtCore.Qt.MatchWildcard)
         if not found:
-            return False, -1
-
-        data = found[0].data(ROLES.PLUGIN_DATA)
-        status = found[0].data(ROLES.PLUGIN_STATUS)
-        return data, status
+            return
+        return found[0]
 
     def _is_plugin_valid(self, plugin):
         match = self.plugin_re.match(plugin)
