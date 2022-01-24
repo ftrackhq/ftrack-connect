@@ -25,7 +25,6 @@ STATUS_ICONS = {
     STATUSES.INSTALLED: QtGui.QIcon(':/ftrack/image/light/project'),
     STATUSES.NEW: QtGui.QIcon(':/ftrack/image/light/action'),
     STATUSES.UPDATE: QtGui.QIcon(':/ftrack/image/light/upArrow'),
-
 }
 
 
@@ -44,19 +43,14 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         self.setProperty('ftrackDropZone', True)
         self.setObjectName('ftrack-connect-publisher-browse-button')
 
-
         layout = QtWidgets.QVBoxLayout()
         self.setLayout(layout)
-        # self.browser = data_drop_zone.DataDropZone()
-        # self.browser._label.setText('Drop Plugins here')
-        # self.browser.dataSelected.connect(self._onDataSelected)
         self.plugin_list = QtWidgets.QListWidget()
 
         button_layout = QtWidgets.QHBoxLayout()
         apply_button = QtWidgets.QPushButton('Apply changes')
         button_layout.addWidget(apply_button)
 
-        # layout.addWidget(self.browser)
         layout.addWidget(self.plugin_list)
         layout.addLayout(button_layout)
         self.populuate_installed_plugins()
@@ -134,7 +128,7 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
 
         if not stored_item:
             # add new plugin
-            print('Adding new {}'.format(data))
+            logger.info('Adding new {}'.format(data))
 
             self.plugin_list.addItem(item)
             return
@@ -143,13 +137,14 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         stored_status = stored_item.data(ROLES.PLUGIN_STATUS)
 
         if stored_status == STATUSES.NEW and status == STATUSES.NEW:
-            print('{} version {} Already available'.format(data['name'], data['version']))
+            logger.info('{} version {} Already available'.format(data['name'], data['version']))
             return
 
         if stored_status == STATUSES.INSTALLED and status == STATUSES.NEW:
             # handle update
-            print('updating : {} with {}'.format(stored_data, data))
+            logger.info('updating : {} with {}'.format(stored_data, data))
             stored_item.setIcon(STATUS_ICONS[STATUSES.UPDATE])
+
 
     def plugin_is_available(self, plugin_data):
         found = self.plugin_list.findItems(plugin_data['name'], QtCore.Qt.MatchWildcard)

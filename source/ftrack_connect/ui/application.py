@@ -86,6 +86,8 @@ class ConnectWidget(QtWidgets.QWidget):
         '''Return name of widget.'''
         return self.__class__.__name__
 
+
+
     def getIdentifier(self):
         '''Return identifier for widget.'''
         return self.getName().lower().replace(' ', '.')
