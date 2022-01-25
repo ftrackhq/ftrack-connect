@@ -35,7 +35,7 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
     plugin_re = re.compile(
         '(?P<name>(([A-Za-z-]+)))-(?P<version>(\w.+))'
     )
-    name = 'Plugin Installer'
+    name = 'Plugin Manager'
 
     # default methods
     def __init__(self, session, parent=None):
@@ -47,7 +47,9 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
 
         layout = QtWidgets.QVBoxLayout()
         self.setLayout(layout)
-        self.plugin_list = QtWidgets.QListWidget()
+        self.plugin_list = QtWidgets.QListView()
+        self.plugin_model = QtGui.QStandardItemModel(self)
+        self.plugin_list.setModel(self.plugin_model)
 
         button_layout = QtWidgets.QHBoxLayout()
         apply_button = QtWidgets.QPushButton('Apply changes')
@@ -123,16 +125,15 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         stored_item = self.plugin_is_available(data)
         data['path'] = os.path.abspath(file_path)
 
-        item = QtWidgets.QListWidgetItem(data['name'])
-        item.setData(ROLES.PLUGIN_DATA, data)
-        item.setData(ROLES.PLUGIN_STATUS, status)
+        item = QtGui.QStandardItem(data['name'])
+        item.setData(data, ROLES.PLUGIN_DATA)
+        item.setData(status, ROLES.PLUGIN_STATUS)
         item.setIcon(STATUS_ICONS[status])
 
         if not stored_item:
             # add new plugin
             logger.info('Adding new {}'.format(data))
-
-            self.plugin_list.addItem(item)
+            self.plugin_model.appendRow(item)
             return
 
         stored_data = stored_item.data(ROLES.PLUGIN_DATA)
@@ -147,9 +148,15 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
             logger.info('updating : {} with {}'.format(stored_data, data))
             stored_item.setIcon(STATUS_ICONS[STATUSES.UPDATE])
 
-
     def plugin_is_available(self, plugin_data):
-        found = self.plugin_list.findItems(plugin_data['name'], QtCore.Qt.MatchWildcard)
+
+        found = self.plugin_model.match(
+            self.plugin_model.index(0, 0),
+            QtCore.Qt.DisplayRole,
+            plugin_data['name']
+        )
+
+        # found = self.plugin_list.findItems(plugin_data['name'], QtCore.Qt.MatchWildcard)
         if not found:
             return
         return found[0]
