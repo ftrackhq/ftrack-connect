@@ -156,10 +156,10 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
             plugin_data['name']
         )
 
-        # found = self.plugin_list.findItems(plugin_data['name'], QtCore.Qt.MatchWildcard)
         if not found:
             return
-        return found[0]
+        result = self.plugin_model.item(found[0].row())
+        return(result)
 
     def _is_plugin_valid(self, plugin):
         match = self.plugin_re.match(plugin)
