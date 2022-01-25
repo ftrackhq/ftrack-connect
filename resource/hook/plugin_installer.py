@@ -5,6 +5,7 @@ import re
 import ftrack_api
 import logging
 from Qt import QtWidgets, QtCore, QtGui
+import qtawesome as qta
 
 import ftrack_connect.ui.application
 logger = logging.getLogger('ftrack_connect.plugin.plugin_installer')
@@ -22,9 +23,9 @@ class ROLES(object):
 
 
 STATUS_ICONS = {
-    STATUSES.INSTALLED: QtGui.QIcon(':/ftrack/image/light/project'),
-    STATUSES.NEW: QtGui.QIcon(':/ftrack/image/light/action'),
-    STATUSES.UPDATE: QtGui.QIcon(':/ftrack/image/light/upArrow'),
+    STATUSES.INSTALLED: QtGui.QIcon(qta.icon('mdi6.harddisk')),
+    STATUSES.NEW:  QtGui.QIcon(qta.icon('mdi6.new-box')),
+    STATUSES.UPDATE:  QtGui.QIcon(qta.icon('mdi6.update')),
 }
 
 
@@ -34,6 +35,7 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
     plugin_re = re.compile(
         '(?P<name>(([A-Za-z-]+)))-(?P<version>(\w.+))'
     )
+    name = 'Plugin Installer'
 
     # default methods
     def __init__(self, session, parent=None):
