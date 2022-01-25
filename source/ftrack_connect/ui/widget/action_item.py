@@ -1,14 +1,20 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
+import os
+import logging
+
+import qtawesome as qta
 
 from Qt import QtCore, QtWidgets, QtGui
 
-import logging
-
 import ftrack_api.event.base
-
+from ftrack_connect import load_icons
 import ftrack_connect.asynchronous
 from ftrack_connect.ui.widget.thumbnail import ActionIcon
+
+# We need to force load the icons or ftrack.<icon> won't be available
+# not sure why is the case, likely due to be in threded function.
+load_icons(os.path.join(os.path.dirname(__file__), '..','..','fonts'))
 
 
 class ActionItem(QtWidgets.QWidget):
@@ -83,7 +89,8 @@ class ActionItem(QtWidgets.QWidget):
             self._hoverIcon = 'menu'
             self._multiple = True
 
-        self._iconLabel = ActionIcon(self)
+        self.action_icon = qta.icon('ftrack.actions')
+        self._iconLabel = ActionIcon(self, default_icon=self.action_icon)
         self._iconLabel.setAlignment(QtCore.Qt.AlignCenter)
         self._iconLabel.setFixedSize(QtCore.QSize(75, 45))
         layout.addWidget(self._iconLabel)
@@ -125,9 +132,7 @@ class ActionItem(QtWidgets.QWidget):
 
     def enterEvent(self, event):
         '''Show hover icon on mouse enter.'''
-        self._iconLabel.loadResource(
-            '{0}{1}'.format(':/ftrack/image/light/', self._hoverIcon)
-        )
+        self._iconLabel.setIcon(qta.icon('mdi.{}'.format(self._hoverIcon)))
 
     def leaveEvent(self, event):
         '''Reset action icon on mouse leave.'''

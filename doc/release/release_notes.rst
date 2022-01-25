@@ -10,10 +10,35 @@ Release Notes
 
 .. release:: Upcoming
 
+    .. change:: added
+        :tags: API
+
+        Emit usage data for Connect session duration along version and os type.
+
     .. change:: fixed
         :tags: API
 
         Storage scenario help points to dead link.
+
+    .. change:: changed
+        :tags: UX
+
+        Provide placeholder text in context selectors.
+
+    .. change:: fixed
+        :tags: UX
+
+        Menubar icon smaller on Mac.
+
+    .. change:: changed
+        :tags: UX
+
+        Update icon set to use font icons (material/ftrack icons) to ensure full hidpi support.
+
+    .. change:: changed
+        :tags: UX
+
+        Consolidate font using Roboto.
 
     .. change:: changed
         :tags: API

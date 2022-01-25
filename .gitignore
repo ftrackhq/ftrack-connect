@@ -39,4 +39,6 @@ Thumbs.db
 .idea/
 source/ftrack_connect/ui/resource.py
 source/ftrack_connect/_version.py
+source/ftrack_connect/fonts/**
+
 

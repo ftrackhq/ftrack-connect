@@ -10,7 +10,6 @@ import urllib.request
 from Qt import QtWidgets, QtCore, QtGui
 import ftrack_connect.worker
 
-
 # Cache of thumbnail images.
 IMAGE_CACHE = dict()
 
@@ -116,11 +115,11 @@ class Base(QtWidgets.QLabel):
 class ActionIcon(Base):
     '''Widget to load action icons over HTTP.'''
 
-
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, default_icon=None):
         '''Initialize action icon.'''
         super(ActionIcon, self).__init__(parent)
         self.setFrameStyle(QtWidgets.QFrame.NoFrame)
+        self._default_icon = default_icon
 
     def setIcon(self, icon):
         '''Set *icon* to a supported icon or show the standard icon.
@@ -129,10 +128,17 @@ class ActionIcon(Base):
 
             * A URL to load the image from starting with 'http'.
         '''
-        if icon and icon[:4] == 'http':
+        if icon and isinstance(icon, QtGui.QIcon):
+            super(ActionIcon, self).setPixmap(
+                icon.pixmap(QtCore.QSize(self.width(), self.height()))
+            )
+
+        elif icon and icon[:4] == 'http':
             self.load(icon)
         else:
-            self.loadResource(':/ftrack/image/light/action')
+            super(ActionIcon, self).setPixmap(
+                self._default_icon.pixmap(QtCore.QSize(self.width(), self.height()))
+            )
 
     def loadResource(self, resource):
         '''Update current pixmap using *resource*.'''

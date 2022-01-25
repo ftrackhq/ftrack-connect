@@ -6,6 +6,7 @@
 import os
 
 from Qt import QtWidgets, QtCore, QtGui, QtCompat
+import qtawesome as qta
 
 import ftrack_connect.ui.model.entity_tree
 import ftrack_connect.ui.widget.overlay
@@ -45,16 +46,22 @@ class EntityBrowser(QtWidgets.QDialog):
         self.headerLayout = QtWidgets.QHBoxLayout()
 
         self.navigationBar = QtWidgets.QTabBar()
+        self.navigationBar.setIconSize(QtCore.QSize(self.size()/2))
         self.navigationBar.setExpanding(False)
         self.navigationBar.setDrawBase(False)
         self.headerLayout.addWidget(self.navigationBar, stretch=1)
 
+        up_button = qta.icon('mdi.chevron-up')
         self.navigateUpButton = QtWidgets.QToolButton()
+        self.navigateUpButton.setIcon(up_button)
+
         self.navigateUpButton.setObjectName('entity-browser-up-button')
         self.navigateUpButton.setToolTip('Navigate up a level.')
         self.headerLayout.addWidget(self.navigateUpButton)
 
+        reload_button = qta.icon('mdi6.sync')
         self.reloadButton = QtWidgets.QToolButton()
+        self.reloadButton.setIcon(reload_button)
         self.reloadButton.setObjectName('entity-browser-reload-button')
         self.reloadButton.setToolTip('Reload listing from server.')
         self.headerLayout.addWidget(self.reloadButton)
@@ -128,7 +135,6 @@ class EntityBrowser(QtWidgets.QDialog):
             0,
             QtWidgets.QHeaderView.Stretch
         )
-
 
         self.acceptButton.clicked.connect(self.accept)
         self.cancelButton.clicked.connect(self.reject)

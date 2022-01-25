@@ -6,6 +6,7 @@
 from Qt import QtWidgets, QtCore, QtGui
 
 import ftrack_connect.worker
+import qtawesome as qta
 
 
 def ItemFactory(session, entity):
@@ -196,12 +197,12 @@ class Context(Item):
     @property
     def icon(self):
         '''Return icon.'''
-        icon = self.entity.get('object_type', {}).get('icon', 'default')
-        return QtGui.QIcon(
-            ':/ftrack/image/{0}/object_type/{1}'.format(
-                self.connect_theme, icon
-            )
-        )
+        icon = self.entity.get('object_type', {}).get('icon', 'file-alert')
+        icon = icon.replace('_', '-')
+        try:
+            return qta.icon('ftrack.{}'.format(icon))
+        except:
+            return qta.icon('mdi.{}'.format(icon))
 
     def _fetchChildren(self):
         '''Fetch and return new child items.'''
@@ -234,9 +235,7 @@ class Project(Context):
     @property
     def icon(self):
         '''Return icon.'''
-        return QtGui.QIcon(
-            ':/ftrack/image/{}/project'.format(self.connect_theme)
-        )
+        return qta.icon('ftrack.project')
 
     @property
     def name(self):
