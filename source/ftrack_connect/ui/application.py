@@ -10,6 +10,7 @@ import logging
 import weakref
 from operator import itemgetter
 import appdirs
+import time
 
 from Qt import QtCore, QtWidgets, QtGui
 
@@ -31,6 +32,7 @@ from ftrack_connect.error import NotUniqueError as _NotUniqueError
 from ftrack_connect.ui import login_tools as _login_tools
 from ftrack_connect.ui.widget import configure_scenario as _scenario_widget
 import ftrack_connect.ui.config
+from ftrack_connect import __version__
 
 
 class ConnectWidgetPlugin(object):
@@ -118,6 +120,24 @@ class Application(QtWidgets.QMainWindow):
     loginSignal = QtCore.Signal(object, object, object)
     loginSuccessSignal = QtCore.Signal()
 
+    def emitConnectUsage(self):
+        '''Emit data to intercom to track Connect data usage'''
+        connect_stopped_time = time.time() 
+
+        metadata = {
+            'label': 'ftrack-connect',
+            'version': ftrack_connect.__version__,
+            'os': platform.platform(),
+            'session-duration': connect_stopped_time - self.__connect_start_time
+        } 
+
+        ftrack_connect.usage.send_event(
+            self.session,
+            'USED-CONNECT',
+            metadata,
+            asynchronous=False
+        )
+
     @property
     def session(self):
         '''Return current session.'''
@@ -131,6 +151,7 @@ class Application(QtWidgets.QMainWindow):
         )
 
         self._session = None
+        self.__connect_start_time = time.time()
 
         self.defaultPluginDirectory = appdirs.user_data_dir(
             'ftrack-connect-plugins', 'ftrack'

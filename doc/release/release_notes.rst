@@ -10,6 +10,11 @@ Release Notes
 
 .. release:: Upcoming
 
+    .. change:: added
+        :tags: API
+
+        Emit usage data for Connect session duration along version and os type.
+
     .. change:: fixed
         :tags: API
 
