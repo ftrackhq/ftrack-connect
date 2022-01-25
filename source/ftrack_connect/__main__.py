@@ -113,6 +113,7 @@ def main(arguments=None):
     # Construct global application.
 
     application = QtWidgets.QApplication([])
+
     application.setOrganizationName('ftrack')
     application.setOrganizationDomain('ftrack.com')
     application.setQuitOnLastWindowClosed(False)
@@ -131,12 +132,11 @@ def main(arguments=None):
         connectWindow.hide()
 
     # Fix for Windows where font size is incorrect for some widgets. For some
-
     # reason, resetting the font here solves the sizing issue.
-
     font = application.font()
     application.setFont(font)
-
+    application.aboutToQuit.connect(connectWindow.emitConnectUsage)
+   
     icon_fonts = os.path.join(os.path.dirname(__file__), 'fonts')
     load_icons(icon_fonts)
 
