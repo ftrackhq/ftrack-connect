@@ -133,7 +133,7 @@ class Application(QtWidgets.QMainWindow):
 
         ftrack_connect.usage.send_event(
             self.session,
-            'STARTED-CONNECT',
+            'USED-CONNECT',
             metadata,
             asynchronous=False
         )
