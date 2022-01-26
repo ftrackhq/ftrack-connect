@@ -4,6 +4,9 @@ import os
 import re
 import ftrack_api
 import logging
+import shutil
+import zipfile
+
 from Qt import QtWidgets, QtCore, QtGui
 import qtawesome as qta
 from distutils.version import LooseVersion
@@ -57,17 +60,20 @@ class PluginProcessor(object):
         self.remove(plugin)
         self.install(plugin)
 
-    @staticmethod
-    def install(plugin):
+    def install(self, plugin):
         source_path = plugin.data(ROLES.PLUGIN_SOURCE_PATH)
-        print('installing : {}'.format(source_path))
-        pass
+        install_path = os.path.dirname(plugin.data(ROLES.PLUGIN_INSTALL_PATH))
 
-    @staticmethod
-    def remove(plugin):
+        plugin_name = os.path.basename(source_path).split('.zip')[0]
+
+        print('installing : {}'.format(source_path))
+        with zipfile.ZipFile(source_path, 'r') as zip_ref:
+            zip_ref.extractall(os.path.join(install_path, plugin_name))
+
+    def remove(self, plugin):
         install_path = plugin.data(ROLES.PLUGIN_INSTALL_PATH)
+        shutil.rmtree(install_path, ignore_errors=False, onerror=None)
         print('removing : {}'.format(install_path))
-        pass
 
 
 class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
@@ -223,7 +229,10 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
             data = match.groupdict()
         else:
             return False
+
         if data['version'].endswith('.zip'):
+            # pop zip extension from the version.
+            # TODO: refine regex to catch extension
             data['version'] = data['version'][:-4]
         return data
 
