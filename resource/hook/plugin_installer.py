@@ -178,7 +178,10 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
             return
 
         # create new plugin item and populate it with data
-        plugin_item = QtGui.QStandardItem('{}\t\r{}'.format(data['name'], data['version']))
+        plugin_item = QtGui.QStandardItem(
+            '{} | {}'.format(data['name'], data['version'])
+        )
+        plugin_item.setFlags(QtCore.Qt.NoItemFlags)
         plugin_item.setData(status, ROLES.PLUGIN_STATUS)
         plugin_item.setData(data['name'], ROLES.PLUGIN_NAME)
         new_plugin_version = LooseVersion(data['version'])
@@ -190,12 +193,23 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         if not stored_item:
             # add new plugin
             if status == STATUSES.INSTALLED:
-                plugin_item.setData(os.path.abspath(file_path), ROLES.PLUGIN_INSTALL_PATH)
+                plugin_item.setData(
+                    os.path.abspath(file_path), ROLES.PLUGIN_INSTALL_PATH
+                )
 
             elif status == STATUSES.NEW:
-                destination_path = os.path.join(self._main_ftrack_connect_plugin_path, os.path.basename(file_path))
-                plugin_item.setData(destination_path, ROLES.PLUGIN_INSTALL_PATH)
-                plugin_item.setData(os.path.abspath(file_path), ROLES.PLUGIN_SOURCE_PATH)
+                destination_path = os.path.join(
+                    self._main_ftrack_connect_plugin_path,
+                    os.path.basename(file_path)
+                )
+
+                plugin_item.setData(
+                    destination_path, ROLES.PLUGIN_INSTALL_PATH
+                )
+
+                plugin_item.setData(
+                    os.path.abspath(file_path), ROLES.PLUGIN_SOURCE_PATH
+                )
 
             self.plugin_model.appendRow(plugin_item)
             return
@@ -243,20 +257,28 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         self.plugin_model.clear()
         plugin_data = self._fetch_installed_plugins()
         for path, plugins in plugin_data.items():
+            if path != self._main_ftrack_connect_plugin_path:
+                continue
             for plugin in plugins:
                 self.addPlugin(os.path.join(path, plugin), STATUSES.INSTALLED)
 
     def _fetch_installed_plugins(self):
         plugin_paths = os.environ.get('FTRACK_CONNECT_PLUGIN_PATH', '').split(os.pathsep)
+
         self._main_ftrack_connect_plugin_path = plugin_paths[0]
+        if len(plugin_paths) > 1:
+            logging.warning(
+                'More than one FTRACK_CONNECT_PLUGIN_PATH found.\n'
+                'Using {}.'.format(
+                    self._main_ftrack_connect_plugin_path
+                )
+            )
 
-        plugins_per_path = {}
-        for plugin_path in plugin_paths:
-            if not plugin_path:
-                continue
-            plugins_per_path.setdefault(plugin_path, [])
-            plugins_per_path[plugin_path] = os.listdir(plugin_path)
-
+        plugins_per_path = {
+            self._main_ftrack_connect_plugin_path: os.listdir(
+                self._main_ftrack_connect_plugin_path
+            )
+        }
         return plugins_per_path
 
     def _setDropZoneState(self, state='default'):
