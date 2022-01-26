@@ -62,26 +62,17 @@ class PluginProcessor(object):
 
     def install(self, plugin):
         source_path = plugin.data(ROLES.PLUGIN_SOURCE_PATH)
-        name = plugin.data(ROLES.PLUGIN_NAME)
-        version = plugin.data(ROLES.PLUGIN_VERSION)
 
         plugin_name = os.path.basename(source_path).split('.zip')[0]
 
         install_path = os.path.dirname(plugin.data(ROLES.PLUGIN_INSTALL_PATH))
         destination_path = os.path.join(install_path, plugin_name)
 
-        print('installing : {} to {}'.format(source_path, destination_path))
         with zipfile.ZipFile(source_path, 'r') as zip_ref:
             zip_ref.extractall(destination_path)
 
-        # update
-        # TODO: model should be reset and new data fetched.... this is for demo only
-        plugin.setIcon(STATUS_ICONS[STATUSES.INSTALLED])
-        plugin.setText('{}\t\r{}'.format(name, version))
-
     def remove(self, plugin):
         install_path = plugin.data(ROLES.PLUGIN_INSTALL_PATH)
-        print('removing : {}'.format(install_path))
         shutil.rmtree(install_path, ignore_errors=False, onerror=None)
 
 
@@ -114,7 +105,8 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
 
         layout.addWidget(self.plugin_list)
         layout.addLayout(button_layout)
-        self.populuate_installed_plugins()
+        self.populate_installed_plugins()
+
         self.apply_button.clicked.connect(self._on_apply_changes)
 
     def _on_apply_changes(self, event):
@@ -122,7 +114,7 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         for i in range(num_items):
             item = self.plugin_model.item(i)
             self.plugin_processor.process(item)
-        self.populuate_installed_plugins()
+        self.populate_installed_plugins()
 
     def _processMimeData(self, mimeData):
         '''Return a list of valid filepaths.'''
@@ -212,10 +204,9 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         stored_status = stored_item.data(ROLES.PLUGIN_STATUS)
         if stored_status == STATUSES.INSTALLED and status == STATUSES.NEW:
             stored_plugin_version = stored_item.data(ROLES.PLUGIN_VERSION)
-            should_update = stored_plugin_version < new_plugin_version
+            should_update = stored_plugin_version != new_plugin_version
             if not should_update:
                 return
-
             # update stored item.
             stored_item.setText('{} > {}'.format(stored_item.text(), new_plugin_version))
             stored_item.setData(STATUSES.UPDATE, ROLES.PLUGIN_STATUS)
@@ -248,8 +239,8 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
             data['version'] = data['version'][:-4]
         return data
 
-    def populuate_installed_plugins(self):
-        # self.plugin_model.reset()
+    def populate_installed_plugins(self):
+        self.plugin_model.clear()
         plugin_data = self._fetch_installed_plugins()
         for path, plugins in plugin_data.items():
             for plugin in plugins:
