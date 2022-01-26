@@ -62,18 +62,19 @@ class PluginProcessor(object):
 
     def install(self, plugin):
         source_path = plugin.data(ROLES.PLUGIN_SOURCE_PATH)
-        install_path = os.path.dirname(plugin.data(ROLES.PLUGIN_INSTALL_PATH))
-
         plugin_name = os.path.basename(source_path).split('.zip')[0]
 
-        print('installing : {}'.format(source_path))
+        install_path = os.path.dirname(plugin.data(ROLES.PLUGIN_INSTALL_PATH))
+        destination_path = os.path.join(install_path, plugin_name)
+
+        print('installing : {} to {}'.format(source_path, destination_path))
         with zipfile.ZipFile(source_path, 'r') as zip_ref:
-            zip_ref.extractall(os.path.join(install_path, plugin_name))
+            zip_ref.extractall(destination_path)
 
     def remove(self, plugin):
         install_path = plugin.data(ROLES.PLUGIN_INSTALL_PATH)
-        shutil.rmtree(install_path, ignore_errors=False, onerror=None)
         print('removing : {}'.format(install_path))
+        shutil.rmtree(install_path, ignore_errors=False, onerror=None)
 
 
 class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
@@ -109,11 +110,11 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         self.apply_button.clicked.connect(self._on_apply_changes)
 
     def _on_apply_changes(self, event):
-
         num_items = self.plugin_model.rowCount()
         for i in range(num_items):
             item = self.plugin_model.item(i)
             self.plugin_processor.process(item)
+        self.populuate_installed_plugins()
 
     def _processMimeData(self, mimeData):
         '''Return a list of valid filepaths.'''
@@ -192,6 +193,8 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
                 plugin_item.setData(os.path.abspath(file_path), ROLES.PLUGIN_INSTALL_PATH)
 
             elif status == STATUSES.NEW:
+                destination_path = os.path.join(self._main_ftrack_connect_plugin_path, os.path.basename(file_path))
+                plugin_item.setData(destination_path, ROLES.PLUGIN_INSTALL_PATH)
                 plugin_item.setData(os.path.abspath(file_path), ROLES.PLUGIN_SOURCE_PATH)
 
             self.plugin_model.appendRow(plugin_item)
@@ -237,6 +240,7 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         return data
 
     def populuate_installed_plugins(self):
+        # self.plugin_model.reset()
         plugin_data = self._fetch_installed_plugins()
         for path, plugins in plugin_data.items():
             for plugin in plugins:
