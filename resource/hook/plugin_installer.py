@@ -20,6 +20,7 @@ class STATUSES(object):
 class ROLES(object):
     PLUGIN_DATA = QtCore.Qt.UserRole + 1
     PLUGIN_STATUS = PLUGIN_DATA + 1
+    PLUGIN_NAME = PLUGIN_STATUS + 1
 
 
 STATUS_ICONS = {
@@ -35,7 +36,7 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
     plugin_re = re.compile(
         '(?P<name>(([A-Za-z-]+)))-(?P<version>(\w.+))'
     )
-    name = 'Plugin Manager'
+    name = 'User Plugin Manager'
 
     # default methods
     def __init__(self, session, parent=None):
@@ -50,7 +51,6 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         self.plugin_list = QtWidgets.QListView()
         self.plugin_model = QtGui.QStandardItemModel(self)
         self.plugin_list.setModel(self.plugin_model)
-
         button_layout = QtWidgets.QHBoxLayout()
         apply_button = QtWidgets.QPushButton('Apply changes')
         button_layout.addWidget(apply_button)
@@ -125,9 +125,11 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         stored_item = self.plugin_is_available(data)
         data['path'] = os.path.abspath(file_path)
 
-        item = QtGui.QStandardItem(data['name'])
+        item = QtGui.QStandardItem('{}::{}'.format(data['name'], data['version']))
         item.setData(data, ROLES.PLUGIN_DATA)
         item.setData(status, ROLES.PLUGIN_STATUS)
+        item.setData(data['name'], ROLES.PLUGIN_NAME)
+        item.setData(STATUS_ICONS[status], QtCore.Qt.DecorationRole)
         item.setIcon(STATUS_ICONS[status])
 
         if not stored_item:
@@ -147,19 +149,20 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
             # handle update
             logger.info('updating : {} with {}'.format(stored_data, data))
             stored_item.setIcon(STATUS_ICONS[STATUSES.UPDATE])
+            stored_item.setData(STATUS_ICONS[STATUSES.UPDATE], QtCore.Qt.DecorationRole)
 
     def plugin_is_available(self, plugin_data):
 
         found = self.plugin_model.match(
             self.plugin_model.index(0, 0),
-            QtCore.Qt.DisplayRole,
+            ROLES.PLUGIN_NAME,
             plugin_data['name']
         )
 
         if not found:
             return
         result = self.plugin_model.item(found[0].row())
-        return(result)
+        return result
 
     def _is_plugin_valid(self, plugin):
         match = self.plugin_re.match(plugin)
