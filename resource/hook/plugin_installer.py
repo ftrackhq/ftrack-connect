@@ -62,6 +62,9 @@ class PluginProcessor(object):
 
     def install(self, plugin):
         source_path = plugin.data(ROLES.PLUGIN_SOURCE_PATH)
+        name = plugin.data(ROLES.PLUGIN_NAME)
+        version = plugin.data(ROLES.PLUGIN_VERSION)
+
         plugin_name = os.path.basename(source_path).split('.zip')[0]
 
         install_path = os.path.dirname(plugin.data(ROLES.PLUGIN_INSTALL_PATH))
@@ -70,6 +73,11 @@ class PluginProcessor(object):
         print('installing : {} to {}'.format(source_path, destination_path))
         with zipfile.ZipFile(source_path, 'r') as zip_ref:
             zip_ref.extractall(destination_path)
+
+        # update
+        # TODO: model should be reset and new data fetched.... this is for demo only
+        plugin.setIcon(STATUS_ICONS[STATUSES.INSTALLED])
+        plugin.setText('{}\t\r{}'.format(name, version))
 
     def remove(self, plugin):
         install_path = plugin.data(ROLES.PLUGIN_INSTALL_PATH)
@@ -213,6 +221,7 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
             stored_item.setData(STATUSES.UPDATE, ROLES.PLUGIN_STATUS)
             stored_item.setIcon(STATUS_ICONS[STATUSES.UPDATE])
             stored_item.setData(os.path.abspath(file_path), ROLES.PLUGIN_SOURCE_PATH)
+            stored_item.setData(new_plugin_version, ROLES.PLUGIN_VERSION)
 
     def plugin_is_available(self, plugin_data):
         found = self.plugin_model.match(
