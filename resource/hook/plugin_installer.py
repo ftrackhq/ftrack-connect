@@ -6,6 +6,7 @@ import ftrack_api
 import logging
 from Qt import QtWidgets, QtCore, QtGui
 import qtawesome as qta
+from distutils.version import LooseVersion
 
 import ftrack_connect.ui.application
 logger = logging.getLogger('ftrack_connect.plugin.plugin_installer')
@@ -18,9 +19,10 @@ class STATUSES(object):
 
 
 class ROLES(object):
-    PLUGIN_DATA = QtCore.Qt.UserRole + 1
-    PLUGIN_STATUS = PLUGIN_DATA + 1
+    PLUGIN_STATUS = QtCore.Qt.UserRole + 1
     PLUGIN_NAME = PLUGIN_STATUS + 1
+    PLUGIN_VERSION = PLUGIN_NAME + 1
+    PLUGIN_PATH = PLUGIN_VERSION + 1
 
 
 STATUS_ICONS = {
@@ -120,36 +122,36 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         if not data:
             return
 
-        # add full source path
+        # create new plugin item and populate it with data
+        plugin_item = QtGui.QStandardItem('{}\t\r{}'.format(data['name'], data['version']))
+        plugin_item.setData(status, ROLES.PLUGIN_STATUS)
+        plugin_item.setData(data['name'], ROLES.PLUGIN_NAME)
+        plugin_item.setData(os.path.abspath(file_path), ROLES.PLUGIN_PATH)
+        new_plugin_version = LooseVersion(data['version'])
+        plugin_item.setData(new_plugin_version, ROLES.PLUGIN_VERSION)
+        plugin_item.setIcon(STATUS_ICONS[status])
 
+        # check if is a new plugin.....
         stored_item = self.plugin_is_available(data)
-        data['path'] = os.path.abspath(file_path)
-
-        item = QtGui.QStandardItem('{}::{}'.format(data['name'], data['version']))
-        item.setData(data, ROLES.PLUGIN_DATA)
-        item.setData(status, ROLES.PLUGIN_STATUS)
-        item.setData(data['name'], ROLES.PLUGIN_NAME)
-        item.setData(STATUS_ICONS[status], QtCore.Qt.DecorationRole)
-        item.setIcon(STATUS_ICONS[status])
-
         if not stored_item:
             # add new plugin
-            logger.info('Adding new {}'.format(data))
-            self.plugin_model.appendRow(item)
+            # logger.info('Adding new {}'.format(data))
+            self.plugin_model.appendRow(plugin_item)
             return
 
-        stored_data = stored_item.data(ROLES.PLUGIN_DATA)
+        # plugin already exist.... let's check what we need to do....
         stored_status = stored_item.data(ROLES.PLUGIN_STATUS)
 
-        if stored_status == STATUSES.NEW and status == STATUSES.NEW:
-            logger.info('{} version {} Already available'.format(data['name'], data['version']))
-            return
-
         if stored_status == STATUSES.INSTALLED and status == STATUSES.NEW:
-            # handle update
-            logger.info('updating : {} with {}'.format(stored_data, data))
+            stored_plugin_version = stored_item.data(ROLES.PLUGIN_VERSION)
+            should_update = stored_plugin_version < new_plugin_version
+            if not should_update:
+                return
+
+            logger.info('updating : {} to version {} from {}'.format(data['name'], new_plugin_version, stored_plugin_version))
+            stored_item.setText('{} > {}'.format(stored_item.text(), new_plugin_version))
+            stored_item.setData(STATUSES.UPDATE, ROLES.PLUGIN_STATUS)
             stored_item.setIcon(STATUS_ICONS[STATUSES.UPDATE])
-            stored_item.setData(STATUS_ICONS[STATUSES.UPDATE], QtCore.Qt.DecorationRole)
 
     def plugin_is_available(self, plugin_data):
 
