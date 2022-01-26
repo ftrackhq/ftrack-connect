@@ -16,13 +16,15 @@ class STATUSES(object):
     INSTALLED = 0
     NEW = 1
     UPDATE = 2
+    REMOVE = 3
 
 
 class ROLES(object):
     PLUGIN_STATUS = QtCore.Qt.UserRole + 1
     PLUGIN_NAME = PLUGIN_STATUS + 1
     PLUGIN_VERSION = PLUGIN_NAME + 1
-    PLUGIN_PATH = PLUGIN_VERSION + 1
+    PLUGIN_SOURCE_PATH = PLUGIN_VERSION + 1
+    PLUGIN_INSTALL_PATH = PLUGIN_SOURCE_PATH +1
 
 
 STATUS_ICONS = {
@@ -30,6 +32,42 @@ STATUS_ICONS = {
     STATUSES.NEW:  QtGui.QIcon(qta.icon('mdi6.new-box')),
     STATUSES.UPDATE:  QtGui.QIcon(qta.icon('mdi6.update')),
 }
+
+
+class PluginProcessor(object):
+    def __init__(self):
+        super(PluginProcessor, self).__init__()
+
+        self.process_mapping = {
+            STATUSES.NEW: self.install,
+            STATUSES.UPDATE: self.update,
+            STATUSES.REMOVE: self.remove
+        }
+
+    def process(self, plugin):
+        status = plugin.data(ROLES.PLUGIN_STATUS)
+        plugin_fn = self.process_mapping.get(status)
+
+        if not plugin_fn:
+            return
+
+        plugin_fn(plugin)
+
+    def update(self, plugin):
+        self.remove(plugin)
+        self.install(plugin)
+
+    @staticmethod
+    def install(plugin):
+        source_path = plugin.data(ROLES.PLUGIN_SOURCE_PATH)
+        print('installing : {}'.format(source_path))
+        pass
+
+    @staticmethod
+    def remove(plugin):
+        install_path = plugin.data(ROLES.PLUGIN_INSTALL_PATH)
+        print('removing : {}'.format(install_path))
+        pass
 
 
 class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
@@ -44,6 +82,8 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
     def __init__(self, session, parent=None):
         '''Instantiate the actions widget.'''
         super(PluginInstaller, self).__init__(session, parent=parent)
+        self.plugin_processor = PluginProcessor()
+        self._main_ftrack_connect_plugin_path = None
         self.setAcceptDrops(True)
         self.setProperty('ftrackDropZone', True)
         self.setObjectName('ftrack-connect-publisher-browse-button')
@@ -54,12 +94,20 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         self.plugin_model = QtGui.QStandardItemModel(self)
         self.plugin_list.setModel(self.plugin_model)
         button_layout = QtWidgets.QHBoxLayout()
-        apply_button = QtWidgets.QPushButton('Apply changes')
-        button_layout.addWidget(apply_button)
+        self.apply_button = QtWidgets.QPushButton('Apply changes')
+        button_layout.addWidget(self.apply_button)
 
         layout.addWidget(self.plugin_list)
         layout.addLayout(button_layout)
         self.populuate_installed_plugins()
+        self.apply_button.clicked.connect(self._on_apply_changes)
+
+    def _on_apply_changes(self, event):
+
+        num_items = self.plugin_model.rowCount()
+        for i in range(num_items):
+            item = self.plugin_model.item(i)
+            self.plugin_processor.process(item)
 
     def _processMimeData(self, mimeData):
         '''Return a list of valid filepaths.'''
@@ -126,7 +174,6 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         plugin_item = QtGui.QStandardItem('{}\t\r{}'.format(data['name'], data['version']))
         plugin_item.setData(status, ROLES.PLUGIN_STATUS)
         plugin_item.setData(data['name'], ROLES.PLUGIN_NAME)
-        plugin_item.setData(os.path.abspath(file_path), ROLES.PLUGIN_PATH)
         new_plugin_version = LooseVersion(data['version'])
         plugin_item.setData(new_plugin_version, ROLES.PLUGIN_VERSION)
         plugin_item.setIcon(STATUS_ICONS[status])
@@ -135,26 +182,30 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         stored_item = self.plugin_is_available(data)
         if not stored_item:
             # add new plugin
-            # logger.info('Adding new {}'.format(data))
+            if status == STATUSES.INSTALLED:
+                plugin_item.setData(os.path.abspath(file_path), ROLES.PLUGIN_INSTALL_PATH)
+
+            elif status == STATUSES.NEW:
+                plugin_item.setData(os.path.abspath(file_path), ROLES.PLUGIN_SOURCE_PATH)
+
             self.plugin_model.appendRow(plugin_item)
             return
 
-        # plugin already exist.... let's check what we need to do....
+        # update/remove plugin
         stored_status = stored_item.data(ROLES.PLUGIN_STATUS)
-
         if stored_status == STATUSES.INSTALLED and status == STATUSES.NEW:
             stored_plugin_version = stored_item.data(ROLES.PLUGIN_VERSION)
             should_update = stored_plugin_version < new_plugin_version
             if not should_update:
                 return
 
-            logger.info('updating : {} to version {} from {}'.format(data['name'], new_plugin_version, stored_plugin_version))
+            # update stored item.
             stored_item.setText('{} > {}'.format(stored_item.text(), new_plugin_version))
             stored_item.setData(STATUSES.UPDATE, ROLES.PLUGIN_STATUS)
             stored_item.setIcon(STATUS_ICONS[STATUSES.UPDATE])
+            stored_item.setData(os.path.abspath(file_path), ROLES.PLUGIN_SOURCE_PATH)
 
     def plugin_is_available(self, plugin_data):
-
         found = self.plugin_model.match(
             self.plugin_model.index(0, 0),
             ROLES.PLUGIN_NAME,
@@ -184,6 +235,8 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
 
     def _fetch_installed_plugins(self):
         plugin_paths = os.environ.get('FTRACK_CONNECT_PLUGIN_PATH', '').split(os.pathsep)
+        self._main_ftrack_connect_plugin_path = plugin_paths[0]
+
         plugins_per_path = {}
         for plugin_path in plugin_paths:
             if not plugin_path:
