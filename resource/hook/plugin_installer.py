@@ -314,6 +314,7 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         if not found:
             return
         result = self.plugin_model.item(found[0].row())
+        print('{} -> {}'.format(plugin_data['name'], result.data(ROLES.PLUGIN_NAME)))
         return result
 
     def _is_plugin_valid(self, plugin):
