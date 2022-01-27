@@ -307,7 +307,8 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         found = self.plugin_model.match(
             self.plugin_model.index(0, 0),
             ROLES.PLUGIN_NAME,
-            plugin_data['name']
+            plugin_data['name'],
+            QtCore.Qt.MatchExactly
         )
 
         if not found:
