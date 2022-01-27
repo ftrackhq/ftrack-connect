@@ -104,7 +104,7 @@ class PluginProcessor(object):
 
     def remove(self, plugin):
         install_path = plugin.data(ROLES.PLUGIN_INSTALL_PATH)
-        logging.debug('Removing {} to {}'.format(install_path))
+        logging.debug('Removing {}'.format(install_path))
         shutil.rmtree(install_path, ignore_errors=False, onerror=None)
 
 
