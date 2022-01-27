@@ -8,6 +8,8 @@ import shutil
 import zipfile
 import tempfile
 import urllib
+from urllib.request import urlopen
+import json
 
 from Qt import QtWidgets, QtCore, QtGui
 import qtawesome as qta
@@ -16,17 +18,9 @@ from distutils.version import LooseVersion
 import ftrack_connect.ui.application
 logger = logging.getLogger('ftrack_connect.plugin.plugin_installer')
 
-
-download_plugins = [
-    'https://s3-eu-west-1.amazonaws.com/ftrack-deployment/ftrack-connect/plugins/ftrack-application-launcher-1.0.1.zip',
-    'https://s3-eu-west-1.amazonaws.com/ftrack-deployment/ftrack-connect/plugins/ftrack-connect-pipeline-1.0.0rc2.zip',
-    'https://s3-eu-west-1.amazonaws.com/ftrack-deployment/ftrack-connect/plugins/ftrack-connect-pipeline-definition-1.0.0rc2.zip',
-    'https://s3-eu-west-1.amazonaws.com/ftrack-deployment/ftrack-connect/plugins/ftrack-connect-pipeline-qt-1.0.0rc2.zip',
-    'https://s3-eu-west-1.amazonaws.com/ftrack-deployment/ftrack-connect/plugins/ftrack-connect-pipeline-maya-1.0.0rc2.zip',
-    'https://s3-eu-west-1.amazonaws.com/ftrack-deployment/ftrack-connect/plugins/ftrack-connect-rv-5.0.zip',
-    'https://s3-eu-west-1.amazonaws.com/ftrack-deployment/ftrack-connect/plugins/ftrack-connect-cinema-4d-0.2.1.zip',
-    'https://s3-eu-west-1.amazonaws.com/ftrack-deployment/ftrack-connect/plugins/ftrack-connect-nuke-studio-2.5.0.zip'
-]
+response = urlopen('https://s3-eu-west-1.amazonaws.com/ftrack-deployment/ftrack-connect/plugins/plugins.json')
+data_json = json.loads(response.read())
+download_plugins = data_json['integrations']
 
 
 class STATUSES(object):
@@ -141,6 +135,14 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         layout.addLayout(button_layout)
 
         self.refresh_plugins()
+
+        self.statusLabel = QtWidgets.QLabel("Installation Progress")
+        self.progressbar = QtWidgets.QProgressBar()
+        self.statusBar = QtWidgets.QStatusBar()
+
+        self.progressbar.setValue(0)
+        self.progressbar.setMinimum(0)
+        self.progressbar.setMaximum(100)
 
         self.apply_button.clicked.connect(self._on_apply_changes)
 
