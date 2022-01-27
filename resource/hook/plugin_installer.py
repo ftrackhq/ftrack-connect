@@ -14,6 +14,8 @@ import json
 from Qt import QtWidgets, QtCore, QtGui
 import qtawesome as qta
 from distutils.version import LooseVersion
+from ftrack_connect.ui.widget.overlay import BlockingOverlay, BusyOverlay
+
 
 import ftrack_connect.ui.application
 logger = logging.getLogger('ftrack_connect.plugin.plugin_installer')
@@ -24,6 +26,22 @@ response = urlopen(
 )
 response_json = json.loads(response.read())
 download_plugins = response_json['integrations']
+
+
+class InstallerBlockingOverlay(
+    BlockingOverlay
+):
+    '''Custom blocking overlay for publisher.'''
+
+    def __init__(self, parent, message=''):
+        super(InstallerBlockingOverlay, self).__init__(parent, message=message)
+        self.confirmButton = QtWidgets.QPushButton('Ok')
+        self.contentLayout.insertWidget(
+            3, self.confirmButton, alignment=QtCore.Qt.AlignCenter, stretch=0
+        )
+        self.confirmButton.hide()
+        self.confirmButton.clicked.connect(self.hide)
+        self.content.setMinimumWidth(350)
 
 
 class STATUSES(object):
@@ -138,13 +156,27 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         layout.addWidget(self.plugin_list)
         layout.addLayout(button_layout)
 
-        self.refresh()
-
+        # wire connections
         self.apply_button.clicked.connect(self._on_apply_changes)
+
+        # overlays
+        self.blockingOverlay = InstallerBlockingOverlay(self)
+        self.blockingOverlay.hide()
+
+        # refresh
+        self.refresh()
 
     def refresh(self):
         self.populate_installed_plugins()
         self.populate_download_plugins()
+
+    def show_message(self):
+        self.blockingOverlay.setMessage(
+            'Installation finished!\n \n'
+            'Please restart connect to pick up the changes.'
+        )
+        self.blockingOverlay.confirmButton.show()
+        self.blockingOverlay.show()
 
     def _on_apply_changes(self, event):
         num_items = self.plugin_model.rowCount()
@@ -152,7 +184,9 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
             item = self.plugin_model.item(i)
             if item.checkState() == QtCore.Qt.Checked:
                 self.plugin_processor.process(item)
+
         self.refresh()
+        self.show_message()
 
     def _processMimeData(self, mimeData):
         '''Return a list of valid filepaths.'''
@@ -234,7 +268,7 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
             # add new plugin
             if status == STATUSES.INSTALLED:
                 plugin_item.setData(
-                    os.path.abspath(file_path), ROLES.PLUGIN_INSTALL_PATH
+                    file_path, ROLES.PLUGIN_INSTALL_PATH
                 )
 
             elif status in [STATUSES.NEW, STATUSES.DOWNLOAD]:
