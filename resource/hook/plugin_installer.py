@@ -22,7 +22,10 @@ download_plugins = [
     'https://s3-eu-west-1.amazonaws.com/ftrack-deployment/ftrack-connect/plugins/ftrack-connect-pipeline-1.0.0rc2.zip',
     'https://s3-eu-west-1.amazonaws.com/ftrack-deployment/ftrack-connect/plugins/ftrack-connect-pipeline-definition-1.0.0rc2.zip',
     'https://s3-eu-west-1.amazonaws.com/ftrack-deployment/ftrack-connect/plugins/ftrack-connect-pipeline-qt-1.0.0rc2.zip',
-    'https://s3-eu-west-1.amazonaws.com/ftrack-deployment/ftrack-connect/plugins/ftrack-connect-pipeline-maya-1.0.0rc2.zip'
+    'https://s3-eu-west-1.amazonaws.com/ftrack-deployment/ftrack-connect/plugins/ftrack-connect-pipeline-maya-1.0.0rc2.zip',
+    'https://s3-eu-west-1.amazonaws.com/ftrack-deployment/ftrack-connect/plugins/ftrack-connect-rv-5.0.zip',
+    'https://s3-eu-west-1.amazonaws.com/ftrack-deployment/ftrack-connect/plugins/ftrack-connect-cinema-4d-0.2.1.zip',
+    'https://s3-eu-west-1.amazonaws.com/ftrack-deployment/ftrack-connect/plugins/ftrack-connect-nuke-studio-2.5.0.zip'
 ]
 
 
