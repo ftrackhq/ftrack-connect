@@ -29,13 +29,13 @@ download_plugins = [
 ]
 
 
-
 class STATUSES(object):
     INSTALLED = 0
     NEW = 1
     UPDATE = 2
     REMOVE = 3
     DOWNLOAD = 4
+
 
 class ROLES(object):
     PLUGIN_STATUS = QtCore.Qt.UserRole + 1
@@ -70,7 +70,7 @@ class PluginProcessor(object):
         zip_name = os.path.basename(source_path)
         save_path = tempfile.gettempdir()
         temp_path = os.path.join(save_path, zip_name)
-        print('Downloading {} to {}'.format(source_path, temp_path))
+        logging.debug('Downloading {} to {}'.format(source_path, temp_path))
 
         with urllib.request.urlopen(source_path) as dl_file:
             with open(temp_path, 'wb') as out_file:
@@ -106,6 +106,7 @@ class PluginProcessor(object):
 
     def remove(self, plugin):
         install_path = plugin.data(ROLES.PLUGIN_INSTALL_PATH)
+        logging.debug('Removing {} to {}'.format(install_path))
         shutil.rmtree(install_path, ignore_errors=False, onerror=None)
 
 
@@ -138,6 +139,7 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
 
         layout.addWidget(self.plugin_list)
         layout.addLayout(button_layout)
+
         self.refresh_plugins()
 
         self.apply_button.clicked.connect(self._on_apply_changes)
