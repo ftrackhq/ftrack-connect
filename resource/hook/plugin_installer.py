@@ -6,6 +6,8 @@ import ftrack_api
 import logging
 import shutil
 import zipfile
+import tempfile
+import urllib
 
 from Qt import QtWidgets, QtCore, QtGui
 import qtawesome as qta
@@ -15,12 +17,22 @@ import ftrack_connect.ui.application
 logger = logging.getLogger('ftrack_connect.plugin.plugin_installer')
 
 
+download_plugins = [
+    'https://s3-eu-west-1.amazonaws.com/ftrack-deployment/ftrack-connect/plugins/ftrack-application-launcher-1.0.1.zip',
+    'https://s3-eu-west-1.amazonaws.com/ftrack-deployment/ftrack-connect/plugins/ftrack-connect-pipeline-1.0.0rc2.zip',
+    'https://s3-eu-west-1.amazonaws.com/ftrack-deployment/ftrack-connect/plugins/ftrack-connect-pipeline-definition-1.0.0rc2.zip',
+    'https://s3-eu-west-1.amazonaws.com/ftrack-deployment/ftrack-connect/plugins/ftrack-connect-pipeline-qt-1.0.0rc2.zip',
+    'https://s3-eu-west-1.amazonaws.com/ftrack-deployment/ftrack-connect/plugins/ftrack-connect-pipeline-maya-1.0.0rc2.zip'
+]
+
+
+
 class STATUSES(object):
     INSTALLED = 0
     NEW = 1
     UPDATE = 2
     REMOVE = 3
-
+    DOWNLOAD = 4
 
 class ROLES(object):
     PLUGIN_STATUS = QtCore.Qt.UserRole + 1
@@ -34,6 +46,8 @@ STATUS_ICONS = {
     STATUSES.INSTALLED: QtGui.QIcon(qta.icon('mdi6.harddisk')),
     STATUSES.NEW:  QtGui.QIcon(qta.icon('mdi6.new-box')),
     STATUSES.UPDATE:  QtGui.QIcon(qta.icon('mdi6.update')),
+    STATUSES.DOWNLOAD: QtGui.QIcon(qta.icon('mdi6.download')),
+
 }
 
 
@@ -44,8 +58,18 @@ class PluginProcessor(object):
         self.process_mapping = {
             STATUSES.NEW: self.install,
             STATUSES.UPDATE: self.update,
-            STATUSES.REMOVE: self.remove
+            STATUSES.REMOVE: self.remove,
+            STATUSES.DOWNLOAD: self.install
         }
+
+    def download(self, plugin):
+        source_path = plugin.data(ROLES.PLUGIN_SOURCE_PATH)
+        save_path = tempfile.tempdir()
+        print('downloading {} to {}'.format(plugin, save_path))
+
+        with urllib.request.urlopen(source_path) as dl_file:
+            with open(save_path, 'wb') as out_file:
+                out_file.write(dl_file.read())
 
     def process(self, plugin):
         status = plugin.data(ROLES.PLUGIN_STATUS)
@@ -62,6 +86,10 @@ class PluginProcessor(object):
 
     def install(self, plugin):
         source_path = plugin.data(ROLES.PLUGIN_SOURCE_PATH)
+        status = plugin.data(ROLES.PLUGIN_STATUS)
+        if status is STATUSES.DOWNLOAD:
+            source_path = self.download(plugin)
+
 
         plugin_name = os.path.basename(source_path).split('.zip')[0]
 
@@ -105,16 +133,20 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
 
         layout.addWidget(self.plugin_list)
         layout.addLayout(button_layout)
-        self.populate_installed_plugins()
+        self.refresh_plugins()
 
         self.apply_button.clicked.connect(self._on_apply_changes)
+
+    def refresh_plugins(self):
+        self.populate_installed_plugins()
+        self.populate_download_plugins()
 
     def _on_apply_changes(self, event):
         num_items = self.plugin_model.rowCount()
         for i in range(num_items):
             item = self.plugin_model.item(i)
             self.plugin_processor.process(item)
-        self.populate_installed_plugins()
+        self.refresh_plugins()
 
     def _processMimeData(self, mimeData):
         '''Return a list of valid filepaths.'''
@@ -197,7 +229,7 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
                     os.path.abspath(file_path), ROLES.PLUGIN_INSTALL_PATH
                 )
 
-            elif status == STATUSES.NEW:
+            elif status in [STATUSES.NEW, STATUSES.DOWNLOAD]:
                 destination_path = os.path.join(
                     self._main_ftrack_connect_plugin_path,
                     os.path.basename(file_path)
@@ -216,7 +248,7 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
 
         # update/remove plugin
         stored_status = stored_item.data(ROLES.PLUGIN_STATUS)
-        if stored_status == STATUSES.INSTALLED and status == STATUSES.NEW:
+        if stored_status == STATUSES.INSTALLED and status in [STATUSES.NEW, STATUSES.DOWNLOAD]:
             stored_plugin_version = stored_item.data(ROLES.PLUGIN_VERSION)
             should_update = stored_plugin_version != new_plugin_version
             if not should_update:
@@ -280,6 +312,10 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
             )
         }
         return plugins_per_path
+
+    def populate_download_plugins(self):
+        for link in download_plugins:
+            self.addPlugin(link, STATUSES.DOWNLOAD)
 
     def _setDropZoneState(self, state='default'):
         '''Set drop zone state to *state*.
