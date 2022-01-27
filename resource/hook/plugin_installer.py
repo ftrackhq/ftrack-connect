@@ -130,7 +130,7 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
     '''Base widget for ftrack connect actions plugin.'''
 
     plugin_re = re.compile(
-        '(?P<name>(([A-Za-z-]+)))-(?P<version>(\w.+))'
+        '(?P<name>(([A-Za-z-3-4]+)))-(?P<version>(\w.+))'
     )
     name = 'User Plugin Manager'
     # icon = qta.icon('mdi6.puzzle')
