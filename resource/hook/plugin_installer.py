@@ -18,9 +18,12 @@ from distutils.version import LooseVersion
 import ftrack_connect.ui.application
 logger = logging.getLogger('ftrack_connect.plugin.plugin_installer')
 
-response = urlopen('https://s3-eu-west-1.amazonaws.com/ftrack-deployment/ftrack-connect/plugins/plugins.json')
-data_json = json.loads(response.read())
-download_plugins = data_json['integrations']
+# fetch available plugins from remote json
+response = urlopen(
+    'https://s3-eu-west-1.amazonaws.com/ftrack-deployment/ftrack-connect/plugins/plugins.json'
+)
+response_json = json.loads(response.read())
+download_plugins = response_json['integrations']
 
 
 class STATUSES(object):
@@ -94,6 +97,7 @@ class PluginProcessor(object):
 
         install_path = os.path.dirname(plugin.data(ROLES.PLUGIN_INSTALL_PATH))
         destination_path = os.path.join(install_path, plugin_name)
+        logging.debug('Installing {} to {}'.format(source_path, destination_path))
 
         with zipfile.ZipFile(source_path, 'r') as zip_ref:
             zip_ref.extractall(destination_path)
@@ -134,19 +138,11 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         layout.addWidget(self.plugin_list)
         layout.addLayout(button_layout)
 
-        self.refresh_plugins()
-
-        self.statusLabel = QtWidgets.QLabel("Installation Progress")
-        self.progressbar = QtWidgets.QProgressBar()
-        self.statusBar = QtWidgets.QStatusBar()
-
-        self.progressbar.setValue(0)
-        self.progressbar.setMinimum(0)
-        self.progressbar.setMaximum(100)
+        self.refresh()
 
         self.apply_button.clicked.connect(self._on_apply_changes)
 
-    def refresh_plugins(self):
+    def refresh(self):
         self.populate_installed_plugins()
         self.populate_download_plugins()
 
@@ -156,7 +152,7 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
             item = self.plugin_model.item(i)
             if item.checkState() == QtCore.Qt.Checked:
                 self.plugin_processor.process(item)
-        self.refresh_plugins()
+        self.refresh()
 
     def _processMimeData(self, mimeData):
         '''Return a list of valid filepaths.'''
@@ -221,8 +217,11 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         plugin_item = QtGui.QStandardItem(
             '{} | {}'.format(data['name'], data['version'])
         )
+
         plugin_item.setCheckable(True)
-        # plugin_item.setFlags(QtCore.Qt.NoItemFlags)
+        plugin_item.setEditable(False)
+        plugin_item.setSelectable(False)
+
         plugin_item.setData(status, ROLES.PLUGIN_STATUS)
         plugin_item.setData(data['name'], ROLES.PLUGIN_NAME)
         new_plugin_version = LooseVersion(data['version'])
