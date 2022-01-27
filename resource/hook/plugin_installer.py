@@ -133,6 +133,7 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         '(?P<name>(([A-Za-z-]+)))-(?P<version>(\w.+))'
     )
     name = 'User Plugin Manager'
+    # icon = qta.icon('mdi6.puzzle')
 
     # default methods
     def __init__(self, session, parent=None):
@@ -299,7 +300,7 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
             stored_item.setText('{} > {}'.format(stored_item.text(), new_plugin_version))
             stored_item.setData(STATUSES.UPDATE, ROLES.PLUGIN_STATUS)
             stored_item.setIcon(STATUS_ICONS[STATUSES.UPDATE])
-            stored_item.setData(os.path.abspath(file_path), ROLES.PLUGIN_SOURCE_PATH)
+            stored_item.setData(file_path, ROLES.PLUGIN_SOURCE_PATH)
             stored_item.setData(new_plugin_version, ROLES.PLUGIN_VERSION)
 
     def plugin_is_available(self, plugin_data):
