@@ -64,12 +64,15 @@ class PluginProcessor(object):
 
     def download(self, plugin):
         source_path = plugin.data(ROLES.PLUGIN_SOURCE_PATH)
-        save_path = tempfile.tempdir()
-        print('downloading {} to {}'.format(plugin, save_path))
+        zip_name = os.path.basename(source_path)
+        save_path = tempfile.gettempdir()
+        temp_path = os.path.join(save_path, zip_name)
+        print('Downloading {} to {}'.format(source_path, temp_path))
 
         with urllib.request.urlopen(source_path) as dl_file:
-            with open(save_path, 'wb') as out_file:
+            with open(temp_path, 'wb') as out_file:
                 out_file.write(dl_file.read())
+        return temp_path
 
     def process(self, plugin):
         status = plugin.data(ROLES.PLUGIN_STATUS)
@@ -89,7 +92,6 @@ class PluginProcessor(object):
         status = plugin.data(ROLES.PLUGIN_STATUS)
         if status is STATUSES.DOWNLOAD:
             source_path = self.download(plugin)
-
 
         plugin_name = os.path.basename(source_path).split('.zip')[0]
 
@@ -240,7 +242,7 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
                 )
 
                 plugin_item.setData(
-                    os.path.abspath(file_path), ROLES.PLUGIN_SOURCE_PATH
+                    file_path, ROLES.PLUGIN_SOURCE_PATH
                 )
 
             self.plugin_model.appendRow(plugin_item)
