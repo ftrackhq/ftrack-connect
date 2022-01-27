@@ -152,7 +152,8 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         num_items = self.plugin_model.rowCount()
         for i in range(num_items):
             item = self.plugin_model.item(i)
-            self.plugin_processor.process(item)
+            if item.checkState() == QtCore.Qt.Checked:
+                self.plugin_processor.process(item)
         self.refresh_plugins()
 
     def _processMimeData(self, mimeData):
@@ -198,8 +199,6 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         '''Handle dropped file event.'''
         self._setDropZoneState()
 
-        # TODO: Allow hook into the dropEvent.
-
         paths = self._processMimeData(
             event.mimeData()
         )
@@ -220,7 +219,8 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         plugin_item = QtGui.QStandardItem(
             '{} | {}'.format(data['name'], data['version'])
         )
-        plugin_item.setFlags(QtCore.Qt.NoItemFlags)
+        plugin_item.setCheckable(True)
+        # plugin_item.setFlags(QtCore.Qt.NoItemFlags)
         plugin_item.setData(status, ROLES.PLUGIN_STATUS)
         plugin_item.setData(data['name'], ROLES.PLUGIN_NAME)
         new_plugin_version = LooseVersion(data['version'])
