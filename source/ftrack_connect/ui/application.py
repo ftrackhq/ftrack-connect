@@ -515,6 +515,7 @@ class Application(QtWidgets.QMainWindow):
 
         self.main_widget = QtWidgets.QWidget()
         self.main_widget.setLayout(QtWidgets.QVBoxLayout())
+        self.main_widget.layout().setContentsMargins(0, 0, 0, 0)
 
         self.header_widget = Header(self.session)
 

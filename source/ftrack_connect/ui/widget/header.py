@@ -110,12 +110,12 @@ class User(QtWidgets.QWidget):
 
     def build(self):
         username = self.session.api_user
-        # self.label = QtWidgets.QLabel(self)
+        self.label = QtWidgets.QLabel(self)
         self.image = thumbnail.User(self.session, parent=self)
         self.image.setFixedSize(35, 35)
 
         self.main_layout.addWidget(self.image)
-        # self.main_layout.addWidget(self.label)
+        self.main_layout.addWidget(self.label)
 
         self.image.load(username)
 
@@ -130,7 +130,7 @@ class User(QtWidgets.QWidget):
                 user['first_name'], user['last_name']
             ).title()
 
-        # self.label.setText(NAME_CACHE[username])
+        self.label.setText(NAME_CACHE[username])
 
 
 class MessageBox(QtWidgets.QWidget):
@@ -155,7 +155,7 @@ class MessageBox(QtWidgets.QWidget):
 
     def build(self):
         self.label = QtWidgets.QLabel(parent=self)
-        self.label.resize(QtCore.QSize(900, 80))
+        self.label.resize(QtCore.QSize(450, 80))
 
         self.icon = QtWidgets.QLabel(parent=self)
         self.icon.resize(QtCore.QSize(45, 45))
