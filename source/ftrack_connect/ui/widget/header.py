@@ -21,10 +21,11 @@ class Header(QtWidgets.QFrame):
 
         self.pre_build()
         self.build()
+        self.setMaximumHeight(90)
 
     def pre_build(self):
         self.main_layout = QtWidgets.QVBoxLayout()
-        # self.main_layout.setContentsMargins(0, 0, 0, 0)
+        self.main_layout.setContentsMargins(0, 0, 0, 0)
         self.main_layout.setAlignment(QtCore.Qt.AlignTop)
         self.setLayout(self.main_layout)
 
@@ -32,7 +33,7 @@ class Header(QtWidgets.QFrame):
         # Logo & User ID
         self.id_container = QtWidgets.QWidget(self)
         self.id_container_layout = QtWidgets.QHBoxLayout()
-        self.id_container_layout.setContentsMargins(0, 0, 0, 0)
+        # self.id_container_layout.setContentsMargins(0, 0, 0, 0)
         # self.id_container_layout.setSpacing(0)
         self.id_container_layout.setAlignment(QtCore.Qt.AlignTop)
         self.id_container.setLayout(self.id_container_layout)
@@ -44,12 +45,12 @@ class Header(QtWidgets.QFrame):
             QtWidgets.QSizePolicy.Minimum,
         )
 
-        self.logo = Logo(self)
+        self.logo = Logo(self.session, self)
         self.user = User(self.session, self)
 
-        self.id_container_layout.addWidget(self.logo)
-        # self.id_container_layout.addItem(spacer)
-        self.id_container_layout.addWidget(self.user)
+        self.id_container_layout.addWidget(self.logo, QtCore.Qt.AlignLeft)
+        self.id_container_layout.addItem(spacer)
+        self.id_container_layout.addWidget(self.user,  QtCore.Qt.AlignRight)
 
         # Add (Logo & User ID) & Message
         self.main_layout.addWidget(self.id_container)
@@ -58,34 +59,56 @@ class Header(QtWidgets.QFrame):
 class Logo(QtWidgets.QLabel):
     '''Logo widget.'''
 
-    def __init__(self, parent=None):
+    def __init__(self, session, parent=None):
         '''Instantiate logo widget.'''
         super(Logo, self).__init__(parent=parent)
+        self.default_logo = QtGui.QPixmap(':ftrack/image/default/ftrackLogoLabel')
 
         self.setObjectName('ftrack-logo-widget')
+        self.session = session
 
         self.pre_build()
         self.build()
+
+        self.setMaximumHeight(90)
+
+    def fetch_custom_logo(self):
+        logo_url = None
+        server_location = self.session.get(
+            'Location', '3a372bde-05bc-11e4-8908-20c9d081909b'
+        )
+
+        logo_component = self.session.query(
+            'select component_id from SettingComponent'
+            ' where group is "EXPORT" and name is "export_logo"'
+        ).first()
+        if logo_component:
+            logo_url = server_location.get_url(logo_component)
+
+        return logo_url
 
     def pre_build(self):
         self.main_layout = QtWidgets.QHBoxLayout()
         self.main_layout.setContentsMargins(0, 0, 0, 0)
         self.main_layout.setSpacing(0)
-        self.main_layout.setAlignment(QtCore.Qt.AlignTop)
+        self.main_layout.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
         self.setLayout(self.main_layout)
 
     def build(self):
-        logoPixmap = QtGui.QPixmap(':ftrack/image/default/ftrackLogoLabel')
-        if not logoPixmap is None:
-            self.setPixmap(
-                logoPixmap.scaled(
-                    QtCore.QSize(self.width(), 20),
-                    QtCore.Qt.KeepAspectRatio,
-                    QtCore.Qt.SmoothTransformation,
-                )
-            )
-        else:
-            self.setText("ftrack1")
+        self.logo_image = thumbnail.Logo(
+            self.session,
+            parent=self,
+            default_icon=self.default_logo
+        )
+
+        self.logo_image.setSizePolicy(
+            QtWidgets.QSizePolicy.MinimumExpanding	,
+            QtWidgets.QSizePolicy.MinimumExpanding
+        )
+
+        custom_logo_url = self.fetch_custom_logo()
+        self.logo_image.setIcon(custom_logo_url)
+        self.main_layout.addWidget(self.logo_image)
 
 
 class User(QtWidgets.QWidget):

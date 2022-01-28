@@ -167,6 +167,7 @@ class ActionIcon(Base):
         )
         self.setPixmap(scaledPixmap)
 
+
 class EllipseBase(Base):
     '''Thumbnail which is drawn as an ellipse.'''
 
@@ -211,3 +212,28 @@ class User(EllipseBase):
             base_url=self.session._server_url, params=params
         )
         return result_url
+
+
+class Logo(ActionIcon):
+    def __init__(self, session, parent=None, default_icon=None):
+        super(Logo, self).__init__(session, parent=parent, default_icon=default_icon)
+
+    def setIcon(self, icon):
+        '''Set *icon* to a supported icon or show the standard icon.
+
+        *icon* may be one of the following.
+
+            * A URL to load the image from starting with 'http'.
+        '''
+        if icon and isinstance(icon, QtGui.QPixmap):
+            super(ActionIcon, self).setPixmap(
+                icon.scaled(self.width(), self.height())
+            )
+
+        elif icon and icon[:4] == 'http':
+            self.load(icon)
+        else:
+
+            super(ActionIcon, self).setPixmap(
+                self._default_icon.scaled(self.width(), self.height())
+            )
