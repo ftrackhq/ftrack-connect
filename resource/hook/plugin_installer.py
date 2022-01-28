@@ -110,7 +110,7 @@ class PluginProcessor(QtCore.QObject):
     def install(self, plugin):
         source_path = plugin.data(ROLES.PLUGIN_SOURCE_PATH)
         status = plugin.data(ROLES.PLUGIN_STATUS)
-        if status is STATUSES.DOWNLOAD:
+        if source_path.startswith('http'):
             source_path = self.download(plugin)
 
         plugin_name = os.path.basename(source_path).split('.zip')[0]
@@ -125,11 +125,8 @@ class PluginProcessor(QtCore.QObject):
     def remove(self, plugin):
         install_path = plugin.data(ROLES.PLUGIN_INSTALL_PATH)
         logging.debug('Removing {}'.format(install_path))
-        try:
+        if os.path.exists(install_path) and os.path.isdir(install_path):
             shutil.rmtree(install_path, ignore_errors=False, onerror=None)
-        except Exception as error:
-            # it could happen if we are trying to update something that is not yet installed....
-            logging.error(error)
 
 
 class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
@@ -281,6 +278,7 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
                 plugin_item.setData(
                     file_path, ROLES.PLUGIN_INSTALL_PATH
                 )
+                plugin_item.setCheckable(False)
 
             elif status in [STATUSES.NEW, STATUSES.DOWNLOAD]:
                 destination_path = os.path.join(
@@ -314,6 +312,7 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
             stored_item.setData(file_path, ROLES.PLUGIN_SOURCE_PATH)
             stored_item.setData(new_plugin_version, ROLES.PLUGIN_VERSION)
             # enable it by default if we are updating
+            stored_item.setCheckable(True)
             stored_item.setCheckState(QtCore.Qt.Checked)
 
     def plugin_is_available(self, plugin_data):
