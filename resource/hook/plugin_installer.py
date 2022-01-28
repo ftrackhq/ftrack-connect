@@ -15,7 +15,7 @@ from Qt import QtWidgets, QtCore, QtGui
 import qtawesome as qta
 from distutils.version import LooseVersion
 from ftrack_connect.ui.widget.overlay import BlockingOverlay, BusyOverlay
-
+from ftrack_connect.asynchronous import asynchronous
 
 import ftrack_connect.ui.application
 logger = logging.getLogger('ftrack_connect.plugin.plugin_installer')
@@ -138,6 +138,9 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
     name = 'User Plugin Manager'
     # icon = qta.icon('mdi6.puzzle')
 
+    installation_done = QtCore.Signal()
+    installation_started = QtCore.Signal()
+
     # default methods
     def __init__(self, session, parent=None):
         '''Instantiate the actions widget.'''
@@ -168,6 +171,13 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         self.blockingOverlay.hide()
         self.blockingOverlay.confirmButton.clicked.connect(self.refresh)
 
+        self.busyOverlay = BusyOverlay(self)
+        self.busyOverlay.hide()
+
+        self.installation_started.connect(self.busyOverlay.show)
+        self.installation_done.connect(self.busyOverlay.hide)
+        self.installation_done.connect(self.show_message)
+
         # refresh
         self.refresh()
 
@@ -183,14 +193,20 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         self.blockingOverlay.confirmButton.show()
         self.blockingOverlay.show()
 
-    def _on_apply_changes(self, event):
+    @asynchronous
+    def _on_apply_changes(self, event=None):
+        self.installation_started.emit()
+        # self.busyOverlay.show()
+        # self.busyOverlay.setVisible(True)
         num_items = self.plugin_model.rowCount()
         for i in range(num_items):
             item = self.plugin_model.item(i)
             if item.checkState() == QtCore.Qt.Checked:
                 self.plugin_processor.process(item)
-
-        self.show_message()
+        self.installation_done.emit()
+        # self.busyOverlay.setVisible(False)
+        # self.busyOverlay.hide()
+        # self.show_message()
 
     def _processMimeData(self, mimeData):
         '''Return a list of valid filepaths.'''
