@@ -70,7 +70,8 @@ STATUS_ICONS = {
 }
 
 
-class PluginProcessor(object):
+class PluginProcessor(QtCore.QObject):
+
     def __init__(self):
         super(PluginProcessor, self).__init__()
 
@@ -124,7 +125,11 @@ class PluginProcessor(object):
     def remove(self, plugin):
         install_path = plugin.data(ROLES.PLUGIN_INSTALL_PATH)
         logging.debug('Removing {}'.format(install_path))
-        shutil.rmtree(install_path, ignore_errors=False, onerror=None)
+        try:
+            shutil.rmtree(install_path, ignore_errors=False, onerror=None)
+        except Exception as error:
+            # it could happen if we are trying to update something that is not yet installed....
+            logging.error(error)
 
 
 class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
@@ -164,6 +169,7 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         # overlays
         self.blockingOverlay = InstallerBlockingOverlay(self)
         self.blockingOverlay.hide()
+        self.blockingOverlay.confirmButton.clicked.connect(self.refresh)
 
         # refresh
         self.refresh()
@@ -187,7 +193,6 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
             if item.checkState() == QtCore.Qt.Checked:
                 self.plugin_processor.process(item)
 
-        self.refresh()
         self.show_message()
 
     def _processMimeData(self, mimeData):
@@ -298,7 +303,7 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         stored_status = stored_item.data(ROLES.PLUGIN_STATUS)
         if stored_status in [STATUSES.INSTALLED, STATUSES.DOWNLOAD] and status in [STATUSES.NEW, STATUSES.DOWNLOAD]:
             stored_plugin_version = stored_item.data(ROLES.PLUGIN_VERSION)
-            should_update = stored_plugin_version != new_plugin_version
+            should_update = stored_plugin_version < new_plugin_version
             if not should_update:
                 return
             print('item {} should update with {}'.format(stored_item.text(), file_path))
