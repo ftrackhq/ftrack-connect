@@ -171,7 +171,7 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         self.blockingOverlay.hide()
         self.blockingOverlay.confirmButton.clicked.connect(self.refresh)
 
-        self.busyOverlay = BusyOverlay(self)
+        self.busyOverlay = BusyOverlay(self, 'Installing Plugins....')
         self.busyOverlay.hide()
 
         self.installation_started.connect(self.busyOverlay.show)
@@ -196,17 +196,12 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
     @asynchronous
     def _on_apply_changes(self, event=None):
         self.installation_started.emit()
-        # self.busyOverlay.show()
-        # self.busyOverlay.setVisible(True)
         num_items = self.plugin_model.rowCount()
         for i in range(num_items):
             item = self.plugin_model.item(i)
             if item.checkState() == QtCore.Qt.Checked:
                 self.plugin_processor.process(item)
         self.installation_done.emit()
-        # self.busyOverlay.setVisible(False)
-        # self.busyOverlay.hide()
-        # self.show_message()
 
     def _processMimeData(self, mimeData):
         '''Return a list of valid filepaths.'''
