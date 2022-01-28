@@ -109,7 +109,6 @@ class PluginProcessor(QtCore.QObject):
 
     def install(self, plugin):
         source_path = plugin.data(ROLES.PLUGIN_SOURCE_PATH)
-        status = plugin.data(ROLES.PLUGIN_STATUS)
         if source_path.startswith('http'):
             source_path = self.download(plugin)
 
@@ -140,6 +139,7 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
 
     installation_done = QtCore.Signal()
     installation_started = QtCore.Signal()
+    installation_in_progress = QtCore.Signal(object)
 
     # default methods
     def __init__(self, session, parent=None):
@@ -147,6 +147,7 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         super(PluginInstaller, self).__init__(session, parent=parent)
         self.plugin_processor = PluginProcessor()
         self._main_ftrack_connect_plugin_path = None
+
         self.setAcceptDrops(True)
         self.setProperty('ftrackDropZone', True)
         self.setObjectName('ftrack-connect-publisher-browse-button')
@@ -170,10 +171,6 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         layout.addWidget(self.plugin_list)
         layout.addLayout(button_layout)
 
-        # wire connections
-        self.apply_button.clicked.connect(self._on_apply_changes)
-        self.search_bar.textChanged.connect(self.proxy_model.setFilterFixedString)
-
         # overlays
         self.blockingOverlay = InstallerBlockingOverlay(self)
         self.blockingOverlay.hide()
@@ -182,9 +179,14 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         self.busyOverlay = BusyOverlay(self, 'Installing Plugins....')
         self.busyOverlay.hide()
 
+        # wire connections
+        self.apply_button.clicked.connect(self._on_apply_changes)
+        self.search_bar.textChanged.connect(self.proxy_model.setFilterFixedString)
+
         self.installation_started.connect(self.busyOverlay.show)
         self.installation_done.connect(self.busyOverlay.hide)
         self.installation_done.connect(self.show_message)
+        self.installation_in_progress.connect(self.update_overlay)
 
         # refresh
         self.refresh()
@@ -201,6 +203,14 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         self.blockingOverlay.confirmButton.show()
         self.blockingOverlay.show()
 
+    def update_overlay(self, item):
+        self.busyOverlay.setMessage(
+            'Installing:\n\n{}\nVersion {} '.format(
+                item.data(ROLES.PLUGIN_NAME),
+                item.data(ROLES.PLUGIN_VERSION)
+            )
+        )
+
     @asynchronous
     def _on_apply_changes(self, event=None):
         self.installation_started.emit()
@@ -208,6 +218,7 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         for i in range(num_items):
             item = self.plugin_model.item(i)
             if item.checkState() == QtCore.Qt.Checked:
+                self.installation_in_progress.emit(item)
                 self.plugin_processor.process(item)
         self.installation_done.emit()
 
@@ -313,6 +324,11 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
                     file_path, ROLES.PLUGIN_SOURCE_PATH
                 )
 
+                if status is STATUSES.NEW:
+                    # enable it by default as is new.
+                    plugin_item.setCheckable(True)
+                    plugin_item.setCheckState(QtCore.Qt.Checked)
+
             self.plugin_model.appendRow(plugin_item)
             return
 
@@ -330,6 +346,7 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
             stored_item.setIcon(STATUS_ICONS[STATUSES.UPDATE])
             stored_item.setData(file_path, ROLES.PLUGIN_SOURCE_PATH)
             stored_item.setData(new_plugin_version, ROLES.PLUGIN_VERSION)
+
             # enable it by default if we are updating
             stored_item.setCheckable(True)
             stored_item.setCheckState(QtCore.Qt.Checked)
@@ -369,14 +386,15 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
     def _fetch_installed_plugins(self):
         plugin_paths = os.environ.get('FTRACK_CONNECT_PLUGIN_PATH', '').split(os.pathsep)
 
-        self._main_ftrack_connect_plugin_path = plugin_paths[0]
         if len(plugin_paths) > 1:
             logging.warning(
                 'More than one FTRACK_CONNECT_PLUGIN_PATH found.\n'
                 'Using {}.'.format(
-                    self._main_ftrack_connect_plugin_path
+                    plugin_paths[0]
                 )
             )
+
+        self._main_ftrack_connect_plugin_path = plugin_paths[0]
 
         plugins_per_path = {
             self._main_ftrack_connect_plugin_path: os.listdir(
