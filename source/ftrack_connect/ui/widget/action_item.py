@@ -90,7 +90,7 @@ class ActionItem(QtWidgets.QWidget):
             self._multiple = True
 
         self.action_icon = qta.icon('ftrack.actions')
-        self._iconLabel = ActionIcon(self, default_icon=self.action_icon)
+        self._iconLabel = ActionIcon(self, self.session, default_icon=self.action_icon)
         self._iconLabel.setAlignment(QtCore.Qt.AlignCenter)
         self._iconLabel.setFixedSize(QtCore.QSize(75, 45))
         layout.addWidget(self._iconLabel)

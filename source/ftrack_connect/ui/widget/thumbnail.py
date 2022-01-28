@@ -2,13 +2,13 @@
 # :copyright: Copyright (c) 2015 ftrack
 
 import os
+import logging
+import urllib.request, urllib.parse, urllib.error
+import urllib.request, urllib.error, urllib.parse
 
-import urllib
-import urllib.error
-import urllib.request
+from Qt import QtCore, QtGui, QtWidgets
 
-from Qt import QtWidgets, QtCore, QtGui
-import ftrack_connect.worker
+from ftrack_connect.worker import Worker
 
 # Cache of thumbnail images.
 IMAGE_CACHE = dict()
@@ -17,21 +17,30 @@ IMAGE_CACHE = dict()
 class Base(QtWidgets.QLabel):
     '''Widget to load thumbnails from ftrack server.'''
 
-    def __init__(self, parent=None):
+    def __init__(self, session, parent=None):
         super(Base, self).__init__(parent)
+        self.session = session
+
+        self.logger = logging.getLogger(
+            __name__ + '.' + self.__class__.__name__
+        )
+
+        self._worker = None
+        self.__loadingReference = None
+        self.pre_build()
+
+    def pre_build(self):
         self.thumbnailCache = {}
         self.setFrameStyle(QtWidgets.QFrame.StyledPanel)
         self.setAlignment(QtCore.Qt.AlignCenter)
 
         self.placholderThumbnail = (
-            os.environ['FTRACK_SERVER'] + '/img/thumbnail2.png'
+            self.session.server_url + '/img/thumbnail2.png'
         )
-
-        self._worker = None
-        self.__loadingReference = None
 
     def load(self, reference):
         '''Load thumbnail from *reference* and display it.'''
+
         if reference in IMAGE_CACHE:
             self._updatePixmapData(IMAGE_CACHE[reference])
             return
@@ -41,15 +50,14 @@ class Base(QtWidgets.QLabel):
                 app = QtWidgets.QApplication.instance()
                 app.processEvents()
 
-        self._worker = ftrack_connect.worker.Worker(
-            self._download, [reference], parent=self
-        )
+        self._worker = Worker(self._download, args=[reference], parent=self)
 
         self.__loadingReference = reference
         self._worker.start()
-        self._worker.finished.connect(self._workerFinnished)
 
-    def _workerFinnished(self):
+        self._worker.finished.connect(self._workerFinished)
+
+    def _workerFinished(self):
         '''Handler worker finished event.'''
         if self._worker:
             IMAGE_CACHE[self.__loadingReference] = self._worker.result
@@ -60,15 +68,15 @@ class Base(QtWidgets.QLabel):
 
     def _updatePixmapData(self, data):
         '''Update thumbnail with *data*.'''
-        pixmap = QtGui.QPixmap()
-        pixmap.loadFromData(data)
-        self._scaleAndSetPixmap(pixmap)
+        if data:
+            pixmap = QtGui.QPixmap()
+            pixmap.loadFromData(data)
+            self._scaleAndSetPixmap(pixmap)
 
     def _scaleAndSetPixmap(self, pixmap):
         '''Scale and set *pixmap*.'''
         scaledPixmap = pixmap.scaledToWidth(
-            self.width(),
-            mode=QtCore.Qt.SmoothTransformation
+            self.width(), mode=QtCore.Qt.SmoothTransformation
         )
         self.setPixmap(scaledPixmap)
 
@@ -77,8 +85,8 @@ class Base(QtWidgets.QLabel):
 
         .. note::
 
-           A placeholder image will be returned if there is not response within the
-           given *timeout*.
+           A placeholder image will be returned if there is not response within
+           the given *timeout*.
 
         '''
 
@@ -92,32 +100,35 @@ class Base(QtWidgets.QLabel):
 
     def _download(self, url):
         '''Return thumbnail file from *url*.'''
+        if url:
+            ftrackProxy = os.getenv('FTRACK_PROXY', '')
+            ftrackServer = self.session._server_url
 
-        ftrackProxy = os.getenv('FTRACK_PROXY', '')
-        ftrackServer = os.getenv('FTRACK_SERVER', '')
-        if ftrackProxy != '':
-            if ftrackServer.startswith('https'):
-                httpHandle = 'https'
+            if ftrackProxy != '':
+                if ftrackServer.startswith('https'):
+                    httpHandle = 'https'
+                else:
+                    httpHandle = 'http'
+
+                proxy = urllib.request.ProxyHandler({httpHandle: ftrackProxy})
+                opener = urllib.request.build_opener(proxy)
+                response = self._safeDownload(url, opener.open)
+                html = response.read()
             else:
-                httpHandle = 'http'
+                response = self._safeDownload(url, urllib.request.urlopen)
+                html = response.read()
 
-            proxy = urllib.request.ProxyHandler({httpHandle: ftrackProxy})
-            opener = urllib.request.build_opener(proxy)
-            response = self._safeDownload(url, opener.open)
-            html = response.read()
-        else:
-            response = self._safeDownload(url, urllib.request.urlopen)
-            html = response.read()
-
-        return html
+            return html
+        self.logger.warning('There is no url image to download')
+        return None
 
 
 class ActionIcon(Base):
     '''Widget to load action icons over HTTP.'''
 
-    def __init__(self, parent=None, default_icon=None):
+    def __init__(self, session, parent=None, default_icon=None):
         '''Initialize action icon.'''
-        super(ActionIcon, self).__init__(parent)
+        super(ActionIcon, self).__init__(session, parent)
         self.setFrameStyle(QtWidgets.QFrame.NoFrame)
         self._default_icon = default_icon
 
@@ -155,3 +166,48 @@ class ActionIcon(Base):
             QtCore.Qt.SmoothTransformation
         )
         self.setPixmap(scaledPixmap)
+
+class EllipseBase(Base):
+    '''Thumbnail which is drawn as an ellipse.'''
+
+    def paintEvent(self, event):
+        '''Override paint event to make round thumbnails.'''
+        painter = QtGui.QPainter(self)
+        painter.setRenderHints(QtGui.QPainter.Antialiasing, True)
+
+        brush = QtGui.QBrush(self.pixmap())
+
+        painter.setBrush(brush)
+
+        painter.setPen(QtGui.QPen(QtGui.QColor(0, 0, 0, 0)))
+
+        painter.drawEllipse(QtCore.QRectF(0, 0, self.width(), self.height()))
+
+
+class User(EllipseBase):
+    def _download(self, reference):
+        '''Return thumbnail from *reference*.'''
+        thumbnail = self.session.query(
+            'select thumbnail from User where username is "{}"'.format(
+                reference
+            )
+        ).first()['thumbnail']
+        url = self.get_thumbnail_url(thumbnail)
+        return super(User, self)._download(url)
+
+    def get_thumbnail_url(self, component):
+        if not component:
+            return
+
+        params = urllib.parse.urlencode(
+            {
+                'id': component['id'],
+                'username': self.session.api_user,
+                'apiKey': self.session.api_key,
+            }
+        )
+
+        result_url = '{base_url}/component/thumbnail?{params}'.format(
+            base_url=self.session._server_url, params=params
+        )
+        return result_url

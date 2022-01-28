@@ -28,7 +28,7 @@ from ftrack_connect.ui.widget import uncaught_error as _uncaught_error
 from ftrack_connect.ui.widget import tab_widget as _tab_widget
 from ftrack_connect.ui.widget import login as _login
 from ftrack_connect.ui.widget import about as _about
-from ftrack_connect.error import NotUniqueError as _NotUniqueError
+from ftrack_connect.ui.widget.header import Header
 from ftrack_connect.ui import login_tools as _login_tools
 from ftrack_connect.ui.widget import configure_scenario as _scenario_widget
 import ftrack_connect.ui.config
@@ -513,9 +513,19 @@ class Application(QtWidgets.QMainWindow):
     def configureConnectAndDiscoverPlugins(self):
         '''Configure connect and load plugins.'''
 
+        self.main_widget = QtWidgets.QWidget()
+        self.main_widget.setLayout(QtWidgets.QVBoxLayout())
+
+        self.header_widget = Header(self.session)
+
         self.tabPanel = _tab_widget.TabWidget()
         self.tabPanel.tabBar().setObjectName('application-tab-bar')
-        self.setCentralWidget(self.tabPanel)
+
+        self.main_widget.layout().addWidget(self.header_widget)
+        self.main_widget.layout().addWidget(self.tabPanel)
+
+
+        self.setCentralWidget(self.main_widget)
 
         self._discoverConnectWidget()
 
