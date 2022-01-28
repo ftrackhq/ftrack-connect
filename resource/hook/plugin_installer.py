@@ -57,7 +57,8 @@ class ROLES(object):
     PLUGIN_NAME = PLUGIN_STATUS + 1
     PLUGIN_VERSION = PLUGIN_NAME + 1
     PLUGIN_SOURCE_PATH = PLUGIN_VERSION + 1
-    PLUGIN_INSTALL_PATH = PLUGIN_SOURCE_PATH +1
+    PLUGIN_INSTALL_PATH = PLUGIN_SOURCE_PATH + 1
+    PLUGIN_ID = PLUGIN_INSTALL_PATH + 1
 
 
 STATUS_ICONS = {
@@ -243,28 +244,32 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
 
     # custom methods
     def addPlugin(self, file_path, status=STATUSES.NEW):
-        data = self._is_plugin_valid(os.path.basename(file_path))
+        data = self._is_plugin_valid(file_path)
 
         if not data:
             return
 
         # create new plugin item and populate it with data
-        plugin_item = QtGui.QStandardItem(
-            '{} | {}'.format(data['name'], data['version'])
-        )
+        plugin_id = str(hash(data['name']))
+        data['id'] = plugin_id
+
+        plugin_item = QtGui.QStandardItem()
 
         plugin_item.setCheckable(True)
         plugin_item.setEditable(False)
         plugin_item.setSelectable(False)
 
+        plugin_item.setText('{} | {}'.format(data['name'], data['version']))
         plugin_item.setData(status, ROLES.PLUGIN_STATUS)
-        plugin_item.setData(data['name'], ROLES.PLUGIN_NAME)
+        plugin_item.setData(str(data['name']), ROLES.PLUGIN_NAME)
         new_plugin_version = LooseVersion(data['version'])
         plugin_item.setData(new_plugin_version, ROLES.PLUGIN_VERSION)
+        plugin_item.setData(plugin_id, ROLES.PLUGIN_ID)
         plugin_item.setIcon(STATUS_ICONS[status])
 
         # check if is a new plugin.....
         stored_item = self.plugin_is_available(data)
+
         if not stored_item:
             # add new plugin
             if status == STATUSES.INSTALLED:
@@ -291,34 +296,33 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
 
         # update/remove plugin
         stored_status = stored_item.data(ROLES.PLUGIN_STATUS)
-        if stored_status == STATUSES.INSTALLED and status in [STATUSES.NEW, STATUSES.DOWNLOAD]:
+        if stored_status in [STATUSES.INSTALLED, STATUSES.DOWNLOAD] and status in [STATUSES.NEW, STATUSES.DOWNLOAD]:
             stored_plugin_version = stored_item.data(ROLES.PLUGIN_VERSION)
             should_update = stored_plugin_version != new_plugin_version
             if not should_update:
                 return
+            print('item {} should update with {}'.format(stored_item.text(), file_path))
             # update stored item.
             stored_item.setText('{} > {}'.format(stored_item.text(), new_plugin_version))
             stored_item.setData(STATUSES.UPDATE, ROLES.PLUGIN_STATUS)
             stored_item.setIcon(STATUS_ICONS[STATUSES.UPDATE])
             stored_item.setData(file_path, ROLES.PLUGIN_SOURCE_PATH)
             stored_item.setData(new_plugin_version, ROLES.PLUGIN_VERSION)
+            # enable it by default if we are updating
+            stored_item.setCheckState(QtCore.Qt.Checked)
 
     def plugin_is_available(self, plugin_data):
-        found = self.plugin_model.match(
-            self.plugin_model.index(0, 0),
-            ROLES.PLUGIN_NAME,
-            plugin_data['name'],
-            QtCore.Qt.MatchExactly
-        )
+        num_items = self.plugin_model.rowCount()
+        for i in range(num_items):
+            item = self.plugin_model.item(i)
+            item_id = item.data(ROLES.PLUGIN_ID)
+            if item_id == plugin_data['id']:
+                return item
+        return None
 
-        if not found:
-            return
-        result = self.plugin_model.item(found[0].row())
-        print('{} -> {}'.format(plugin_data['name'], result.data(ROLES.PLUGIN_NAME)))
-        return result
-
-    def _is_plugin_valid(self, plugin):
-        match = self.plugin_re.match(plugin)
+    def _is_plugin_valid(self, plugin_path):
+        plugin_name = os.path.basename(plugin_path)
+        match = self.plugin_re.match(plugin_name)
         if match:
             data = match.groupdict()
         else:
