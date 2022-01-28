@@ -153,9 +153,16 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
 
         layout = QtWidgets.QVBoxLayout()
         self.setLayout(layout)
+
+        self.search_bar = QtWidgets.QLineEdit()
+        self.search_bar.setPlaceholderText('Search plugin...')
+        self.layout().addWidget(self.search_bar)
+
         self.plugin_list = QtWidgets.QListView()
         self.plugin_model = QtGui.QStandardItemModel(self)
-        self.plugin_list.setModel(self.plugin_model)
+        self.proxy_model = QtCore.QSortFilterProxyModel(self)
+        self.proxy_model.setSourceModel(self.plugin_model)
+        self.plugin_list.setModel(self.proxy_model)
         button_layout = QtWidgets.QHBoxLayout()
         self.apply_button = QtWidgets.QPushButton('Apply changes')
         button_layout.addWidget(self.apply_button)
@@ -165,6 +172,7 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
 
         # wire connections
         self.apply_button.clicked.connect(self._on_apply_changes)
+        self.search_bar.textChanged.connect(self.proxy_model.setFilterFixedString)
 
         # overlays
         self.blockingOverlay = InstallerBlockingOverlay(self)
