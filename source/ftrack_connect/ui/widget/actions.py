@@ -12,7 +12,6 @@ from Qt import QtWidgets
 import ftrack_api.event.base
 import ftrack_connect.asynchronous
 import ftrack_connect.error
-import ftrack_connect.session
 import ftrack_connect.usage
 
 from ftrack_connect.ui.widget import (
