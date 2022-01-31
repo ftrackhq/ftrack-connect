@@ -41,6 +41,7 @@ class InstallerBlockingOverlay(
 
 
 class STATUSES(object):
+    '''Store plugin statuses'''
     INSTALLED = 0
     NEW = 1
     UPDATE = 2
@@ -49,6 +50,8 @@ class STATUSES(object):
 
 
 class ROLES(object):
+    '''Store plugin roles'''
+
     PLUGIN_STATUS = QtCore.Qt.UserRole + 1
     PLUGIN_NAME = PLUGIN_STATUS + 1
     PLUGIN_VERSION = PLUGIN_NAME + 1
@@ -57,6 +60,7 @@ class ROLES(object):
     PLUGIN_ID = PLUGIN_INSTALL_PATH + 1
 
 
+# Icon representation for statuses
 STATUS_ICONS = {
     STATUSES.INSTALLED: QtGui.QIcon(qta.icon('mdi6.harddisk')),
     STATUSES.NEW:  QtGui.QIcon(qta.icon('mdi6.new-box')),
@@ -68,6 +72,7 @@ STATUS_ICONS = {
 
 
 class PluginProcessor(QtCore.QObject):
+    '''Handles installation process of plugins.'''
 
     def __init__(self):
         super(PluginProcessor, self).__init__()
@@ -80,6 +85,7 @@ class PluginProcessor(QtCore.QObject):
         }
 
     def download(self, plugin):
+        '''Download provided *plugin* item.'''
         source_path = plugin.data(ROLES.PLUGIN_SOURCE_PATH)
         zip_name = os.path.basename(source_path)
         save_path = tempfile.gettempdir()
@@ -92,6 +98,8 @@ class PluginProcessor(QtCore.QObject):
         return temp_path
 
     def process(self, plugin):
+        '''Process provided *plugin* item.'''
+
         status = plugin.data(ROLES.PLUGIN_STATUS)
         plugin_fn = self.process_mapping.get(status)
 
@@ -101,10 +109,12 @@ class PluginProcessor(QtCore.QObject):
         plugin_fn(plugin)
 
     def update(self, plugin):
+        '''Update provided *plugin* item.'''
         self.remove(plugin)
         self.install(plugin)
 
     def install(self, plugin):
+        '''Install provided *plugin* item.'''
         source_path = plugin.data(ROLES.PLUGIN_SOURCE_PATH)
         if source_path.startswith('http'):
             source_path = self.download(plugin)
@@ -119,6 +129,7 @@ class PluginProcessor(QtCore.QObject):
             zip_ref.extractall(destination_path)
 
     def remove(self, plugin):
+        '''Remove provided *plugin* item.'''
         install_path = plugin.data(ROLES.PLUGIN_INSTALL_PATH)
         logging.debug('Removing {}'.format(install_path))
         if os.path.exists(install_path) and os.path.isdir(install_path):
@@ -126,7 +137,8 @@ class PluginProcessor(QtCore.QObject):
 
 
 class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
-    '''Base widget for ftrack connect actions plugin.'''
+    '''Show and manage plugin installations.'''
+
     name = 'User Plugin Manager'
     # icon = qta.icon('mdi6.puzzle')
 
@@ -192,17 +204,19 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
 
         self.installation_started.connect(self.busyOverlay.show)
         self.installation_done.connect(self.busyOverlay.hide)
-        self.installation_done.connect(self.show_message)
-        self.installation_in_progress.connect(self.update_overlay)
+        self.installation_done.connect(self._show_user_message)
+        self.installation_in_progress.connect(self._update_overlay)
 
         # refresh
         self.refresh()
 
     def refresh(self):
+        '''Force refresh of the model, fetching all the available plugins.'''
         self.populate_installed_plugins()
         self.populate_download_plugins()
 
-    def show_message(self):
+    def _show_user_message(self):
+        '''Show final message to the user.'''
         self.blockingOverlay.setMessage(
             'Installation finished!\n \n'
             'Please restart connect to pick up the changes.'
@@ -210,7 +224,8 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         self.blockingOverlay.confirmButton.show()
         self.blockingOverlay.show()
 
-    def update_overlay(self, item):
+    def _update_overlay(self, item):
+        '''Update the overlay with the current item *information*.'''
         self.busyOverlay.setMessage(
             'Installing:\n\n{}\nVersion {} '.format(
                 item.data(ROLES.PLUGIN_NAME),
@@ -220,6 +235,7 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
 
     @asynchronous
     def _on_apply_changes(self, event=None):
+        '''Will process all the selected plugins.'''
         self.installation_started.emit()
         num_items = self.plugin_model.rowCount()
         for i in range(num_items):
@@ -283,6 +299,7 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
 
     # custom methods
     def addPlugin(self, file_path, status=STATUSES.NEW):
+        '''Add provided *plugin_path* as plugin with given *status*.'''
         if not file_path:
             return
 
@@ -344,14 +361,19 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
 
         # update/remove plugin
         stored_status = stored_item.data(ROLES.PLUGIN_STATUS)
-        if stored_status in [STATUSES.INSTALLED, STATUSES.DOWNLOAD] and status in [STATUSES.NEW, STATUSES.DOWNLOAD]:
+        if (
+                stored_status in [STATUSES.INSTALLED, STATUSES.DOWNLOAD] and
+                status in [STATUSES.NEW, STATUSES.DOWNLOAD]
+        ):
             stored_plugin_version = stored_item.data(ROLES.PLUGIN_VERSION)
             should_update = stored_plugin_version < new_plugin_version
             if not should_update:
                 return
-            
+
             # update stored item.
-            stored_item.setText('{} > {}'.format(stored_item.text(), new_plugin_version))
+            stored_item.setText(
+                '{} > {}'.format(stored_item.text(), new_plugin_version)
+            )
             stored_item.setData(STATUSES.UPDATE, ROLES.PLUGIN_STATUS)
             stored_item.setIcon(STATUS_ICONS[STATUSES.UPDATE])
             stored_item.setData(file_path, ROLES.PLUGIN_SOURCE_PATH)
@@ -362,6 +384,7 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
             stored_item.setCheckState(QtCore.Qt.Checked)
 
     def plugin_is_available(self, plugin_data):
+        '''Return item from *plugin_data* if found.'''
         num_items = self.plugin_model.rowCount()
         for i in range(num_items):
             item = self.plugin_model.item(i)
@@ -371,6 +394,7 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         return None
 
     def _is_plugin_valid(self, plugin_path):
+        '''Return whether the provided *plugin_path* is a valid plugin.'''
         plugin_name = os.path.basename(plugin_path)
         match = self.plugin_re.match(plugin_name)
         if match:
@@ -385,6 +409,7 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         return data
 
     def populate_installed_plugins(self):
+        '''Populate model with installed plugins.'''
         self.plugin_model.clear()
 
         plugins = os.listdir(
@@ -399,7 +424,7 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
             self.addPlugin(plugin_path, STATUSES.INSTALLED)
 
     def populate_download_plugins(self):
-        # Allow override of path where to pick the config from.
+        '''Populate model with remotely configured plugins.'''
 
         response = urlopen(self.json_config_url)
         response_json = json.loads(response.read())
