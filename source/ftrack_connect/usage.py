@@ -4,7 +4,6 @@
 import logging
 
 import ftrack_connect.asynchronous
-import ftrack_connect.session
 
 
 logger = logging.getLogger('ftrack_connect:usage')
