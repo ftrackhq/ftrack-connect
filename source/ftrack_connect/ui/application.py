@@ -697,7 +697,7 @@ class Application(QtWidgets.QMainWindow):
                 widget_plugin = ResponsePlugin(self.session)
 
             except Exception as error:
-                self.logger.error(str(error))
+                self.logger.exception(msg=error)
                 continue
 
             if not isinstance(widget_plugin, ConnectWidget):
