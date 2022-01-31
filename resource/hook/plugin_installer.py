@@ -9,6 +9,7 @@ import zipfile
 import tempfile
 import urllib
 from urllib.request import urlopen
+import appdirs
 import json
 
 from Qt import QtWidgets, QtCore, QtGui
@@ -16,16 +17,11 @@ import qtawesome as qta
 from distutils.version import LooseVersion
 from ftrack_connect.ui.widget.overlay import BlockingOverlay, BusyOverlay
 from ftrack_connect.asynchronous import asynchronous
-
 import ftrack_connect.ui.application
 logger = logging.getLogger('ftrack_connect.plugin.plugin_installer')
 
-# fetch available plugins from remote json
-response = urlopen(
-    'https://s3-eu-west-1.amazonaws.com/ftrack-deployment/ftrack-connect/plugins/plugins.json'
-)
-response_json = json.loads(response.read())
-download_plugins = response_json['integrations']
+# Default json config url where to fetch plugins from.
+
 
 
 class InstallerBlockingOverlay(
@@ -68,6 +64,7 @@ STATUS_ICONS = {
     STATUSES.DOWNLOAD: QtGui.QIcon(qta.icon('mdi6.download')),
 
 }
+
 
 
 class PluginProcessor(QtCore.QObject):
@@ -130,12 +127,13 @@ class PluginProcessor(QtCore.QObject):
 
 class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
     '''Base widget for ftrack connect actions plugin.'''
+    name = 'User Plugin Manager'
+    # icon = qta.icon('mdi6.puzzle')
 
+    default_json_config_url = 'https://s3-eu-west-1.amazonaws.com/ftrack-deployment/ftrack-connect/plugins/plugins.json'
     plugin_re = re.compile(
         '(?P<name>(([A-Za-z-3-4]+)))-(?P<version>(\w.+))'
     )
-    name = 'User Plugin Manager'
-    # icon = qta.icon('mdi6.puzzle')
 
     installation_done = QtCore.Signal()
     installation_started = QtCore.Signal()
@@ -145,8 +143,17 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
     def __init__(self, session, parent=None):
         '''Instantiate the actions widget.'''
         super(PluginInstaller, self).__init__(session, parent=parent)
+
+        self.default_plugin_directory = appdirs.user_data_dir(
+            'ftrack-connect-plugins', 'ftrack'
+        )
+
+        self.json_config_url = os.environ.get(
+            'FTRACK_CONNECT_JSON_PLUGINS_URL',
+            self.default_json_config_url
+        )
+
         self.plugin_processor = PluginProcessor()
-        self._main_ftrack_connect_plugin_path = None
 
         self.setAcceptDrops(True)
         self.setProperty('ftrackDropZone', True)
@@ -276,6 +283,9 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
 
     # custom methods
     def addPlugin(self, file_path, status=STATUSES.NEW):
+        if not file_path:
+            return
+
         data = self._is_plugin_valid(file_path)
 
         if not data:
@@ -312,7 +322,7 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
 
             elif status in [STATUSES.NEW, STATUSES.DOWNLOAD]:
                 destination_path = os.path.join(
-                    self._main_ftrack_connect_plugin_path,
+                    self.default_plugin_directory,
                     os.path.basename(file_path)
                 )
 
@@ -339,7 +349,7 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
             should_update = stored_plugin_version < new_plugin_version
             if not should_update:
                 return
-            print('item {} should update with {}'.format(stored_item.text(), file_path))
+            
             # update stored item.
             stored_item.setText('{} > {}'.format(stored_item.text(), new_plugin_version))
             stored_item.setData(STATUSES.UPDATE, ROLES.PLUGIN_STATUS)
@@ -376,35 +386,25 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
 
     def populate_installed_plugins(self):
         self.plugin_model.clear()
-        plugin_data = self._fetch_installed_plugins()
-        for path, plugins in plugin_data.items():
-            if path != self._main_ftrack_connect_plugin_path:
-                continue
-            for plugin in plugins:
-                self.addPlugin(os.path.join(path, plugin), STATUSES.INSTALLED)
 
-    def _fetch_installed_plugins(self):
-        plugin_paths = os.environ.get('FTRACK_CONNECT_PLUGIN_PATH', '').split(os.pathsep)
+        plugins = os.listdir(
+            self.default_plugin_directory
+        )
 
-        if len(plugin_paths) > 1:
-            logging.warning(
-                'More than one FTRACK_CONNECT_PLUGIN_PATH found.\n'
-                'Using {}.'.format(
-                    plugin_paths[0]
-                )
+        for plugin in plugins:
+            plugin_path = os.path.join(
+                self.default_plugin_directory,
+                plugin
             )
-
-        self._main_ftrack_connect_plugin_path = plugin_paths[0]
-
-        plugins_per_path = {
-            self._main_ftrack_connect_plugin_path: os.listdir(
-                self._main_ftrack_connect_plugin_path
-            )
-        }
-        return plugins_per_path
+            self.addPlugin(plugin_path, STATUSES.INSTALLED)
 
     def populate_download_plugins(self):
-        for link in download_plugins:
+        # Allow override of path where to pick the config from.
+
+        response = urlopen(self.json_config_url)
+        response_json = json.loads(response.read())
+
+        for link in response_json['integrations']:
             self.addPlugin(link, STATUSES.DOWNLOAD)
 
     def _setDropZoneState(self, state='default'):
