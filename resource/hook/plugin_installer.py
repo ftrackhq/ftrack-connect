@@ -11,6 +11,7 @@ import urllib
 from urllib.request import urlopen
 import appdirs
 import json
+from functools import partial
 
 from Qt import QtWidgets, QtCore, QtGui
 import qtawesome as qta
@@ -18,10 +19,11 @@ from distutils.version import LooseVersion
 from ftrack_connect.ui.widget.overlay import BlockingOverlay, BusyOverlay
 from ftrack_connect.asynchronous import asynchronous
 import ftrack_connect.ui.application
+import ftrack_connect
+
 logger = logging.getLogger('ftrack_connect.plugin.plugin_installer')
 
 # Default json config url where to fetch plugins from.
-
 
 
 class InstallerBlockingOverlay(
@@ -68,7 +70,6 @@ STATUS_ICONS = {
     STATUSES.DOWNLOAD: QtGui.QIcon(qta.icon('mdi6.download')),
 
 }
-
 
 
 class PluginProcessor(QtCore.QObject):
@@ -140,7 +141,6 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
     '''Show and manage plugin installations.'''
 
     name = 'User Plugin Manager'
-    # icon = qta.icon('mdi6.puzzle')
 
     default_json_config_url = 'https://s3-eu-west-1.amazonaws.com/ftrack-deployment/ftrack-connect/plugins/plugins.json'
     plugin_re = re.compile(
@@ -150,6 +150,9 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
     installation_done = QtCore.Signal()
     installation_started = QtCore.Signal()
     installation_in_progress = QtCore.Signal(object)
+
+    refresh_started = QtCore.Signal()
+    refresh_done = QtCore.Signal()
 
     # default methods
     def __init__(self, session, parent=None):
@@ -174,8 +177,23 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         layout = QtWidgets.QVBoxLayout()
         self.setLayout(layout)
 
+        self.top_bar_layout = QtWidgets.QHBoxLayout()
+
+        self.plugin_path_label = QtWidgets.QLabel(
+            'Using: {}'.format(self.default_plugin_directory)
+        )
+        self.open_folder_button = QtWidgets.QPushButton('Open Plugin Directory')
+        self.open_folder_button.setIcon(QtGui.QIcon(qta.icon('mdi6.folder-home')))
+
+        self.open_folder_button.setFixedWidth(150)
+
+        self.top_bar_layout.addWidget(self.plugin_path_label)
+        self.top_bar_layout.addWidget(self.open_folder_button)
+        self.layout().addLayout(self.top_bar_layout)
+
         self.search_bar = QtWidgets.QLineEdit()
         self.search_bar.setPlaceholderText('Search plugin...')
+
         self.layout().addWidget(self.search_bar)
 
         self.plugin_list = QtWidgets.QListView()
@@ -183,9 +201,19 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         self.proxy_model = QtCore.QSortFilterProxyModel(self)
         self.proxy_model.setSourceModel(self.plugin_model)
         self.plugin_list.setModel(self.proxy_model)
+
         button_layout = QtWidgets.QHBoxLayout()
         self.apply_button = QtWidgets.QPushButton('Apply changes')
+        self.apply_button.setIcon(QtGui.QIcon(qta.icon('mdi6.check')))
+        self.apply_button.setDisabled(True)
+
+
+        self.reset_button = QtWidgets.QPushButton('Reset')
+        self.reset_button.setIcon(QtGui.QIcon(qta.icon('mdi6.lock-reset')))
+        self.reset_button.setMaximumWidth(100)
+
         button_layout.addWidget(self.apply_button)
+        button_layout.addWidget(self.reset_button)
 
         layout.addWidget(self.plugin_list)
         layout.addLayout(button_layout)
@@ -195,25 +223,44 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         self.blockingOverlay.hide()
         self.blockingOverlay.confirmButton.clicked.connect(self.refresh)
 
-        self.busyOverlay = BusyOverlay(self, 'Installing Plugins....')
+        self.busyOverlay = BusyOverlay(self, 'Updating....')
         self.busyOverlay.hide()
 
         # wire connections
         self.apply_button.clicked.connect(self._on_apply_changes)
+        self.reset_button.clicked.connect(self.refresh)
         self.search_bar.textChanged.connect(self.proxy_model.setFilterFixedString)
+        self.open_folder_button.clicked.connect(self.openDefaultPluginDirectory)
 
         self.installation_started.connect(self.busyOverlay.show)
         self.installation_done.connect(self.busyOverlay.hide)
         self.installation_done.connect(self._show_user_message)
         self.installation_in_progress.connect(self._update_overlay)
 
+        self.refresh_started.connect(self.busyOverlay.show)
+        self.refresh_done.connect(self.busyOverlay.hide)
+
+        self.plugin_model.itemChanged.connect(self.check_plugins_state)
+
         # refresh
         self.refresh()
 
+    def check_plugins_state(self, item):
+        self.apply_button.setDisabled(True)
+        num_items = self.plugin_model.rowCount()
+        for i in range(num_items):
+            item = self.plugin_model.item(i)
+            if item.checkState() == QtCore.Qt.Checked:
+                self.apply_button.setEnabled(True)
+                break
+
+    @asynchronous
     def refresh(self):
+        self.refresh_started.emit()
         '''Force refresh of the model, fetching all the available plugins.'''
         self.populate_installed_plugins()
         self.populate_download_plugins()
+        self.refresh_done.emit()
 
     def _show_user_message(self):
         '''Show final message to the user.'''
@@ -442,6 +489,27 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         self.style().unpolish(self)
         self.style().polish(self)
         self.update()
+
+    def openDefaultPluginDirectory(self):
+        '''Open default plugin directory in platform default file browser.'''
+
+        directory = self.default_plugin_directory
+
+        if not os.path.exists(directory):
+            # Create directory if not existing.
+            try:
+                os.makedirs(directory)
+            except OSError:
+                messageBox = QtWidgets.QMessageBox(parent=self)
+                messageBox.setIcon(QtWidgets.QMessageBox.Warning)
+                messageBox.setText(
+                    u'Could not open or create default plugin '
+                    u'directory: {0}.'.format(directory)
+                )
+                messageBox.exec_()
+                return
+
+        ftrack_connect.util.open_directory(directory)
 
 
 def register(session, **kw):
