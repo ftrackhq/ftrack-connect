@@ -240,12 +240,13 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         self.refresh_started.connect(self.busyOverlay.show)
         self.refresh_done.connect(self.busyOverlay.hide)
 
-        self.plugin_model.itemChanged.connect(self.check_plugins_state)
+        self.plugin_model.itemChanged.connect(self.enable_apply_button)
 
         # refresh
         self.refresh()
 
-    def check_plugins_state(self, item):
+    def enable_apply_button(self, item):
+        '''Check the plugins state.'''
         self.apply_button.setDisabled(True)
         num_items = self.plugin_model.rowCount()
         for i in range(num_items):
@@ -256,13 +257,12 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
 
     @asynchronous
     def refresh(self):
-        self.refresh_started.emit()
         '''Force refresh of the model, fetching all the available plugins.'''
+        self.refresh_started.emit()
         self.populate_installed_plugins()
         self.populate_download_plugins()
-        self.check_plugins_state(None)
+        self.enable_apply_button(None)
         self.refresh_done.emit()
-
 
     def _show_user_message(self):
         '''Show final message to the user.'''
@@ -307,15 +307,15 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
             return validPaths
 
         for path in mimeData.urls():
-            localPath = path.toLocalFile()
-            if os.path.isfile(localPath):
-                if localPath.endswith('.zip'):
-                    validPaths.append(localPath)
+            local_path = path.toLocalFile()
+            if os.path.isfile(local_path):
+                if local_path.endswith('.zip'):
+                    validPaths.append(local_path)
             else:
                 message = u'Invalid file: "{0}" is not a valid file.'.format(
-                    localPath
+                    local_path
                 )
-                if os.path.isdir(localPath):
+                if os.path.isdir(local_path):
                     message = (
                         'Folders not supported.\n\nIn the current version, '
                         'folders are not supported. This will be enabled in a '
