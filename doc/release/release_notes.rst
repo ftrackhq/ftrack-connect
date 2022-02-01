@@ -11,6 +11,21 @@ Release Notes
 .. release:: Upcoming
 
     .. change:: added
+        :tags: Plugin
+
+        Provide new ConnectWidget plugin to allow installation and update of integrations.
+
+    .. change:: added
+        :tags: API
+
+        Provide ConnectWidget Plugin with custom name attribute to render.
+
+    .. change:: fixed
+        :tags: API
+
+        Storage scenario help points to dead link.
+
+    .. change:: added
         :tags: API
 
         Emit usage data for Connect session duration along version and os type.
