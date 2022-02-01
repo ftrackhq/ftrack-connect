@@ -18,3 +18,4 @@ Find out all the information you need to use ftrack connect day to day.
     using_actions
     connect_widgets
     plugin_directory
+    managing_integrations
