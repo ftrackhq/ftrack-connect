@@ -260,7 +260,9 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         '''Force refresh of the model, fetching all the available plugins.'''
         self.populate_installed_plugins()
         self.populate_download_plugins()
+        self.check_plugins_state(None)
         self.refresh_done.emit()
+
 
     def _show_user_message(self):
         '''Show final message to the user.'''
