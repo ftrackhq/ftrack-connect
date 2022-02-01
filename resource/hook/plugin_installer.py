@@ -180,7 +180,7 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         self.top_bar_layout = QtWidgets.QHBoxLayout()
 
         self.plugin_path_label = QtWidgets.QLabel(
-            'Using: {}'.format(self.default_plugin_directory)
+            'Using: <i>{}</i>'.format(self.default_plugin_directory)
         )
         self.open_folder_button = QtWidgets.QPushButton('Open Plugin Directory')
         self.open_folder_button.setIcon(QtGui.QIcon(qta.icon('mdi6.folder-home')))
@@ -206,7 +206,6 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         self.apply_button = QtWidgets.QPushButton('Apply changes')
         self.apply_button.setIcon(QtGui.QIcon(qta.icon('mdi6.check')))
         self.apply_button.setDisabled(True)
-
 
         self.reset_button = QtWidgets.QPushButton('Reset')
         self.reset_button.setIcon(QtGui.QIcon(qta.icon('mdi6.lock-reset')))
