@@ -156,7 +156,6 @@ class DNDPlugins(QtWidgets.QFrame):
             'ftrack-connect-plugins', 'ftrack'
         )
 
-
         self.setAcceptDrops(True)
         self.setProperty('ftrackDropZone', True)
         self.setObjectName('ftrack-connect-publisher-browse-button')
@@ -230,6 +229,7 @@ class DNDPlugins(QtWidgets.QFrame):
                     plugin_item.setCheckState(QtCore.Qt.Checked)
 
             self.plugin_model.appendRow(plugin_item)
+            self.plugin_model.itemChanged.emit(plugin_item)
             return
 
         # update/remove plugin
@@ -386,7 +386,6 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
     def __init__(self, session, parent=None):
         '''Instantiate the actions widget.'''
         super(PluginInstaller, self).__init__(session, parent=parent)
-
 
         self.plugin_processor = PluginProcessor()
 
