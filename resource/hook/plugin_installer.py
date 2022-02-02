@@ -87,7 +87,7 @@ class PluginProcessor(QtCore.QObject):
 
     def download(self, plugin):
         '''Download provided *plugin* item.'''
-        source_path = plugin.data(ROLES.PLUGIN_SOURCE_PATH)
+        source_path = plugin.data(role=ROLES.PLUGIN_SOURCE_PATH)
         zip_name = os.path.basename(source_path)
         save_path = tempfile.gettempdir()
         temp_path = os.path.join(save_path, zip_name)
@@ -101,7 +101,7 @@ class PluginProcessor(QtCore.QObject):
     def process(self, plugin):
         '''Process provided *plugin* item.'''
 
-        status = plugin.data(ROLES.PLUGIN_STATUS)
+        status = plugin.data(role=ROLES.PLUGIN_STATUS)
         plugin_fn = self.process_mapping.get(status)
 
         if not plugin_fn:
@@ -116,13 +116,13 @@ class PluginProcessor(QtCore.QObject):
 
     def install(self, plugin):
         '''Install provided *plugin* item.'''
-        source_path = plugin.data(ROLES.PLUGIN_SOURCE_PATH)
+        source_path = plugin.data(role=ROLES.PLUGIN_SOURCE_PATH)
         if source_path.startswith('http'):
             source_path = self.download(plugin)
 
         plugin_name = os.path.basename(source_path).split('.zip')[0]
 
-        install_path = os.path.dirname(plugin.data(ROLES.PLUGIN_INSTALL_PATH))
+        install_path = os.path.dirname(plugin.data(role=ROLES.PLUGIN_INSTALL_PATH))
         destination_path = os.path.join(install_path, plugin_name)
         logging.debug('Installing {} to {}'.format(source_path, destination_path))
 
@@ -131,10 +131,29 @@ class PluginProcessor(QtCore.QObject):
 
     def remove(self, plugin):
         '''Remove provided *plugin* item.'''
-        install_path = plugin.data(ROLES.PLUGIN_INSTALL_PATH)
+        install_path = plugin.data(role=ROLES.PLUGIN_INSTALL_PATH)
         logging.debug('Removing {}'.format(install_path))
         if os.path.exists(install_path) and os.path.isdir(install_path):
             shutil.rmtree(install_path, ignore_errors=False, onerror=None)
+
+
+class PluginsModel(QtGui.QStandardItemModel):
+
+    def data(self, index=QtCore.QModelIndex(), role=QtCore.Qt.DisplayRole):
+        if not index.isValid():
+            return None
+        item = self.item(index.row())
+        column = index.column()
+        name = item.data(role=ROLES.PLUGIN_NAME)
+        version = str(item.data(role=ROLES.PLUGIN_VERSION))
+
+        if role == QtCore.Qt.DisplayRole:
+            if column == 0:
+                return name
+            if column == 1:
+                return version
+        else:
+            return super(PluginsModel, self).data(index, role)
 
 
 class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
@@ -196,8 +215,16 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
 
         self.layout().addWidget(self.search_bar)
 
-        self.plugin_list = QtWidgets.QListView()
-        self.plugin_model = QtGui.QStandardItemModel(self)
+        self.plugin_list = QtWidgets.QTableView()
+        self.plugin_list.horizontalHeader().setStretchLastSection(True)
+        self.plugin_list.horizontalHeader().setVisible(False)
+        self.plugin_list.verticalHeader().setVisible(False)
+        self.plugin_list.setShowGrid(False)
+        self.plugin_list.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers);
+
+        self.plugin_model = PluginsModel(self)
+        self.plugin_model.setColumnCount(2)
+
         self.proxy_model = QtCore.QSortFilterProxyModel(self)
         self.proxy_model.setSourceModel(self.plugin_model)
         self.plugin_list.setModel(self.proxy_model)
@@ -276,8 +303,8 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         '''Update the overlay with the current item *information*.'''
         self.busyOverlay.setMessage(
             'Installing:\n\n{}\nVersion {} '.format(
-                item.data(ROLES.PLUGIN_NAME),
-                item.data(ROLES.PLUGIN_VERSION)
+                item.data(role=ROLES.PLUGIN_NAME),
+                item.data(role=ROLES.PLUGIN_VERSION)
             )
         )
 
@@ -405,15 +432,17 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
                     plugin_item.setCheckState(QtCore.Qt.Checked)
 
             self.plugin_model.appendRow(plugin_item)
+            self.plugin_model.setColumnCount(2)
+            self.plugin_list.resizeColumnToContents(0)
             return
 
         # update/remove plugin
-        stored_status = stored_item.data(ROLES.PLUGIN_STATUS)
+        stored_status = stored_item.data(role=ROLES.PLUGIN_STATUS)
         if (
                 stored_status in [STATUSES.INSTALLED, STATUSES.DOWNLOAD] and
                 status in [STATUSES.NEW, STATUSES.DOWNLOAD]
         ):
-            stored_plugin_version = stored_item.data(ROLES.PLUGIN_VERSION)
+            stored_plugin_version = stored_item.data(role=ROLES.PLUGIN_VERSION)
             should_update = stored_plugin_version < new_plugin_version
             if not should_update:
                 return
@@ -436,7 +465,7 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         num_items = self.plugin_model.rowCount()
         for i in range(num_items):
             item = self.plugin_model.item(i)
-            item_id = item.data(ROLES.PLUGIN_ID)
+            item_id = item.data(role=ROLES.PLUGIN_ID)
             if item_id == plugin_data['id']:
                 return item
         return None
