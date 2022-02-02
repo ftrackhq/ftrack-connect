@@ -305,7 +305,6 @@ class DNDPlugins(QtWidgets.QFrame):
         for link in response_json['integrations']:
             self.addPlugin(link, STATUSES.DOWNLOAD)
 
-
     def _processMimeData(self, mimeData):
         '''Return a list of valid filepaths.'''
         validPaths = []
@@ -323,19 +322,6 @@ class DNDPlugins(QtWidgets.QFrame):
             if os.path.isfile(local_path):
                 if local_path.endswith('.zip'):
                     validPaths.append(local_path)
-            else:
-                message = u'Invalid file: "{0}" is not a valid file.'.format(
-                    local_path
-                )
-                if os.path.isdir(local_path):
-                    message = (
-                        'Folders not supported.\n\nIn the current version, '
-                        'folders are not supported. This will be enabled in a '
-                        'later release of ftrack connect.'
-                    )
-                QtWidgets.QMessageBox.warning(
-                    self, 'Invalid file', message
-                )
 
         return validPaths
 
