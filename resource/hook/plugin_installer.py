@@ -9,21 +9,19 @@ import zipfile
 import tempfile
 import urllib
 from urllib.request import urlopen
+from distutils.version import LooseVersion
 import appdirs
 import json
-from functools import partial
 
 from Qt import QtWidgets, QtCore, QtGui
 import qtawesome as qta
-from distutils.version import LooseVersion
+
 from ftrack_connect.ui.widget.overlay import BlockingOverlay, BusyOverlay
 from ftrack_connect.asynchronous import asynchronous
 import ftrack_connect.ui.application
 import ftrack_connect
 
 logger = logging.getLogger('ftrack_connect.plugin.plugin_installer')
-
-# Default json config url where to fetch plugins from.
 
 
 class InstallerBlockingOverlay(
@@ -137,7 +135,7 @@ class PluginProcessor(QtCore.QObject):
             shutil.rmtree(install_path, ignore_errors=False, onerror=None)
 
 
-class DNDPlugins(QtWidgets.QFrame):
+class DndPluginList(QtWidgets.QFrame):
 
     default_json_config_url = 'https://s3-eu-west-1.amazonaws.com/ftrack-deployment/ftrack-connect/plugins/plugins.json'
     plugin_re = re.compile(
@@ -145,7 +143,7 @@ class DNDPlugins(QtWidgets.QFrame):
     )
 
     def __init__(self, session, parent=None):
-        super(DNDPlugins, self).__init__(parent=parent)
+        super(DndPluginList, self).__init__(parent=parent)
 
         self.json_config_url = os.environ.get(
             'FTRACK_CONNECT_JSON_PLUGINS_URL',
@@ -161,6 +159,7 @@ class DNDPlugins(QtWidgets.QFrame):
         self.setObjectName('ftrack-connect-publisher-browse-button')
 
         self.main_layout = QtWidgets.QVBoxLayout()
+        self.main_layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.main_layout)
         self.plugin_list = QtWidgets.QListView()
         self.plugin_model = QtGui.QStandardItemModel(self)
@@ -343,6 +342,8 @@ class DNDPlugins(QtWidgets.QFrame):
             self.addPlugin(path, STATUSES.NEW)
 
         event.accept()
+        self._setDropZoneState()
+
 
     def _setDropZoneState(self, state='default'):
         '''Set drop zone state to *state*.
@@ -381,7 +382,7 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         self.top_bar_layout = QtWidgets.QHBoxLayout()
 
         self.plugin_path_label = QtWidgets.QLabel()
-        self.open_folder_button = QtWidgets.QPushButton('Open Plugin Directory')
+        self.open_folder_button = QtWidgets.QPushButton('Open')
         self.open_folder_button.setIcon(QtGui.QIcon(qta.icon('mdi6.folder-home')))
 
         self.open_folder_button.setFixedWidth(150)
@@ -396,13 +397,13 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         self.layout().addWidget(self.search_bar)
 
         # plugin list
-        self.plugins = DNDPlugins(
+        self.plugin_list_widget = DndPluginList(
             self.session
         )
-        layout.addWidget(self.plugins)
+        layout.addWidget(self.plugin_list_widget)
 
         self.plugin_path_label.setText('Using: <i>{}</i>'.format(
-            self.plugins.default_plugin_directory
+            self.plugin_list_widget.default_plugin_directory
         ))
 
         # apply and reset button.
@@ -432,7 +433,7 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         # wire connections
         self.apply_button.clicked.connect(self._on_apply_changes)
         self.reset_button.clicked.connect(self.refresh)
-        self.search_bar.textChanged.connect(self.plugins.proxy_model.setFilterFixedString)
+        self.search_bar.textChanged.connect(self.plugin_list_widget.proxy_model.setFilterFixedString)
         self.open_folder_button.clicked.connect(self.openDefaultPluginDirectory)
 
         self.installation_started.connect(self.busyOverlay.show)
@@ -443,7 +444,7 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         self.refresh_started.connect(self.busyOverlay.show)
         self.refresh_done.connect(self.busyOverlay.hide)
 
-        self.plugins.plugin_model.itemChanged.connect(self.enable_apply_button)
+        self.plugin_list_widget.plugin_model.itemChanged.connect(self.enable_apply_button)
 
         # refresh
         self.refresh()
@@ -451,9 +452,9 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
     def enable_apply_button(self, item):
         '''Check the plugins state.'''
         self.apply_button.setDisabled(True)
-        num_items = self.plugins.plugin_model.rowCount()
+        num_items = self.plugin_list_widget.plugin_model.rowCount()
         for i in range(num_items):
-            item = self.plugins.plugin_model.item(i)
+            item = self.plugin_list_widget.plugin_model.item(i)
             if item.checkState() == QtCore.Qt.Checked:
                 self.apply_button.setEnabled(True)
                 break
@@ -462,8 +463,8 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
     def refresh(self):
         '''Force refresh of the model, fetching all the available plugins.'''
         self.refresh_started.emit()
-        self.plugins.populate_installed_plugins()
-        self.plugins.populate_download_plugins()
+        self.plugin_list_widget.populate_installed_plugins()
+        self.plugin_list_widget.populate_download_plugins()
         self.enable_apply_button(None)
         self.refresh_done.emit()
 
@@ -489,9 +490,9 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
     def _on_apply_changes(self, event=None):
         '''Will process all the selected plugins.'''
         self.installation_started.emit()
-        num_items = self.plugins.plugin_model.rowCount()
+        num_items = self.plugin_list_widget.plugin_model.rowCount()
         for i in range(num_items):
-            item = self.plugins.plugin_model.item(i)
+            item = self.plugin_list_widget.plugin_model.item(i)
             if item.checkState() == QtCore.Qt.Checked:
                 self.installation_in_progress.emit(item)
                 self.plugin_processor.process(item)
@@ -500,7 +501,7 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
     def openDefaultPluginDirectory(self):
         '''Open default plugin directory in platform default file browser.'''
 
-        directory = self.default_plugin_directory
+        directory = self.plugin_list_widget.default_plugin_directory
 
         if not os.path.exists(directory):
             # Create directory if not existing.
