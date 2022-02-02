@@ -1,6 +1,8 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
 
+import operator
+
 from Qt import QtWidgets, QtCore, QtGui
 import qtawesome as qta
 
@@ -40,8 +42,8 @@ class EntitySelector(QtWidgets.QStackedWidget):
 
         # TODO: Once the link is available through the API change this to a
         # combo with assigned tasks.
-        self.assignedContextSelector = QtWidgets.QLineEdit()
-        self.assignedContextSelector.setReadOnly(True)
+        self.assignedContextSelector = QtWidgets.QComboBox()
+        # self.assignedContextSelector.setReadOnly(True)
 
         selectionWidget.layout().addWidget(self.assignedContextSelector)
         selectionWidget.layout().addWidget(self.entityBrowseButton)
@@ -71,6 +73,24 @@ class EntitySelector(QtWidgets.QStackedWidget):
         self.entityBrowseButton.clicked.connect(
             self._onEntityBrowseButtonClicked
         )
+        self._fetch_user_tasks()
+
+    def _getPath(self, entity):
+        '''Return path to *entity*.'''
+        path = [e['name'] for e in entity.get('link', [])]
+        return ' / '.join(path)
+
+    def _fetch_user_tasks(self):
+        '''Update assigned list.'''
+        self.assignedContextSelector.clear()
+
+        assigned_tasks = self.session.query(
+            'select link from Task '
+            'where assignments any (resource.username = "{0}")'.format(self.session.api_user)
+        ).all()
+
+        for task in assigned_tasks:
+            self.assignedContextSelector.addItem(self._getPath(task), task['id'])
 
     def _updateIndex(self, entity):
         '''Update the widget when entity changes.'''
