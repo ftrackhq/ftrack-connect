@@ -137,213 +137,38 @@ class PluginProcessor(QtCore.QObject):
             shutil.rmtree(install_path, ignore_errors=False, onerror=None)
 
 
-class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
-    '''Show and manage plugin installations.'''
-
-    name = 'User Plugin Manager'
+class DNDPlugins(QtWidgets.QFrame):
 
     default_json_config_url = 'https://s3-eu-west-1.amazonaws.com/ftrack-deployment/ftrack-connect/plugins/plugins.json'
     plugin_re = re.compile(
         '(?P<name>(([A-Za-z-3-4]+)))-(?P<version>(\w.+))'
     )
 
-    installation_done = QtCore.Signal()
-    installation_started = QtCore.Signal()
-    installation_in_progress = QtCore.Signal(object)
-
-    refresh_started = QtCore.Signal()
-    refresh_done = QtCore.Signal()
-
-    # default methods
     def __init__(self, session, parent=None):
-        '''Instantiate the actions widget.'''
-        super(PluginInstaller, self).__init__(session, parent=parent)
-
-        self.default_plugin_directory = appdirs.user_data_dir(
-            'ftrack-connect-plugins', 'ftrack'
-        )
+        super(DNDPlugins, self).__init__(parent=parent)
 
         self.json_config_url = os.environ.get(
             'FTRACK_CONNECT_JSON_PLUGINS_URL',
             self.default_json_config_url
         )
 
-        self.plugin_processor = PluginProcessor()
+        self.default_plugin_directory = appdirs.user_data_dir(
+            'ftrack-connect-plugins', 'ftrack'
+        )
+
 
         self.setAcceptDrops(True)
         self.setProperty('ftrackDropZone', True)
         self.setObjectName('ftrack-connect-publisher-browse-button')
 
-        layout = QtWidgets.QVBoxLayout()
-        self.setLayout(layout)
-
-        self.top_bar_layout = QtWidgets.QHBoxLayout()
-
-        self.plugin_path_label = QtWidgets.QLabel(
-            'Using: <i>{}</i>'.format(self.default_plugin_directory)
-        )
-        self.open_folder_button = QtWidgets.QPushButton('Open Plugin Directory')
-        self.open_folder_button.setIcon(QtGui.QIcon(qta.icon('mdi6.folder-home')))
-
-        self.open_folder_button.setFixedWidth(150)
-
-        self.top_bar_layout.addWidget(self.plugin_path_label)
-        self.top_bar_layout.addWidget(self.open_folder_button)
-        self.layout().addLayout(self.top_bar_layout)
-
-        self.search_bar = QtWidgets.QLineEdit()
-        self.search_bar.setPlaceholderText('Search plugin...')
-
-        self.layout().addWidget(self.search_bar)
-
+        self.main_layout = QtWidgets.QVBoxLayout()
+        self.setLayout(self.main_layout)
         self.plugin_list = QtWidgets.QListView()
         self.plugin_model = QtGui.QStandardItemModel(self)
         self.proxy_model = QtCore.QSortFilterProxyModel(self)
         self.proxy_model.setSourceModel(self.plugin_model)
         self.plugin_list.setModel(self.proxy_model)
-
-        button_layout = QtWidgets.QHBoxLayout()
-        self.apply_button = QtWidgets.QPushButton('Apply changes')
-        self.apply_button.setIcon(QtGui.QIcon(qta.icon('mdi6.check')))
-        self.apply_button.setDisabled(True)
-
-        self.reset_button = QtWidgets.QPushButton('Reset')
-        self.reset_button.setIcon(QtGui.QIcon(qta.icon('mdi6.lock-reset')))
-        self.reset_button.setMaximumWidth(100)
-
-        button_layout.addWidget(self.apply_button)
-        button_layout.addWidget(self.reset_button)
-
-        layout.addWidget(self.plugin_list)
-        layout.addLayout(button_layout)
-
-        # overlays
-        self.blockingOverlay = InstallerBlockingOverlay(self)
-        self.blockingOverlay.hide()
-        self.blockingOverlay.confirmButton.clicked.connect(self.refresh)
-
-        self.busyOverlay = BusyOverlay(self, 'Updating....')
-        self.busyOverlay.hide()
-
-        # wire connections
-        self.apply_button.clicked.connect(self._on_apply_changes)
-        self.reset_button.clicked.connect(self.refresh)
-        self.search_bar.textChanged.connect(self.proxy_model.setFilterFixedString)
-        self.open_folder_button.clicked.connect(self.openDefaultPluginDirectory)
-
-        self.installation_started.connect(self.busyOverlay.show)
-        self.installation_done.connect(self.busyOverlay.hide)
-        self.installation_done.connect(self._show_user_message)
-        self.installation_in_progress.connect(self._update_overlay)
-
-        self.refresh_started.connect(self.busyOverlay.show)
-        self.refresh_done.connect(self.busyOverlay.hide)
-
-        self.plugin_model.itemChanged.connect(self.enable_apply_button)
-
-        # refresh
-        self.refresh()
-
-    def enable_apply_button(self, item):
-        '''Check the plugins state.'''
-        self.apply_button.setDisabled(True)
-        num_items = self.plugin_model.rowCount()
-        for i in range(num_items):
-            item = self.plugin_model.item(i)
-            if item.checkState() == QtCore.Qt.Checked:
-                self.apply_button.setEnabled(True)
-                break
-
-    @asynchronous
-    def refresh(self):
-        '''Force refresh of the model, fetching all the available plugins.'''
-        self.refresh_started.emit()
-        self.populate_installed_plugins()
-        self.populate_download_plugins()
-        self.enable_apply_button(None)
-        self.refresh_done.emit()
-
-    def _show_user_message(self):
-        '''Show final message to the user.'''
-        self.blockingOverlay.setMessage(
-            'Installation finished!\n \n'
-            'Please restart connect to pick up the changes.'
-        )
-        self.blockingOverlay.confirmButton.show()
-        self.blockingOverlay.show()
-
-    def _update_overlay(self, item):
-        '''Update the overlay with the current item *information*.'''
-        self.busyOverlay.setMessage(
-            'Installing:\n\n{}\nVersion {} '.format(
-                item.data(ROLES.PLUGIN_NAME),
-                item.data(ROLES.PLUGIN_VERSION)
-            )
-        )
-
-    @asynchronous
-    def _on_apply_changes(self, event=None):
-        '''Will process all the selected plugins.'''
-        self.installation_started.emit()
-        num_items = self.plugin_model.rowCount()
-        for i in range(num_items):
-            item = self.plugin_model.item(i)
-            if item.checkState() == QtCore.Qt.Checked:
-                self.installation_in_progress.emit(item)
-                self.plugin_processor.process(item)
-        self.installation_done.emit()
-
-    def _processMimeData(self, mimeData):
-        '''Return a list of valid filepaths.'''
-        validPaths = []
-
-        if not mimeData.hasUrls():
-            QtWidgets.QMessageBox.warning(
-                self,
-                'Invalid file',
-                'Invalid file: the dropped item is not a valid file.'
-            )
-            return validPaths
-
-        for path in mimeData.urls():
-            local_path = path.toLocalFile()
-            if os.path.isfile(local_path):
-                if local_path.endswith('.zip'):
-                    validPaths.append(local_path)
-            else:
-                message = u'Invalid file: "{0}" is not a valid file.'.format(
-                    local_path
-                )
-                if os.path.isdir(local_path):
-                    message = (
-                        'Folders not supported.\n\nIn the current version, '
-                        'folders are not supported. This will be enabled in a '
-                        'later release of ftrack connect.'
-                    )
-                QtWidgets.QMessageBox.warning(
-                    self, 'Invalid file', message
-                )
-
-        return validPaths
-
-    def dragEnterEvent(self, event):
-        '''Override dragEnterEvent and accept all events.'''
-        event.setDropAction(QtCore.Qt.CopyAction)
-        event.accept()
-        self._setDropZoneState('active')
-
-    def dropEvent(self, event):
-        '''Handle dropped file event.'''
-        self._setDropZoneState()
-
-        paths = self._processMimeData(
-            event.mimeData()
-        )
-
-        for path in paths:
-            self.addPlugin(path, STATUSES.NEW)
-
-        event.accept()
+        self.main_layout.addWidget(self.plugin_list)
 
     # custom methods
     def addPlugin(self, file_path, status=STATUSES.NEW):
@@ -480,6 +305,59 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         for link in response_json['integrations']:
             self.addPlugin(link, STATUSES.DOWNLOAD)
 
+
+    def _processMimeData(self, mimeData):
+        '''Return a list of valid filepaths.'''
+        validPaths = []
+
+        if not mimeData.hasUrls():
+            QtWidgets.QMessageBox.warning(
+                self,
+                'Invalid file',
+                'Invalid file: the dropped item is not a valid file.'
+            )
+            return validPaths
+
+        for path in mimeData.urls():
+            local_path = path.toLocalFile()
+            if os.path.isfile(local_path):
+                if local_path.endswith('.zip'):
+                    validPaths.append(local_path)
+            else:
+                message = u'Invalid file: "{0}" is not a valid file.'.format(
+                    local_path
+                )
+                if os.path.isdir(local_path):
+                    message = (
+                        'Folders not supported.\n\nIn the current version, '
+                        'folders are not supported. This will be enabled in a '
+                        'later release of ftrack connect.'
+                    )
+                QtWidgets.QMessageBox.warning(
+                    self, 'Invalid file', message
+                )
+
+        return validPaths
+
+    def dragEnterEvent(self, event):
+        '''Override dragEnterEvent and accept all events.'''
+        event.setDropAction(QtCore.Qt.CopyAction)
+        event.accept()
+        self._setDropZoneState('active')
+
+    def dropEvent(self, event):
+        '''Handle dropped file event.'''
+        self._setDropZoneState()
+
+        paths = self._processMimeData(
+            event.mimeData()
+        )
+
+        for path in paths:
+            self.addPlugin(path, STATUSES.NEW)
+
+        event.accept()
+
     def _setDropZoneState(self, state='default'):
         '''Set drop zone state to *state*.
 
@@ -490,6 +368,149 @@ class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
         self.style().unpolish(self)
         self.style().polish(self)
         self.update()
+
+
+class PluginInstaller(ftrack_connect.ui.application.ConnectWidget):
+    '''Show and manage plugin installations.'''
+
+    name = 'User Plugin Manager'
+
+    installation_done = QtCore.Signal()
+    installation_started = QtCore.Signal()
+    installation_in_progress = QtCore.Signal(object)
+
+    refresh_started = QtCore.Signal()
+    refresh_done = QtCore.Signal()
+
+    # default methods
+    def __init__(self, session, parent=None):
+        '''Instantiate the actions widget.'''
+        super(PluginInstaller, self).__init__(session, parent=parent)
+
+
+        self.plugin_processor = PluginProcessor()
+
+        layout = QtWidgets.QVBoxLayout()
+        self.setLayout(layout)
+
+        self.top_bar_layout = QtWidgets.QHBoxLayout()
+
+        self.plugin_path_label = QtWidgets.QLabel()
+        self.open_folder_button = QtWidgets.QPushButton('Open Plugin Directory')
+        self.open_folder_button.setIcon(QtGui.QIcon(qta.icon('mdi6.folder-home')))
+
+        self.open_folder_button.setFixedWidth(150)
+
+        self.top_bar_layout.addWidget(self.plugin_path_label)
+        self.top_bar_layout.addWidget(self.open_folder_button)
+        self.layout().addLayout(self.top_bar_layout)
+
+        self.search_bar = QtWidgets.QLineEdit()
+        self.search_bar.setPlaceholderText('Search plugin...')
+
+        self.layout().addWidget(self.search_bar)
+
+        # plugin list
+        self.plugins = DNDPlugins(
+            self.session
+        )
+        layout.addWidget(self.plugins)
+
+        self.plugin_path_label.setText('Using: <i>{}</i>'.format(
+            self.plugins.default_plugin_directory
+        ))
+
+        # apply and reset button.
+        button_layout = QtWidgets.QHBoxLayout()
+
+        self.apply_button = QtWidgets.QPushButton('Apply changes')
+        self.apply_button.setIcon(QtGui.QIcon(qta.icon('mdi6.check')))
+        self.apply_button.setDisabled(True)
+
+        self.reset_button = QtWidgets.QPushButton('Reset')
+        self.reset_button.setIcon(QtGui.QIcon(qta.icon('mdi6.lock-reset')))
+        self.reset_button.setMaximumWidth(100)
+
+        button_layout.addWidget(self.apply_button)
+        button_layout.addWidget(self.reset_button)
+
+        layout.addLayout(button_layout)
+
+        # overlays
+        self.blockingOverlay = InstallerBlockingOverlay(self)
+        self.blockingOverlay.hide()
+        self.blockingOverlay.confirmButton.clicked.connect(self.refresh)
+
+        self.busyOverlay = BusyOverlay(self, 'Updating....')
+        self.busyOverlay.hide()
+
+        # wire connections
+        self.apply_button.clicked.connect(self._on_apply_changes)
+        self.reset_button.clicked.connect(self.refresh)
+        self.search_bar.textChanged.connect(self.plugins.proxy_model.setFilterFixedString)
+        self.open_folder_button.clicked.connect(self.openDefaultPluginDirectory)
+
+        self.installation_started.connect(self.busyOverlay.show)
+        self.installation_done.connect(self.busyOverlay.hide)
+        self.installation_done.connect(self._show_user_message)
+        self.installation_in_progress.connect(self._update_overlay)
+
+        self.refresh_started.connect(self.busyOverlay.show)
+        self.refresh_done.connect(self.busyOverlay.hide)
+
+        self.plugins.plugin_model.itemChanged.connect(self.enable_apply_button)
+
+        # refresh
+        self.refresh()
+
+    def enable_apply_button(self, item):
+        '''Check the plugins state.'''
+        self.apply_button.setDisabled(True)
+        num_items = self.plugins.plugin_model.rowCount()
+        for i in range(num_items):
+            item = self.plugins.plugin_model.item(i)
+            if item.checkState() == QtCore.Qt.Checked:
+                self.apply_button.setEnabled(True)
+                break
+
+    @asynchronous
+    def refresh(self):
+        '''Force refresh of the model, fetching all the available plugins.'''
+        self.refresh_started.emit()
+        self.plugins.populate_installed_plugins()
+        self.plugins.populate_download_plugins()
+        self.enable_apply_button(None)
+        self.refresh_done.emit()
+
+    def _show_user_message(self):
+        '''Show final message to the user.'''
+        self.blockingOverlay.setMessage(
+            'Installation finished!\n \n'
+            'Please restart connect to pick up the changes.'
+        )
+        self.blockingOverlay.confirmButton.show()
+        self.blockingOverlay.show()
+
+    def _update_overlay(self, item):
+        '''Update the overlay with the current item *information*.'''
+        self.busyOverlay.setMessage(
+            'Installing:\n\n{}\nVersion {} '.format(
+                item.data(ROLES.PLUGIN_NAME),
+                item.data(ROLES.PLUGIN_VERSION)
+            )
+        )
+
+    @asynchronous
+    def _on_apply_changes(self, event=None):
+        '''Will process all the selected plugins.'''
+        self.installation_started.emit()
+        num_items = self.plugins.plugin_model.rowCount()
+        for i in range(num_items):
+            item = self.plugins.plugin_model.item(i)
+            if item.checkState() == QtCore.Qt.Checked:
+                self.installation_in_progress.emit(item)
+                self.plugin_processor.process(item)
+        self.installation_done.emit()
 
     def openDefaultPluginDirectory(self):
         '''Open default plugin directory in platform default file browser.'''
