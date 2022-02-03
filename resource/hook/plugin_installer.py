@@ -137,7 +137,7 @@ class PluginProcessor(QtCore.QObject):
 
 class DndPluginList(QtWidgets.QFrame):
 
-    default_json_config_url = 'https://s3-eu-west-1.amazonaws.com/ftrack-deployment/ftrack-connect/plugins/plugins.json'
+    default_json_config_url = 'https://download.ftrack.com/ftrack-connect/plugins.json'
     plugin_re = re.compile(
         '(?P<name>(([A-Za-z-3-4]+)))-(?P<version>(\w.+))'
     )
