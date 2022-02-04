@@ -10,6 +10,18 @@ Release Notes
 
 .. release:: Upcoming
 
+
+
+    .. change:: changed
+        :tags: UX
+
+        Context selection is changed to a list of assigned tasks.
+
+    .. change:: added
+        :tags: UX
+
+        Indicator during discovery of actions.
+
     .. change:: added
         :tags: API
 
