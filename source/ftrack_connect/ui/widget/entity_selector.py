@@ -17,6 +17,7 @@ class EntitySelector(QtWidgets.QStackedWidget):
 
     entityChanged = QtCore.Signal(object)
 
+
     @property
     def session(self):
         '''Return current session.'''
@@ -82,22 +83,25 @@ class EntitySelector(QtWidgets.QStackedWidget):
         path = [e['name'] for e in entity.get('link', [])]
         return ' / '.join(path)
 
-    def _fetch_user_tasks(self):
+    def _fetch_user_tasks(self, task_number=10):
         '''Update assigned list.'''
-        print('FETCHING USERS TASKS....')
         self.assignedContextSelector.clear()
 
         assigned_tasks = self.session.query(
-            'select link from Task '
-            'where assignments any (resource.username = "{0}")'.format(self.session.api_user)
+            'select priority, assignments.resource.username, link, status.name from Task '
+            'where assignments any (resource.username = "{0}") and '
+            'status.name not_in ("Omitted", "On Hold", "Completed") '
+            'order by priority.sort '
+            'limit {1}'.format(
+                self.session.api_user,
+                task_number
+            )
         ).all()
 
         for task in assigned_tasks:
             self.assignedContextSelector.addItem(self._getPath(task), task)
 
-        print('Setting entity to {}'.format(self._getPath(assigned_tasks[0])))
         self.setEntity(assigned_tasks[0])
-        # self.setCurrentIndex(0)
 
     def updateEntityPath(self, index):
         entity = self.assignedContextSelector.itemData(index, QtCore.Qt.UserRole)
@@ -113,7 +117,6 @@ class EntitySelector(QtWidgets.QStackedWidget):
     def _onDiscardEntityButtonClicked(self):
         '''Handle discard entity button clicked.'''
         self.setEntity(None)
-
 
     def _onEntityBrowseButtonClicked(self):
         '''Handle entity browse button clicked.'''

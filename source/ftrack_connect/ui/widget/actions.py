@@ -198,6 +198,7 @@ class Actions(QtWidgets.QWidget):
         )
 
     def _contextFromEntity(self, entity):
+        '''convert *entity* to list of dicts'''
         context = []
         try:
             context = [{
@@ -322,6 +323,7 @@ class Actions(QtWidgets.QWidget):
             'key': self.RECENT_METADATA_KEY,
             'value': encodedRecentActions
         }, identifying_keys=['parent_type', 'parent_id', 'key'])
+
 
     def _loadActionsForContext(self, context):
         '''Obtain new actions synchronously for *context*.'''
