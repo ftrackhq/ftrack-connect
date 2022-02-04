@@ -69,6 +69,7 @@ class EntitySelector(QtWidgets.QStackedWidget):
         presentationWidget.layout().addWidget(self.discardEntityButton)
 
         self.entityChanged.connect(self.entityPath.setEntity)
+        self.assignedContextSelector.currentIndexChanged.connect(self.updateEntityPath)
         self.entityChanged.connect(self._updateIndex)
         self.entityBrowseButton.clicked.connect(
             self._onEntityBrowseButtonClicked
@@ -90,7 +91,11 @@ class EntitySelector(QtWidgets.QStackedWidget):
         ).all()
 
         for task in assigned_tasks:
-            self.assignedContextSelector.addItem(self._getPath(task), task['id'])
+            self.assignedContextSelector.addItem(self._getPath(task), task)
+
+    def updateEntityPath(self, index):
+        entity = self.assignedContextSelector.itemData(index, QtCore.Qt.UserRole)
+        self.setEntity(entity)
 
     def _updateIndex(self, entity):
         '''Update the widget when entity changes.'''
