@@ -517,8 +517,6 @@ class Application(QtWidgets.QMainWindow):
         self.tabPanel.tabBar().setObjectName('application-tab-bar')
         self.setCentralWidget(self.tabPanel)
 
-        self._discoverConnectWidget()
-
         self.session.event_hub.subscribe(
             'topic=ftrack.connect and source.user.username="{0}"'.format(
                 self.session.api_user
@@ -538,6 +536,7 @@ class Application(QtWidgets.QMainWindow):
             lambda event : True
         )
         self.session._configure_locations()
+        self._discoverConnectWidget()
 
     def _discover_hook_paths(self):
         '''Return a list of paths to pass to ftrack_api.Session()'''

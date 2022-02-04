@@ -121,8 +121,8 @@ class Actions(QtWidgets.QWidget):
 
         self.recentActionsChanged.connect(self._updateRecentSection)
 
-        self._loadActionsForContext([])
         self._updateRecentActions()
+        self._loadActionsForContext([])
 
     def _onBeforeActionLaunched(self, action):
         '''Before action is launched, show busy overlay with message..'''
@@ -320,6 +320,7 @@ class Actions(QtWidgets.QWidget):
 
     def _loadActionsForContext(self, context):
         '''Obtain new actions synchronously for *context*.'''
+        print('LOADING ACTION FOR CONTEXT :{}'.format(context))
         discoveredActions = []
 
         event = ftrack_api.event.base.Event(

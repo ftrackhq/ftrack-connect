@@ -9,6 +9,8 @@ import qtawesome as qta
 from ftrack_connect.ui.widget import entity_path as _entity_path
 from ftrack_connect.ui.widget import entity_browser as _entity_browser
 
+from ftrack_connect.asynchronous import asynchronous
+
 
 class EntitySelector(QtWidgets.QStackedWidget):
     '''Entity selector widget.'''
@@ -39,11 +41,7 @@ class EntitySelector(QtWidgets.QStackedWidget):
         )
 
         self.entityBrowseButton = QtWidgets.QPushButton('Browse')
-
-        # TODO: Once the link is available through the API change this to a
-        # combo with assigned tasks.
         self.assignedContextSelector = QtWidgets.QComboBox()
-        # self.assignedContextSelector.setReadOnly(True)
 
         selectionWidget.layout().addWidget(self.assignedContextSelector)
         selectionWidget.layout().addWidget(self.entityBrowseButton)
@@ -69,7 +67,10 @@ class EntitySelector(QtWidgets.QStackedWidget):
         presentationWidget.layout().addWidget(self.discardEntityButton)
 
         self.entityChanged.connect(self.entityPath.setEntity)
+
         self.assignedContextSelector.currentIndexChanged.connect(self.updateEntityPath)
+        # self.assignedContextSelector.currentIndexChanged.connect(self._updateIndex)
+
         self.entityChanged.connect(self._updateIndex)
         self.entityBrowseButton.clicked.connect(
             self._onEntityBrowseButtonClicked
@@ -83,6 +84,7 @@ class EntitySelector(QtWidgets.QStackedWidget):
 
     def _fetch_user_tasks(self):
         '''Update assigned list.'''
+        print('FETCHING USERS TASKS....')
         self.assignedContextSelector.clear()
 
         assigned_tasks = self.session.query(
@@ -92,6 +94,10 @@ class EntitySelector(QtWidgets.QStackedWidget):
 
         for task in assigned_tasks:
             self.assignedContextSelector.addItem(self._getPath(task), task)
+
+        print('Setting entity to {}'.format(self._getPath(assigned_tasks[0])))
+        self.setEntity(assigned_tasks[0])
+        # self.setCurrentIndex(0)
 
     def updateEntityPath(self, index):
         entity = self.assignedContextSelector.itemData(index, QtCore.Qt.UserRole)
@@ -107,6 +113,7 @@ class EntitySelector(QtWidgets.QStackedWidget):
     def _onDiscardEntityButtonClicked(self):
         '''Handle discard entity button clicked.'''
         self.setEntity(None)
+
 
     def _onEntityBrowseButtonClicked(self):
         '''Handle entity browse button clicked.'''
