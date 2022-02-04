@@ -27,7 +27,7 @@ class EntitySelector(QtWidgets.QStackedWidget):
         '''Instantiate the entity selector widget.'''
         super(EntitySelector, self).__init__(parent=parent)
         self._entity = None
-
+        self._user_tasks = []
         self._session = session
         # Create widget used to select an entity.
         selectionWidget = QtWidgets.QFrame()
@@ -68,11 +68,11 @@ class EntitySelector(QtWidgets.QStackedWidget):
         presentationWidget.layout().addWidget(self.discardEntityButton)
 
         self.entityChanged.connect(self.entityPath.setEntity)
-
         self.assignedContextSelector.currentIndexChanged.connect(self.updateEntityPath)
-        # self.assignedContextSelector.currentIndexChanged.connect(self._updateIndex)
 
         self.entityChanged.connect(self._updateIndex)
+        # self.assignedContextSelector.currentIndexChanged.connect(self._updateIndex)
+
         self.entityBrowseButton.clicked.connect(
             self._onEntityBrowseButtonClicked
         )
@@ -85,7 +85,13 @@ class EntitySelector(QtWidgets.QStackedWidget):
 
     def _fetch_user_tasks(self, task_number=10):
         '''Update assigned list.'''
+        self._user_tasks = [None]   # add placeholder for fake label below
         self.assignedContextSelector.clear()
+        self.assignedContextSelector.addItem(
+            '- Select from assigned tasks or browse.- ',
+            None,
+            QtCore.Qt.AlignCenter
+        )
 
         assigned_tasks = self.session.query(
             'select priority, assignments.resource.username, link, status.name from Task '
@@ -100,6 +106,7 @@ class EntitySelector(QtWidgets.QStackedWidget):
 
         for task in assigned_tasks:
             self.assignedContextSelector.addItem(self._getPath(task), task)
+            self._user_tasks.append(task)
 
         self.setEntity(assigned_tasks[0])
 
@@ -117,6 +124,8 @@ class EntitySelector(QtWidgets.QStackedWidget):
     def _onDiscardEntityButtonClicked(self):
         '''Handle discard entity button clicked.'''
         self.setEntity(None)
+        self.assignedContextSelector.setCurrentIndex(0)
+
 
     def _onEntityBrowseButtonClicked(self):
         '''Handle entity browse button clicked.'''
