@@ -122,7 +122,9 @@ class Actions(QtWidgets.QWidget):
         self.recentActionsChanged.connect(self._updateRecentSection)
 
         self._updateRecentActions()
-        self._loadActionsForContext([])
+
+        context = self._contextFromEntity(self._entitySelector._entity)
+        self._loadActionsForContext(context)
 
     def _onBeforeActionLaunched(self, action):
         '''Before action is launched, show busy overlay with message..'''
@@ -195,9 +197,7 @@ class Actions(QtWidgets.QWidget):
             functools.partial(self._overlay.setVisible, False)
         )
 
-    def _onEntityChanged(self, entity):
-        '''Load new actions when the context has changed'''
-
+    def _contextFromEntity(self, entity):
         context = []
         try:
             context = [{
@@ -208,6 +208,11 @@ class Actions(QtWidgets.QWidget):
         except Exception:
             self.logger.debug(u'Invalid entity: {0}'.format(entity))
 
+        return context
+
+    def _onEntityChanged(self, entity):
+        '''Load new actions when the context has changed'''
+        context = self._contextFromEntity(entity)
         self._recentSection.clear()
         self._allSection.clear()
         self._loadActionsForContext(context)
@@ -320,7 +325,7 @@ class Actions(QtWidgets.QWidget):
 
     def _loadActionsForContext(self, context):
         '''Obtain new actions synchronously for *context*.'''
-        print('LOADING ACTION FOR CONTEXT :{}'.format(context))
+
         discoveredActions = []
 
         event = ftrack_api.event.base.Event(
