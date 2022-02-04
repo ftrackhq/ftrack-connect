@@ -69,6 +69,8 @@ class Actions(QtWidgets.QWidget):
 
     #: Emitted when recent actions has been modified
     recentActionsChanged = QtCore.Signal(name='recentActionsChanged')
+    actionsLoaded = QtCore.Signal(object, name='actionsLoaded')
+    actionsLoading = QtCore.Signal()
 
     @property
     def session(self):
@@ -121,10 +123,14 @@ class Actions(QtWidgets.QWidget):
 
         self.recentActionsChanged.connect(self._updateRecentSection)
 
-        self._updateRecentActions()
+        self.actionsLoaded.connect(self.onActionsLoaded)
+        self.actionsLoading.connect(self.onActionsLoading)
 
         context = self._contextFromEntity(self._entitySelector._entity)
+
         self._loadActionsForContext(context)
+        self.recentActionsChanged.emit()
+        # self._updateRecentActions()
 
     def _onBeforeActionLaunched(self, action):
         '''Before action is launched, show busy overlay with message..'''
@@ -324,10 +330,10 @@ class Actions(QtWidgets.QWidget):
             'value': encodedRecentActions
         }, identifying_keys=['parent_type', 'parent_id', 'key'])
 
-
+    @ftrack_connect.asynchronous.asynchronous
     def _loadActionsForContext(self, context):
         '''Obtain new actions synchronously for *context*.'''
-
+        self.actionsLoading.emit()
         discoveredActions = []
 
         event = ftrack_api.event.base.Event(
@@ -368,7 +374,19 @@ class Actions(QtWidgets.QWidget):
             key=lambda groupedAction: groupedAction[0]['label'].lower()
         )
 
-        self.logger.debug('Discovered actions: {0}'.format(groupedActions))
-        self._actions = groupedActions
+        self.actionsLoaded.emit(groupedActions)
+
+    def onActionsLoaded(self, actions):
+        self._actions = actions
         self._updateRecentSection()
         self._updateAllSection()
+        self._overlay.indicator.hide()
+        self._overlay.indicator.stop()
+        self._overlay.setVisible(False)
+
+    def onActionsLoading(self):
+        message = u'Discovering Actions ....'
+        self._overlay.setMessage(message)
+        self._overlay.indicator.show()
+        self._overlay.setVisible(True)
+
