@@ -129,8 +129,7 @@ class Actions(QtWidgets.QWidget):
         context = self._contextFromEntity(self._entitySelector._entity)
 
         self._loadActionsForContext(context)
-        self.recentActionsChanged.emit()
-        # self._updateRecentActions()
+        self._updateRecentActions()
 
     def _onBeforeActionLaunched(self, action):
         '''Before action is launched, show busy overlay with message..'''
@@ -255,7 +254,7 @@ class Actions(QtWidgets.QWidget):
                 '<p>Try another selection or add some actions.</p>'
             )
 
-    @ftrack_connect.asynchronous.asynchronous
+    # @ftrack_connect.asynchronous.asynchronous
     def _updateRecentActions(self):
         '''Retrieve and update recent actions.'''
         self._recentActions = self._getRecentActions()
