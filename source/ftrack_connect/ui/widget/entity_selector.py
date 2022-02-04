@@ -71,7 +71,6 @@ class EntitySelector(QtWidgets.QStackedWidget):
         self.assignedContextSelector.currentIndexChanged.connect(self.updateEntityPath)
 
         self.entityChanged.connect(self._updateIndex)
-        # self.assignedContextSelector.currentIndexChanged.connect(self._updateIndex)
 
         self.entityBrowseButton.clicked.connect(
             self._onEntityBrowseButtonClicked
@@ -87,10 +86,11 @@ class EntitySelector(QtWidgets.QStackedWidget):
         '''Update assigned list.'''
         self._user_tasks = [None]   # add placeholder for fake label below
         self.assignedContextSelector.clear()
+        cancel_button = qta.icon('ftrack.down')
         self.assignedContextSelector.addItem(
-            '- Select from assigned tasks or browse.- ',
-            None,
-            QtCore.Qt.AlignCenter
+            QtGui.QIcon(cancel_button),
+            '- Select from assigned tasks or browse to discover more actions.- ',
+            None
         )
 
         assigned_tasks = self.session.query(

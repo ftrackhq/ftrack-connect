@@ -1,18 +1,17 @@
 /** Combo Box. */
-//QComboBox::drop-down {
-//    subcontrol-origin: padding;
-//    subcontrol-position: top right;
-//    width: 8px;
-//    padding: $input-padding;
-//    border: 0;
-//}
-//
-//QComboBox::down-arrow {
-//    // image: theme-image('downArrow');
-//    width: 8px;
-//    height: 8px;
-//    margin-right: $input-padding;
-//}
+QComboBox::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 8px;
+    padding: $input-padding;
+    border: 0;
+}
+
+QComboBox::down-arrow {
+    width: 8px;
+    height: 8px;
+    margin-right: $input-padding;
+}
 
 QComboBox QAbstractItemView {
     background: $input-background;
