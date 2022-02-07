@@ -87,7 +87,6 @@ class EntitySelector(QtWidgets.QStackedWidget):
         '''Update assigned list.'''
         self._user_tasks = [None]   # add placeholder for fake label below
         self.assignedContextSelector.clear()
-        cancel_button = qta.icon('ftrack.down')
         self.assignedContextSelector.addItem(
             '- Select from assigned tasks or browse to discover more actions.- ',
             None
