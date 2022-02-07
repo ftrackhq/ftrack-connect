@@ -24,6 +24,8 @@
         <file alias='ftrackLogoColor'>image/ftrack_icon_circle_light.svg</file>
         <file alias='ftrackLogoGreyDark'>image/ftrack_icon_circle_dark.svg</file>
         <file alias='ftrackLogoLabelDark'>image/ftrack_logo_dark.svg</file>
+        <file alias='downArrow'>image/arrow_down_light.svg</file>
+
     </qresource>
 
     <qresource prefix='ftrack/image/dark'>
@@ -31,6 +33,8 @@
         <file alias='ftrackLogoGrey'>image/ftrack_icon_circle_faded.svg</file>
         <file alias='ftrackLogoGreyDark'>image/ftrack_icon_circle_light.svg</file>
         <file alias='ftrackLogoLabelDark'>image/ftrack_logo_light.svg</file>
+        <file alias='downArrow'>image/arrow_down_dark.svg</file>
+
     </qresource>
 
 </RCC>

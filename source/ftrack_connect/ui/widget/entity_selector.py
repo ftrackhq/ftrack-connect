@@ -12,6 +12,7 @@ from ftrack_connect.ui.widget import entity_browser as _entity_browser
 from ftrack_connect.asynchronous import asynchronous
 
 
+
 class EntitySelector(QtWidgets.QStackedWidget):
     '''Entity selector widget.'''
 
@@ -88,7 +89,6 @@ class EntitySelector(QtWidgets.QStackedWidget):
         self.assignedContextSelector.clear()
         cancel_button = qta.icon('ftrack.down')
         self.assignedContextSelector.addItem(
-            QtGui.QIcon(cancel_button),
             '- Select from assigned tasks or browse to discover more actions.- ',
             None
         )
