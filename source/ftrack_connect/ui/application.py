@@ -110,6 +110,8 @@ class PluginWarning(ConnectWidget):
 class Application(QtWidgets.QMainWindow):
     '''Main application window for ftrack connect.'''
 
+    EXIT_CODE_REBOOT = -27021976
+
     #: Signal when login fails.
     loginError = QtCore.Signal(object)
 
@@ -119,6 +121,10 @@ class Application(QtWidgets.QMainWindow):
     # Login signal.
     loginSignal = QtCore.Signal(object, object, object)
     loginSuccessSignal = QtCore.Signal()
+
+    def restart(self):
+        print('restarting {}'.format(Application.EXIT_CODE_REBOOT))
+        qApp.exit(Application.EXIT_CODE_REBOOT )
 
     def emitConnectUsage(self):
         '''Emit data to intercom to track Connect data usage'''
@@ -660,6 +666,12 @@ class Application(QtWidgets.QMainWindow):
         alwaysOnTopAction = QtWidgets.QAction(
             'Always on top', self
         )
+
+        restartAction = QtWidgets.QAction(
+            'Restart', self,
+            triggered=self.restart
+        )
+
         alwaysOnTopAction.setCheckable(True)
         alwaysOnTopAction.triggered[bool].connect(self.setAlwaysOnTop)
 
@@ -676,6 +688,8 @@ class Application(QtWidgets.QMainWindow):
         menu.addSeparator()
         menu.addAction(quitAction)
 
+        menu.addSeparator()
+        menu.addAction(restartAction)
         return menu
 
     def _discoverConnectWidget(self):
