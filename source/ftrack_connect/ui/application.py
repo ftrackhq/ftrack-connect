@@ -68,6 +68,8 @@ class ConnectWidgetPlugin(object):
 class ConnectWidget(QtWidgets.QWidget):
     '''Base widget for ftrack connect application plugin.'''
     icon = None
+    name = None
+
     #: Signal to emit to request focus of this plugin in application.
     requestApplicationFocus = QtCore.Signal(object)
 
@@ -86,7 +88,7 @@ class ConnectWidget(QtWidgets.QWidget):
 
     def getName(self):
         '''Return name of widget.'''
-        return self.__class__.__name__
+        return self.name or self.__class__.__name__
 
     def getIdentifier(self):
         '''Return identifier for widget.'''
@@ -694,8 +696,8 @@ class Application(QtWidgets.QMainWindow):
             try:
                 widget_plugin = ResponsePlugin(self.session)
 
-            except Exception as error:
-                self.logger.error(str(error))
+            except Exception:
+                self.logger.exception(msg='Error while loading plugin : {}'.format(widget_plugin))
                 continue
 
             if not isinstance(widget_plugin, ConnectWidget):

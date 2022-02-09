@@ -13,6 +13,16 @@ Release Notes
     .. change:: added
         :tags: API
 
+        Provide ConnectWidget Plugin with custom name attribute to render.
+
+    .. change:: added
+        :tags: API
+
+        Improve ConnectWidget error logging.
+
+    .. change:: added
+        :tags: API
+
         Emit usage data for Connect session duration along version and os type.
 
     .. change:: fixed
