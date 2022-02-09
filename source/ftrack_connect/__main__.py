@@ -140,17 +140,11 @@ def main(arguments=None):
     icon_fonts = os.path.join(os.path.dirname(__file__), 'fonts')
     load_icons(icon_fonts)
 
-    currentExitCode = application.exec_()
-    application = None
-    return currentExitCode
+    application.exec_()
 
 
 if __name__ == '__main__':
-
-    currentExitCode = connectWindow.EXIT_CODE_REBOOT
-    while currentExitCode == connectWindow.EXIT_CODE_REBOOT:     
-        currentExitCode = main()   
-        raise SystemExit(
-            currentExitCode
-        )
+    raise SystemExit(
+        main()   
+    )
     

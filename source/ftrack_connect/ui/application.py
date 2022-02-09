@@ -2,6 +2,7 @@
 # :copyright: Copyright (c) 2014 ftrack
 
 import os
+import sys
 import platform
 import requests
 import requests.exceptions
@@ -110,8 +111,6 @@ class PluginWarning(ConnectWidget):
 class Application(QtWidgets.QMainWindow):
     '''Main application window for ftrack connect.'''
 
-    EXIT_CODE_REBOOT = -27021976
-
     #: Signal when login fails.
     loginError = QtCore.Signal(object)
 
@@ -122,9 +121,10 @@ class Application(QtWidgets.QMainWindow):
     loginSignal = QtCore.Signal(object, object, object)
     loginSuccessSignal = QtCore.Signal()
 
-    def restart(self):
-        print('restarting {}'.format(Application.EXIT_CODE_REBOOT))
-        qApp.exit(Application.EXIT_CODE_REBOOT )
+    @staticmethod
+    def restart():
+        QtCore.QCoreApplication.quit()
+        status = QtCore.QProcess.startDetached(sys.executable, [sys.argv, sys.argv])
 
     def emitConnectUsage(self):
         '''Emit data to intercom to track Connect data usage'''
