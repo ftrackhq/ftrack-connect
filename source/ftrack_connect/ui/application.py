@@ -122,6 +122,7 @@ class Application(QtWidgets.QMainWindow):
     loginSignal = QtCore.Signal(object, object, object)
     loginSuccessSignal = QtCore.Signal()
 
+
     def emitConnectUsage(self):
         '''Emit data to intercom to track Connect data usage'''
         connect_stopped_time = time.time() 
@@ -202,6 +203,8 @@ class Application(QtWidgets.QMainWindow):
 
         if self.tray:
             self.tray.show()
+
+        self._createDefaultPluginDirectory()
 
     def _assign_session_theme(self, theme):
         if self.session:
@@ -876,23 +879,29 @@ class Application(QtWidgets.QMainWindow):
 
         aboutDialog.exec_()
 
-    def openDefaultPluginDirectory(self):
-        '''Open default plugin directory in platform default file browser.'''
-
+    def _createDefaultPluginDirectory(self):
         directory = self.defaultPluginDirectory
 
         if not os.path.exists(directory):
             # Create directory if not existing.
             try:
                 os.makedirs(directory)
-            except OSError:
-                messageBox = QtWidgets.QMessageBox(parent=self)
-                messageBox.setIcon(QtWidgets.QMessageBox.Warning)
-                messageBox.setText(
-                    u'Could not open or create default plugin '
-                    u'directory: {0}.'.format(directory)
-                )
-                messageBox.exec_()
-                return
+            except Exception:
+                raise
 
-        ftrack_connect.util.open_directory(directory)
+    def openDefaultPluginDirectory(self):
+        '''Open default plugin directory in platform default file browser.'''
+
+        try:
+            self._createDefaultPluginDirectory()
+        except OSError:
+            messageBox = QtWidgets.QMessageBox(parent=self)
+            messageBox.setIcon(QtWidgets.QMessageBox.Warning)
+            messageBox.setText(
+                u'Could not open or create default plugin '
+                u'directory: {0}.'.format(self.defaultPluginDirectory)
+            )
+            messageBox.exec_()
+            return
+
+        ftrack_connect.util.open_directory(self.defaultPluginDirectory)

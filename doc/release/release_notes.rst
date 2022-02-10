@@ -10,7 +10,10 @@ Release Notes
 
 .. release:: Upcoming
 
+    .. change:: changed
+        :tags: API
 
+        User's plugin folder is created at startup time.
 
     .. change:: changed
         :tags: UX
