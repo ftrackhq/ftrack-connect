@@ -159,6 +159,7 @@ class Application(QtWidgets.QMainWindow):
         self.defaultPluginDirectory = appdirs.user_data_dir(
             'ftrack-connect-plugins', 'ftrack'
         )
+        self._createDefaultPluginDirectory()
 
         self.pluginHookPaths = self._discover_hook_paths()
 
@@ -204,7 +205,6 @@ class Application(QtWidgets.QMainWindow):
         if self.tray:
             self.tray.show()
 
-        self._createDefaultPluginDirectory()
 
     def _assign_session_theme(self, theme):
         if self.session:
