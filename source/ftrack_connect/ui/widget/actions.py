@@ -111,6 +111,7 @@ class Actions(QtWidgets.QWidget):
         layout.addWidget(self._recentSection)
 
         self._allLabel = QtWidgets.QLabel('Discovering actions..')
+        self._allLabel.setWordWrap(True)
         self._allLabel.setAlignment(QtCore.Qt.AlignCenter)
         layout.addWidget(self._allLabel)
         self._allSection = ActionSection(self.session, self)
@@ -240,8 +241,6 @@ class Actions(QtWidgets.QWidget):
             self._recentLabel.hide()
             self._recentSection.hide()
 
-        self._recentSection.update()
-
     def _updateAllSection(self):
         '''Clear and update actions in all section.'''
         self._allSection.clear()
@@ -252,8 +251,8 @@ class Actions(QtWidgets.QWidget):
         else:
             self._allLabel.setAlignment(QtCore.Qt.AlignCenter)
             self._allLabel.setText(
-                '<h2 style="font-weight: medium">No actions found</h2>'
-                '<p>Try another selection or add some actions.</p>'
+                '<h2 style="font-weight: medium"> No matching applications or actions was found</h2>'
+                '<p>Try another selection, add some actions and make sure you have the right integrations set up for the applications you want to launch.</p>'
             )
 
     def _updateRecentActions(self):
