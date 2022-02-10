@@ -107,7 +107,10 @@ class EntitySelector(QtWidgets.QStackedWidget):
             self.assignedContextSelector.addItem(self._getPath(task), task)
             self._user_tasks.append(task)
 
-        self.setEntity(assigned_tasks[0])
+        if assigned_tasks:
+            self.setEntity(assigned_tasks[0])
+        else:
+            self._onDiscardEntityButtonClicked()
 
     def updateEntityPath(self, index):
         entity = self.assignedContextSelector.itemData(index, QtCore.Qt.UserRole)
@@ -124,7 +127,6 @@ class EntitySelector(QtWidgets.QStackedWidget):
         '''Handle discard entity button clicked.'''
         self.setEntity(None)
         self.assignedContextSelector.setCurrentIndex(0)
-
 
     def _onEntityBrowseButtonClicked(self):
         '''Handle entity browse button clicked.'''
