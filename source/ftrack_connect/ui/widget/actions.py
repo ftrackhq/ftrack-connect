@@ -128,7 +128,6 @@ class Actions(QtWidgets.QWidget):
         self.actionsLoading.connect(self.onActionsLoading)
 
         context = self._contextFromEntity(self._entitySelector._entity)
-
         self._updateRecentActions()
         self._loadActionsForContext(context)
 
@@ -223,6 +222,7 @@ class Actions(QtWidgets.QWidget):
         self._recentSection.clear()
         self._allSection.clear()
         self._loadActionsForContext(context)
+        self._updateRecentActions()
 
     def _updateRecentSection(self):
         '''Clear and update actions in recent section.'''
