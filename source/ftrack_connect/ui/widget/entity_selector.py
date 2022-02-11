@@ -88,7 +88,7 @@ class EntitySelector(QtWidgets.QStackedWidget):
         self._user_tasks = [None]   # add placeholder for fake label below
         self.assignedContextSelector.clear()
         self.assignedContextSelector.addItem(
-            '- Select from assigned tasks or browse to discover more actions.- ',
+            '- Select a task or browse. - ',
             None
         )
 
