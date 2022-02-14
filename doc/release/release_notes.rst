@@ -11,6 +11,11 @@ Release Notes
 .. release:: Upcoming
 
     .. change:: changed
+        :tags: UX
+
+        Assigned tasks are refreshed on cancel.
+
+    .. change:: changed
         :tags: API
 
         User's plugin folder is created at startup time.
