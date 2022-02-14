@@ -18,7 +18,6 @@ class EntitySelector(QtWidgets.QStackedWidget):
 
     entityChanged = QtCore.Signal(object)
 
-
     @property
     def session(self):
         '''Return current session.'''
@@ -76,7 +75,12 @@ class EntitySelector(QtWidgets.QStackedWidget):
         self.entityBrowseButton.clicked.connect(
             self._onEntityBrowseButtonClicked
         )
-        self._fetch_user_tasks()
+        assigned_tasks = self._fetch_user_tasks()
+
+        if assigned_tasks:
+            self.setEntity(assigned_tasks[0])
+        else:
+            self._onDiscardEntityButtonClicked()
 
     def _getPath(self, entity):
         '''Return path to *entity*.'''
@@ -107,10 +111,7 @@ class EntitySelector(QtWidgets.QStackedWidget):
             self.assignedContextSelector.addItem(self._getPath(task), task)
             self._user_tasks.append(task)
 
-        if assigned_tasks:
-            self.setEntity(assigned_tasks[0])
-        else:
-            self._onDiscardEntityButtonClicked()
+        return assigned_tasks
 
     def updateEntityPath(self, index):
         entity = self.assignedContextSelector.itemData(index, QtCore.Qt.UserRole)
@@ -127,6 +128,7 @@ class EntitySelector(QtWidgets.QStackedWidget):
         '''Handle discard entity button clicked.'''
         self.setEntity(None)
         self.assignedContextSelector.setCurrentIndex(0)
+        self._fetch_user_tasks()
 
     def _onEntityBrowseButtonClicked(self):
         '''Handle entity browse button clicked.'''
