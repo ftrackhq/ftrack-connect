@@ -8,7 +8,8 @@
 Release Notes
 *************
 
-.. release:: Upcoming
+.. release:: 2.0.0-rc-4
+    :date: 2022-01-15
 
     .. change:: changed
         :tags: UX
