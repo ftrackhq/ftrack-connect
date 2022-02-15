@@ -10,6 +10,26 @@ Release Notes
 
 .. release:: Upcoming
 
+    .. change:: changed
+        :tags: UX
+
+        Assigned tasks are refreshed on cancel.
+
+    .. change:: changed
+        :tags: API
+
+        User's plugin folder is created at startup time.
+
+    .. change:: changed
+        :tags: UX
+
+        Context selection is changed to a list of assigned tasks.
+
+    .. change:: added
+        :tags: UX
+
+        Indicator during discovery of actions.
+
     .. change:: added
         :tags: API
 

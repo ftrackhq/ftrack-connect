@@ -122,6 +122,7 @@ class Application(QtWidgets.QMainWindow):
     loginSignal = QtCore.Signal(object, object, object)
     loginSuccessSignal = QtCore.Signal()
 
+
     def emitConnectUsage(self):
         '''Emit data to intercom to track Connect data usage'''
         connect_stopped_time = time.time() 
@@ -158,6 +159,7 @@ class Application(QtWidgets.QMainWindow):
         self.defaultPluginDirectory = appdirs.user_data_dir(
             'ftrack-connect-plugins', 'ftrack'
         )
+        self._createDefaultPluginDirectory()
 
         self.pluginHookPaths = self._discover_hook_paths()
 
@@ -202,6 +204,7 @@ class Application(QtWidgets.QMainWindow):
 
         if self.tray:
             self.tray.show()
+
 
     def _assign_session_theme(self, theme):
         if self.session:
@@ -519,8 +522,6 @@ class Application(QtWidgets.QMainWindow):
         self.tabPanel.tabBar().setObjectName('application-tab-bar')
         self.setCentralWidget(self.tabPanel)
 
-        self._discoverConnectWidget()
-
         self.session.event_hub.subscribe(
             'topic=ftrack.connect and source.user.username="{0}"'.format(
                 self.session.api_user
@@ -540,6 +541,7 @@ class Application(QtWidgets.QMainWindow):
             lambda event : True
         )
         self.session._configure_locations()
+        self._discoverConnectWidget()
 
     def _discover_hook_paths(self):
         '''Return a list of paths to pass to ftrack_api.Session()'''
@@ -877,23 +879,29 @@ class Application(QtWidgets.QMainWindow):
 
         aboutDialog.exec_()
 
-    def openDefaultPluginDirectory(self):
-        '''Open default plugin directory in platform default file browser.'''
-
+    def _createDefaultPluginDirectory(self):
         directory = self.defaultPluginDirectory
 
         if not os.path.exists(directory):
             # Create directory if not existing.
             try:
                 os.makedirs(directory)
-            except OSError:
-                messageBox = QtWidgets.QMessageBox(parent=self)
-                messageBox.setIcon(QtWidgets.QMessageBox.Warning)
-                messageBox.setText(
-                    u'Could not open or create default plugin '
-                    u'directory: {0}.'.format(directory)
-                )
-                messageBox.exec_()
-                return
+            except Exception:
+                raise
 
-        ftrack_connect.util.open_directory(directory)
+    def openDefaultPluginDirectory(self):
+        '''Open default plugin directory in platform default file browser.'''
+
+        try:
+            self._createDefaultPluginDirectory()
+        except OSError:
+            messageBox = QtWidgets.QMessageBox(parent=self)
+            messageBox.setIcon(QtWidgets.QMessageBox.Warning)
+            messageBox.setText(
+                u'Could not open or create default plugin '
+                u'directory: {0}.'.format(self.defaultPluginDirectory)
+            )
+            messageBox.exec_()
+            return
+
+        ftrack_connect.util.open_directory(self.defaultPluginDirectory)
