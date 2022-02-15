@@ -78,7 +78,7 @@ class EntitySelector(QtWidgets.QStackedWidget):
         assigned_tasks = self._fetch_user_tasks()
 
         if assigned_tasks:
-            self.setEntity(assigned_tasks[0])
+            self.assignedContextSelector.setCurrentIndex(1)
         else:
             self._onDiscardEntityButtonClicked()
 
