@@ -6,7 +6,7 @@ Lowdown==0.2.0
 PySide2>=5.15,<5.16
 python-dateutil==2.8.1
 Qt.py==1.3.2
-requests==2.25.1
+requests[security]==2.25.1
 Riffle==1.0.1
 setuptools>=45.0.0
 qtawesome

@@ -305,7 +305,7 @@ configuration = dict(
         ),
     ],
     zip_safe=False,
-    python_requires=">=3, <4.0"
+    python_requires=">=3.9, <4.0"
 )
 
 
