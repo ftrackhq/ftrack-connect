@@ -27,6 +27,10 @@ structure for a project with one click.
 Launching actions in Connect
 ============================
 
+.. note::
+
+    If any task is assigned to your user, these will be appearing as part of the drop down, to be easily accessibles.
+
 To launch an action, select an entity for which to launch the action and press
 the action in the list below.
 

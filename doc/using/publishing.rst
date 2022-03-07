@@ -42,6 +42,10 @@ entry.
 Select a linked entity
 ======================
 
+.. note::
+
+    If any task is assigned to your user, these will be appearing as part of the drop down, to be easily accessibles.
+
 To change the entity that the publish will be linked to, click the
 :guilabel:`Browse` button next to the :guilabel:`Linked Entity` field.
 
