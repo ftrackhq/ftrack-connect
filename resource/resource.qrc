@@ -7,6 +7,11 @@
         <file alias='ftrackLogoLabelDark'>image/ftrack_logo_dark.svg</file>
     </qresource>
 
+    <qresource prefix='ftrack/logo'>
+        <file alias='light'>image/menu_bar_light_theme.svg</file>
+        <file alias='dark'>image/menu_bar_dark_theme.svg</file>
+    </qresource>
+
     <qresource prefix='ftrack/style'>
         <file alias='light'>style_light.css</file>
         <file alias='dark'>style_dark.css</file>
