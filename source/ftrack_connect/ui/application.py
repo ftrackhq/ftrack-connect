@@ -3,6 +3,8 @@
 
 import os
 import platform
+import sys
+
 import requests
 import requests.exceptions
 import uuid
@@ -125,9 +127,13 @@ class Application(QtWidgets.QMainWindow):
     loginSignal = QtCore.Signal(object, object, object)
     loginSuccessSignal = QtCore.Signal()
 
-    @property
-    def system_theme(self):
-        return darkdetect.theme().lower()
+    def system_theme(self, fallback='light'):
+        current_theme = darkdetect.theme()
+        if not current_theme:
+            self.logger.warning('System theme could not be determined, using: light')
+            current_theme = fallback
+
+        return current_theme.lower()
 
     def emitConnectUsage(self):
         '''Emit data to intercom to track Connect data usage'''
@@ -152,7 +158,7 @@ class Application(QtWidgets.QMainWindow):
         '''Return current session.'''
         return self._session
 
-    def __init__(self, theme='light'):
+    def __init__(self, theme='system'):
         '''Initialise the main application window.'''
         super(Application, self).__init__()
         self.logger = logging.getLogger(
@@ -179,15 +185,13 @@ class Application(QtWidgets.QMainWindow):
                 'No system tray located.'
             )
 
-        self.logoIcon = QtGui.QIcon(
-            QtGui.QPixmap(':ftrack/logo/{}'.format(self.system_theme))
-        )
-
         self._login_server_thread = None
-
         self._theme = None
         self.setTheme(theme)
 
+        self.logoIcon = QtGui.QIcon(
+            QtGui.QPixmap(':ftrack/logo/{}'.format(self.system_theme()))
+        )
         self.plugins = {}
 
         self.setObjectName('ftrack-connect-window')
@@ -222,7 +226,7 @@ class Application(QtWidgets.QMainWindow):
     def setTheme(self, theme):
         '''Set *theme*.'''
         if theme not in ['light', 'dark']:
-            theme = self.system_theme
+            theme = self.system_theme()
 
         self._theme = theme
 
@@ -629,7 +633,7 @@ class Application(QtWidgets.QMainWindow):
 
         self.tray.setIcon(
             QtGui.QPixmap(':ftrack/logo/{}'.format(
-                self.system_theme)
+                self.system_theme())
             )
         )
 
