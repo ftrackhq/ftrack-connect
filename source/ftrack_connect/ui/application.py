@@ -14,6 +14,7 @@ import time
 
 from Qt import QtCore, QtWidgets, QtGui
 
+import qtawesome as qta
 import darkdetect
 
 import ftrack_api
@@ -126,7 +127,7 @@ class Application(QtWidgets.QMainWindow):
 
     @property
     def system_theme(self):
-        return darkdetect.theme()
+        return darkdetect.theme().lower()
 
     def emitConnectUsage(self):
         '''Emit data to intercom to track Connect data usage'''
@@ -179,7 +180,7 @@ class Application(QtWidgets.QMainWindow):
             )
 
         self.logoIcon = QtGui.QIcon(
-            QtGui.QPixmap(':ftrack/logo/{}'.format(self.system_theme.lower()))
+            QtGui.QPixmap(':ftrack/logo/{}'.format(self.system_theme))
         )
 
         self._login_server_thread = None
@@ -210,7 +211,6 @@ class Application(QtWidgets.QMainWindow):
         if self.tray:
             self.tray.show()
 
-
     def _assign_session_theme(self, theme):
         if self.session:
             self.session.connect_theme = theme
@@ -221,8 +221,16 @@ class Application(QtWidgets.QMainWindow):
 
     def setTheme(self, theme):
         '''Set *theme*.'''
+        if theme not in ['light', 'dark']:
+            theme = self.system_theme
+
         self._theme = theme
+
+        qtawesome_style = getattr(qta, theme)
+        qtawesome_style(QtWidgets.QApplication.instance())
+
         ftrack_connect.ui.theme.applyFont()
+        ftrack_connect.ui.theme.applyTheme(self, self._theme, 'cleanlooks')
         ftrack_connect.ui.theme.applyTheme(self, self._theme, 'cleanlooks')
 
     def _onConnectTopicEvent(self, event):
@@ -620,7 +628,9 @@ class Application(QtWidgets.QMainWindow):
         )
 
         self.tray.setIcon(
-            QtGui.QPixmap(':ftrack/logo/{}'.format(self.system_theme.lower()))
+            QtGui.QPixmap(':ftrack/logo/{}'.format(
+                self.system_theme)
+            )
         )
 
     def _initialiseMenuBar(self):
