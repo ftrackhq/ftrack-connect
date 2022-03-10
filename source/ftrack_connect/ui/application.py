@@ -14,6 +14,8 @@ import time
 
 from Qt import QtCore, QtWidgets, QtGui
 
+import darkdetect
+
 import ftrack_api
 import ftrack_api._centralized_storage_scenario
 import ftrack_api.event.base
@@ -122,6 +124,9 @@ class Application(QtWidgets.QMainWindow):
     loginSignal = QtCore.Signal(object, object, object)
     loginSuccessSignal = QtCore.Signal()
 
+    @property
+    def system_theme(self):
+        return darkdetect.theme()
 
     def emitConnectUsage(self):
         '''Emit data to intercom to track Connect data usage'''
@@ -174,7 +179,7 @@ class Application(QtWidgets.QMainWindow):
             )
 
         self.logoIcon = QtGui.QIcon(
-            QtGui.QPixmap(':/ftrack/image/default/ftrackLogoGreyDark')
+            QtGui.QPixmap(':ftrack/logo/{}'.format(self.system_theme.lower()))
         )
 
         self._login_server_thread = None
@@ -614,14 +619,9 @@ class Application(QtWidgets.QMainWindow):
             self.trayMenu
         )
 
-        if platform.system() != 'Darwin':
-            self.tray.setIcon(
-                QtGui.QPixmap(':/ftrack/image/default/ftrackLogoWhite')
-            )
-        else:
-            self.tray.setIcon(
-                QtGui.QPixmap(':/ftrack/image/default/ftrackLogoWhiteMac')
-            )
+        self.tray.setIcon(
+            QtGui.QPixmap(':ftrack/logo/{}'.format(self.system_theme.lower()))
+        )
 
     def _initialiseMenuBar(self):
         '''Initialise and add connect widget to widgets menu.'''

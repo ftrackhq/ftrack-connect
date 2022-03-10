@@ -9,6 +9,8 @@ import signal
 import os
 import pkg_resources
 import qtawesome
+import darkdetect
+
 bindings = ['PySide2']
 os.environ.setdefault('QT_PREFERRED_BINDING', os.pathsep.join(bindings))
 
@@ -61,7 +63,7 @@ def main(arguments=None):
         '-t', '--theme',
         help='Set the theme to use.',
         choices=['light', 'dark'],
-        default='light'
+        default= darkdetect.theme().lower()
     )
 
     parser.add_argument(
