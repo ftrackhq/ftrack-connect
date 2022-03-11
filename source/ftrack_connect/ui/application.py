@@ -201,9 +201,16 @@ class Application(QtWidgets.QMainWindow):
         self._theme = None
         self.setTheme(theme)
 
+        logo_path = ':ftrack/logo/{}'
+        if platform.system() == 'Darwin':
+            logo_path.format('darwin/{}'.format(self.system_theme))
+        else:
+            logo_path.format(self.system_theme)
+
         self.logoIcon = QtGui.QIcon(
-            QtGui.QPixmap(':ftrack/logo/{}'.format(self.system_theme))
+            QtGui.QPixmap(logo_path)
         )
+
         self.plugins = {}
 
         self.setObjectName('ftrack-connect-window')
@@ -220,6 +227,8 @@ class Application(QtWidgets.QMainWindow):
         self.loginWidget = _login.Login(theme=theme)
         self.loginSignal.connect(self.loginWithCredentials)
         self.loginSuccessSignal.connect(self._post_login_settings)
+        QtWidgets.QApplication.instance().paletteChanged.connect(self.setTheme)
+
         self.login()
 
     def _post_login_settings(self):
@@ -235,7 +244,7 @@ class Application(QtWidgets.QMainWindow):
         '''Return current theme.'''
         return self._theme
 
-    def setTheme(self, theme):
+    def setTheme(self, theme='system'):
         '''Set *theme*.'''
         if theme not in ['light', 'dark']:
             theme = self.system_theme
