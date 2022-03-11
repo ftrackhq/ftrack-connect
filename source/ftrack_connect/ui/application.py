@@ -227,8 +227,6 @@ class Application(QtWidgets.QMainWindow):
         self.loginWidget = _login.Login(theme=theme)
         self.loginSignal.connect(self.loginWithCredentials)
         self.loginSuccessSignal.connect(self._post_login_settings)
-        QtWidgets.QApplication.instance().paletteChanged.connect(self.setTheme)
-
         self.login()
 
     def _post_login_settings(self):

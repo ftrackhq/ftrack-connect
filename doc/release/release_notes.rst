@@ -8,6 +8,18 @@
 Release Notes
 *************
 
+.. release:: Upcoming
+
+    .. change:: changed
+        :tags: UX
+
+        Add new icons set for Connect.
+
+    .. change:: changed
+        :tags: UX
+
+        Connect color theme respect system theme.
+
 .. release:: 2.0.0-rc-4
     :date: 2022-01-15
 
