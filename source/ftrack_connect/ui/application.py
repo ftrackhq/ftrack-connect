@@ -127,8 +127,20 @@ class Application(QtWidgets.QMainWindow):
     loginSignal = QtCore.Signal(object, object, object)
     loginSuccessSignal = QtCore.Signal()
 
+    @property
     def system_theme(self, fallback='light'):
-        current_theme = darkdetect.theme()
+        # replicate content of https://github.com/albertosottile/darkdetect/blob/master/darkdetect/__init__.py
+        # as does not work when frozen
+        if sys.platform == "darwin":
+            from darkdetect import _mac_detect as stylemodule
+
+        elif sys.platform == "win32" and int(platform.release()) >= 10:
+            from darkdetect import _windows_detect  as stylemodule
+
+        elif sys.platform == "linux":
+            from darkdetect import _linux_detect  as stylemodule
+
+        current_theme = stylemodule.theme()
         if not current_theme:
             self.logger.warning('System theme could not be determined, using: light')
             current_theme = fallback
@@ -190,7 +202,7 @@ class Application(QtWidgets.QMainWindow):
         self.setTheme(theme)
 
         self.logoIcon = QtGui.QIcon(
-            QtGui.QPixmap(':ftrack/logo/{}'.format(self.system_theme()))
+            QtGui.QPixmap(':ftrack/logo/{}'.format(self.system_theme))
         )
         self.plugins = {}
 
@@ -226,7 +238,7 @@ class Application(QtWidgets.QMainWindow):
     def setTheme(self, theme):
         '''Set *theme*.'''
         if theme not in ['light', 'dark']:
-            theme = self.system_theme()
+            theme = self.system_theme
 
         self._theme = theme
 
@@ -633,7 +645,7 @@ class Application(QtWidgets.QMainWindow):
 
         self.tray.setIcon(
             QtGui.QPixmap(':ftrack/logo/{}'.format(
-                self.system_theme())
+                self.system_theme)
             )
         )
 
