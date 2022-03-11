@@ -128,6 +128,17 @@ class Application(QtWidgets.QMainWindow):
     loginSuccessSignal = QtCore.Signal()
 
     @property
+    def ftrack_logo(self):
+        logo_path = ':ftrack/logo/{}'
+        if platform.system() == 'Darwin':
+            logo_path.format('darwin/{}'.format(self.system_theme))
+        else:
+            logo_path.format(self.system_theme)
+
+        return logo_path
+
+
+    @property
     def system_theme(self, fallback='light'):
         # replicate content of https://github.com/albertosottile/darkdetect/blob/master/darkdetect/__init__.py
         # as does not work when frozen
@@ -201,14 +212,8 @@ class Application(QtWidgets.QMainWindow):
         self._theme = None
         self.setTheme(theme)
 
-        logo_path = ':ftrack/logo/{}'
-        if platform.system() == 'Darwin':
-            logo_path.format('darwin/{}'.format(self.system_theme))
-        else:
-            logo_path.format(self.system_theme)
-
         self.logoIcon = QtGui.QIcon(
-            QtGui.QPixmap(logo_path)
+            QtGui.QPixmap(self.ftrack_logo)
         )
 
         self.plugins = {}
@@ -651,9 +656,7 @@ class Application(QtWidgets.QMainWindow):
         )
 
         self.tray.setIcon(
-            QtGui.QPixmap(':ftrack/logo/{}'.format(
-                self.system_theme)
-            )
+            QtGui.QPixmap(self.ftrack_logo)
         )
 
     def _initialiseMenuBar(self):
