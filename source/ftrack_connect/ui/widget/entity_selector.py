@@ -3,7 +3,7 @@
 
 import operator
 
-from Qt import QtWidgets, QtCore, QtGui
+from qtpy import QtWidgets, QtCore, QtGui
 import qtawesome as qta
 
 from ftrack_connect.ui.widget import entity_path as _entity_path

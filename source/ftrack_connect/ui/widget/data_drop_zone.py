@@ -4,8 +4,8 @@
 import logging
 import os
 
-from Qt import QtCore
-from Qt import QtWidgets
+from qtpy import QtCore
+from qtpy import QtWidgets
 import qtawesome as qta
 
 import clique

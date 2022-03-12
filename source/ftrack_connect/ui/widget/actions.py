@@ -7,8 +7,8 @@ import logging
 import functools
 import qtawesome as qta
 
-from Qt import QtCore
-from Qt import QtWidgets
+from qtpy import QtCore
+from qtpy import QtWidgets
 import ftrack_api.event.base
 import ftrack_connect.asynchronous
 import ftrack_connect.error

@@ -3,7 +3,7 @@
 
 import sys
 
-from Qt import QtCore
+from qtpy import QtCore
 
 
 class Worker(QtCore.QThread):

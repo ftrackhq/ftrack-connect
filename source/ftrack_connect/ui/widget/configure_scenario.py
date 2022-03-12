@@ -3,7 +3,7 @@
 
 import webbrowser
 
-from Qt import QtWidgets, QtCore, QtSvg, QtGui
+from qtpy import QtWidgets, QtCore, QtSvg, QtGui
 
 import qtawesome as qta
 

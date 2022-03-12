@@ -84,7 +84,7 @@ class BuildResources(Command):
         Qt.
 
         '''
-        replace = r'from Qt import QtCore'
+        replace = r'from qtpy import QtCore'
         for line in fileinput.input(self.resource_target_path, inplace=True, mode='r'):
             if r'import QtCore' in line:
                 # Calling print will yield a new line in the resource file.
@@ -261,7 +261,7 @@ configuration = dict(
     },
     setup_requires=[
         'PySide2 >=5, <6',
-        'Qt.py >=1.0.0, < 2',
+        'Qtpy',
         'pyScss >= 1.2.0, < 2',
         'sphinx >= 1.8.5, < 4',
         'sphinx_rtd_theme >= 0.1.6, < 1',
@@ -278,7 +278,7 @@ configuration = dict(
         'appdirs >= 1.4, < 1.5',
         'requests >= 2, <3',
         'lowdown >= 0.1.0, < 1',
-        'Qt.py >=1.0.0, < 2',
+        'Qtpy',
         'qtawesome'
     ],
     tests_require=[

@@ -3,7 +3,7 @@
 
 import os
 
-from Qt import QtWidgets, QtCore, QtGui
+from qtpy import QtWidgets, QtCore, QtGui
 
 import ftrack_connect.error
 

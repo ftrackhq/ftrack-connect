@@ -7,7 +7,7 @@ import textwrap
 import platform
 
 import Qt
-from Qt import QtCore, QtWidgets, QtGui
+from qtpy import QtCore, QtWidgets, QtGui
 
 import ftrack_api
 from ftrack_connect.config import get_log_directory

@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-from Qt import QtGui, QtWidgets, QtCore
+from qtpy import QtGui, QtWidgets, QtCore
 
 import ftrack_connect.ui.widget.overlay
 from harness import Harness

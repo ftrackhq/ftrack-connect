@@ -12,7 +12,7 @@ from operator import itemgetter
 import appdirs
 import time
 
-from Qt import QtCore, QtWidgets, QtGui
+from qtpy import QtCore, QtWidgets, QtGui
 
 import ftrack_api
 import ftrack_api._centralized_storage_scenario

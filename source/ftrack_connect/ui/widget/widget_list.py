@@ -1,4 +1,4 @@
-from Qt import QtCore, QtWidgets, QtGui
+from qtpy import QtCore, QtWidgets, QtGui
 
 
 class WidgetList(QtWidgets.QWidget):

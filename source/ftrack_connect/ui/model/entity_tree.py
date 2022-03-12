@@ -3,7 +3,7 @@
 #             Copyright (c) 2014 Martin Pengelly-Phillips
 # :notice: Derived from Riffle (https://github.com/4degrees/riffle)
 
-from Qt import QtWidgets, QtCore, QtGui
+from qtpy import QtWidgets, QtCore, QtGui
 
 import ftrack_connect.worker
 import qtawesome as qta

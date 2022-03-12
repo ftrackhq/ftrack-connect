@@ -6,7 +6,7 @@ import logging
 import argparse
 import signal
 
-from Qt import QtGui, QtWidgets, QtCore
+from qtpy import QtGui, QtWidgets, QtCore
 import ftrack_api
 import ftrack_connect.ui.theme
 

@@ -6,7 +6,7 @@ import traceback
 from io import StringIO
 import logging
 
-from Qt import QtWidgets, QtCore
+from qtpy import QtWidgets, QtCore
 
 
 class UncaughtError(QtWidgets.QMessageBox):

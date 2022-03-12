@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-from Qt import QtCore
+from qtpy import QtCore
 
 
 class NewApiEventHubThread(QtCore.QThread):

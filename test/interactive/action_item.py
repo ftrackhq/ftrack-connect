@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-from Qt import QtGui, QtWidgets
+from qtpy import QtGui, QtWidgets
 import ftrack_api
 from ftrack_connect.ui.widget.action_item import ActionItem
 from ftrack_connect.ui.widget.flow_layout import ScrollingFlowWidget

@@ -8,11 +8,12 @@ import sys
 import signal
 import os
 import pkg_resources
-import qtawesome
-bindings = ['PySide2']
-os.environ.setdefault('QT_PREFERRED_BINDING', os.pathsep.join(bindings))
 
-from Qt import QtWidgets, QtCore
+bindings = 'pyside2'
+os.environ['QT_API'] = bindings
+
+import qtawesome
+from qtpy import QtWidgets, QtCore
 
 from ftrack_connect import load_icons
 import ftrack_connect.config

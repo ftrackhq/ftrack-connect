@@ -5,7 +5,7 @@
 
 import os
 
-from Qt import QtWidgets, QtCore, QtGui, QtCompat
+from qtpy import QtWidgets, QtCore, QtGui, QtCompat
 import qtawesome as qta
 
 import ftrack_connect.ui.model.entity_tree

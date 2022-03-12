@@ -5,7 +5,7 @@ import logging
 
 import qtawesome as qta
 
-from Qt import QtCore, QtWidgets, QtGui
+from qtpy import QtCore, QtWidgets, QtGui
 
 import ftrack_api.event.base
 from ftrack_connect import load_icons
