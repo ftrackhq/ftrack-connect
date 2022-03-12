@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-from qtpy import QtWidgets, QtCompat
+from qtpy import QtWidgets #, QtCompat
 
 
 class List(QtWidgets.QTableWidget):
@@ -25,11 +25,11 @@ class List(QtWidgets.QTableWidget):
         )
         self.verticalHeader().hide()
 
-        QtCompat.setSectionResizeMode(
-            self.verticalHeader(),
-            QtWidgets.QHeaderView.ResizeToContents
+        # QtCompat.setSectionResizeMode(
+        #     self.verticalHeader(),
+        #     QtWidgets.QHeaderView.ResizeToContents
 
-        )
+        # )
 
         self.horizontalHeader().setStretchLastSection(True)
         self.horizontalHeader().hide()
