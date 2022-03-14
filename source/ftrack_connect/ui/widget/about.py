@@ -6,7 +6,7 @@ import sys
 import textwrap
 import platform
 
-import Qt
+import qtpy
 from qtpy import QtCore, QtWidgets, QtGui
 
 import ftrack_api
@@ -185,7 +185,7 @@ class AboutDialog(QtWidgets.QDialog):
             server=server,
             user=user,
             api_versions=ftrack_api.__version__,
-            pyside_version=Qt.__version__,
+            pyside_version=qtpy.__version__,
             qt_version=QtCore.qVersion(),
             python_version=sys.version,
             host=platform.node(),

@@ -243,7 +243,7 @@ __version__ = {version!r}
 configuration = dict(
     name='ftrack-connect',
     description='Core for ftrack connect.',
-    long_description=open(README_PATH).read(),
+    # long_description=open(README_PATH).read(),
     keywords='ftrack, connect, publish',
     url='https://bitbucket.org/ftrack/ftrack-connect',
     author='ftrack',
@@ -298,12 +298,12 @@ configuration = dict(
         ],
     },
     options={},
-    data_files=[
-        (
-            'ftrack_connect_resource/hook',
-            [os.path.relpath(path) for path in glob.glob(os.path.join(RESOURCE_PATH, 'hook', '*.py'))]
-        ),
-    ],
+    # data_files=[
+    #     (
+    #         'ftrack_connect_resource/hook',
+    #         [os.path.relpath(path) for path in glob.glob(os.path.join(RESOURCE_PATH, 'hook', '*.py'))]
+    #     ),
+    # ],
     zip_safe=False,
     python_requires=">=3, <4.0"
 )
