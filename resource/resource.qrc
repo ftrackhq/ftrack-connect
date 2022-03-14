@@ -8,13 +8,13 @@
     </qresource>
 
     <qresource prefix='ftrack/logo'>
-        <file alias='light'>image/menu_bar_light_theme_windows.svg</file>
-        <file alias='dark'>image/menu_bar_dark_theme_windows.svg</file>
+        <file alias='light'>image/menu_bar_windows.svg</file>
+        <file alias='dark'>image/menu_bar_windows.svg</file>
     </qresource>
 
     <qresource prefix='ftrack/logo/darwin'>
-        <file alias='light'>image/menu_bar_light_theme_darwin.svg</file>
-        <file alias='dark'>image/menu_bar_dark_theme_darwin.svg</file>
+        <file alias='light'>image/menu_bar_windows.svg</file>
+        <file alias='dark'>image/menu_bar_windows.svg</file>
     </qresource>
 
     <qresource prefix='ftrack/style'>
