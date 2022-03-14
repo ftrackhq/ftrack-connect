@@ -127,19 +127,18 @@ class Application(QtWidgets.QMainWindow):
     loginSignal = QtCore.Signal(object, object, object)
     loginSuccessSignal = QtCore.Signal()
 
-    @property
-    def ftrack_logo(self):
+    def ftrack_logo(self, theme=None):
         logo_path = ':ftrack/logo/{}'
 
+        theme = theme or self.system_theme()
         if platform.system() == 'Darwin':
-            result_logo = logo_path.format('darwin/{}'.format(self.system_theme))
+            result_logo = logo_path.format('darwin/{}'.format(theme))
         else:
-            result_logo = logo_path.format(self.system_theme)
+            result_logo = logo_path.format(theme)
 
+        self.logger.warning(result_logo)
         return result_logo
 
-
-    @property
     def system_theme(self, fallback='light'):
         # replicate content of https://github.com/albertosottile/darkdetect/blob/master/darkdetect/__init__.py
         # as does not work when frozen
@@ -209,12 +208,9 @@ class Application(QtWidgets.QMainWindow):
                 'No system tray located.'
             )
 
-        self.logoIcon = QtGui.QIcon(
-            QtGui.QPixmap(self.ftrack_logo)
-        )
+
 
         self._login_server_thread = None
-        self._theme = None
         self.setTheme(theme)
 
         self.plugins = {}
@@ -251,10 +247,15 @@ class Application(QtWidgets.QMainWindow):
     def setTheme(self, theme='system'):
         '''Set *theme*.'''
         if theme not in ['light', 'dark']:
-            theme = self.system_theme
+            theme = self.system_theme()
 
         self._theme = theme
 
+        self.logoIcon = QtGui.QIcon(
+            QtGui.QPixmap(self.ftrack_logo(theme))
+        )
+
+        self.logger.info('setting theme, {}'.format(theme))
         qtawesome_style = getattr(qta, theme)
         qtawesome_style(QtWidgets.QApplication.instance())
 
@@ -656,7 +657,7 @@ class Application(QtWidgets.QMainWindow):
         )
 
         self.tray.setIcon(
-            QtGui.QPixmap(self.ftrack_logo)
+            QtGui.QPixmap(self.ftrack_logo(self._theme))
         )
 
     def _initialiseMenuBar(self):

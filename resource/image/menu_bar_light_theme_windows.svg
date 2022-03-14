@@ -1,10 +1,71 @@
-<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g clip-path="url(#clip0_560_5737)">
-<path fill-rule="evenodd" clip-rule="evenodd" d="M64.1285 32.0568C64.1285 32.0379 64.1285 32.019 64.1285 32C64.1285 31.9811 64.1285 31.9621 64.1285 31.9432V32.0568ZM63.88 36H43.3659C41.7122 40.6608 37.2501 44 32.005 44C25.352 44 19.9587 38.6274 19.9587 32C19.9587 25.3726 25.352 20 32.005 20C37.2501 20 41.7122 23.3392 43.3659 28H63.88C61.904 12.2148 48.3865 0 32.005 0C15.6235 0 2.10595 12.2148 0.130005 28.0001H6.21174C8.14324 15.5397 18.9558 6.00011 32.005 6.00011C32.8718 6.00011 32.6628 6.00009 32.4196 6.00007C32.081 6.00004 31.6762 6 34.0127 6C38.0282 6 38.0282 10.0001 38.0282 10.0001V14.0001H32.005C22.0255 14.0001 13.9355 22.0589 13.9355 32.0001C13.9355 41.9413 22.0255 50.0001 32.005 50.0001L38.0282 50V54C38.0282 54 38.0282 58.0001 34.0127 58L31.9204 58C18.9091 57.9588 8.13906 48.4336 6.21174 36.0001H0.130032C2.10607 51.7853 15.6236 64 32.005 64C48.3865 64 61.904 51.7852 63.88 36ZM32.005 58.0001L31.9204 58C30.9344 58 32.005 58.0001 32.005 58.0001ZM36.0204 32C36.0204 34.2091 34.2226 36 32.005 36C29.7873 36 27.9895 34.2091 27.9895 32C27.9895 29.7909 29.7873 28 32.005 28C34.2226 28 36.0204 29.7909 36.0204 32Z" fill="#202020"/>
-</g>
-<defs>
-<clipPath id="clip0_560_5737">
-<rect width="64" height="64" fill="white"/>
-</clipPath>
-</defs>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="64"
+   height="64"
+   viewBox="0 0 64 64"
+   fill="none"
+   version="1.1"
+   id="svg71"
+   sodipodi:docname="menu_bar_light_theme_windows.svg"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)">
+  <metadata
+     id="metadata75">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1080"
+     id="namedview73"
+     showgrid="false"
+     inkscape:zoom="13.359375"
+     inkscape:cx="32"
+     inkscape:cy="32"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg71" />
+  <g
+     clip-path="url(#clip0_560_5737)"
+     id="g64">
+    <path
+       fill-rule="evenodd"
+       clip-rule="evenodd"
+       d="M64.1285 32.0568C64.1285 32.0379 64.1285 32.019 64.1285 32C64.1285 31.9811 64.1285 31.9621 64.1285 31.9432V32.0568ZM63.88 36H43.3659C41.7122 40.6608 37.2501 44 32.005 44C25.352 44 19.9587 38.6274 19.9587 32C19.9587 25.3726 25.352 20 32.005 20C37.2501 20 41.7122 23.3392 43.3659 28H63.88C61.904 12.2148 48.3865 0 32.005 0C15.6235 0 2.10595 12.2148 0.130005 28.0001H6.21174C8.14324 15.5397 18.9558 6.00011 32.005 6.00011C32.8718 6.00011 32.6628 6.00009 32.4196 6.00007C32.081 6.00004 31.6762 6 34.0127 6C38.0282 6 38.0282 10.0001 38.0282 10.0001V14.0001H32.005C22.0255 14.0001 13.9355 22.0589 13.9355 32.0001C13.9355 41.9413 22.0255 50.0001 32.005 50.0001L38.0282 50V54C38.0282 54 38.0282 58.0001 34.0127 58L31.9204 58C18.9091 57.9588 8.13906 48.4336 6.21174 36.0001H0.130032C2.10607 51.7853 15.6236 64 32.005 64C48.3865 64 61.904 51.7852 63.88 36ZM32.005 58.0001L31.9204 58C30.9344 58 32.005 58.0001 32.005 58.0001ZM36.0204 32C36.0204 34.2091 34.2226 36 32.005 36C29.7873 36 27.9895 34.2091 27.9895 32C27.9895 29.7909 29.7873 28 32.005 28C34.2226 28 36.0204 29.7909 36.0204 32Z"
+       fill="#202020"
+       id="path62" />
+  </g>
+  <defs
+     id="defs69">
+    <clipPath
+       id="clip0_560_5737">
+      <rect
+         width="64"
+         height="64"
+         fill="white"
+         id="rect66" />
+    </clipPath>
+  </defs>
 </svg>
