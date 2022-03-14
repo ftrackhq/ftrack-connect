@@ -130,12 +130,13 @@ class Application(QtWidgets.QMainWindow):
     @property
     def ftrack_logo(self):
         logo_path = ':ftrack/logo/{}'
-        if platform.system() == 'Darwin':
-            logo_path.format('darwin/{}'.format(self.system_theme))
-        else:
-            logo_path.format(self.system_theme)
 
-        return logo_path
+        if platform.system() == 'Darwin':
+            result_logo = logo_path.format('darwin/{}'.format(self.system_theme))
+        else:
+            result_logo = logo_path.format(self.system_theme)
+
+        return result_logo
 
 
     @property
@@ -208,13 +209,13 @@ class Application(QtWidgets.QMainWindow):
                 'No system tray located.'
             )
 
-        self._login_server_thread = None
-        self._theme = None
-        self.setTheme(theme)
-
         self.logoIcon = QtGui.QIcon(
             QtGui.QPixmap(self.ftrack_logo)
         )
+
+        self._login_server_thread = None
+        self._theme = None
+        self.setTheme(theme)
 
         self.plugins = {}
 
@@ -258,7 +259,6 @@ class Application(QtWidgets.QMainWindow):
         qtawesome_style(QtWidgets.QApplication.instance())
 
         ftrack_connect.ui.theme.applyFont()
-        ftrack_connect.ui.theme.applyTheme(self, self._theme, 'cleanlooks')
         ftrack_connect.ui.theme.applyTheme(self, self._theme, 'cleanlooks')
 
     def _onConnectTopicEvent(self, event):
