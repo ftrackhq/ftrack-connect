@@ -127,7 +127,11 @@ class Application(QtWidgets.QMainWindow):
     loginSignal = QtCore.Signal(object, object, object)
     loginSuccessSignal = QtCore.Signal()
 
-    def ftrack_logo(self, theme=None):
+    def ftrack_title_icon(self, theme=None):
+        logo_path = ':ftrack/titlebar/logo'
+        return logo_path
+
+    def ftrack_tray_icon(self, theme=None):
         logo_path = ':ftrack/logo/{}'
 
         theme = theme or self.system_theme()
@@ -208,9 +212,10 @@ class Application(QtWidgets.QMainWindow):
                 'No system tray located.'
             )
 
-
-
         self._login_server_thread = None
+        self._initialiseTray()
+        self._initialiseMenuBar()
+
         self.setTheme(theme)
 
         self.plugins = {}
@@ -219,11 +224,6 @@ class Application(QtWidgets.QMainWindow):
         self.setWindowTitle('ftrack Connect')
         self.resize(450, 700)
         self.move(50, 50)
-
-        self.setWindowIcon(self.logoIcon)
-
-        self._initialiseTray()
-        self._initialiseMenuBar()
 
         self._login_overlay = None
         self.loginWidget = _login.Login(theme=theme)
@@ -251,11 +251,14 @@ class Application(QtWidgets.QMainWindow):
 
         self._theme = theme
 
-        self.logoIcon = QtGui.QIcon(
-            QtGui.QPixmap(self.ftrack_logo(theme))
-        )
+        self.setWindowIcon(QtGui.QIcon(
+            QtGui.QPixmap(self.ftrack_title_icon(theme))
+        ))
 
-        self.logger.info('setting theme, {}'.format(theme))
+        self.tray.setIcon(QtGui.QIcon(
+            QtGui.QPixmap(self.ftrack_tray_icon(theme))
+        ))
+
         qtawesome_style = getattr(qta, theme)
         qtawesome_style(QtWidgets.QApplication.instance())
 
@@ -656,9 +659,6 @@ class Application(QtWidgets.QMainWindow):
             self.trayMenu
         )
 
-        self.tray.setIcon(
-            QtGui.QPixmap(self.ftrack_logo(self._theme))
-        )
 
     def _initialiseMenuBar(self):
         '''Initialise and add connect widget to widgets menu.'''
