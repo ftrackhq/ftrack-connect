@@ -11,6 +11,11 @@ Release Notes
 .. release:: Upcoming
 
     .. change:: changed
+        :tags: About, Linux
+
+        Linux Desktop entry respect packaged or virtual environment paths.
+
+    .. change:: changed
         :tags: UX
 
         Add new icons set for Connect.
