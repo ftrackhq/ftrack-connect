@@ -131,7 +131,7 @@ class AboutDialog(QtWidgets.QDialog):
 
         # ensure name is set correctly if the connect is packaged or from sources.
         app_name = 'ftrack_connect_package'
-        if hasattr(sys, 'frozen'):
+        if getattr(sys, 'frozen', False):
             app_name = 'ftrack-connect'
 
         content = textwrap.dedent('''\
