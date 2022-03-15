@@ -251,13 +251,8 @@ class Application(QtWidgets.QMainWindow):
 
         self._theme = theme
 
-        self.setWindowIcon(QtGui.QIcon(
-            QtGui.QPixmap(self.ftrack_title_icon(theme))
-        ))
-
-        self.tray.setIcon(QtGui.QIcon(
-            QtGui.QPixmap(self.ftrack_tray_icon(theme))
-        ))
+        self.setWindowIcon(QtGui.QPixmap(self.ftrack_title_icon(theme)))
+        self.tray.setIcon(QtGui.QPixmap(self.ftrack_tray_icon(theme)))
 
         qtawesome_style = getattr(qta, theme)
         qtawesome_style(QtWidgets.QApplication.instance())
