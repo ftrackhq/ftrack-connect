@@ -124,7 +124,7 @@ def main(arguments=None):
 
     # Construct main connect window and apply theme.
     connectWindow = ftrack_connect.ui.application.Application(
-        theme=namespace.theme
+        theme=str(namespace.theme)
     )
 
     if namespace.silent:
