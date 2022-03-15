@@ -140,7 +140,6 @@ class Application(QtWidgets.QMainWindow):
         else:
             result_logo = logo_path.format(theme)
 
-        self.logger.warning(result_logo)
         return result_logo
 
     def system_theme(self, fallback='light'):

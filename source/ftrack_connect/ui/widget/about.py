@@ -56,7 +56,7 @@ class AboutDialog(QtWidgets.QDialog):
 
         layout.addWidget(self.loggingButton)
 
-        if sys.platform == 'linux2':
+        if 'linux' in sys.platform:
             self.createApplicationShortcutButton = QtWidgets.QPushButton(
                 'Create application shortcut'
             )
@@ -105,7 +105,7 @@ class AboutDialog(QtWidgets.QDialog):
 
     def _onCreateApplicationShortcutClicked(self):
         '''Create a desktop entry for Connect.'''
-        if sys.platform != 'linux2':
+        if 'linux' not in sys.platform:
             return
 
         if os.path.realpath(__file__).startswith(os.path.expanduser('~')):
