@@ -225,7 +225,7 @@ class Application(QtWidgets.QMainWindow):
         self.move(50, 50)
 
         self._login_overlay = None
-        self.loginWidget = _login.Login(theme=self.theme)
+        self.loginWidget = _login.Login(theme=self.theme())
         self.loginSignal.connect(self.loginWithCredentials)
         self.loginSuccessSignal.connect(self._post_login_settings)
         self.login()
@@ -258,7 +258,7 @@ class Application(QtWidgets.QMainWindow):
         qtawesome_style(QtWidgets.QApplication.instance())
 
         ftrack_connect.ui.theme.applyFont()
-        ftrack_connect.ui.theme.applyTheme(self, self.theme, 'cleanlooks')
+        ftrack_connect.ui.theme.applyTheme(self, self.theme(), 'cleanlooks')
 
     def _onConnectTopicEvent(self, event):
         '''Generic callback for all ftrack.connect events.
