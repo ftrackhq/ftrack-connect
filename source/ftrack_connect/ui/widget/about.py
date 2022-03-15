@@ -129,6 +129,11 @@ class AboutDialog(QtWidgets.QDialog):
 
         application_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
 
+        # ensure name is set correctly if the connect is packaged or from sources.
+        app_name = 'ftrack_connect_package'
+        if hasattr(sys, 'frozen'):
+            app_name = 'ftrack-connect'
+
         content = textwrap.dedent('''\
         #!/usr/bin/env xdg-open
 
@@ -137,10 +142,10 @@ class AboutDialog(QtWidgets.QDialog):
         Icon={0}/logo.svg
         Name=ftrack connect package
         Comment=ftrack connect package
-        Exec={0}/ftrack_connect_package
+        Exec={0}/{1}
         StartupNotify=true
         Terminal=false
-        '''.format(application_dir))
+        '''.format(application_dir, app_name))
 
         with open(filepath, 'w+') as f:
             f.write(content)
