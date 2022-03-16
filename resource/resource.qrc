@@ -21,18 +21,18 @@
     </qresource>
 
     <qresource prefix='ftrack/titlebar'>
-        <file alias='logo'>image/menu_bar.svg</file>
+        <file alias='logo'>image/tray_icon.svg</file>
     </qresource>
 
 
     <qresource prefix='ftrack/logo'>
-        <file alias='dark'>image/outlined_white.svg</file>
-        <file alias='light'>image/outlined_black.svg</file>
+        <file alias='dark'>image/menu_bar_light.svg</file>
+        <file alias='light'>image/menu_bar_dark.svg</file>
     </qresource>
 
     <qresource prefix='ftrack/logo/darwin'>
-        <file alias='dark'>image/outlined_white.svg</file>
-        <file alias='light'>image/outlined_white.svg</file>
+        <file alias='dark'>image/menu_bar_mac_light.svg</file>
+        <file alias='light'>image/menu_bar_mac_dark.svg</file>
     </qresource>
 
     <qresource prefix='ftrack/style'>
