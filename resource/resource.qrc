@@ -32,7 +32,7 @@
 
     <qresource prefix='ftrack/logo/darwin'>
         <file alias='dark'>image/outlined_white.svg</file>
-        <file alias='light'>image/outlined_black.svg</file>
+        <file alias='light'>image/outlined_white.svg</file>
     </qresource>
 
     <qresource prefix='ftrack/style'>
