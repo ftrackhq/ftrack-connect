@@ -10,3 +10,5 @@ requests==2.25.1
 Riffle==1.0.1
 setuptools>=45.0.0
 qtawesome
+wheel
+darkdetect
