@@ -11,18 +11,28 @@ logger = logging.getLogger('ftrack_connect:usage')
 
 def _send_event(session, event_name, metadata=None):
     '''Send usage event with *event_name* and *metadata*.'''
+        
+    if not isinstance(metadata, list):
+        metadata = [metadata]
+
+    payload = []
+    for data in metadata:
+        payload.append(
+            {
+                'action': '_track_usage',
+                'data': {
+                    'type': 'event',
+                    'name': event_name,
+                    'metadata': data
+                }
+            }
+        )
 
     try:
-        session.call([{
-            'action': '_track_usage',
-            'data': {
-                'type': 'event',
-                'name': event_name,
-                'metadata': metadata
-            }
-        }])
+        session.call(payload)
+        
     except Exception:
-        logger.exception('Failed to send event.')
+        logger.exception('Failed to send event : {}'.format(event_name))
 
 @ftrack_connect.asynchronous.asynchronous
 def _send_async_event(session, event_name, metadata=None):
