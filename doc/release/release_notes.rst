@@ -8,13 +8,26 @@
 Release Notes
 *************
 
-
 .. release:: Upcoming
-
     .. change:: changed
         :tags: Events
 
         Sending of usage_events can now be batched.
+
+    .. change:: changed
+        :tags: About, Linux
+
+        Linux Desktop entry respect packaged or virtual environment paths.
+
+    .. change:: changed
+        :tags: UX
+
+        Add new icons set for Connect.
+
+    .. change:: changed
+        :tags: UX
+
+        Connect color theme respect system theme.
 
 .. release:: 2.0.0-rc-4
     :date: 2022-01-15

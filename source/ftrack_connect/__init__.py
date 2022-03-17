@@ -3,7 +3,7 @@
 
 import os
 import qtawesome as qta
-
+import darkdetect
 from ._version import __version__
 
 

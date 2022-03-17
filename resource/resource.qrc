@@ -1,12 +1,38 @@
 <RCC>
     <qresource prefix='ftrack/image/default'>
-        <file alias='ftrackLogoGrey'>image/ftrack_icon_circle_faded.svg</file>
         <file alias='ftrackLogoGreyDark'>image/ftrack_icon_circle_dark.svg</file>
         <file alias='ftrackLogoColor'>image/ftrack_icon_circle_light.svg</file>
         <file alias='ftrackLogoWhite'>image/ftrack_icon_circle_white.svg</file>
-        <file alias='ftrackLogoWhiteMac'>image/ftrack_logo_menu_bar_mac.svg</file>
-        <file alias='ftrackLogoLabel'>image/ftrack_logo_gray.svg</file>
         <file alias='ftrackLogoLabelDark'>image/ftrack_logo_dark.svg</file>
+    </qresource>
+
+    <qresource prefix='ftrack/image/light'>
+        <file alias='ftrackLogoColor'>image/ftrack_icon_circle_light.svg</file>
+        <file alias='ftrackLogoGreyDark'>image/ftrack_icon_circle_dark.svg</file>
+        <file alias='ftrackLogoLabelDark'>image/ftrack_logo_dark.svg</file>
+        <file alias='downArrow'>image/arrow_down_light.svg</file>
+    </qresource>
+
+    <qresource prefix='ftrack/image/dark'>
+        <file alias='ftrackLogoColor'>image/ftrack_icon_circle_dark.svg</file>
+        <file alias='ftrackLogoGreyDark'>image/ftrack_icon_circle_light.svg</file>
+        <file alias='ftrackLogoLabelDark'>image/ftrack_logo_light.svg</file>
+        <file alias='downArrow'>image/arrow_down_dark.svg</file>
+    </qresource>
+
+    <qresource prefix='ftrack/titlebar'>
+        <file alias='logo'>image/tray_icon.svg</file>
+    </qresource>
+
+
+    <qresource prefix='ftrack/logo'>
+        <file alias='dark'>image/menu_bar_light.svg</file>
+        <file alias='light'>image/menu_bar_dark.svg</file>
+    </qresource>
+
+    <qresource prefix='ftrack/logo/darwin'>
+        <file alias='dark'>image/menu_bar_mac_light.svg</file>
+        <file alias='light'>image/menu_bar_mac_dark.svg</file>
     </qresource>
 
     <qresource prefix='ftrack/style'>
@@ -20,21 +46,6 @@
         <file alias='ftrack'>font/ftrack-icon.ttf</file>
     </qresource>
 
-    <qresource prefix='ftrack/image/light'>
-        <file alias='ftrackLogoColor'>image/ftrack_icon_circle_light.svg</file>
-        <file alias='ftrackLogoGreyDark'>image/ftrack_icon_circle_dark.svg</file>
-        <file alias='ftrackLogoLabelDark'>image/ftrack_logo_dark.svg</file>
-        <file alias='downArrow'>image/arrow_down_light.svg</file>
 
-    </qresource>
-
-    <qresource prefix='ftrack/image/dark'>
-        <file alias='ftrackLogoColor'>image/ftrack_icon_circle_dark.svg</file>
-        <file alias='ftrackLogoGrey'>image/ftrack_icon_circle_faded.svg</file>
-        <file alias='ftrackLogoGreyDark'>image/ftrack_icon_circle_light.svg</file>
-        <file alias='ftrackLogoLabelDark'>image/ftrack_logo_light.svg</file>
-        <file alias='downArrow'>image/arrow_down_dark.svg</file>
-
-    </qresource>
 
 </RCC>
