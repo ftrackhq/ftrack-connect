@@ -8,6 +8,14 @@
 Release Notes
 *************
 
+
+.. release:: Upcoming
+
+    .. change:: changed
+        :tags: Events
+
+        Sending of usage_events can now be batched.
+
 .. release:: 2.0.0-rc-4
     :date: 2022-01-15
 
