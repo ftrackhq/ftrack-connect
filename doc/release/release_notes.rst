@@ -9,6 +9,10 @@ Release Notes
 *************
 
 .. release:: Upcoming
+    .. change:: changed
+        :tags: Events
+
+        Sending of usage_events can now be batched.
 
     .. change:: changed
         :tags: About, Linux

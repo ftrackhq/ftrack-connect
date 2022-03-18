@@ -176,7 +176,7 @@ class Application(QtWidgets.QMainWindow):
             self.session,
             'USED-CONNECT',
             metadata,
-            asynchronous=False
+            asynchronous=True
         )
 
     @property
