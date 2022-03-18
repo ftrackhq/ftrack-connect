@@ -173,7 +173,7 @@ class Actions(QtWidgets.QWidget):
             self.session,
             'LAUNCHED-ACTION',
             metadata,
-            asynchronous=False
+            asynchronous=True
         )
 
     def _showResultMessage(self, results):
