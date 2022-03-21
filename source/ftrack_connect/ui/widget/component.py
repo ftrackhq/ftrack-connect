@@ -4,7 +4,7 @@
 import os
 import uuid
 
-from Qt import QtWidgets, QtCore, QtGui
+from ftrack_connect.qt import QtWidgets, QtCore, QtGui
 import qtawesome as qta
 
 import ftrack_connect.ui.widget.line_edit

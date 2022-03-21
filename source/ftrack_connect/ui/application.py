@@ -14,7 +14,7 @@ from operator import itemgetter
 import appdirs
 import time
 
-from Qt import QtCore, QtWidgets, QtGui
+from ftrack_connect.qt import QtCore, QtWidgets, QtGui
 
 import qtawesome as qta
 import darkdetect

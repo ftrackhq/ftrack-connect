@@ -2,4 +2,4 @@
 # :copyright: Copyright (c) 2022 ftrack
 
 from Qt import * 
-from Qt import __version__
+from Qt import __version__, QtCompat

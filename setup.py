@@ -84,7 +84,7 @@ class BuildResources(Command):
         Qt.
 
         '''
-        replace = r'from Qt import QtCore'
+        replace = r'from ftrack_connect.qt import QtCore'
         for line in fileinput.input(self.resource_target_path, inplace=True, mode='r'):
             if r'import QtCore' in line:
                 # Calling print will yield a new line in the resource file.

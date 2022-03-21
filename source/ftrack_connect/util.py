@@ -5,7 +5,7 @@ import os
 import subprocess
 import sys
 
-from Qt import QtCore
+from ftrack_connect.qt import QtCore
 
 
 def open_directory(path):
