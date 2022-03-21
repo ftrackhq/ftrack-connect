@@ -5,11 +5,10 @@ import json
 import sys
 import textwrap
 import platform
-
-import Qt
-from Qt import QtCore, QtWidgets, QtGui
-
 import ftrack_api
+
+from ftrack_connect.qt import QtCore, QtWidgets, QtGui, __version__ as QtVersion
+
 from ftrack_connect.config import get_log_directory
 
 import ftrack_connect.util
@@ -190,7 +189,7 @@ class AboutDialog(QtWidgets.QDialog):
             server=server,
             user=user,
             api_versions=ftrack_api.__version__,
-            pyside_version=Qt.__version__,
+            pyside_version=QtVersion,
             qt_version=QtCore.qVersion(),
             python_version=sys.version,
             host=platform.node(),

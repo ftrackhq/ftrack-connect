@@ -2,7 +2,7 @@
 # :copyright: Copyright (c) 2014 ftrack
 import ftrack_api
 import logging
-from Qt import QtCore, QtWidgets
+from ftrack_connect.qt import QtCore, QtWidgets
 
 import ftrack_connect.ui.application
 import ftrack_connect.ui.widget.overlay
