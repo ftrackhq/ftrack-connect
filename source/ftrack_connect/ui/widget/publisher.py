@@ -3,9 +3,9 @@
 
 import logging
 
-from Qt import QtWidgets
-from Qt import QtCore
-from Qt import QtGui
+from ftrack_connect.qt import QtWidgets
+from ftrack_connect.qt import QtCore
+from ftrack_connect.qt import QtGui
 
 from ftrack_api import exception
 from ftrack_api import event
