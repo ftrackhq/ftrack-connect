@@ -9,6 +9,12 @@ Release Notes
 *************
 
 .. release:: Upcoming
+
+    .. change:: fixed
+        :tags: Actions
+
+        Random crashes on discovering on null context.
+
     .. change:: changed
         :tags: Events
 
