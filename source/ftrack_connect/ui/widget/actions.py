@@ -43,6 +43,7 @@ class ActionSection(flow_layout.ScrollingFlowWidget):
         for item in items:
             # item.setParent(None)
             item.deleteLater()
+            del item
 
     def addActions(self, actions):
         '''Add *actions* to section'''
@@ -318,7 +319,7 @@ class Actions(QtWidgets.QWidget):
             'value': encodedRecentActions
         }, identifying_keys=['parent_type', 'parent_id', 'key'])
 
-    @ftrack_connect.asynchronous.asynchronous
+    # @ftrack_connect.asynchronous.asynchronous
     def _loadActionsForContext(self, context):
         '''Obtain new actions synchronously for *context*.'''
         self.actionsLoading.emit()

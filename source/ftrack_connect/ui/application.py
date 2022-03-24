@@ -251,8 +251,8 @@ class Application(QtWidgets.QMainWindow):
         self.logger.debug('Setting theme {}'.format(theme))
         self._theme = theme
 
-        self.setWindowIcon(QtGui.QPixmap(self.ftrack_title_icon(theme)))
-        self.tray.setIcon(QtGui.QPixmap(self.ftrack_tray_icon(theme)))
+        self.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(self.ftrack_title_icon(theme))))
+        self.tray.setIcon(QtGui.QIcon(QtGui.QPixmap(self.ftrack_tray_icon(theme))))
 
         qtawesome_style = getattr(qta, theme)
         qtawesome_style(QtWidgets.QApplication.instance())
@@ -399,6 +399,7 @@ class Application(QtWidgets.QMainWindow):
         # Listen to events using the new API event hub. This is required to
         # allow reconfiguring the storage scenario.
         self._hub_thread = _event_hub_thread.NewApiEventHubThread(self)
+
         self._hub_thread.start(session)
         weakref.finalize(self._hub_thread, self._hub_thread.cleanup)
 
@@ -470,6 +471,7 @@ class Application(QtWidgets.QMainWindow):
         if not username or not apiKey:
             self._login_server_thread = _login_tools.LoginServerThread()
             self._login_server_thread.loginSignal.connect(self.loginSignal)
+            self._login_server_thread.finished.connect(self._login_server_thread.deleteLater)
             self._login_server_thread.start(url)
             return
 
