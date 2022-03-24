@@ -319,6 +319,7 @@ class Actions(QtWidgets.QWidget):
             'value': encodedRecentActions
         }, identifying_keys=['parent_type', 'parent_id', 'key'])
 
+    # TODO: To re evaluate: breaks in PySide2 2.14, but works on PyQt5 2.15
     # @ftrack_connect.asynchronous.asynchronous
     def _loadActionsForContext(self, context):
         '''Obtain new actions synchronously for *context*.'''
