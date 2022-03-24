@@ -41,7 +41,8 @@ class ActionSection(flow_layout.ScrollingFlowWidget):
         '''Remove all actions from section.'''
         items = self.findChildren(action_item.ActionItem)
         for item in items:
-            item.setParent(None)
+            # item.setParent(None)
+            item.deleteLater()
 
     def addActions(self, actions):
         '''Add *actions* to section'''
@@ -119,7 +120,7 @@ class Actions(QtWidgets.QWidget):
         self._allSection.actionLaunched.connect(self._onActionLaunched)
         layout.addWidget(self._allSection)
 
-        self._overlay = overlay.BusyOverlay(self, message='Launching...')
+        self._overlay = overlay.BusyOverlay(parent=self, message='Launching...')
         self._overlay.setVisible(False)
 
         self.recentActionsChanged.connect(self._updateRecentSection)
@@ -128,8 +129,8 @@ class Actions(QtWidgets.QWidget):
         self.actionsLoading.connect(self.onActionsLoading)
 
         context = self._contextFromEntity(self._entitySelector._entity)
-        self._updateRecentActions()
         self._loadActionsForContext(context)
+        self._updateRecentActions()
 
     def _onBeforeActionLaunched(self, action):
         '''Before action is launched, show busy overlay with message..'''
@@ -205,6 +206,9 @@ class Actions(QtWidgets.QWidget):
     def _contextFromEntity(self, entity):
         '''convert *entity* to list of dicts'''
         context = []
+        if not entity:
+            return context
+
         try:
             context = [{
                 'entityId': entity['id'],
@@ -221,8 +225,8 @@ class Actions(QtWidgets.QWidget):
         context = self._contextFromEntity(entity)
         self._recentSection.clear()
         self._allSection.clear()
-        self._loadActionsForContext(context)
         self._updateRecentActions()
+        self._loadActionsForContext(context)
 
     def _updateRecentSection(self):
         '''Clear and update actions in recent section.'''

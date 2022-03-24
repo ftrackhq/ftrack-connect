@@ -263,6 +263,7 @@ class EntityTreeModel(QtCore.QAbstractItemModel):
         super(EntityTreeModel, self).__init__(parent=parent)
         self.root = root
         self.columns = ['Name', 'Type']
+        self._worker = None
 
     def rowCount(self, parent):
         '''Return number of children *parent* index has.'''
@@ -414,17 +415,17 @@ class EntityTreeModel(QtCore.QAbstractItemModel):
             self.loadStarted.emit()
             startIndex = len(item.children)
 
-            worker = ftrack_connect.worker.Worker(item.fetchChildren)
-            worker.start()
+            self._worker = ftrack_connect.worker.Worker(item.fetchChildren, parent=self)
+            self._worker.start()
 
-            while worker.isRunning():
+            while self._worker.isRunning():
                 app = QtWidgets.QApplication.instance()
                 app.processEvents()
 
-            if worker.error:
-                raise worker.error[1]
+            if self._worker.error:
+                raise self._worker.error[1]
 
-            additionalChildren = worker.result
+            additionalChildren = self._worker.result
 
             endIndex = startIndex + len(additionalChildren) - 1
             if endIndex >= startIndex:

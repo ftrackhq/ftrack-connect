@@ -398,7 +398,7 @@ class Application(QtWidgets.QMainWindow):
 
         # Listen to events using the new API event hub. This is required to
         # allow reconfiguring the storage scenario.
-        self._hub_thread = _event_hub_thread.NewApiEventHubThread()
+        self._hub_thread = _event_hub_thread.NewApiEventHubThread(self)
         self._hub_thread.start(session)
         weakref.finalize(self._hub_thread, self._hub_thread.cleanup)
 
