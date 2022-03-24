@@ -3,7 +3,7 @@
 
 import webbrowser
 
-from Qt import QtWidgets, QtCore, QtSvg, QtGui
+from ftrack_connect.qt import QtWidgets, QtCore, QtSvg, QtGui
 
 import qtawesome as qta
 
