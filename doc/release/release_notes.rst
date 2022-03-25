@@ -9,12 +9,14 @@ Release Notes
 *************
 
 .. release:: Upcoming
+    .. change:: fixed
+        :tags: Actions
 
+        Random crashes on discovering on null context.
     .. change:: added
         :tags: Module
 
         Provide ftrak_connect.qt module to abstract imported Qt modules.
-
     .. change:: changed
         :tags: Events
 

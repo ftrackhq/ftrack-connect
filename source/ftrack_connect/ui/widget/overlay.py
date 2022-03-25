@@ -139,7 +139,7 @@ class BlockingOverlay(Overlay):
          *message* is the message to display on the overlay.
 
          '''
-        super(BlockingOverlay, self).__init__(parent)
+        super(BlockingOverlay, self).__init__(parent=parent)
         layout = QtWidgets.QVBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(layout)
@@ -184,7 +184,7 @@ class BusyOverlay(BlockingOverlay):
 
     def __init__(self, parent, message='Processing'):
         '''Initialise with *parent* and busy *message*.'''
-        super(BusyOverlay, self).__init__(parent, message=message)
+        super(BusyOverlay, self).__init__(parent=parent, message=message)
 
         self.indicator = ftrack_connect.ui.widget.indicator.BusyIndicator()
         self.indicator.setFixedSize(85, 85)
@@ -209,7 +209,7 @@ class CancelOverlay(BusyOverlay):
 
     def __init__(self, parent, message='Processing'):
         '''Initialise with *parent* and busy *message*.'''
-        super(CancelOverlay, self).__init__(parent, message=message)
+        super(CancelOverlay, self).__init__(parent=parent, message=message)
 
         self.contentLayout.addSpacing(10)
 
