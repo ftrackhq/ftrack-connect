@@ -8,15 +8,19 @@
 Release Notes
 *************
 
-.. release:: Upcoming
+.. release:: 2.0.0-rc-5
+    :date: 2022-03-25
+
     .. change:: fixed
         :tags: Actions
 
         Random crashes on discovering on null context.
+
     .. change:: added
         :tags: Module
 
         Provide ftrak_connect.qt module to abstract imported Qt modules.
+        
     .. change:: changed
         :tags: Events
 
