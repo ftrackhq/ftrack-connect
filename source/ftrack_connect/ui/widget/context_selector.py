@@ -2,8 +2,8 @@
 # :copyright: Copyright (c) 2015 ftrack
 
 import ftrack_api
-from Qt import QtWidgets
-from Qt import QtCore
+from ftrack_connect.qt import QtWidgets
+from ftrack_connect.qt import QtCore
 
 import entity_path as entityPath
 import entity_browser as entityBrowser

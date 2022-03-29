@@ -3,7 +3,7 @@
 
 import operator
 
-from Qt import QtWidgets, QtCore, QtGui
+from ftrack_connect.qt import QtWidgets, QtCore, QtGui
 import qtawesome as qta
 
 from ftrack_connect.ui.widget import entity_path as _entity_path
@@ -42,6 +42,7 @@ class EntitySelector(QtWidgets.QStackedWidget):
         )
 
         self.entityBrowseButton = QtWidgets.QPushButton('Browse')
+        self.entityBrowseButton.setMaximumWidth(150)
         self.assignedContextSelector = QtWidgets.QComboBox()
 
         selectionWidget.layout().addWidget(self.assignedContextSelector)

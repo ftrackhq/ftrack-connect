@@ -6,7 +6,7 @@ import urllib.parse
 import webbrowser
 import functools
 
-from Qt import QtCore
+from ftrack_connect.qt import QtCore
 
 
 class LoginServerHandler(BaseHTTPRequestHandler):

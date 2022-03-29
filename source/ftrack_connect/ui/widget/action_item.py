@@ -5,7 +5,7 @@ import logging
 
 import qtawesome as qta
 
-from Qt import QtCore, QtWidgets, QtGui
+from ftrack_connect.qt import QtCore, QtWidgets, QtGui
 
 import ftrack_api.event.base
 from ftrack_connect import load_icons
@@ -148,7 +148,7 @@ class ActionItem(QtWidgets.QWidget):
 
     def _launchAction(self, action):
         '''Launch *action* via event hub.'''
-        self.logger.info(u'Launching action: {0}'.format(action))
+        self.logger.debug(u'Launching action: {0}'.format(action))
         self.beforeActionLaunch.emit(action)
         self._publishLaunchActionEvent(action)
 

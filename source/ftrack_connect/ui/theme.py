@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-from Qt import QtCore, QtWidgets, QtGui
+from ftrack_connect.qt import QtCore, QtWidgets, QtGui
 
 
 def applyFont():
