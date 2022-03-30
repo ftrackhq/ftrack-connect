@@ -13,7 +13,9 @@ class WidgetHarness(Harness):
     def constructWidget(self):
         '''Return widget instance to test.'''
         widget = QtWidgets.QFrame()
-        widget.setFrameStyle(QtWidgets.QFrame.StyledPanel | QtWidgets.QFrame.Plain)
+        widget.setFrameStyle(
+            QtWidgets.QFrame.StyledPanel | QtWidgets.QFrame.Plain
+        )
         layout = QtWidgets.QVBoxLayout()
         widget.setLayout(layout)
         for index in range(5):
@@ -62,14 +64,10 @@ class WidgetHarness(Harness):
         messageEdit.setPlaceholderText('Enter message to display')
         controlLayout.addWidget(messageEdit)
 
-        messageEdit.textChanged.connect(
-            widget.overlay.setMessage
-        )
+        messageEdit.textChanged.connect(widget.overlay.setMessage)
 
         return controlWidget
 
 
 if __name__ == '__main__':
-    raise SystemExit(
-        WidgetHarness().run()
-    )
+    raise SystemExit(WidgetHarness().run())

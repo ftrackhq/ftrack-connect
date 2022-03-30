@@ -41,7 +41,9 @@ class Publisher(ftrack_connect.ui.application.ConnectWidget):
         layout = QtWidgets.QVBoxLayout()
         self.setLayout(layout)
 
-        self.publishView = ftrack_connect.ui.widget.publisher.Publisher(self.session)
+        self.publishView = ftrack_connect.ui.widget.publisher.Publisher(
+            self.session
+        )
         layout.addWidget(self.publishView)
 
         self.blockingOverlay = PublisherBlockingOverlay(self)
@@ -50,17 +52,11 @@ class Publisher(ftrack_connect.ui.application.ConnectWidget):
         self.busyOverlay = ftrack_connect.ui.widget.overlay.BusyOverlay(self)
         self.busyOverlay.hide()
 
-        self.publishView.publishStarted.connect(
-            self._onPublishStarted
-        )
+        self.publishView.publishStarted.connect(self._onPublishStarted)
 
-        self.publishView.publishFinished.connect(
-            self._onPublishFinished
-        )
+        self.publishView.publishFinished.connect(self._onPublishFinished)
 
-        self.entityChanged.connect(
-            self._onEntityChanged
-        )
+        self.entityChanged.connect(self._onEntityChanged)
 
     def _onPublishStarted(self):
         '''Callback for publish started signal.'''
@@ -79,8 +75,9 @@ class Publisher(ftrack_connect.ui.application.ConnectWidget):
             self.blockingOverlay.confirmButton.show()
             self.blockingOverlay.show()
 
-            ftrack_connect.usage.send_event(self.session, 'PUBLISHED-FROM-CONNECT')
-
+            ftrack_connect.usage.send_event(
+                self.session, 'PUBLISHED-FROM-CONNECT'
+            )
 
     def _onEntityChanged(self):
         '''Callback for entityChanged signal.'''
@@ -134,10 +131,12 @@ class Publisher(ftrack_connect.ui.application.ConnectWidget):
         # Add any components from event data
         components = event['data'].get('components', [])
         for componentData in components:
-            self.publishView.componentsList.addItem({
-                'componentName': componentData.get('name'),
-                'resourceIdentifier': componentData.get('path')
-            })
+            self.publishView.componentsList.addItem(
+                {
+                    'componentName': componentData.get('name'),
+                    'resourceIdentifier': componentData.get('path'),
+                }
+            )
 
         # Add thumbnail from event data
         thumbnail = event['data'].get('thumbnail')
@@ -154,8 +153,7 @@ class Publisher(ftrack_connect.ui.application.ConnectWidget):
         self.requestApplicationFocus.emit(self)
 
         self.session.event_hub.publish_reply(
-            source_event=event,
-            data={'message': 'Publisher started.'}
+            source_event=event, data={'message': 'Publisher started.'}
         )
 
 

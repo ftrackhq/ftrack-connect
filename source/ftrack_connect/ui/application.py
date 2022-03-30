@@ -66,12 +66,13 @@ class ConnectWidgetPlugin(object):
                 self.topic, session.api_user
             ),
             self._return_widget,
-            priority=priority
+            priority=priority,
         )
 
 
 class ConnectWidget(QtWidgets.QWidget):
     '''Base widget for ftrack connect application plugin.'''
+
     icon = None
     name = None
 
@@ -102,6 +103,7 @@ class ConnectWidget(QtWidgets.QWidget):
 
 class PluginWarning(ConnectWidget):
     '''Warning missing plugin widget.'''
+
     def __init__(self, session, parent=None):
         '''Instantiate the actions widget.'''
         super(PluginWarning, self).__init__(session, parent=parent)
@@ -149,34 +151,34 @@ class Application(QtWidgets.QMainWindow):
             from darkdetect import _mac_detect as stylemodule
 
         elif sys.platform == "win32" and int(platform.release()) >= 10:
-            from darkdetect import _windows_detect  as stylemodule
+            from darkdetect import _windows_detect as stylemodule
 
         elif sys.platform == "linux":
-            from darkdetect import _linux_detect  as stylemodule
+            from darkdetect import _linux_detect as stylemodule
 
         current_theme = stylemodule.theme()
         if not current_theme:
-            self.logger.warning('System theme could not be determined, using: light')
+            self.logger.warning(
+                'System theme could not be determined, using: light'
+            )
             current_theme = fallback
 
         return current_theme.lower()
 
     def emitConnectUsage(self):
         '''Emit data to intercom to track Connect data usage'''
-        connect_stopped_time = time.time() 
+        connect_stopped_time = time.time()
 
         metadata = {
             'label': 'ftrack-connect',
             'version': ftrack_connect.__version__,
             'os': platform.platform(),
-            'session-duration': connect_stopped_time - self.__connect_start_time
-        } 
+            'session-duration': connect_stopped_time
+            - self.__connect_start_time,
+        }
 
         ftrack_connect.usage.send_event(
-            self.session,
-            'USED-CONNECT',
-            metadata,
-            asynchronous=True
+            self.session, 'USED-CONNECT', metadata, asynchronous=True
         )
 
     @property
@@ -202,14 +204,10 @@ class Application(QtWidgets.QMainWindow):
         self.pluginHookPaths = self._discover_hook_paths()
 
         # Register widget for error handling.
-        self.uncaughtError = _uncaught_error.UncaughtError(
-            parent=self
-        )
+        self.uncaughtError = _uncaught_error.UncaughtError(parent=self)
 
         if not QtWidgets.QSystemTrayIcon.isSystemTrayAvailable():
-            raise ftrack_connect.error.ConnectError(
-                'No system tray located.'
-            )
+            raise ftrack_connect.error.ConnectError('No system tray located.')
 
         self._login_server_thread = None
         self._initialiseTray()
@@ -251,8 +249,12 @@ class Application(QtWidgets.QMainWindow):
         self.logger.debug('Setting theme {}'.format(theme))
         self._theme = theme
 
-        self.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(self.ftrack_title_icon(theme))))
-        self.tray.setIcon(QtGui.QIcon(QtGui.QPixmap(self.ftrack_tray_icon(theme))))
+        self.setWindowIcon(
+            QtGui.QIcon(QtGui.QPixmap(self.ftrack_title_icon(theme)))
+        )
+        self.tray.setIcon(
+            QtGui.QIcon(QtGui.QPixmap(self.ftrack_tray_icon(theme)))
+        )
 
         qtawesome_style = getattr(qta, theme)
         qtawesome_style(QtWidgets.QApplication.instance())
@@ -299,7 +301,7 @@ class Application(QtWidgets.QMainWindow):
                 credentials = {
                     'server_url': data['server_url'],
                     'api_user': data['api_user'],
-                    'api_key': data['api_key']
+                    'api_key': data['api_key'],
                 }
             except Exception:
                 self.logger.debug(
@@ -319,7 +321,7 @@ class Application(QtWidgets.QMainWindow):
                 credentials = {
                     'server_url': server_url,
                     'api_user': api_user,
-                    'api_key': api_key
+                    'api_key': api_key,
                 }
 
         return credentials
@@ -340,11 +342,13 @@ class Application(QtWidgets.QMainWindow):
         if not 'id' in json_config:
             json_config['id'] = str(uuid.uuid4())
 
-        json_config['accounts'] = [{
-            'server_url': server_url,
-            'api_user': api_user,
-            'api_key': api_key
-        }]
+        json_config['accounts'] = [
+            {
+                'server_url': server_url,
+                'api_user': api_user,
+                'api_key': api_key,
+            }
+        ]
 
         ftrack_connect.ui.config.write_json_config(json_config)
 
@@ -358,14 +362,13 @@ class Application(QtWidgets.QMainWindow):
             self.loginWithCredentials(
                 credentials['server_url'],
                 credentials['api_user'],
-                credentials['api_key']
+                credentials['api_key'],
             )
 
     def showLoginWidget(self):
         '''Show the login widget.'''
         self._login_overlay = ftrack_connect.ui.widget.overlay.CancelOverlay(
-            self.loginWidget,
-            message='Signing in'
+            self.loginWidget, message='Signing in'
         )
 
         self._login_overlay.hide()
@@ -390,8 +393,7 @@ class Application(QtWidgets.QMainWindow):
             plugin_paths = self.pluginHookPaths
         try:
             session = ftrack_api.Session(
-                auto_connect_event_hub=True,
-                plugin_paths=plugin_paths
+                auto_connect_event_hub=True, plugin_paths=plugin_paths
             )
         except Exception as error:
             raise ftrack_connect.error.ParseError(error)
@@ -416,7 +418,6 @@ class Application(QtWidgets.QMainWindow):
             u'\nPlease check log file for more informations.'
             u'\nIf the error persists please send the log file to:'
             u' support@ftrack.com'.format(error)
-
         )
         self.loginError.emit(msg)
 
@@ -453,9 +454,7 @@ class Application(QtWidgets.QMainWindow):
             )
             return
 
-        if (
-            result.status_code != 200 or 'FTRACK_VERSION' not in result.headers
-        ):
+        if result.status_code != 200 or 'FTRACK_VERSION' not in result.headers:
             self.loginError.emit(
                 'The server URL you provided is not a valid ftrack server.'
             )
@@ -471,7 +470,9 @@ class Application(QtWidgets.QMainWindow):
         if not username or not apiKey:
             self._login_server_thread = _login_tools.LoginServerThread()
             self._login_server_thread.loginSignal.connect(self.loginSignal)
-            self._login_server_thread.finished.connect(self._login_server_thread.deleteLater)
+            self._login_server_thread.finished.connect(
+                self._login_server_thread.deleteLater
+            )
             self._login_server_thread.start(url)
             return
 
@@ -499,7 +500,9 @@ class Application(QtWidgets.QMainWindow):
                 'storage_scenario'
             )
             if storage_scenario is None:
-                ftrack_api.plugin.discover(self.pluginHookPaths, [self.session])
+                ftrack_api.plugin.discover(
+                    self.pluginHookPaths, [self.session]
+                )
                 # Hide login overlay at this time since it will be deleted
                 self.logger.debug('Storage scenario is not configured.')
                 scenario_widget = _scenario_widget.ConfigureScenario(
@@ -545,12 +548,10 @@ class Application(QtWidgets.QMainWindow):
                 'storage_scenario': self.session.server_information.get(
                     'storage_scenario'
                 )
-            }
+            },
         )
         results = self.session.event_hub.publish(event, synchronous=True)
-        problems = [
-            problem for problem in results if isinstance(problem, str)
-        ]
+        problems = [problem for problem in results if isinstance(problem, str)]
         if problems:
             msgBox = QtWidgets.QMessageBox(parent=self)
             msgBox.setIcon(QtWidgets.QMessageBox.Warning)
@@ -568,7 +569,7 @@ class Application(QtWidgets.QMainWindow):
             'topic=ftrack.connect and source.user.username="{0}"'.format(
                 self.session.api_user
             ),
-            self._relayEventHubEvent
+            self._relayEventHubEvent,
         )
         self.eventHubSignal.connect(self._onConnectTopicEvent)
 
@@ -580,7 +581,7 @@ class Application(QtWidgets.QMainWindow):
             'topic=ftrack.connect.discover and source.user.username="{0}"'.format(
                 self.session.api_user
             ),
-            lambda event : True
+            lambda event: True,
         )
         self.session._configure_locations()
         self._discoverConnectWidget()
@@ -591,26 +592,20 @@ class Application(QtWidgets.QMainWindow):
         plugin_paths = []
 
         plugin_paths.extend(
-            self._gatherPluginHooks(
-                self.defaultPluginDirectory
-            )
+            self._gatherPluginHooks(self.defaultPluginDirectory)
         )
 
-        for apiPluginPath in (
-            os.environ.get('FTRACK_EVENT_PLUGIN_PATH', '').split(os.pathsep)
-        ):
+        for apiPluginPath in os.environ.get(
+            'FTRACK_EVENT_PLUGIN_PATH', ''
+        ).split(os.pathsep):
             if apiPluginPath not in plugin_paths:
-                plugin_paths.append(
-                    os.path.expandvars(apiPluginPath)
-                )
+                plugin_paths.append(os.path.expandvars(apiPluginPath))
 
-        for connectPluginPath in (
-            os.environ.get('FTRACK_CONNECT_PLUGIN_PATH', '').split(os.pathsep)
-        ):
+        for connectPluginPath in os.environ.get(
+            'FTRACK_CONNECT_PLUGIN_PATH', ''
+        ).split(os.pathsep):
             plugin_paths.extend(
-                self._gatherPluginHooks(
-                    os.path.expandvars(connectPluginPath)
-                )
+                self._gatherPluginHooks(os.path.expandvars(connectPluginPath))
             )
 
         self.logger.info(
@@ -632,9 +627,7 @@ class Application(QtWidgets.QMainWindow):
                 if os.path.isdir(candidate_path):
                     full_hook_path = os.path.join(candidate_path, 'hook')
                     if full_hook_path not in paths:
-                        paths.append(
-                            full_hook_path
-                        )
+                        paths.append(full_hook_path)
 
         self.logger.debug(
             u'Found {0!r} plugin hooks in {1!r}.'.format(paths, path)
@@ -652,10 +645,7 @@ class Application(QtWidgets.QMainWindow):
 
         self.tray = QtWidgets.QSystemTrayIcon(self)
 
-        self.tray.setContextMenu(
-            self.trayMenu
-        )
-
+        self.tray.setContextMenu(self.trayMenu)
 
     def _initialiseMenuBar(self):
         '''Initialise and add connect widget to widgets menu.'''
@@ -671,33 +661,26 @@ class Application(QtWidgets.QMainWindow):
         menu = QtWidgets.QMenu(self)
 
         logoutAction = QtWidgets.QAction(
-            'Log Out && Quit', self,
-            triggered=self.logout
+            'Log Out && Quit', self, triggered=self.logout
         )
 
         quitAction = QtWidgets.QAction(
-            'Quit', self,
-            triggered=QtWidgets.QApplication.quit
+            'Quit', self, triggered=QtWidgets.QApplication.quit
         )
 
-        focusAction = QtWidgets.QAction(
-            'Open', self,
-            triggered=self.focus
-        )
+        focusAction = QtWidgets.QAction('Open', self, triggered=self.focus)
 
         openPluginDirectoryAction = QtWidgets.QAction(
-            'Open plugin directory', self,
-            triggered=self.openDefaultPluginDirectory
+            'Open plugin directory',
+            self,
+            triggered=self.openDefaultPluginDirectory,
         )
 
         aboutAction = QtWidgets.QAction(
-            'About', self,
-            triggered=self.showAbout
+            'About', self, triggered=self.showAbout
         )
 
-        alwaysOnTopAction = QtWidgets.QAction(
-            'Always on top', self
-        )
+        alwaysOnTopAction = QtWidgets.QAction('Always on top', self)
         alwaysOnTopAction.setCheckable(True)
         alwaysOnTopAction.triggered[bool].connect(self.setAlwaysOnTop)
 
@@ -719,13 +702,9 @@ class Application(QtWidgets.QMainWindow):
     def _discoverConnectWidget(self):
         '''Find and load connect widgets in search paths.'''
 
-        event = ftrack_api.event.base.Event(
-            topic = ConnectWidgetPlugin.topic
-        )
+        event = ftrack_api.event.base.Event(topic=ConnectWidgetPlugin.topic)
 
-        responses = self.session.event_hub.publish(
-            event, synchronous=True
-        )
+        responses = self.session.event_hub.publish(event, synchronous=True)
 
         for ResponsePlugin in responses:
 
@@ -733,12 +712,16 @@ class Application(QtWidgets.QMainWindow):
                 widget_plugin = ResponsePlugin(self.session)
 
             except Exception:
-                self.logger.exception(msg='Error while loading plugin : {}'.format(widget_plugin))
+                self.logger.exception(
+                    msg='Error while loading plugin : {}'.format(widget_plugin)
+                )
                 continue
 
             if not isinstance(widget_plugin, ConnectWidget):
                 self.logger.warning(
-                    'Widget {} is not a valid ConnectWidget'.format(widget_plugin)
+                    'Widget {} is not a valid ConnectWidget'.format(
+                        widget_plugin
+                    )
                 )
                 continue
             try:
@@ -746,7 +729,9 @@ class Application(QtWidgets.QMainWindow):
                 if not self.plugins.get(identifier):
                     self.plugins[identifier] = widget_plugin
                 else:
-                    self.logger.debug('Widget {} already registered'.format(identifier))
+                    self.logger.debug(
+                        'Widget {} already registered'.format(identifier)
+                    )
                     continue
 
                 self.addPlugin(widget_plugin)
@@ -777,9 +762,7 @@ class Application(QtWidgets.QMainWindow):
             pluginInstance = self.plugins[plugin]
         except KeyError:
             raise ftrack_connect.error.ConnectError(
-                'Plugin "{0}" not found.'.format(
-                    plugin
-                )
+                'Plugin "{0}" not found.'.format(plugin)
             )
 
         try:
@@ -839,7 +822,9 @@ class Application(QtWidgets.QMainWindow):
 
         if registered_plugin is None:
             self.logger.warning(
-                'No plugin registered with identifier "{0}".'.format(identifier)
+                'No plugin registered with identifier "{0}".'.format(
+                    identifier
+                )
             )
             return
 
@@ -855,9 +840,13 @@ class Application(QtWidgets.QMainWindow):
     def setAlwaysOnTop(self, state):
         '''Set the application window to be on top'''
         if state:
-            self.setWindowFlags(self.windowFlags() | QtCore.Qt.WindowStaysOnTopHint)
+            self.setWindowFlags(
+                self.windowFlags() | QtCore.Qt.WindowStaysOnTopHint
+            )
         else:
-            self.setWindowFlags(self.windowFlags() & ~QtCore.Qt.WindowStaysOnTopHint)
+            self.setWindowFlags(
+                self.windowFlags() & ~QtCore.Qt.WindowStaysOnTopHint
+            )
         self.focus()
 
     def showAbout(self):
@@ -867,29 +856,31 @@ class Application(QtWidgets.QMainWindow):
         aboutDialog = _about.AboutDialog(self)
 
         environmentData = os.environ.copy()
-        environmentData.update({
-            'PLATFORM': platform.platform(),
-            'PYTHON_VERSION': platform.python_version()
-        })
+        environmentData.update(
+            {
+                'PLATFORM': platform.platform(),
+                'PYTHON_VERSION': platform.python_version(),
+            }
+        )
 
-        versionData = [{
-            'name': 'ftrack connect',
-            'version': ftrack_connect.__version__,
-            'core': True,
-            'debug_information': environmentData
-        }]
+        versionData = [
+            {
+                'name': 'ftrack connect',
+                'version': ftrack_connect.__version__,
+                'core': True,
+                'debug_information': environmentData,
+            }
+        ]
 
         # Gather information about API versions and other
         # plugin hooks.
 
         try:
             event = ftrack_api.event.base.Event(
-                topic = 'ftrack.connect.plugin.debug-information'
+                topic='ftrack.connect.plugin.debug-information'
             )
 
-            responses = self.session.event_hub.publish(
-                event, synchronous=True
-            )
+            responses = self.session.event_hub.publish(event, synchronous=True)
 
             for response in responses:
                 if isinstance(response, dict):
@@ -898,9 +889,7 @@ class Application(QtWidgets.QMainWindow):
                     versionData = versionData + response
 
         except Exception as error:
-            self.logger.error(
-                error
-            )
+            self.logger.error(error)
 
         sorted_version_data = sorted(versionData, key=itemgetter('name'))
 
@@ -908,7 +897,7 @@ class Application(QtWidgets.QMainWindow):
             versionData=sorted_version_data,
             server=os.environ.get('FTRACK_SERVER', 'Not set'),
             user=self.session.api_user,
-            widget_plugins=self.plugins
+            widget_plugins=self.plugins,
         )
 
         aboutDialog.exec_()

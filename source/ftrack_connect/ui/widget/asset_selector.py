@@ -37,7 +37,9 @@ class AssetSelector(_item_selector.ItemSelector):
                 entity = entity['parent']
 
             assets = entity.session.query(
-                'select name from Asset where parent.id is {}'.format(entity['id'])
+                'select name from Asset where parent.id is {}'.format(
+                    entity['id']
+                )
             ).all()
 
             self.logger.debug('Loaded {0} assets'.format(len(assets)))

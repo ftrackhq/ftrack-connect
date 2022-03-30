@@ -14,7 +14,9 @@ from ftrack_api import event
 from ftrack_connect.ui.widget import data_drop_zone as _data_drop_zone
 from ftrack_connect.ui.widget import components_list as _components_list
 from ftrack_connect.ui.widget import item_selector as _item_selector
-from ftrack_connect.ui.widget import thumbnail_drop_zone as _thumbnail_drop_zone
+from ftrack_connect.ui.widget import (
+    thumbnail_drop_zone as _thumbnail_drop_zone,
+)
 from ftrack_connect.ui.widget import asset_options as _asset_options
 from ftrack_connect.ui.widget import entity_selector
 
@@ -69,12 +71,15 @@ class Publisher(QtWidgets.QWidget):
         self.componentsList.itemsChanged.connect(
             self._onComponentListItemsChanged
         )
-        verticalSpacer = QtWidgets.QSpacerItem(0, 0, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        verticalSpacer = QtWidgets.QSpacerItem(
+            0,
+            0,
+            QtWidgets.QSizePolicy.Minimum,
+            QtWidgets.QSizePolicy.Expanding,
+        )
         layout.addItem(verticalSpacer)
 
-        layout.addWidget(
-            self.componentsList, stretch=1
-        )
+        layout.addWidget(self.componentsList, stretch=1)
         self.componentsList.hide()
 
         # Create form layout to keep track of publish form items.
@@ -85,13 +90,14 @@ class Publisher(QtWidgets.QWidget):
         self.entitySelector = EntitySelector(self.session)
         formLayout.addRow('Linked to', self.entitySelector)
 
-
         # Add asset options.
         self.assetOptions = _asset_options.AssetOptions(session=self.session)
         self.entitySelector.entityChanged.connect(self.assetOptions.setEntity)
         self.assetCreated.connect(self.assetOptions.setAsset)
         formLayout.addRow('Asset', self.assetOptions.radioButtonFrame)
-        formLayout.addRow('Existing asset', self.assetOptions.existingAssetSelector)
+        formLayout.addRow(
+            'Existing asset', self.assetOptions.existingAssetSelector
+        )
         formLayout.addRow('Type', self.assetOptions.assetTypeSelector)
         formLayout.addRow('Name', self.assetOptions.assetNameLineEdit)
         self.assetOptions.initializeFieldLabels(formLayout)
@@ -102,7 +108,7 @@ class Publisher(QtWidgets.QWidget):
             idField='resourceIdentifier',
             labelField='componentName',
             defaultLabel='Unnamed component',
-            emptyLabel='Select component to use'
+            emptyLabel='Select component to use',
         )
         formLayout.addRow('Web playable', self.previewSelector)
 
@@ -135,9 +141,7 @@ class Publisher(QtWidgets.QWidget):
 
     def _onDataSelected(self, filePath):
         '''Callback for Browser file selected signal.'''
-        self.componentsList.addItem({
-            'resourceIdentifier': filePath
-        })
+        self.componentsList.addItem({'resourceIdentifier': filePath})
 
     def clear(self):
         '''Clear the publish view to it's initial state.'''
@@ -176,11 +180,13 @@ class Publisher(QtWidgets.QWidget):
 
         components = []
         for component in self.componentsList.items():
-            components.append({
-                'locations': [componentLocation],
-                'name': component['componentName'],
-                'filePath': component['resourceIdentifier']
-            })
+            components.append(
+                {
+                    'locations': [componentLocation],
+                    'name': component['componentName'],
+                    'filePath': component['resourceIdentifier'],
+                }
+            )
 
         thumbnailFilePath = self.thumbnailDropZone.getFilePath()
 
@@ -193,7 +199,7 @@ class Publisher(QtWidgets.QWidget):
             taskId=taskId,
             components=components,
             previewPath=previewPath,
-            thumbnailFilePath=thumbnailFilePath
+            thumbnailFilePath=thumbnailFilePath,
         )
 
     def _cleanupFailedPublish(self, version=None):
@@ -214,9 +220,16 @@ class Publisher(QtWidgets.QWidget):
 
     @ftrack_connect.asynchronous.asynchronous
     def _publish(
-        self, entity=None, assetName=None, assetType=None,
-        versionDescription='', taskId=None, components=None,
-        previewPath=None, thumbnailFilePath=None, asset=None
+        self,
+        entity=None,
+        assetName=None,
+        assetType=None,
+        versionDescription='',
+        taskId=None,
+        components=None,
+        previewPath=None,
+        thumbnailFilePath=None,
+        asset=None,
     ):
         '''If *asset* is specified, publish a new version of it. Otherwise, get
         or create an asset of *assetType* on *entity*.
@@ -253,9 +266,7 @@ class Publisher(QtWidgets.QWidget):
             new_entity = self.session.get('Context', entity['id'])
 
             if not asset:
-                asset_type = self.session.get(
-                    'AssetType', assetType
-                )
+                asset_type = self.session.get('AssetType', assetType)
                 if assetName is None:
                     assetName = asset_type['name']
 
@@ -264,8 +275,8 @@ class Publisher(QtWidgets.QWidget):
                     {
                         'name': assetName,
                         'type': asset_type,
-                        'parent': new_entity
-                    }
+                        'parent': new_entity,
+                    },
                 )
 
                 self.session.commit()
@@ -280,7 +291,7 @@ class Publisher(QtWidgets.QWidget):
                     'asset': asset,
                     'comment': versionDescription,
                     'task': task,
-                }
+                },
             )
             self.session.commit()
 
@@ -292,13 +303,11 @@ class Publisher(QtWidgets.QWidget):
                 component = version.create_component(
                     componentData.get('filePath'),
                     {'name': componentData.get('name', None)},
-                    location=None
+                    location=None,
                 )
 
                 for location in componentData.get('locations', []):
-                    new_location = self.session.get(
-                        'Location', location['id']
-                    )
+                    new_location = self.session.get('Location', location['id'])
                     new_location.add_component(
                         component, source=origin_location
                     )
@@ -312,12 +321,9 @@ class Publisher(QtWidgets.QWidget):
                 self.session.event_hub.publish(
                     event.base.Event(
                         'ftrack.connect.publish.make-web-playable',
-                        data=dict(
-                            versionId=version['id'],
-                            path=previewPath
-                        )
+                        data=dict(versionId=version['id'], path=previewPath),
                     ),
-                    synchronous=True
+                    synchronous=True,
                 )
 
             if thumbnailFilePath:

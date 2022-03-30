@@ -14,7 +14,6 @@ from riffle.icon_factory import IconFactory, IconType
 
 
 class CustomIconFactory(IconFactory):
-
     def icon(self, specification):
         '''Return appropriate icon for *specification*.
         *specification* should be either:
@@ -45,7 +44,6 @@ class CustomIconFactory(IconFactory):
 
 
 class CustomFilesystemBrowser(riffle.browser.FilesystemBrowser):
-
     def _construct(self):
         super(CustomFilesystemBrowser, self)._construct()
         self._upButton.setIcon(qta.icon('mdi.chevron-up'))
@@ -72,16 +70,11 @@ class DataDropZone(QtWidgets.QFrame):
         topCenterAlignment = QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter
 
         self._label = QtWidgets.QLabel('Drop files here or')
-        layout.addWidget(
-            self._label,
-            alignment=bottomCenterAlignment
-        )
+        layout.addWidget(self._label, alignment=bottomCenterAlignment)
 
         self._browseButton = QtWidgets.QPushButton('Browse')
         self._browseButton.setToolTip('Browse for file(s).')
-        layout.addWidget(
-            self._browseButton, alignment=topCenterAlignment
-        )
+        layout.addWidget(self._browseButton, alignment=topCenterAlignment)
 
         self._setupConnections()
 
@@ -97,7 +90,9 @@ class DataDropZone(QtWidgets.QFrame):
         '''Show browse dialog and emit dataSelected signal on file select.'''
         # Recreate browser on each browse to avoid issues where files are
         # removed and also get rid of any caching issues.
-        dialog = CustomFilesystemBrowser(parent=self, iconFactory=CustomIconFactory())
+        dialog = CustomFilesystemBrowser(
+            parent=self, iconFactory=CustomIconFactory()
+        )
         dialog.setMinimumSize(900, 500)
 
         if self._currentLocation:
@@ -139,7 +134,7 @@ class DataDropZone(QtWidgets.QFrame):
             QtWidgets.QMessageBox.warning(
                 self,
                 'Invalid file',
-                'Invalid file: the dropped item is not a valid file.'
+                'Invalid file: the dropped item is not a valid file.',
             )
             return validPaths
 
@@ -158,9 +153,7 @@ class DataDropZone(QtWidgets.QFrame):
                         'folders are not supported. This will be enabled in a '
                         'later release of ftrack connect.'
                     )
-                QtWidgets.QMessageBox.warning(
-                    self, 'Invalid file', message
-                )
+                QtWidgets.QMessageBox.warning(self, 'Invalid file', message)
 
         return validPaths
 
@@ -186,9 +179,7 @@ class DataDropZone(QtWidgets.QFrame):
 
         # TODO: Allow hook into the dropEvent.
 
-        paths = self._processMimeData(
-            event.mimeData()
-        )
+        paths = self._processMimeData(event.mimeData())
 
         self.log.debug(u'Paths: {0}'.format(paths))
 
@@ -196,10 +187,7 @@ class DataDropZone(QtWidgets.QFrame):
         # frame sequences.
         framesPattern = clique.PATTERNS.get('frames')
         sequences, remainders = clique.assemble(
-            paths,
-            patterns=[
-                framesPattern
-            ]
+            paths, patterns=[framesPattern]
         )
 
         self.log.debug(u'Sequences: {0}'.format(sequences))

@@ -52,6 +52,7 @@ class Harness(object):
     Subclass this and implement constructWidget. Then call run.
 
     '''
+
     def __init__(self):
         self.session = ftrack_api.Session()
 
@@ -77,22 +78,28 @@ class Harness(object):
         # Allow setting of logging level from arguments.
         loggingLevels = {}
         for level in (
-            logging.NOTSET, logging.DEBUG, logging.INFO, logging.WARNING,
-            logging.ERROR, logging.CRITICAL
+            logging.NOTSET,
+            logging.DEBUG,
+            logging.INFO,
+            logging.WARNING,
+            logging.ERROR,
+            logging.CRITICAL,
         ):
             loggingLevels[logging.getLevelName(level).lower()] = level
 
         parser.add_argument(
-            '-v', '--verbosity',
+            '-v',
+            '--verbosity',
             help='Set the logging output verbosity.',
             choices=loggingLevels.keys(),
-            default='info'
+            default='info',
         )
         parser.add_argument(
-            '-t', '--theme',
+            '-t',
+            '--theme',
             help='Set the theme to use.',
             choices=['light', 'dark'],
-            default='light'
+            default='light',
         )
 
         namespace = parser.parse_args(arguments)

@@ -7,7 +7,12 @@ import textwrap
 import platform
 import ftrack_api
 
-from ftrack_connect.qt import QtCore, QtWidgets, QtGui, __version__ as QtVersion
+from ftrack_connect.qt import (
+    QtCore,
+    QtWidgets,
+    QtGui,
+    __version__ as QtVersion,
+)
 
 from ftrack_connect.config import get_log_directory
 
@@ -18,8 +23,7 @@ class AboutDialog(QtWidgets.QDialog):
     '''About widget.'''
 
     def __init__(
-        self, parent,
-        icon=':ftrack/image/default/ftrackLogoLabelDark'
+        self, parent, icon=':ftrack/image/default/ftrackLogoLabelDark'
     ):
         super(AboutDialog, self).__init__(parent)
         self.setWindowTitle('About connect')
@@ -43,7 +47,6 @@ class AboutDialog(QtWidgets.QDialog):
         layout.addWidget(self.messageLabel)
 
         layout.addSpacing(25)
-
 
         self.debugButton = QtWidgets.QPushButton('More info')
         self.debugButton.clicked.connect(self._onDebugButtonClicked)
@@ -133,7 +136,8 @@ class AboutDialog(QtWidgets.QDialog):
         if getattr(sys, 'frozen', False):
             app_name = 'ftrack-connect'
 
-        content = textwrap.dedent('''\
+        content = textwrap.dedent(
+            '''\
         #!/usr/bin/env xdg-open
 
         [Desktop Entry]
@@ -144,15 +148,16 @@ class AboutDialog(QtWidgets.QDialog):
         Exec={0}/{1}
         StartupNotify=true
         Terminal=false
-        '''.format(application_dir, app_name))
+        '''.format(
+                application_dir, app_name
+            )
+        )
 
         with open(filepath, 'w+') as f:
             f.write(content)
 
         messageBox = QtWidgets.QMessageBox(parent=self)
-        messageBox.setText(
-            u'Wrote shortcut file to: {0}.'.format(filepath)
-        )
+        messageBox.setText(u'Wrote shortcut file to: {0}.'.format(filepath))
         messageBox.exec_()
 
     def setInformation(self, versionData, user, server, widget_plugins):
@@ -180,8 +185,7 @@ class AboutDialog(QtWidgets.QDialog):
         coreVersions = ''
         for _core in core:
             coreVersions += itemTemplate.format(
-                name=_core['name'],
-                version=_core['version']
+                name=_core['name'], version=_core['version']
             )
 
         content = coreTemplate.format(
@@ -193,7 +197,7 @@ class AboutDialog(QtWidgets.QDialog):
             qt_version=QtCore.qVersion(),
             python_version=sys.version,
             host=platform.node(),
-            os=platform.platform()
+            os=platform.platform(),
         )
 
         if plugins:
@@ -202,8 +206,7 @@ class AboutDialog(QtWidgets.QDialog):
             pluginVersions = ''
             for _plugin in plugins:
                 pluginVersions += itemTemplate.format(
-                    name=_plugin['name'],
-                    version=_plugin['version']
+                    name=_plugin['name'], version=_plugin['version']
                 )
 
             content += '<h4>Plugins:</h4>{0}'.format(pluginVersions)

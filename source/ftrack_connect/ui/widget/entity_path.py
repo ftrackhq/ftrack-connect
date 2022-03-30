@@ -8,8 +8,8 @@ import ftrack_connect.asynchronous
 
 class EntityPath(QtWidgets.QLineEdit):
     '''Entity path widget.'''
-    path_ready = QtCore.Signal(object)
 
+    path_ready = QtCore.Signal(object)
 
     def __init__(self, *args, **kwargs):
         '''Instantiate the entity path widget.'''

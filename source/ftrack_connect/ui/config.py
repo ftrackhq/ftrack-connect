@@ -14,10 +14,7 @@ logger = logging.getLogger('ftrack_connect.ui.config')
 def get_config_file_path():
     '''Return config file path.'''
     config_file = os.path.join(
-        appdirs.user_data_dir(
-            'ftrack-connect', 'ftrack'
-        ),
-        'config.json'
+        appdirs.user_data_dir('ftrack-connect', 'ftrack'), 'config.json'
     )
 
     return config_file

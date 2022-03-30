@@ -4,6 +4,7 @@
 
 class ConnectError(Exception):
     '''Base ftrack connect error.'''
+
     pass
 
 

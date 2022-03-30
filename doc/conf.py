@@ -9,14 +9,7 @@ import sys
 from pkg_resources import get_distribution, DistributionNotFound
 
 
-
-sys.path.append(
-    os.path.join(
-        os.path.dirname(__file__),
-        '..',
-        'source'
-    )
-)
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'source'))
 # -- General ------------------------------------------------------------------
 
 # Extensions.
@@ -26,7 +19,7 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx.ext.todo',
     'sphinx.ext.viewcode',
-    'lowdown'
+    'lowdown',
 ]
 
 
@@ -46,7 +39,7 @@ try:
     # take major/minor/patch
     VERSION = '.'.join(release.split('.')[:3])
 except DistributionNotFound:
-     # package is not installed
+    # package is not installed
     VERSION = 'Unknown version'
 
 version = VERSION
@@ -59,7 +52,9 @@ exclude_patterns = ['_template']
 # A list of prefixes to ignore for module listings.
 modindex_common_prefix = [
     'ftrack_connect',
-    'ftrack_connect.', 'ftrack_connect.ui.', 'ftrack_connect.ui.widget.'
+    'ftrack_connect.',
+    'ftrack_connect.ui.',
+    'ftrack_connect.ui.widget.',
 ]
 
 # -- HTML output --------------------------------------------------------------
@@ -69,6 +64,7 @@ on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 
 if not on_rtd:  # only import and set the theme if we're building docs locally
     import sphinx_rtd_theme
+
     html_theme = 'sphinx_rtd_theme'
     html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
@@ -98,15 +94,18 @@ def autodoc_skip(app, what, name, obj, skip, options):
 intersphinx_mapping = {
     'python': ('http://docs.python.org/', None),
     'ftrack-connect-hieroplayer': (
-        'http://ftrack-connect-hieroplayer.rtd.ftrack.com/en/latest/', None
+        'http://ftrack-connect-hieroplayer.rtd.ftrack.com/en/latest/',
+        None,
     ),
     'ftrack-connect-cinesync': (
-        'http://ftrack-connect-cinesync.rtd.ftrack.com/en/latest/', None
+        'http://ftrack-connect-cinesync.rtd.ftrack.com/en/latest/',
+        None,
     ),
     'ftrack': ('http://ftrack.rtd.ftrack.com/en/latest/', None),
     'ftrack-python-api': (
-        'http://rtd.ftrack.com/docs/ftrack-python-api/en/latest/', None
-    )
+        'http://rtd.ftrack.com/docs/ftrack-python-api/en/latest/',
+        None,
+    ),
 }
 
 
@@ -115,6 +114,7 @@ intersphinx_mapping = {
 todo_include_todos = True
 
 # -- Setup --------------------------------------------------------------------
+
 
 def setup(app):
     app.connect('autodoc-skip-member', autodoc_skip)

@@ -15,7 +15,10 @@ import ftrack_connect.error
 import ftrack_connect.usage
 
 from ftrack_connect.ui.widget import (
-    action_item, flow_layout, entity_selector, overlay
+    action_item,
+    flow_layout,
+    entity_selector,
+    overlay,
 )
 
 
@@ -23,8 +26,7 @@ class ActionBase(dict):
     '''Wrapper for an action dict.'''
 
     def __init__(self, *args, **kwargs):
-        '''Initialise the action.
-        '''
+        '''Initialise the action.'''
         super(ActionBase, self).__init__(*args, **kwargs)
 
 
@@ -48,7 +50,9 @@ class ActionSection(flow_layout.ScrollingFlowWidget):
     def addActions(self, actions):
         '''Add *actions* to section'''
         for item in actions:
-            actionItem = action_item.ActionItem(self.session, item, parent=self)
+            actionItem = action_item.ActionItem(
+                self.session, item, parent=self
+            )
             actionItem.actionLaunched.connect(self._onActionLaunched)
             actionItem.beforeActionLaunch.connect(self._onBeforeActionLaunched)
             self.addWidget(actionItem)
@@ -98,9 +102,7 @@ class Actions(QtWidgets.QWidget):
         self._entitySelector = entity_selector.EntitySelector(self.session)
 
         self._entitySelector.setFixedHeight(50)
-        self._entitySelector.entityChanged.connect(
-            self._onEntityChanged
-        )
+        self._entitySelector.entityChanged.connect(self._onEntityChanged)
         layout.addWidget(QtWidgets.QLabel('Select action context'))
         layout.addWidget(self._entitySelector)
 
@@ -108,7 +110,9 @@ class Actions(QtWidgets.QWidget):
         layout.addWidget(self._recentLabel)
         self._recentSection = ActionSection(self.session, self)
         self._recentSection.setFixedHeight(150)
-        self._recentSection.beforeActionLaunch.connect(self._onBeforeActionLaunched)
+        self._recentSection.beforeActionLaunch.connect(
+            self._onBeforeActionLaunched
+        )
         self._recentSection.actionLaunched.connect(self._onActionLaunched)
         layout.addWidget(self._recentSection)
 
@@ -117,11 +121,15 @@ class Actions(QtWidgets.QWidget):
         self._allLabel.setAlignment(QtCore.Qt.AlignCenter)
         layout.addWidget(self._allLabel)
         self._allSection = ActionSection(self.session, self)
-        self._allSection.beforeActionLaunch.connect(self._onBeforeActionLaunched)
+        self._allSection.beforeActionLaunch.connect(
+            self._onBeforeActionLaunched
+        )
         self._allSection.actionLaunched.connect(self._onActionLaunched)
         layout.addWidget(self._allSection)
 
-        self._overlay = overlay.BusyOverlay(parent=self, message='Launching...')
+        self._overlay = overlay.BusyOverlay(
+            parent=self, message='Launching...'
+        )
         self._overlay.setVisible(False)
 
         self.recentActionsChanged.connect(self._updateRecentSection)
@@ -135,12 +143,9 @@ class Actions(QtWidgets.QWidget):
 
     def _onBeforeActionLaunched(self, action):
         '''Before action is launched, show busy overlay with message..'''
-        self.logger.debug(
-            u'Before action launched: {0}'.format(action)
-        )
+        self.logger.debug(u'Before action launched: {0}'.format(action))
         message = u'Launching action <em>{0} {1}</em>...'.format(
-            action.get('label', 'Untitled action'),
-            action.get('variant', '')
+            action.get('label', 'Untitled action'), action.get('variant', '')
         )
         self._overlay.setMessage(message)
         self._overlay.indicator.show()
@@ -148,9 +153,7 @@ class Actions(QtWidgets.QWidget):
 
     def _onActionLaunched(self, action, results):
         '''On action launched, save action and add it to top of list.'''
-        self.logger.debug(
-            u'Action launched: {0}'.format(action)
-        )
+        self.logger.debug(u'Action launched: {0}'.format(action))
         self._addRecentAction(action['label'])
         self._moveToFront(self._recentActions, action['label'])
         self._updateRecentSection()
@@ -161,7 +164,7 @@ class Actions(QtWidgets.QWidget):
             'actionIdentifier',
             'label',
             'variant',
-            'applicationIdentifier'
+            'applicationIdentifier',
         ]
         metadata = {}
         for key, value in action.items():
@@ -171,10 +174,7 @@ class Actions(QtWidgets.QWidget):
         # Send usage event in the main thread to prevent X server threading
         # related crashes on Linux.
         ftrack_connect.usage.send_event(
-            self.session,
-            'LAUNCHED-ACTION',
-            metadata,
-            asynchronous=False
+            self.session, 'LAUNCHED-ACTION', metadata, asynchronous=False
         )
 
     def _showResultMessage(self, results):
@@ -199,8 +199,7 @@ class Actions(QtWidgets.QWidget):
     def _hideOverlayAfterTimeout(self, timeout):
         '''Hide overlay after *timeout* seconds.'''
         QtCore.QTimer.singleShot(
-            timeout * 1000,
-            functools.partial(self._overlay.setVisible, False)
+            timeout * 1000, functools.partial(self._overlay.setVisible, False)
         )
 
     def _contextFromEntity(self, entity):
@@ -210,10 +209,12 @@ class Actions(QtWidgets.QWidget):
             return context
 
         try:
-            context = [{
-                'entityId': entity['id'],
-                'entityType': entity.entity_type.lower(),
-            }]
+            context = [
+                {
+                    'entityId': entity['id'],
+                    'entityType': entity.entity_type.lower(),
+                }
+            ]
             self.logger.debug(u'Context changed: {0}'.format(context))
         except Exception:
             self.logger.debug(u'Invalid entity: {0}'.format(entity))
@@ -264,7 +265,6 @@ class Actions(QtWidgets.QWidget):
         self._recentActions = self._getRecentActions()
         self.recentActionsChanged.emit()
 
-
     def _getCurrentUserId(self):
         '''Return current user id.'''
         if not self._currentUserId:
@@ -309,15 +309,19 @@ class Actions(QtWidgets.QWidget):
         '''Add *actionLabel* to recent actions, persisting the change.'''
         recentActions = self._getRecentActions()
         self._moveToFront(recentActions, actionLabel)
-        recentActions = recentActions[:self.RECENT_ACTIONS_LENGTH]
+        recentActions = recentActions[: self.RECENT_ACTIONS_LENGTH]
         encodedRecentActions = json.dumps(recentActions)
 
-        self.session.ensure('Metadata', {
-            'parent_type': 'User',
-            'parent_id': self._getCurrentUserId(),
-            'key': self.RECENT_METADATA_KEY,
-            'value': encodedRecentActions
-        }, identifying_keys=['parent_type', 'parent_id', 'key'])
+        self.session.ensure(
+            'Metadata',
+            {
+                'parent_type': 'User',
+                'parent_id': self._getCurrentUserId(),
+                'key': self.RECENT_METADATA_KEY,
+                'value': encodedRecentActions,
+            },
+            identifying_keys=['parent_type', 'parent_id', 'key'],
+        )
 
     # TODO: To re evaluate: breaks in PySide2 2.14, but works on PyQt5 2.15
     # @ftrack_connect.asynchronous.asynchronous
@@ -327,23 +331,15 @@ class Actions(QtWidgets.QWidget):
         discoveredActions = []
 
         event = ftrack_api.event.base.Event(
-            topic='ftrack.action.discover',
-            data=dict(
-                selection=context
-            )
+            topic='ftrack.action.discover', data=dict(selection=context)
         )
 
-        results = self.session.event_hub.publish(
-            event,
-            synchronous=True
-        )
+        results = self.session.event_hub.publish(event, synchronous=True)
 
         for result in results:
             if result:
                 for action in result.get('items', []):
-                    discoveredActions.append(
-                        ActionBase(action)
-                    )
+                    discoveredActions.append(ActionBase(action))
 
         # Sort actions by label
         groupedActions = []
@@ -361,7 +357,7 @@ class Actions(QtWidgets.QWidget):
         # Sort actions by label
         groupedActions = sorted(
             groupedActions,
-            key=lambda groupedAction: groupedAction[0]['label'].lower()
+            key=lambda groupedAction: groupedAction[0]['label'].lower(),
         )
 
         self.actionsLoaded.emit(groupedActions)
@@ -379,4 +375,3 @@ class Actions(QtWidgets.QWidget):
         self._overlay.setMessage(message)
         self._overlay.indicator.show()
         self._overlay.setVisible(True)
-

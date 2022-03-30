@@ -10,9 +10,10 @@ from harness import Harness
 
 TASK_ID = '9e9b2100-5910-11e4-8a3c-3c0754282242'
 
+
 class WidgetHarness(Harness):
     '''Test harness for widget.'''
-    
+
     def constructWidget(self):
         '''Return widget instance to test.'''
         widget = QtWidgets.QWidget()
@@ -27,7 +28,9 @@ class WidgetHarness(Harness):
 
         self.assetOptions = _asset_options.AssetOptions(self.session)
         formLayout.addRow('Asset', self.assetOptions.radioButtonFrame)
-        formLayout.addRow('Existing asset', self.assetOptions.existingAssetSelector)
+        formLayout.addRow(
+            'Existing asset', self.assetOptions.existingAssetSelector
+        )
         formLayout.addRow('Type', self.assetOptions.assetTypeSelector)
         formLayout.addRow('Name', self.assetOptions.assetNameLineEdit)
         self.assetOptions.initializeFieldLabels(formLayout)
@@ -49,6 +52,4 @@ class WidgetHarness(Harness):
 
 if __name__ == '__main__':
 
-    raise SystemExit(
-        WidgetHarness().run()
-    )
+    raise SystemExit(WidgetHarness().run())

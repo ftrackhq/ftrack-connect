@@ -11,14 +11,14 @@ import ftrack_connect.ui.widget.line_edit
 import ftrack_connect.ui.widget.label
 
 
-
 class Component(QtWidgets.QWidget):
     '''Represent a component.'''
 
     nameChanged = QtCore.Signal()
 
-    def __init__(self, componentName=None, resourceIdentifier=None,
-                 parent=None):
+    def __init__(
+        self, componentName=None, resourceIdentifier=None, parent=None
+    ):
         '''Initialise widget with initial component *value* and *parent*.'''
         super(Component, self).__init__(parent=parent)
         self.setLayout(QtWidgets.QVBoxLayout())
@@ -30,12 +30,12 @@ class Component(QtWidgets.QWidget):
         self.layout().addWidget(self.componentNameEdit)
 
         remove_icon = qta.icon('mdi6.trash-can')
-        self.removeAction = QtWidgets.QAction(remove_icon, 'Remove', self.componentNameEdit)
+        self.removeAction = QtWidgets.QAction(
+            remove_icon, 'Remove', self.componentNameEdit
+        )
         self.removeAction.setObjectName('component-remove-action')
         self.removeAction.setStatusTip('Remove component.')
-        self.componentNameEdit.addAction(
-            self.removeAction
-        )
+        self.componentNameEdit.addAction(self.removeAction)
 
         self.resourceInformation = ftrack_connect.ui.widget.label.Label()
         self.layout().addWidget(self.resourceInformation)
@@ -50,7 +50,7 @@ class Component(QtWidgets.QWidget):
         return {
             'id': self.id(),
             'componentName': self.componentName(),
-            'resourceIdentifier': self.resourceIdentifier()
+            'resourceIdentifier': self.resourceIdentifier(),
         }
 
     def computeComponentName(self, resourceIdentifier):

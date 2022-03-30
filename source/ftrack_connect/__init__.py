@@ -13,5 +13,5 @@ def load_icons(font_folder):
         'ftrack',
         'ftrack-icon.ttf',
         'ftrack-icon-charmap.json',
-        directory=font_folder
+        directory=font_folder,
     )
