@@ -13,7 +13,10 @@ from operator import itemgetter
 import appdirs
 import time
 
-from Qt import QtCore, QtWidgets, QtGui
+from ftrack_connect.qt import QtCore, QtWidgets, QtGui
+
+import qtawesome as qta
+import darkdetect
 
 import ftrack_api
 import ftrack_api._centralized_storage_scenario
@@ -69,6 +72,8 @@ class ConnectWidgetPlugin(object):
 class ConnectWidget(QtWidgets.QWidget):
     '''Base widget for ftrack connect application plugin.'''
     icon = None
+    name = None
+
     #: Signal to emit to request focus of this plugin in application.
     requestApplicationFocus = QtCore.Signal(object)
 
@@ -87,7 +92,7 @@ class ConnectWidget(QtWidgets.QWidget):
 
     def getName(self):
         '''Return name of widget.'''
-        return self.__class__.__name__
+        return self.name or self.__class__.__name__
 
     def getIdentifier(self):
         '''Return identifier for widget.'''
@@ -120,11 +125,44 @@ class Application(QtWidgets.QMainWindow):
     # Login signal.
     loginSignal = QtCore.Signal(object, object, object)
     loginSuccessSignal = QtCore.Signal()
-
     @staticmethod
     def restart():
         QtCore.QCoreApplication.quit()
         status = QtCore.QProcess.startDetached(sys.executable, [sys.argv, sys.argv])
+
+    def ftrack_title_icon(self, theme=None):
+        logo_path = ':ftrack/titlebar/logo'
+        return logo_path
+
+    def ftrack_tray_icon(self, theme=None):
+        logo_path = ':ftrack/logo/{}'
+
+        theme = theme or self.system_theme()
+        if platform.system() == 'Darwin':
+            result_logo = logo_path.format('darwin/{}'.format(theme))
+        else:
+            result_logo = logo_path.format(theme)
+
+        return result_logo
+
+    def system_theme(self, fallback='light'):
+        # replicate content of https://github.com/albertosottile/darkdetect/blob/master/darkdetect/__init__.py
+        # as does not work when frozen
+        if sys.platform == "darwin":
+            from darkdetect import _mac_detect as stylemodule
+
+        elif sys.platform == "win32" and int(platform.release()) >= 10:
+            from darkdetect import _windows_detect  as stylemodule
+
+        elif sys.platform == "linux":
+            from darkdetect import _linux_detect  as stylemodule
+
+        current_theme = stylemodule.theme()
+        if not current_theme:
+            self.logger.warning('System theme could not be determined, using: light')
+            current_theme = fallback
+
+        return current_theme.lower()
 
     def emitConnectUsage(self):
         '''Emit data to intercom to track Connect data usage'''
@@ -141,7 +179,7 @@ class Application(QtWidgets.QMainWindow):
             self.session,
             'USED-CONNECT',
             metadata,
-            asynchronous=False
+            asynchronous=True
         )
 
     @property
@@ -149,7 +187,7 @@ class Application(QtWidgets.QMainWindow):
         '''Return current session.'''
         return self._session
 
-    def __init__(self, theme='light'):
+    def __init__(self, theme='system'):
         '''Initialise the main application window.'''
         super(Application, self).__init__()
         self.logger = logging.getLogger(
@@ -162,6 +200,7 @@ class Application(QtWidgets.QMainWindow):
         self.defaultPluginDirectory = appdirs.user_data_dir(
             'ftrack-connect-plugins', 'ftrack'
         )
+        self._createDefaultPluginDirectory()
 
         self.pluginHookPaths = self._discover_hook_paths()
 
@@ -175,13 +214,13 @@ class Application(QtWidgets.QMainWindow):
                 'No system tray located.'
             )
 
-        self.logoIcon = QtGui.QIcon(
-            QtGui.QPixmap(':/ftrack/image/default/ftrackLogoGreyDark')
-        )
+
 
         self._login_server_thread = None
+        self._initialiseTray()
+        self._initialiseMenuBar()
 
-        self._theme = None
+
         self.setTheme(theme)
 
         self.plugins = {}
@@ -191,13 +230,10 @@ class Application(QtWidgets.QMainWindow):
         self.resize(450, 700)
         self.move(50, 50)
 
-        self.setWindowIcon(self.logoIcon)
 
-        self._initialiseTray()
-        self._initialiseMenuBar()
 
         self._login_overlay = None
-        self.loginWidget = _login.Login(theme=theme)
+        self.loginWidget = _login.Login(theme=self.theme())
         self.loginSignal.connect(self.loginWithCredentials)
         self.loginSuccessSignal.connect(self._post_login_settings)
         self.login()
@@ -215,11 +251,20 @@ class Application(QtWidgets.QMainWindow):
         '''Return current theme.'''
         return self._theme
 
-    def setTheme(self, theme):
+    def setTheme(self, theme='system'):
         '''Set *theme*.'''
+        if theme not in ['light', 'dark']:
+            theme = self.system_theme()
+
+        self.logger.debug('Setting theme {}'.format(theme))
         self._theme = theme
+        self.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(self.ftrack_title_icon(theme))))
+        self.tray.setIcon(QtGui.QIcon(QtGui.QPixmap(self.ftrack_tray_icon(theme))))
+
+        qtawesome_style = getattr(qta, theme)
+        qtawesome_style(QtWidgets.QApplication.instance())
         ftrack_connect.ui.theme.applyFont()
-        ftrack_connect.ui.theme.applyTheme(self, self._theme, 'cleanlooks')
+        ftrack_connect.ui.theme.applyTheme(self, self.theme(), 'cleanlooks')
 
     def _onConnectTopicEvent(self, event):
         '''Generic callback for all ftrack.connect events.
@@ -359,7 +404,8 @@ class Application(QtWidgets.QMainWindow):
 
         # Listen to events using the new API event hub. This is required to
         # allow reconfiguring the storage scenario.
-        self._hub_thread = _event_hub_thread.NewApiEventHubThread()
+        self._hub_thread = _event_hub_thread.NewApiEventHubThread(self)
+
         self._hub_thread.start(session)
         weakref.finalize(self._hub_thread, self._hub_thread.cleanup)
 
@@ -431,6 +477,7 @@ class Application(QtWidgets.QMainWindow):
         if not username or not apiKey:
             self._login_server_thread = _login_tools.LoginServerThread()
             self._login_server_thread.loginSignal.connect(self.loginSignal)
+            self._login_server_thread.finished.connect(self._login_server_thread.deleteLater)
             self._login_server_thread.start(url)
             return
 
@@ -523,7 +570,7 @@ class Application(QtWidgets.QMainWindow):
         self.tabPanel.tabBar().setObjectName('application-tab-bar')
         self.setCentralWidget(self.tabPanel)
 
-        self._discoverConnectWidget()
+
 
         self.session.event_hub.subscribe(
             'topic=ftrack.connect and source.user.username="{0}"'.format(
@@ -544,6 +591,7 @@ class Application(QtWidgets.QMainWindow):
             lambda event : True
         )
         self.session._configure_locations()
+        self._discoverConnectWidget()
 
     def _discover_hook_paths(self):
         '''Return a list of paths to pass to ftrack_api.Session()'''
@@ -616,14 +664,7 @@ class Application(QtWidgets.QMainWindow):
             self.trayMenu
         )
 
-        if platform.system() != 'Darwin':
-            self.tray.setIcon(
-                QtGui.QPixmap(':/ftrack/image/default/ftrackLogoWhite')
-            )
-        else:
-            self.tray.setIcon(
-                QtGui.QPixmap(':/ftrack/image/default/ftrackLogoWhiteMac')
-            )
+
 
     def _initialiseMenuBar(self):
         '''Initialise and add connect widget to widgets menu.'''
@@ -666,12 +707,10 @@ class Application(QtWidgets.QMainWindow):
         alwaysOnTopAction = QtWidgets.QAction(
             'Always on top', self
         )
-
         restartAction = QtWidgets.QAction(
             'Restart', self,
             triggered=self.restart
         )
-
         alwaysOnTopAction.setCheckable(True)
         alwaysOnTopAction.triggered[bool].connect(self.setAlwaysOnTop)
 
@@ -708,8 +747,8 @@ class Application(QtWidgets.QMainWindow):
             try:
                 widget_plugin = ResponsePlugin(self.session)
 
-            except Exception as error:
-                self.logger.error(str(error))
+            except Exception:
+                self.logger.exception(msg='Error while loading plugin : {}'.format(widget_plugin))
                 continue
 
             if not isinstance(widget_plugin, ConnectWidget):

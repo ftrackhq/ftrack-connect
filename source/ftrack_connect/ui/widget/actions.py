@@ -7,8 +7,8 @@ import logging
 import functools
 import qtawesome as qta
 
-from Qt import QtCore
-from Qt import QtWidgets
+from ftrack_connect.qt import QtCore
+from ftrack_connect.qt import QtWidgets
 import ftrack_api.event.base
 import ftrack_connect.asynchronous
 import ftrack_connect.error
@@ -41,7 +41,9 @@ class ActionSection(flow_layout.ScrollingFlowWidget):
         '''Remove all actions from section.'''
         items = self.findChildren(action_item.ActionItem)
         for item in items:
-            item.setParent(None)
+            # item.setParent(None)
+            item.deleteLater()
+            del item
 
     def addActions(self, actions):
         '''Add *actions* to section'''
@@ -69,6 +71,8 @@ class Actions(QtWidgets.QWidget):
 
     #: Emitted when recent actions has been modified
     recentActionsChanged = QtCore.Signal(name='recentActionsChanged')
+    actionsLoaded = QtCore.Signal(object, name='actionsLoaded')
+    actionsLoading = QtCore.Signal()
 
     @property
     def session(self):
@@ -92,9 +96,6 @@ class Actions(QtWidgets.QWidget):
         self._actions = []
 
         self._entitySelector = entity_selector.EntitySelector(self.session)
-        self._entitySelector.assignedContextSelector.setPlaceholderText(
-            'Click Browse to discover more actions.'
-        )
 
         self._entitySelector.setFixedHeight(50)
         self._entitySelector.entityChanged.connect(
@@ -112,6 +113,7 @@ class Actions(QtWidgets.QWidget):
         layout.addWidget(self._recentSection)
 
         self._allLabel = QtWidgets.QLabel('Discovering actions..')
+        self._allLabel.setWordWrap(True)
         self._allLabel.setAlignment(QtCore.Qt.AlignCenter)
         layout.addWidget(self._allLabel)
         self._allSection = ActionSection(self.session, self)
@@ -119,12 +121,16 @@ class Actions(QtWidgets.QWidget):
         self._allSection.actionLaunched.connect(self._onActionLaunched)
         layout.addWidget(self._allSection)
 
-        self._overlay = overlay.BusyOverlay(self, message='Launching...')
+        self._overlay = overlay.BusyOverlay(parent=self, message='Launching...')
         self._overlay.setVisible(False)
 
         self.recentActionsChanged.connect(self._updateRecentSection)
 
-        self._loadActionsForContext([])
+        self.actionsLoaded.connect(self.onActionsLoaded)
+        self.actionsLoading.connect(self.onActionsLoading)
+
+        context = self._contextFromEntity(self._entitySelector._entity)
+        self._loadActionsForContext(context)
         self._updateRecentActions()
 
     def _onBeforeActionLaunched(self, action):
@@ -145,10 +151,9 @@ class Actions(QtWidgets.QWidget):
         self.logger.debug(
             u'Action launched: {0}'.format(action)
         )
-        if self._isRecentActionsEnabled():
-            self._addRecentAction(action['label'])
-            self._moveToFront(self._recentActions, action['label'])
-            self._updateRecentSection()
+        self._addRecentAction(action['label'])
+        self._moveToFront(self._recentActions, action['label'])
+        self._updateRecentSection()
 
         self._showResultMessage(results)
 
@@ -198,10 +203,12 @@ class Actions(QtWidgets.QWidget):
             functools.partial(self._overlay.setVisible, False)
         )
 
-    def _onEntityChanged(self, entity):
-        '''Load new actions when the context has changed'''
-
+    def _contextFromEntity(self, entity):
+        '''convert *entity* to list of dicts'''
         context = []
+        if not entity:
+            return context
+
         try:
             context = [{
                 'entityId': entity['id'],
@@ -211,8 +218,14 @@ class Actions(QtWidgets.QWidget):
         except Exception:
             self.logger.debug(u'Invalid entity: {0}'.format(entity))
 
+        return context
+
+    def _onEntityChanged(self, entity):
+        '''Load new actions when the context has changed'''
+        context = self._contextFromEntity(entity)
         self._recentSection.clear()
         self._allSection.clear()
+        self._updateRecentActions()
         self._loadActionsForContext(context)
 
     def _updateRecentSection(self):
@@ -242,28 +255,15 @@ class Actions(QtWidgets.QWidget):
         else:
             self._allLabel.setAlignment(QtCore.Qt.AlignCenter)
             self._allLabel.setText(
-                '<h2 style="font-weight: medium">No actions found</h2>'
-                '<p>Try another selection or add some actions.</p>'
+                '<h2 style="font-weight: medium"> No matching applications or actions was found</h2>'
+                '<p>Try another selection, add some actions and make sure you have the right integrations set up for the applications you want to launch.</p>'
             )
 
-    @ftrack_connect.asynchronous.asynchronous
     def _updateRecentActions(self):
         '''Retrieve and update recent actions.'''
         self._recentActions = self._getRecentActions()
         self.recentActionsChanged.emit()
 
-    def _isRecentActionsEnabled(self):
-        '''Return if recent actions is enabled.
-
-        Recent actions depends on being able to save metadata on users,
-        which was added in a ftrack server version 3.2.x. Check for the
-        metadata attribute on the dynamic class.
-        '''
-        userHasMetadata = any(
-            attribute.name == 'metadata'
-            for attribute in self._session.types['User'].attributes
-        )
-        return userHasMetadata
 
     def _getCurrentUserId(self):
         '''Return current user id.'''
@@ -278,8 +278,6 @@ class Actions(QtWidgets.QWidget):
 
     def _getRecentActions(self):
         '''Retrieve recent actions from the server.'''
-        if not self._isRecentActionsEnabled():
-            return []
 
         metadata = self.session.query(
             'Metadata where key is "{0}" and parent_type is "User" '
@@ -321,8 +319,11 @@ class Actions(QtWidgets.QWidget):
             'value': encodedRecentActions
         }, identifying_keys=['parent_type', 'parent_id', 'key'])
 
+    # TODO: To re evaluate: breaks in PySide2 2.14, but works on PyQt5 2.15
+    # @ftrack_connect.asynchronous.asynchronous
     def _loadActionsForContext(self, context):
         '''Obtain new actions synchronously for *context*.'''
+        self.actionsLoading.emit()
         discoveredActions = []
 
         event = ftrack_api.event.base.Event(
@@ -363,7 +364,19 @@ class Actions(QtWidgets.QWidget):
             key=lambda groupedAction: groupedAction[0]['label'].lower()
         )
 
-        self.logger.debug('Discovered actions: {0}'.format(groupedActions))
-        self._actions = groupedActions
+        self.actionsLoaded.emit(groupedActions)
+
+    def onActionsLoaded(self, actions):
+        self._actions = actions
         self._updateRecentSection()
         self._updateAllSection()
+        self._overlay.indicator.hide()
+        self._overlay.indicator.stop()
+        self._overlay.setVisible(False)
+
+    def onActionsLoading(self):
+        message = u'Discovering Actions ....'
+        self._overlay.setMessage(message)
+        self._overlay.indicator.show()
+        self._overlay.setVisible(True)
+

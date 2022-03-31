@@ -8,7 +8,71 @@
 Release Notes
 *************
 
-.. release:: Upcoming
+.. release:: 2.0.0-rc-5
+    :date: 2022-03-25
+
+    .. change:: fixed
+        :tags: Actions
+
+        Random crashes on discovering on null context.
+
+    .. change:: added
+        :tags: Module
+
+        Provide ftrak_connect.qt module to abstract imported Qt modules.
+        
+    .. change:: changed
+        :tags: Events
+
+        Sending of usage_events can now be batched.
+
+    .. change:: changed
+        :tags: About, Linux
+
+        Linux Desktop entry respect packaged or virtual environment paths.
+
+    .. change:: changed
+        :tags: UX
+
+        Add new icons set for Connect.
+
+    .. change:: changed
+        :tags: UX
+
+        Connect color theme respect system theme.
+
+.. release:: 2.0.0-rc-4
+    :date: 2022-01-15
+
+    .. change:: changed
+        :tags: UX
+
+        Assigned tasks are refreshed on cancel.
+
+    .. change:: changed
+        :tags: API
+
+        User's plugin folder is created at startup time.
+
+    .. change:: changed
+        :tags: UX
+
+        Context selection is changed to a list of assigned tasks.
+
+    .. change:: added
+        :tags: UX
+
+        Indicator during discovery of actions.
+
+    .. change:: added
+        :tags: API
+
+        Provide ConnectWidget Plugin with custom name attribute to render.
+
+    .. change:: added
+        :tags: API
+
+        Improve ConnectWidget error logging.
 
     .. change:: added
         :tags: API

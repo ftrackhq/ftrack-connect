@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-from Qt import QtWidgets, QtCore, QtGui
+from ftrack_connect.qt import QtWidgets, QtCore, QtGui
 
 
 class ClickableLabel(QtWidgets.QLabel):
@@ -35,6 +35,7 @@ class Login(QtWidgets.QWidget):
         self.setLayout(layout)
 
         logo = QtWidgets.QLabel()
+
         logoPixmap = QtGui.QPixmap(
             ':ftrack/image/{}/ftrackLogoLabelDark'.format(theme)
         )

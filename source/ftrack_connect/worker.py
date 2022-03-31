@@ -3,7 +3,7 @@
 
 import sys
 
-from Qt import QtCore
+from ftrack_connect.qt import QtCore
 
 
 class Worker(QtCore.QThread):

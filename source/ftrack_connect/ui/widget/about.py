@@ -5,11 +5,10 @@ import json
 import sys
 import textwrap
 import platform
-
-import Qt
-from Qt import QtCore, QtWidgets, QtGui
-
 import ftrack_api
+
+from ftrack_connect.qt import QtCore, QtWidgets, QtGui, __version__ as QtVersion
+
 from ftrack_connect.config import get_log_directory
 
 import ftrack_connect.util
@@ -56,7 +55,7 @@ class AboutDialog(QtWidgets.QDialog):
 
         layout.addWidget(self.loggingButton)
 
-        if sys.platform == 'linux2':
+        if 'linux' in sys.platform:
             self.createApplicationShortcutButton = QtWidgets.QPushButton(
                 'Create application shortcut'
             )
@@ -105,7 +104,7 @@ class AboutDialog(QtWidgets.QDialog):
 
     def _onCreateApplicationShortcutClicked(self):
         '''Create a desktop entry for Connect.'''
-        if sys.platform != 'linux2':
+        if 'linux' not in sys.platform:
             return
 
         if os.path.realpath(__file__).startswith(os.path.expanduser('~')):
@@ -129,6 +128,11 @@ class AboutDialog(QtWidgets.QDialog):
 
         application_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
 
+        # ensure name is set correctly if the connect is packaged or from sources.
+        app_name = 'ftrack_connect_package'
+        if getattr(sys, 'frozen', False):
+            app_name = 'ftrack-connect'
+
         content = textwrap.dedent('''\
         #!/usr/bin/env xdg-open
 
@@ -137,10 +141,10 @@ class AboutDialog(QtWidgets.QDialog):
         Icon={0}/logo.svg
         Name=ftrack connect package
         Comment=ftrack connect package
-        Exec={0}/ftrack_connect_package
+        Exec={0}/{1}
         StartupNotify=true
         Terminal=false
-        '''.format(application_dir))
+        '''.format(application_dir, app_name))
 
         with open(filepath, 'w+') as f:
             f.write(content)
@@ -185,7 +189,7 @@ class AboutDialog(QtWidgets.QDialog):
             server=server,
             user=user,
             api_versions=ftrack_api.__version__,
-            pyside_version=Qt.__version__,
+            pyside_version=QtVersion,
             qt_version=QtCore.qVersion(),
             python_version=sys.version,
             host=platform.node(),

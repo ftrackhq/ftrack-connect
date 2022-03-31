@@ -4,8 +4,8 @@
 import logging
 import os
 
-from Qt import QtCore
-from Qt import QtWidgets
+from ftrack_connect.qt import QtCore
+from ftrack_connect.qt import QtWidgets
 import qtawesome as qta
 
 import clique

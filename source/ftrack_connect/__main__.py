@@ -1,18 +1,18 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
-
+import sys
 import appdirs
 import argparse
 import logging
-import sys
 import signal
 import os
 import pkg_resources
 import qtawesome
+
 bindings = ['PySide2']
 os.environ.setdefault('QT_PREFERRED_BINDING', os.pathsep.join(bindings))
 
-from Qt import QtWidgets, QtCore
+from ftrack_connect.qt import QtWidgets, QtCore
 
 from ftrack_connect import load_icons
 import ftrack_connect.config
@@ -44,6 +44,7 @@ def main(arguments=None):
 
     # Allow setting of logging level from arguments.
     loggingLevels = {}
+
     for level in (
         logging.NOTSET, logging.DEBUG, logging.INFO, logging.WARNING,
         logging.ERROR, logging.CRITICAL
@@ -60,8 +61,8 @@ def main(arguments=None):
     parser.add_argument(
         '-t', '--theme',
         help='Set the theme to use.',
-        choices=['light', 'dark'],
-        default='light'
+        choices=['light', 'dark', 'system'],
+        default='system'
     )
 
     parser.add_argument(
@@ -121,11 +122,9 @@ def main(arguments=None):
     # Enable ctrl+c to quit application when started from command line.
     signal.signal(signal.SIGINT, lambda sig, _: application.quit())
 
-    qtawesome_style = getattr(qtawesome, namespace.theme)
-    qtawesome_style(application)
     # Construct main connect window and apply theme.
     connectWindow = ftrack_connect.ui.application.Application(
-        theme=namespace.theme
+        theme=str(namespace.theme)
     )
 
     if namespace.silent:
