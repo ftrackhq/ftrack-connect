@@ -8,6 +8,12 @@
 Release Notes
 *************
 
+.. release:: Upcoming
+
+    .. change:: added
+        :tags: SystemTray, API
+        Allow connect to restart.
+
 .. release:: 2.0.0-rc-5
     :date: 2022-03-25
 
