@@ -83,6 +83,7 @@ def main(arguments=None):
         'ftrack_connect', level=loggingLevels[namespace.verbosity]
     )
 
+    single_instance = None
     if not namespace.allow_multiple:
         lockfile = os.path.join(
             appdirs.user_data_dir(
@@ -92,7 +93,7 @@ def main(arguments=None):
         )
         logger = logging.getLogger('ftrack_connect')
         try:
-            si = ftrack_connect.singleton.SingleInstance('', lockfile)
+            single_instance = ftrack_connect.singleton.SingleInstance('', lockfile)
         except ftrack_connect.singleton.SingleInstanceException:
             logger.error(
                 'Lockfile found: {}\nIs Connect already running?\nClose Connect,'
@@ -124,7 +125,7 @@ def main(arguments=None):
 
     # Construct main connect window and apply theme.
     connectWindow = ftrack_connect.ui.application.Application(
-        theme=str(namespace.theme)
+        theme=str(namespace.theme), instance=single_instance,
     )
 
     if namespace.silent:

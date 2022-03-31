@@ -125,10 +125,15 @@ class Application(QtWidgets.QMainWindow):
     # Login signal.
     loginSignal = QtCore.Signal(object, object, object)
     loginSuccessSignal = QtCore.Signal()
-    @staticmethod
-    def restart():
+
+    def restart(self):
         QtCore.QCoreApplication.quit()
-        status = QtCore.QProcess.startDetached(sys.executable, [sys.argv, sys.argv])
+        del self._instance
+        time.sleep(1)
+        print("running {} with {} ".format(sys.executable, sys.argv))
+        status = QtCore.QProcess.startDetached(sys.executable, sys.argv)
+        print(status)
+        return status
 
     def ftrack_title_icon(self, theme=None):
         logo_path = ':ftrack/titlebar/logo'
@@ -187,13 +192,13 @@ class Application(QtWidgets.QMainWindow):
         '''Return current session.'''
         return self._session
 
-    def __init__(self, theme='system'):
+    def __init__(self, theme='system', instance=None):
         '''Initialise the main application window.'''
         super(Application, self).__init__()
         self.logger = logging.getLogger(
             __name__ + '.' + self.__class__.__name__
         )
-
+        self._instance = instance
         self._session = None
         self.__connect_start_time = time.time()
 
