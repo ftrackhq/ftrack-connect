@@ -928,6 +928,16 @@ class Application(QtWidgets.QMainWindow):
 
         aboutDialog.exec_()
 
+    def _createDefaultPluginDirectory(self):
+        directory = self.defaultPluginDirectory
+
+        if not os.path.exists(directory):
+            # Create directory if not existing.
+            try:
+                os.makedirs(directory)
+            except Exception:
+                raise
+
     def openDefaultPluginDirectory(self):
         '''Open default plugin directory in platform default file browser.'''
 
