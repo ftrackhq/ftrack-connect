@@ -127,12 +127,12 @@ class Application(QtWidgets.QMainWindow):
     loginSuccessSignal = QtCore.Signal()
 
     def restart(self):
-        QtCore.QCoreApplication.quit()
         del self._instance
-        time.sleep(1)
-        print("running {} with {} ".format(sys.executable, sys.argv))
-        status = QtCore.QProcess.startDetached(sys.executable, sys.argv)
-        print(status)
+        process = QtCore.QProcess()
+        QtWidgets.QApplication.quit()
+        args = sys.argv
+        args.append('--allow-multiple')
+        status = process.startDetached(sys.executable, args)
         return status
 
     def ftrack_title_icon(self, theme=None):
@@ -727,13 +727,12 @@ class Application(QtWidgets.QMainWindow):
 
         menu.addAction(openPluginDirectoryAction)
         menu.addSeparator()
-
         menu.addAction(logoutAction)
-        menu.addSeparator()
-        menu.addAction(quitAction)
 
         menu.addSeparator()
         menu.addAction(restartAction)
+        menu.addAction(quitAction)
+        
         return menu
 
     def _discoverConnectWidget(self):

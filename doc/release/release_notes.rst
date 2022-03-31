@@ -12,6 +12,7 @@ Release Notes
 
     .. change:: added
         :tags: SystemTray, API
+
         Allow connect to restart.
 
 .. release:: 2.0.0-rc-5
