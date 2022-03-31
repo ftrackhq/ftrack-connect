@@ -732,7 +732,7 @@ class Application(QtWidgets.QMainWindow):
         menu.addSeparator()
         menu.addAction(restartAction)
         menu.addAction(quitAction)
-        
+
         return menu
 
     def _discoverConnectWidget(self):
