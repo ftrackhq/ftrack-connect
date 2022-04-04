@@ -8,6 +8,13 @@
 Release Notes
 *************
 
+.. releaes:: Upcoming
+
+    .. change:: changed
+        :tags: Codestyle
+
+        Run black pass with flags : black --skip-string-normalization -l 79 . on Codebase.
+
 .. release:: 2.0.0-rc-5
     :date: 2022-03-25
 

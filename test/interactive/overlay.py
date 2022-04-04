@@ -21,7 +21,8 @@ class CustomOverlay(ftrack_connect.ui.widget.overlay.Overlay):
         message.setAlignment(QtCore.Qt.AlignCenter)
         layout.addWidget(message)
 
-        self.setStyleSheet('''
+        self.setStyleSheet(
+            '''
             QWidget#overlay {
                 border: 5px solid black;
                 background-color:rgba(255, 0, 0, 150);
@@ -32,7 +33,8 @@ class CustomOverlay(ftrack_connect.ui.widget.overlay.Overlay):
                 font-size: 16pt;
                 background: transparent;
             }
-        ''')
+        '''
+        )
 
 
 class WidgetHarness(Harness):
@@ -41,7 +43,9 @@ class WidgetHarness(Harness):
     def constructWidget(self):
         '''Return widget instance to test.'''
         widget = QtWidgets.QFrame()
-        widget.setFrameStyle(QtWidgets.QFrame.StyledPanel | QtWidgets.QFrame.Plain)
+        widget.setFrameStyle(
+            QtWidgets.QFrame.StyledPanel | QtWidgets.QFrame.Plain
+        )
         widget.setStyleSheet('QFrame { background-color: blue; }')
 
         self._overlay = CustomOverlay(widget)
@@ -51,6 +55,4 @@ class WidgetHarness(Harness):
 
 
 if __name__ == '__main__':
-    raise SystemExit(
-        WidgetHarness().run()
-    )
+    raise SystemExit(WidgetHarness().run())

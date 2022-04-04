@@ -12,7 +12,9 @@ class WidgetHarness(Harness):
 
     def constructWidget(self):
         '''Return widget instance to test.'''
-        widget = ftrack_connect.ui.widget.entity_browser.EntityBrowser(self.session)
+        widget = ftrack_connect.ui.widget.entity_browser.EntityBrowser(
+            self.session
+        )
         widget.setMinimumSize(600, 400)
         self._browser = widget
 
@@ -60,10 +62,8 @@ class WidgetHarness(Harness):
 
     def _onAccept(self):
         '''Display selected.'''
-        print 'Selected: ', self._browser.selected()
+        print('Selected: {}'.format(self._browser.selected()))
 
 
 if __name__ == '__main__':
-    raise SystemExit(
-        WidgetHarness().run()
-    )
+    raise SystemExit(WidgetHarness().run())

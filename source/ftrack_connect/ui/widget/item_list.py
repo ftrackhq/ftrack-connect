@@ -27,7 +27,9 @@ class ItemList(QtWidgets.QFrame):
         super(ItemList, self).__init__(parent=parent)
 
         self.setLayout(QtWidgets.QVBoxLayout())
-        self.setFrameStyle(QtWidgets.QFrame.StyledPanel | QtWidgets.QFrame.NoFrame)
+        self.setFrameStyle(
+            QtWidgets.QFrame.StyledPanel | QtWidgets.QFrame.NoFrame
+        )
 
         # List
         self.list = ftrack_connect.ui.widget.list.List()

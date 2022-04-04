@@ -42,7 +42,9 @@ class ConfigureScenario(QtWidgets.QWidget):
         cloud_icon = qta.icon('ftrack.cloud-done')
         icon = QtWidgets.QLabel()
         icon.setPixmap(
-            cloud_icon.pixmap(QtCore.QSize(self.width()/3, self.height()/3))
+            cloud_icon.pixmap(
+                QtCore.QSize(self.width() / 3, self.height() / 3)
+            )
         )
 
         icon.setAlignment(QtCore.Qt.AlignCenter)
@@ -132,7 +134,7 @@ class ConfigureScenario(QtWidgets.QWidget):
 
         self._subscriber_identifier = session.event_hub.subscribe(
             'topic=ftrack.storage-scenario.configure-done',
-            self._complete_configuration
+            self._complete_configuration,
         )
         self._session = session
 

@@ -7,7 +7,9 @@ from ftrack_connect.qt import QtWidgets
 
 from ftrack_connect.error import NotUniqueError
 from ftrack_connect.ui.widget import asset_name_edit as _asset_name_edit
-from ftrack_connect.ui.widget import asset_type_selector as _asset_type_selector
+from ftrack_connect.ui.widget import (
+    asset_type_selector as _asset_type_selector,
+)
 from ftrack_connect.ui.widget import asset_selector as _asset_selector
 
 NEW_ASSET = 'NEW_ASSET'
@@ -48,24 +50,38 @@ class AssetOptions(object):
         self.newAssetButton.toggled.connect(self._onNewAssetToggled)
         self.radioButtonFrame.layout().addWidget(self.newAssetButton)
 
-        self.existingAssetButton = QtWidgets.QRadioButton('Version up existing')
+        self.existingAssetButton = QtWidgets.QRadioButton(
+            'Version up existing'
+        )
         self.existingAssetButton.toggled.connect(self._onExistingAssetToggled)
         self.radioButtonFrame.layout().addWidget(self.existingAssetButton)
 
-        self.existingAssetSelector = _asset_selector.AssetSelector(session=self.session)
-        self.assetTypeSelector = _asset_type_selector.AssetTypeSelector(session=self.session)
+        self.existingAssetSelector = _asset_selector.AssetSelector(
+            session=self.session
+        )
+        self.assetTypeSelector = _asset_type_selector.AssetTypeSelector(
+            session=self.session
+        )
         self.assetNameLineEdit = _asset_name_edit.AssetNameEdit(
             self.session, self.existingAssetSelector, self.assetTypeSelector
         )
 
-        self.assetTypeSelector.currentIndexChanged.connect(self._onAssetTypeChanged)
+        self.assetTypeSelector.currentIndexChanged.connect(
+            self._onAssetTypeChanged
+        )
         self.assetNameLineEdit.textEdited.connect(self._onAssetNameEdited)
 
     def initializeFieldLabels(self, layout):
         '''Get labels for widgets in *layout* and set initial state.'''
-        self.assetNameLineEdit._fieldLabel = layout.labelForField(self.assetNameLineEdit)
-        self.existingAssetSelector._fieldLabel = layout.labelForField(self.existingAssetSelector)
-        self.assetTypeSelector._fieldLabel = layout.labelForField(self.assetTypeSelector)
+        self.assetNameLineEdit._fieldLabel = layout.labelForField(
+            self.assetNameLineEdit
+        )
+        self.existingAssetSelector._fieldLabel = layout.labelForField(
+            self.existingAssetSelector
+        )
+        self.assetTypeSelector._fieldLabel = layout.labelForField(
+            self.assetTypeSelector
+        )
         self._toggleFieldAndLabel(self.existingAssetSelector, False)
         self._toggleFieldAndLabel(self.assetTypeSelector, False)
         self._toggleFieldAndLabel(self.assetNameLineEdit, False)
@@ -79,7 +95,9 @@ class AssetOptions(object):
 
     def setAsset(self, asset=None):
         '''Select *asset*, add it to the selector if it does not exist.'''
-        self.logger.debug('Reloading assets for entity: {0}'.format(self._entity))
+        self.logger.debug(
+            'Reloading assets for entity: {0}'.format(self._entity)
+        )
         self.existingAssetSelector.loadAssets(self._entity, selectAsset=asset)
         self.existingAssetButton.setChecked(True)
 

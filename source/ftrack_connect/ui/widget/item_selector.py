@@ -13,8 +13,14 @@ class ItemSelector(QtWidgets.QComboBox):
         return self._session
 
     def __init__(
-        self, session=None, idField='id', labelField='label', defaultLabel='Unnamed Item',
-        emptyLabel='Select an item', *args, **kwargs
+        self,
+        session=None,
+        idField='id',
+        labelField='label',
+        defaultLabel='Unnamed Item',
+        emptyLabel='Select an item',
+        *args,
+        **kwargs
     ):
         '''Initialise item selector widget.
 

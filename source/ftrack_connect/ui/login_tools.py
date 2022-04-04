@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2016 ftrack
 
-from http.server import BaseHTTPRequestHandler,HTTPServer
+from http.server import BaseHTTPRequestHandler, HTTPServer
 import urllib.parse
 import webbrowser
 import functools
@@ -57,7 +57,9 @@ class LoginServerHandler(BaseHTTPRequestHandler):
                     </p>
                 </body>
                 </html>
-            """.format(api_user)
+            """.format(
+                api_user
+            )
         else:
             message = '<h1>Failed to sign in</h1>'
 
@@ -66,10 +68,7 @@ class LoginServerHandler(BaseHTTPRequestHandler):
         self.wfile.write(message.encode())
 
         if login_credentials:
-            self.login_callback(
-                api_user,
-                api_key
-            )
+            self.login_callback(api_user, api_key)
 
 
 class LoginServerThread(QtCore.QThread):
@@ -91,9 +90,7 @@ class LoginServerThread(QtCore.QThread):
         '''Listen for events.'''
         self._server = HTTPServer(
             ('localhost', 0),
-            functools.partial(
-                LoginServerHandler, self._handle_login
-            )
+            functools.partial(LoginServerHandler, self._handle_login),
         )
         webbrowser.open_new_tab(
             '{0}/user/api_credentials?redirect_url=http://localhost:{1}'.format(

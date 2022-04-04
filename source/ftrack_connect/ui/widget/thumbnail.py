@@ -67,8 +67,7 @@ class Base(QtWidgets.QLabel):
     def _scaleAndSetPixmap(self, pixmap):
         '''Scale and set *pixmap*.'''
         scaledPixmap = pixmap.scaledToWidth(
-            self.width(),
-            mode=QtCore.Qt.SmoothTransformation
+            self.width(), mode=QtCore.Qt.SmoothTransformation
         )
         self.setPixmap(scaledPixmap)
 
@@ -137,21 +136,23 @@ class ActionIcon(Base):
             self.load(icon)
         else:
             super(ActionIcon, self).setPixmap(
-                self._default_icon.pixmap(QtCore.QSize(self.width(), self.height()))
+                self._default_icon.pixmap(
+                    QtCore.QSize(self.width(), self.height())
+                )
             )
 
     def loadResource(self, resource):
         '''Update current pixmap using *resource*.'''
-        pixmap = QtGui.QPixmap(
-            QtCore.QSize(self.width(), self.height())
-        )
+        pixmap = QtGui.QPixmap(QtCore.QSize(self.width(), self.height()))
         pixmap.load(resource)
         self._scaleAndSetPixmap(pixmap)
 
     def _scaleAndSetPixmap(self, pixmap):
         '''Scale *pixmap* to fit within current bounds'''
         scaledPixmap = pixmap.scaled(
-            self.width(), self.height(), QtCore.Qt.KeepAspectRatio,
-            QtCore.Qt.SmoothTransformation
+            self.width(),
+            self.height(),
+            QtCore.Qt.KeepAspectRatio,
+            QtCore.Qt.SmoothTransformation,
         )
         self.setPixmap(scaledPixmap)

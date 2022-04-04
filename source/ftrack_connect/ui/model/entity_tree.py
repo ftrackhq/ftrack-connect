@@ -415,7 +415,9 @@ class EntityTreeModel(QtCore.QAbstractItemModel):
             self.loadStarted.emit()
             startIndex = len(item.children)
 
-            self._worker = ftrack_connect.worker.Worker(item.fetchChildren, parent=self)
+            self._worker = ftrack_connect.worker.Worker(
+                item.fetchChildren, parent=self
+            )
             self._worker.start()
 
             while self._worker.isRunning():
@@ -467,15 +469,13 @@ class EntityTreeProxyModel(QtCore.QSortFilterProxyModel):
             leftItem = sourceModel.item(left)
             rightItem = sourceModel.item(right)
 
-            if (
-                isinstance(leftItem, (Context, Project))
-                and not isinstance(rightItem, (Context, Project))
+            if isinstance(leftItem, (Context, Project)) and not isinstance(
+                rightItem, (Context, Project)
             ):
                 return self.sortOrder() == QtCore.Qt.AscendingOrder
 
-            elif (
-                not isinstance(leftItem, (Context, Project))
-                and isinstance(rightItem, (Context, Project))
+            elif not isinstance(leftItem, (Context, Project)) and isinstance(
+                rightItem, (Context, Project)
             ):
                 return self.sortOrder() == QtCore.Qt.DescendingOrder
 

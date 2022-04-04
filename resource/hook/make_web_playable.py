@@ -33,9 +33,7 @@ def callback(event, session):
 
     # Validate that the path is an accessible file.
     if not os.path.isfile(path):
-        raise ValueError(
-            '"{0}" is not a valid filepath.'.format(path)
-        )
+        raise ValueError('"{0}" is not a valid filepath.'.format(path))
 
     # version.encode_media uploads file to cloud storage and triggers
     # encoding of the file to appropirate formats(mp4 and webm).
@@ -52,7 +50,7 @@ def subscribe(session):
         u'topic="{0}" and source.user.username="{1}"'.format(
             topic, session.api_user
         ),
-        functools.partial(callback, session=session)
+        functools.partial(callback, session=session),
     )
 
 

@@ -11,17 +11,13 @@ class WidgetHarness(Harness):
     def constructWidget(self):
         '''Return widget instance to test.'''
         widget = ftrack_connect.ui.widget.components_list.ComponentsList()
-        widget.addItem({
-            'resourceIdentifier': '/path/to/file.png'
-        })
-        widget.addItem({
-            'resourceIdentifier': '/path/to/sequence.%04d.png [1-20]'
-        })
+        widget.addItem({'resourceIdentifier': '/path/to/file.png'})
+        widget.addItem(
+            {'resourceIdentifier': '/path/to/sequence.%04d.png [1-20]'}
+        )
 
         return widget
 
 
 if __name__ == '__main__':
-    raise SystemExit(
-        WidgetHarness().run()
-    )
+    raise SystemExit(WidgetHarness().run())

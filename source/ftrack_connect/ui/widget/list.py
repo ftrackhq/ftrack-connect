@@ -14,21 +14,13 @@ class List(QtWidgets.QTableWidget):
         self._widgetColumn = 0
 
         self.setColumnCount(1)
-        self.setSelectionBehavior(
-            QtWidgets.QAbstractItemView.SelectRows
-        )
-        self.setSelectionMode(
-            QtWidgets.QAbstractItemView.ExtendedSelection
-        )
-        self.setVerticalScrollMode(
-            QtWidgets.QAbstractItemView.ScrollPerPixel
-        )
+        self.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+        self.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
         self.verticalHeader().hide()
 
         QtCompat.setSectionResizeMode(
-            self.verticalHeader(),
-            QtWidgets.QHeaderView.ResizeToContents
-
+            self.verticalHeader(), QtWidgets.QHeaderView.ResizeToContents
         )
 
         self.horizontalHeader().setStretchLastSection(True)

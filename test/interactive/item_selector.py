@@ -23,18 +23,20 @@ class WidgetHarness(Harness):
         selector = ftrack_connect.ui.widget.item_selector.ItemSelector(
             labelField='componentName',
             defaultLabel='Unnamed component',
-            emptyLabel='Select component to use as preview'
+            emptyLabel='Select component to use as preview',
         )
 
         # Create components list
-        componentsList = ftrack_connect.ui.widget.components_list.ComponentsList()
+        componentsList = (
+            ftrack_connect.ui.widget.components_list.ComponentsList()
+        )
 
         # Create a button to add new components
         def _addComponent():
             fileName = str(uuid.uuid4())[:6]
-            componentsList.addItem({
-                'resourceIdentifier': '/path/to/{}.ext'.format(fileName)
-            })
+            componentsList.addItem(
+                {'resourceIdentifier': '/path/to/{}.ext'.format(fileName)}
+            )
 
         addComponentButton = QtGui.QPushButton('Add component')
         addComponentButton.clicked.connect(_addComponent)
@@ -54,6 +56,4 @@ class WidgetHarness(Harness):
 
 
 if __name__ == '__main__':
-    raise SystemExit(
-        WidgetHarness().run()
-    )
+    raise SystemExit(WidgetHarness().run())

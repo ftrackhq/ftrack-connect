@@ -21,11 +21,9 @@ class ComponentsList(ftrack_connect.ui.widget.item_list.ItemList):
         super(ComponentsList, self).__init__(
             widgetFactory=self._createComponentWidget,
             widgetItem=lambda widget: widget.value(),
-            parent=parent
+            parent=parent,
         )
-        self.list.setSelectionMode(
-            QtWidgets.QAbstractItemView.NoSelection
-        )
+        self.list.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)
         self.list.setShowGrid(False)
 
         self.label = QtWidgets.QLabel('Components')
