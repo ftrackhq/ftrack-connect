@@ -127,13 +127,17 @@ class Application(QtWidgets.QMainWindow):
     loginSuccessSignal = QtCore.Signal()
 
     def restart(self):
-        self._instance.__del__()
-        process = QtCore.QProcess()
+        '''restart connect application'''
+        self.logger.info('Connect restarting....')
         QtWidgets.QApplication.quit()
+        self._instance.__del__()
+
+        time.sleep(2)
+        process = QtCore.QProcess()
 
         path = QtCore.QCoreApplication.applicationFilePath()
         args = QtCore.QCoreApplication.arguments()
-        args.append('--allow-multiple')
+        # args.append('--allow-multiple')
 
         if not hasattr(sys, 'frozen'):
             path = sys.executable
@@ -142,12 +146,13 @@ class Application(QtWidgets.QMainWindow):
 
         status = -1
 
-        self.logger.info(f'restarting with :: path: {path} argv: {args}')
+        self.logger.debug(f'Connect restarting with :: path: {path} argv: {args}')
         try:
             status = process.startDetached(path, args)
         except Exception as error:
             self.logger.exception(str(error))
-        self.logger.debug('Restart status {}'.format(status))
+
+        self.logger.debug(f'Connect restarted with status {status}')
 
         return status
 
