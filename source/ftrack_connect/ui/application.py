@@ -72,6 +72,7 @@ class ConnectWidgetPlugin(object):
 
 class ConnectWidget(QtWidgets.QWidget):
     '''Base widget for ftrack connect application plugin.'''
+
     icon = None
     name = None
 
@@ -102,6 +103,7 @@ class ConnectWidget(QtWidgets.QWidget):
 
 class PluginWarning(ConnectWidget):
     '''Warning missing plugin widget.'''
+
     def __init__(self, session, parent=None):
         '''Instantiate the actions widget.'''
         super(PluginWarning, self).__init__(session, parent=parent)
@@ -448,7 +450,6 @@ class Application(QtWidgets.QMainWindow):
             u'\nPlease check log file for more informations.'
             u'\nIf the error persists please send the log file to:'
             u' support@ftrack.com'.format(error)
-
         )
         self.loginError.emit(msg)
 
@@ -711,9 +712,7 @@ class Application(QtWidgets.QMainWindow):
             'About', self, triggered=self.showAbout
         )
 
-        alwaysOnTopAction = QtWidgets.QAction(
-            'Always on top', self
-        )
+        alwaysOnTopAction = QtWidgets.QAction('Always on top', self)
         restartAction = QtWidgets.QAction(
             'Restart', self, triggered=self.restart
         )
@@ -728,7 +727,6 @@ class Application(QtWidgets.QMainWindow):
 
         menu.addAction(openPluginDirectoryAction)
         menu.addSeparator()
-
 
         menu.addAction(logoutAction)
         menu.addSeparator()
