@@ -2,8 +2,9 @@
 # :copyright: Copyright (c) 2014 ftrack
 
 import os
-import sys
 import platform
+import sys
+
 import requests
 import requests.exceptions
 import uuid
@@ -71,7 +72,6 @@ class ConnectWidgetPlugin(object):
 
 class ConnectWidget(QtWidgets.QWidget):
     '''Base widget for ftrack connect application plugin.'''
-
     icon = None
     name = None
 
@@ -102,7 +102,6 @@ class ConnectWidget(QtWidgets.QWidget):
 
 class PluginWarning(ConnectWidget):
     '''Warning missing plugin widget.'''
-
     def __init__(self, session, parent=None):
         '''Instantiate the actions widget.'''
         super(PluginWarning, self).__init__(session, parent=parent)
@@ -279,6 +278,7 @@ class Application(QtWidgets.QMainWindow):
 
         self.logger.debug('Setting theme {}'.format(theme))
         self._theme = theme
+
         self.setWindowIcon(
             QtGui.QIcon(QtGui.QPixmap(self.ftrack_title_icon(theme)))
         )
@@ -288,6 +288,7 @@ class Application(QtWidgets.QMainWindow):
 
         qtawesome_style = getattr(qta, theme)
         qtawesome_style(QtWidgets.QApplication.instance())
+
         ftrack_connect.ui.theme.applyFont()
         ftrack_connect.ui.theme.applyTheme(self, self.theme(), 'cleanlooks')
 
@@ -447,6 +448,7 @@ class Application(QtWidgets.QMainWindow):
             u'\nPlease check log file for more informations.'
             u'\nIf the error persists please send the log file to:'
             u' support@ftrack.com'.format(error)
+
         )
         self.loginError.emit(msg)
 
@@ -709,7 +711,9 @@ class Application(QtWidgets.QMainWindow):
             'About', self, triggered=self.showAbout
         )
 
-        alwaysOnTopAction = QtWidgets.QAction('Always on top', self)
+        alwaysOnTopAction = QtWidgets.QAction(
+            'Always on top', self
+        )
         restartAction = QtWidgets.QAction(
             'Restart', self, triggered=self.restart
         )
@@ -724,8 +728,9 @@ class Application(QtWidgets.QMainWindow):
 
         menu.addAction(openPluginDirectoryAction)
         menu.addSeparator()
-        menu.addAction(logoutAction)
 
+
+        menu.addAction(logoutAction)
         menu.addSeparator()
         menu.addAction(restartAction)
         menu.addAction(quitAction)
@@ -948,20 +953,16 @@ class Application(QtWidgets.QMainWindow):
     def openDefaultPluginDirectory(self):
         '''Open default plugin directory in platform default file browser.'''
 
-        directory = self.defaultPluginDirectory
+        try:
+            self._createDefaultPluginDirectory()
+        except OSError:
+            messageBox = QtWidgets.QMessageBox(parent=self)
+            messageBox.setIcon(QtWidgets.QMessageBox.Warning)
+            messageBox.setText(
+                u'Could not open or create default plugin '
+                u'directory: {0}.'.format(self.defaultPluginDirectory)
+            )
+            messageBox.exec_()
+            return
 
-        if not os.path.exists(directory):
-            # Create directory if not existing.
-            try:
-                os.makedirs(directory)
-            except OSError:
-                messageBox = QtWidgets.QMessageBox(parent=self)
-                messageBox.setIcon(QtWidgets.QMessageBox.Warning)
-                messageBox.setText(
-                    u'Could not open or create default plugin '
-                    u'directory: {0}.'.format(directory)
-                )
-                messageBox.exec_()
-                return
-
-        ftrack_connect.util.open_directory(directory)
+        ftrack_connect.util.open_directory(self.defaultPluginDirectory)
