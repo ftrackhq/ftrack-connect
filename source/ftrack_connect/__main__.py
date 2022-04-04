@@ -150,7 +150,7 @@ def main(arguments=None):
     icon_fonts = os.path.join(os.path.dirname(__file__), 'fonts')
     load_icons(icon_fonts)
 
-    application.exec_()
+    return application.exec_()
 
 
 if __name__ == '__main__':
