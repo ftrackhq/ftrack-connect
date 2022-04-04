@@ -127,12 +127,28 @@ class Application(QtWidgets.QMainWindow):
     loginSuccessSignal = QtCore.Signal()
 
     def restart(self):
-        del self._instance
+        self._instance.__del__()
         process = QtCore.QProcess()
         QtWidgets.QApplication.quit()
-        args = sys.argv
+
+        path = QtCore.QCoreApplication.applicationFilePath()
+        args = QtCore.QCoreApplication.arguments()
         args.append('--allow-multiple')
-        status = process.startDetached(sys.executable, args)
+
+        if not hasattr(sys, 'frozen'):
+            path = sys.executable
+        else:
+            args.pop(0)
+
+        status = -1
+
+        self.logger.info(f'restarting with :: path: {path} argv: {args}')
+        try:
+            status = process.startDetached(path, args)
+        except Exception as error:
+            self.logger.exception(str(error))
+        self.logger.debug('Restart status {}'.format(status))
+
         return status
 
     def ftrack_title_icon(self, theme=None):
