@@ -21,21 +21,13 @@ from distutils.spawn import find_executable
 from pkg_resources import get_distribution, DistributionNotFound
 
 
-ROOT_PATH = os.path.dirname(
-    os.path.realpath(__file__)
-)
+ROOT_PATH = os.path.dirname(os.path.realpath(__file__))
 
-RESOURCE_PATH = os.path.join(
-    ROOT_PATH, 'resource'
-)
+RESOURCE_PATH = os.path.join(ROOT_PATH, 'resource')
 
-SOURCE_PATH = os.path.join(
-    ROOT_PATH, 'source'
-)
+SOURCE_PATH = os.path.join(ROOT_PATH, 'source')
 
-DISTRIBUTION_PATH = os.path.join(
-    ROOT_PATH, 'dist'
-)
+DISTRIBUTION_PATH = os.path.join(ROOT_PATH, 'dist')
 
 RESOURCE_TARGET_PATH = os.path.join(
     SOURCE_PATH, 'ftrack_connect', 'ui', 'resource.py'
@@ -48,14 +40,13 @@ FONTS_PATH = os.path.join(RESOURCE_PATH, 'font')
 FONTS_TARGET_PATH = os.path.join(SOURCE_PATH, 'ftrack_connect', 'fonts')
 
 
-
 # Read version from source.
 try:
     release = get_distribution('ftrack-connect').version
     # take major/minor/patch
     VERSION = '.'.join(release.split('.')[:3])
 except DistributionNotFound:
-     # package is not installed
+    # package is not installed
     VERSION = 'Unknown version'
 
 
@@ -72,9 +63,7 @@ class BuildResources(Command):
         '''Finalize options to be used.'''
         self.sass_path = os.path.join(RESOURCE_PATH, 'sass')
         self.css_path = RESOURCE_PATH
-        self.resource_source_path = os.path.join(
-            RESOURCE_PATH, 'resource.qrc'
-        )
+        self.resource_source_path = os.path.join(RESOURCE_PATH, 'resource.qrc')
         self.resource_target_path = RESOURCE_TARGET_PATH
 
     def _replace_imports_(self):
@@ -85,7 +74,9 @@ class BuildResources(Command):
 
         '''
         replace = r'from ftrack_connect.qt import QtCore'
-        for line in fileinput.input(self.resource_target_path, inplace=True, mode='r'):
+        for line in fileinput.input(
+            self.resource_target_path, inplace=True, mode='r'
+        ):
             if r'import QtCore' in line:
                 # Calling print will yield a new line in the resource file.
                 sys.stdout.write(line.replace(line, replace))
@@ -108,21 +99,16 @@ class BuildResources(Command):
                 'Check you have the pyScss Python package installed.'
             )
 
-        compiler = scss.Scss(
-            search_paths=[self.sass_path]
-        )
+        compiler = scss.Scss(search_paths=[self.sass_path])
 
-        themes = [
-            'style_light',
-            'style_dark'
-        ]
+        themes = ['style_light', 'style_dark']
         for theme in themes:
-            scss_source = os.path.join(self.sass_path, '{0}.scss'.format(theme))
+            scss_source = os.path.join(
+                self.sass_path, '{0}.scss'.format(theme)
+            )
             css_target = os.path.join(self.css_path, '{0}.css'.format(theme))
 
-            compiled = compiler.compile(
-                scss_file=scss_source
-            )
+            compiled = compiler.compile(scss_file=scss_source)
             with open(css_target, 'w') as file_handle:
                 file_handle.write(compiled)
                 print('Compiled {0}'.format(css_target))
@@ -130,7 +116,7 @@ class BuildResources(Command):
         try:
             pyside_rcc_command = 'pyside2-rcc'
             executable = None
-    
+
             # Check if the command for pyside*-rcc is in executable paths.
             if find_executable(pyside_rcc_command):
                 executable = pyside_rcc_command
@@ -143,7 +129,7 @@ class BuildResources(Command):
                 executable,
                 '-o',
                 self.resource_target_path,
-                self.resource_source_path
+                self.resource_source_path,
             ]
             print('running : {}'.format(cmd))
             subprocess.check_call(cmd)
@@ -196,8 +182,9 @@ class Clean(CleanCommand):
             os.remove(relative_resource_path)
         else:
             distutils.log.warn(
-                '\'{0}\' does not exist -- can\'t clean it'
-                .format(relative_resource_path)
+                '\'{0}\' does not exist -- can\'t clean it'.format(
+                    relative_resource_path
+                )
             )
 
         if self.all:
@@ -210,8 +197,9 @@ class Clean(CleanCommand):
                 )
             else:
                 distutils.log.warn(
-                    '\'{0}\' does not exist -- can\'t clean it'
-                    .format(relative_distribution_path)
+                    '\'{0}\' does not exist -- can\'t clean it'.format(
+                        relative_distribution_path
+                    )
                 )
 
         CleanCommand.run(self)
@@ -229,6 +217,7 @@ class PyTest(TestCommand):
     def run_tests(self):
         '''Import pytest and run.'''
         import pytest
+
         raise SystemExit(pytest.main(self.test_args))
 
 
@@ -254,11 +243,9 @@ configuration = dict(
     use_scm_version={
         'write_to': 'source/ftrack_connect/_version.py',
         'write_to_template': version_template,
-        'version_scheme': 'post-release'
+        'version_scheme': 'post-release',
     },
-    package_dir={
-        '': 'source'
-    },
+    package_dir={'': 'source'},
     setup_requires=[
         'PySide2 >=5, <6',
         'Qt.py >=1.0.0, < 2',
@@ -267,7 +254,7 @@ configuration = dict(
         'sphinx_rtd_theme >= 0.1.6, < 1',
         'lowdown >= 0.1.0, < 1',
         'setuptools>=45.0.0',
-        'setuptools_scm'
+        'setuptools_scm',
     ],
     install_requires=[
         'clique==1.6.1',
@@ -279,18 +266,16 @@ configuration = dict(
         'requests >= 2, <3',
         'lowdown >= 0.1.0, < 1',
         'Qt.py >=1.0.0, < 2',
-        'qtawesome'
+        'qtawesome',
     ],
-    tests_require=[
-        'pytest >= 2.3.5, < 3'
-    ],
+    tests_require=['pytest >= 2.3.5, < 3'],
     cmdclass={
         'build': Build,
         'build_ext': Build,
         'build_resources': BuildResources,
         'bdist_egg': BuildEgg,
         'clean': Clean,
-        'test': PyTest
+        'test': PyTest,
     },
     entry_points={
         'console_scripts': [
@@ -301,11 +286,16 @@ configuration = dict(
     data_files=[
         (
             'ftrack_connect_resource/hook',
-            [os.path.relpath(path) for path in glob.glob(os.path.join(RESOURCE_PATH, 'hook', '*.py'))]
+            [
+                os.path.relpath(path)
+                for path in glob.glob(
+                    os.path.join(RESOURCE_PATH, 'hook', '*.py')
+                )
+            ],
         ),
     ],
     zip_safe=False,
-    python_requires=">=3, <4.0"
+    python_requires=">=3, <4.0",
 )
 
 

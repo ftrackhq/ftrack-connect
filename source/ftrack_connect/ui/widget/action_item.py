@@ -14,7 +14,7 @@ from ftrack_connect.ui.widget.thumbnail import ActionIcon
 
 # We need to force load the icons or ftrack.<icon> won't be available
 # not sure why is the case, likely due to be in threded function.
-load_icons(os.path.join(os.path.dirname(__file__), '..','..','fonts'))
+load_icons(os.path.join(os.path.dirname(__file__), '..', '..', 'fonts'))
 
 
 class ActionItem(QtWidgets.QWidget):
@@ -42,7 +42,7 @@ class ActionItem(QtWidgets.QWidget):
         icon
             An URL to an image or one of the provided icons.
         variant
-            A variant of the action. Will be shown in the menu shown for 
+            A variant of the action. Will be shown in the menu shown for
             multiple actions, or as part of the label for a single action.
         description
             A optional description of the action to be shown on hover.
@@ -74,14 +74,16 @@ class ActionItem(QtWidgets.QWidget):
         self._variants = [
             u'{0} {1}'.format(
                 action.get('label', 'Untitled action'),
-                action.get('variant', '')
+                action.get('variant', ''),
             ).strip()
             for action in actions
         ]
 
         if len(actions) == 1:
             if actions[0].get('variant'):
-                self._label = u'{0} {1}'.format(self._label, actions[0].get('variant'))
+                self._label = u'{0} {1}'.format(
+                    self._label, actions[0].get('variant')
+                )
 
             self._hoverIcon = 'play'
             self._multiple = False
@@ -96,8 +98,10 @@ class ActionItem(QtWidgets.QWidget):
         layout.addWidget(self._iconLabel)
 
         self._textLabel = QtWidgets.QLabel(self)
-        self._textLabel.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignTop)
-        self._textLabel.setContentsMargins(0,5,0,0)
+        self._textLabel.setAlignment(
+            QtCore.Qt.AlignHCenter | QtCore.Qt.AlignTop
+        )
+        self._textLabel.setContentsMargins(0, 5, 0, 0)
         self._textLabel.setWordWrap(True)
         self._textLabel.setFixedSize(QtCore.QSize(75, 55))
         layout.addWidget(self._textLabel)
@@ -108,7 +112,7 @@ class ActionItem(QtWidgets.QWidget):
             self.setToolTip(self._description)
 
     def mouseReleaseEvent(self, event):
-        '''Launch action on mouse release. 
+        '''Launch action on mouse release.
 
         First show menu with variants if multiple actions are available.
         '''
@@ -159,14 +163,15 @@ class ActionItem(QtWidgets.QWidget):
         try:
             results = self.session.event_hub.publish(
                 ftrack_api.event.base.Event(
-                    topic='ftrack.action.launch',
-                    data=action
+                    topic='ftrack.action.launch', data=action
                 ),
-                synchronous=True
+                synchronous=True,
             )
 
         except Exception as error:
-            results = [{'success': False, 'message': 'Failed to launch action'}]
+            results = [
+                {'success': False, 'message': 'Failed to launch action'}
+            ]
             self.logger.warning(
                 u'Action launch failed with exception: {0}'.format(error)
             )

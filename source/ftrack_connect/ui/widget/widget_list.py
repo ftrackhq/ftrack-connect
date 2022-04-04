@@ -2,7 +2,6 @@ from ftrack_connect.qt import QtCore, QtWidgets, QtGui
 
 
 class WidgetList(QtWidgets.QWidget):
-
     def __init__(self, parent=None):
         super(WidgetList, self).__init__(parent=parent)
         layout = QtWidgets.QVBoxLayout()
@@ -24,4 +23,3 @@ class WidgetList(QtWidgets.QWidget):
         connect_widget = item.data(QtCore.Qt.UserRole)
         # hide / show tab containing the plugin.
         connect_widget.parent().parent().setVisible(item.checkState())
-

@@ -46,7 +46,7 @@ class EntityBrowser(QtWidgets.QDialog):
         self.headerLayout = QtWidgets.QHBoxLayout()
 
         self.navigationBar = QtWidgets.QTabBar()
-        self.navigationBar.setIconSize(QtCore.QSize(self.size()/2))
+        self.navigationBar.setIconSize(QtCore.QSize(self.size() / 2))
         self.navigationBar.setExpanding(False)
         self.navigationBar.setDrawBase(False)
         self.headerLayout.addWidget(self.navigationBar, stretch=1)
@@ -85,7 +85,7 @@ class EntityBrowser(QtWidgets.QDialog):
             root=ftrack_connect.ui.model.entity_tree.ItemFactory(
                 self._session, self._root
             ),
-            parent=self
+            parent=self,
         )
         proxy.setSourceModel(model)
         proxy.setDynamicSortFilter(True)
@@ -127,13 +127,11 @@ class EntityBrowser(QtWidgets.QDialog):
 
         QtCompat.setSectionResizeMode(
             self.view.horizontalHeader(),
-            QtWidgets.QHeaderView.ResizeToContents
+            QtWidgets.QHeaderView.ResizeToContents,
         )
 
         QtCompat.setSectionResizeMode(
-            self.view.horizontalHeader(),
-            0,
-            QtWidgets.QHeaderView.Stretch
+            self.view.horizontalHeader(), 0, QtWidgets.QHeaderView.Stretch
         )
 
         self.acceptButton.clicked.connect(self.accept)
@@ -171,9 +169,8 @@ class EntityBrowser(QtWidgets.QDialog):
         '''
         # Ensure root children loaded in order to begin search.
         rootIndex = self.model.index(-1, -1)
-        if (
-            self.model.hasChildren(rootIndex)
-            and self.model.canFetchMore(rootIndex)
+        if self.model.hasChildren(rootIndex) and self.model.canFetchMore(
+            rootIndex
         ):
             self.model.fetchMore(rootIndex)
 
@@ -183,17 +180,14 @@ class EntityBrowser(QtWidgets.QDialog):
         matchingIndex = rootIndex
         searchIndex = self.model.index(0, 0)
         for identity in location:
-            matches = self.model.match(
-                searchIndex, role, identity
-            )
+            matches = self.model.match(searchIndex, role, identity)
             if not matches:
                 break
 
             matchingIndex = matches[0]
-            if (
-                self.model.hasChildren(matchingIndex)
-                and self.model.canFetchMore(matchingIndex)
-            ):
+            if self.model.hasChildren(
+                matchingIndex
+            ) and self.model.canFetchMore(matchingIndex):
                 self.model.fetchMore(matchingIndex)
 
             searchIndex = self.model.index(0, 0, parent=matchingIndex)
@@ -258,15 +252,11 @@ class EntityBrowser(QtWidgets.QDialog):
         index = self.view.rootIndex()
         while index.isValid():
             item = self.model.item(index)
-            entries.append(
-                dict(icon=item.icon, label=item.name, index=index)
-            )
+            entries.append(dict(icon=item.icon, label=item.name, index=index))
             index = self.model.parent(index)
 
         item = self.model.root
-        entries.append(
-            dict(icon=item.icon, label=item.name, index=None)
-        )
+        entries.append(dict(icon=item.icon, label=item.name, index=None))
 
         entries.reverse()
         for entry in entries:

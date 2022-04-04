@@ -21,7 +21,9 @@ class Overlay(QtWidgets.QFrame):
         '''Initialise overlay for target *parent*.'''
         super(Overlay, self).__init__(parent=parent)
         self.setObjectName('overlay')
-        self.setFrameStyle(QtWidgets.QFrame.StyledPanel | QtWidgets.QFrame.Plain)
+        self.setFrameStyle(
+            QtWidgets.QFrame.StyledPanel | QtWidgets.QFrame.Plain
+        )
 
         # Install global event filter that will deal with matching parent size
         # and disabling parent interaction when overlay is visible.
@@ -83,10 +85,7 @@ class Overlay(QtWidgets.QFrame):
             and event.type() == QtCore.QEvent.FocusIn
         ):
             parent = self.parent()
-            if (
-                isinstance(obj, QtWidgets.QWidget)
-                and parent.isAncestorOf(obj)
-            ):
+            if isinstance(obj, QtWidgets.QWidget) and parent.isAncestorOf(obj):
                 # Ensure the targeted object loses its focus.
                 obj.clearFocus()
 
@@ -113,10 +112,9 @@ class Overlay(QtWidgets.QFrame):
                     # Keep track of candidates to avoid infinite recursion.
                     seen.append(candidate)
 
-                    if (
-                        isinstance(candidate, QtWidgets.QWidget)
-                        and not parent.isAncestorOf(candidate)
-                    ):
+                    if isinstance(
+                        candidate, QtWidgets.QWidget
+                    ) and not parent.isAncestorOf(candidate):
                         candidate.setFocus(event.reason())
                         break
 
@@ -131,14 +129,16 @@ class BlockingOverlay(Overlay):
     '''Display a standard blocking overlay over another widget.'''
 
     def __init__(
-        self, parent, message='Processing',
-        icon=':ftrack/image/default/ftrackLogoGreyDark'
+        self,
+        parent,
+        message='Processing',
+        icon=':ftrack/image/default/ftrackLogoGreyDark',
     ):
         '''Initialise with *parent*.
 
-         *message* is the message to display on the overlay.
+        *message* is the message to display on the overlay.
 
-         '''
+        '''
         super(BlockingOverlay, self).__init__(parent=parent)
         layout = QtWidgets.QVBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
@@ -146,9 +146,7 @@ class BlockingOverlay(Overlay):
 
         self.content = QtWidgets.QFrame()
         self.content.setObjectName('content')
-        layout.addWidget(
-            self.content, alignment=QtCore.Qt.AlignCenter
-        )
+        layout.addWidget(self.content, alignment=QtCore.Qt.AlignCenter)
 
         self.contentLayout = QtWidgets.QVBoxLayout()
         self.contentLayout.setContentsMargins(0, 0, 0, 0)

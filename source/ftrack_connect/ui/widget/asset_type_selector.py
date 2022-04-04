@@ -24,7 +24,6 @@ class AssetTypeSelector(_item_selector.ItemSelector):
         '''Load asset types and add to selector.'''
         assetTypes = self.session.query('select id, name from AssetType').all()
         assetTypes = sorted(
-            assetTypes,
-            key=lambda assetType: assetType['name']
+            assetTypes, key=lambda assetType: assetType['name']
         )
         self.setItems(assetTypes)

@@ -12,7 +12,6 @@ from ftrack_connect.ui.widget import entity_browser as _entity_browser
 from ftrack_connect.asynchronous import asynchronous
 
 
-
 class EntitySelector(QtWidgets.QStackedWidget):
     '''Entity selector widget.'''
 
@@ -35,7 +34,9 @@ class EntitySelector(QtWidgets.QStackedWidget):
         selectionWidget.layout().setContentsMargins(0, 0, 0, 0)
         self.insertWidget(0, selectionWidget)
 
-        self.entityBrowser = _entity_browser.EntityBrowser(self.session, parent=self)
+        self.entityBrowser = _entity_browser.EntityBrowser(
+            self.session, parent=self
+        )
         self.entityBrowser.setMinimumSize(600, 400)
         self.entityBrowser.selectionChanged.connect(
             self._onEntityBrowserSelectionChanged
@@ -69,7 +70,9 @@ class EntitySelector(QtWidgets.QStackedWidget):
         presentationWidget.layout().addWidget(self.discardEntityButton)
 
         self.entityChanged.connect(self.entityPath.setEntity)
-        self.assignedContextSelector.currentIndexChanged.connect(self.updateEntityPath)
+        self.assignedContextSelector.currentIndexChanged.connect(
+            self.updateEntityPath
+        )
 
         self.entityChanged.connect(self._updateIndex)
 
@@ -90,11 +93,10 @@ class EntitySelector(QtWidgets.QStackedWidget):
 
     def _fetch_user_tasks(self, task_number=10):
         '''Update assigned list.'''
-        self._user_tasks = [None]   # add placeholder for fake label below
+        self._user_tasks = [None]  # add placeholder for fake label below
         self.assignedContextSelector.clear()
         self.assignedContextSelector.addItem(
-            '- Select a task or browse. - ',
-            None
+            '- Select a task or browse. - ', None
         )
 
         assigned_tasks = self.session.query(
@@ -102,10 +104,7 @@ class EntitySelector(QtWidgets.QStackedWidget):
             'where assignments any (resource.username = "{0}") and '
             'status.name not_in ("Omitted", "On Hold", "Completed") '
             'order by priority.sort '
-            'limit {1}'.format(
-                self.session.api_user,
-                task_number
-            )
+            'limit {1}'.format(self.session.api_user, task_number)
         ).all()
 
         for task in assigned_tasks:
@@ -115,7 +114,9 @@ class EntitySelector(QtWidgets.QStackedWidget):
         return assigned_tasks
 
     def updateEntityPath(self, index):
-        entity = self.assignedContextSelector.itemData(index, QtCore.Qt.UserRole)
+        entity = self.assignedContextSelector.itemData(
+            index, QtCore.Qt.UserRole
+        )
         self.setEntity(entity)
 
     def _updateIndex(self, entity):

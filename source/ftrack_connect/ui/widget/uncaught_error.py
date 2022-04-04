@@ -26,11 +26,7 @@ class UncaughtError(QtWidgets.QMessageBox):
     def getTraceback(self, exceptionTraceback):
         '''Return message from *exceptionTraceback*.'''
         tracebackInfoStream = StringIO()
-        traceback.print_tb(
-            exceptionTraceback,
-            None,
-            tracebackInfoStream
-        )
+        traceback.print_tb(exceptionTraceback, None, tracebackInfoStream)
         tracebackInfoStream.seek(0)
         return tracebackInfoStream.read()
 
@@ -39,7 +35,7 @@ class UncaughtError(QtWidgets.QMessageBox):
 
         logging.error(
             'Logging an uncaught exception',
-            exc_info=(exceptionType, exceptionValue, exceptionTraceback)
+            exc_info=(exceptionType, exceptionValue, exceptionTraceback),
         )
 
         # Show exception to user.

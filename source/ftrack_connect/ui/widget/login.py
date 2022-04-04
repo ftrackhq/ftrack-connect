@@ -16,6 +16,7 @@ class ClickableLabel(QtWidgets.QLabel):
 
 class Login(QtWidgets.QWidget):
     '''Login widget class.'''
+
     # Login signal with params url, username and API key.
     login = QtCore.Signal(object, object, object)
 
@@ -43,7 +44,7 @@ class Login(QtWidgets.QWidget):
             logoPixmap.scaled(
                 QtCore.QSize(100, 100),
                 QtCore.Qt.KeepAspectRatio,
-                QtCore.Qt.SmoothTransformation
+                QtCore.Qt.SmoothTransformation,
             )
         )
         layout.addWidget(logo, alignment=QtCore.Qt.AlignCenter)
@@ -105,7 +106,9 @@ class Login(QtWidgets.QWidget):
             '<a href="#" style="color: #935BA2;">Sign in with username and API key</a>'
         )
         self.toggle_api_label.clicked.connect(self._toggle_credentials)
-        layout.addWidget(self.toggle_api_label, alignment=QtCore.Qt.AlignCenter)
+        layout.addWidget(
+            self.toggle_api_label, alignment=QtCore.Qt.AlignCenter
+        )
         layout.addSpacing(20)
 
     def on_set_error(self, error):

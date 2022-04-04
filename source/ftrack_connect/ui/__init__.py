@@ -9,4 +9,3 @@ from ftrack_connect.qt import QtXml
 
 # Load UI resources such as icons.
 from . import resource as _resource
-
