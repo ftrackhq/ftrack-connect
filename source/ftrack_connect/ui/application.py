@@ -135,13 +135,14 @@ class Application(QtWidgets.QMainWindow):
         QtWidgets.QApplication.quit()
         self._instance.__del__()
 
+        # Give 2 sec to ensure the lockfile has been removed
         time.sleep(2)
         process = QtCore.QProcess()
 
         path = QtCore.QCoreApplication.applicationFilePath()
         args = QtCore.QCoreApplication.arguments()
-        # args.append('--allow-multiple')
 
+        # Check if Connect is frozen (cx_freeze) and act accordingly.
         if not hasattr(sys, 'frozen'):
             path = sys.executable
         else:
