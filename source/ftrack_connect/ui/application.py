@@ -104,15 +104,26 @@ class ConnectWidget(QtWidgets.QWidget):
 class PluginWarning(ConnectWidget):
     '''Warning missing plugin widget.'''
 
+    name = "Warning!"
+    icon = 'mdi6.emoticon-sad-outline'
+
     def __init__(self, session, parent=None):
         '''Instantiate the actions widget.'''
         super(PluginWarning, self).__init__(session, parent=parent)
         layout = QtWidgets.QVBoxLayout()
         self.setLayout(layout)
 
+        icon_label = QtWidgets.QLabel()
+        icon = qta.icon(self.icon)
+        icon_label.setPixmap(icon.pixmap(icon.actualSize(QtCore.QSize(180, 180))))
+        icon_label.setAlignment(QtCore.Qt.AlignCenter)
+
         label = QtWidgets.QLabel(
-            'Warning!  no tab plugin found to register for connect.'
+            '<b>Warning!</b>  <br><br> No widget plugin/s found to register for connect.'
         )
+        label.setAlignment(QtCore.Qt.AlignCenter)
+
+        layout.addWidget(icon_label)
         layout.addWidget(label, QtCore.Qt.AlignCenter)
 
 
@@ -705,43 +716,49 @@ class Application(QtWidgets.QMainWindow):
         event = ftrack_api.event.base.Event(topic=ConnectWidgetPlugin.topic)
 
         responses = self.session.event_hub.publish(event, synchronous=True)
+        if not responses:
+            widget_plugin = PluginWarning(self.session)
+            identifier = widget_plugin.getIdentifier()
+            if not self.plugins.get(identifier):
+                self.plugins[identifier] = widget_plugin
+                self.addPlugin(widget_plugin)
+        else:
+            for ResponsePlugin in responses:
 
-        for ResponsePlugin in responses:
+                try:
+                    widget_plugin = ResponsePlugin(self.session)
 
-            try:
-                widget_plugin = ResponsePlugin(self.session)
-
-            except Exception:
-                self.logger.exception(
-                    msg='Error while loading plugin : {}'.format(widget_plugin)
-                )
-                continue
-
-            if not isinstance(widget_plugin, ConnectWidget):
-                self.logger.warning(
-                    'Widget {} is not a valid ConnectWidget'.format(
-                        widget_plugin
-                    )
-                )
-                continue
-            try:
-                identifier = widget_plugin.getIdentifier()
-                if not self.plugins.get(identifier):
-                    self.plugins[identifier] = widget_plugin
-                else:
-                    self.logger.debug(
-                        'Widget {} already registered'.format(identifier)
+                except Exception:
+                    self.logger.exception(
+                        msg='Error while loading plugin : {}'.format(widget_plugin)
                     )
                     continue
 
-                self.addPlugin(widget_plugin)
-
-            except Exception as error:
-                self.logger.warning(
-                    'Connect Widget Plugin "{}" could not be loaded. Reason: {}'.format(
-                        widget_plugin.getName(), str(error)
+                if not isinstance(widget_plugin, ConnectWidget):
+                    self.logger.warning(
+                        'Widget {} is not a valid ConnectWidget'.format(
+                            widget_plugin
+                        )
                     )
-                )
+                    continue
+                try:
+                    identifier = widget_plugin.getIdentifier()
+                    if not self.plugins.get(identifier):
+                        self.plugins[identifier] = widget_plugin
+                    else:
+                        self.logger.debug(
+                            'Widget {} already registered'.format(identifier)
+                        )
+                        continue
+
+                    self.addPlugin(widget_plugin)
+
+                except Exception as error:
+                    self.logger.warning(
+                        'Connect Widget Plugin "{}" could not be loaded. Reason: {}'.format(
+                            widget_plugin.getName(), str(error)
+                        )
+                    )
 
     def _routeEvent(self, event):
         '''Route websocket *event* to publisher plugin.
@@ -800,7 +817,12 @@ class Application(QtWidgets.QMainWindow):
         if name is None:
             name = plugin.getName()
 
-        icon = QtGui.QIcon(plugin.icon)
+        icon = None
+        try:
+            icon = qta.icon(plugin.icon)
+        except Exception as err:
+            icon = QtGui.QIcon(plugin.icon)
+
         self.tabPanel.addTab(plugin, icon, name)
 
         # Connect standard plugin events.
