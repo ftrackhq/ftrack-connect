@@ -22,7 +22,7 @@ import darkdetect
 import ftrack_api
 import ftrack_api._centralized_storage_scenario
 import ftrack_api.event.base
-
+import ftrack_connect.usage
 import ftrack_connect
 import ftrack_connect.event_hub_thread as _event_hub_thread
 import ftrack_connect.error
