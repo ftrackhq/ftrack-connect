@@ -11,6 +11,11 @@ Release Notes
 .. releaes:: Upcoming
 
     .. change:: changed
+        :tags: Plugins
+
+        Remove publisher and launcher from connect codebase.
+
+    .. change:: changed
         :tags: Codestyle
 
         Run black pass with flags : black --skip-string-normalization -l 79 . on Codebase.
