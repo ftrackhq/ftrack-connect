@@ -14,6 +14,7 @@ Release Notes
         :tags: Plugins
 
         Remove publisher and launcher from connect codebase.
+        Documentation can be found in :publisher+ftrack-connect-publisher-widget:ref:`publisher <_using/publishing>` and loader widgets plugin now.
 
     .. change:: changed
         :tags: Codestyle

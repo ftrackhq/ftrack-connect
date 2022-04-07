@@ -104,8 +104,7 @@ class ConnectWidget(QtWidgets.QWidget):
 class PluginWarning(ConnectWidget):
     '''Warning missing plugin widget.'''
 
-    name = "Warning!"
-    icon = 'mdi6.emoticon-sad-outline'
+    name = "Welcome"
 
     def __init__(self, session, parent=None):
         '''Instantiate the actions widget.'''
@@ -114,17 +113,26 @@ class PluginWarning(ConnectWidget):
         self.setLayout(layout)
 
         icon_label = QtWidgets.QLabel()
-        icon = qta.icon(self.icon)
+        icon = qta.icon("mdi6.rocket-launch-outline", color='orange')
         icon_label.setPixmap(icon.pixmap(icon.actualSize(QtCore.QSize(180, 180))))
         icon_label.setAlignment(QtCore.Qt.AlignCenter)
 
-        label = QtWidgets.QLabel(
-            '<b>Warning!</b>  <br><br> No widget plugin/s found to register for connect.'
+        label_title = QtWidgets.QLabel(
+            "<H1>Let's get started!</H1>"
         )
-        label.setAlignment(QtCore.Qt.AlignCenter)
+        label_title.setAlignment(QtCore.Qt.AlignCenter)
 
-        layout.addWidget(icon_label)
-        layout.addWidget(label, QtCore.Qt.AlignCenter)
+        label_text = QtWidgets.QLabel(
+            'To be able to get use of the connection application, you will need to install the plugins for the integrations you would like to use'
+            '<br/><br/>'
+            '<b>Install the plugin manager</b> to get started.'
+        )
+        label_text.setAlignment(QtCore.Qt.AlignCenter)
+        label_text.setWordWrap(True)
+
+        layout.addWidget(label_title, QtCore.Qt.AlignCenter)
+        layout.addWidget(icon_label, QtCore.Qt.AlignCenter)
+        layout.addWidget(label_text, QtCore.Qt.AlignCenter)
 
 
 class Application(QtWidgets.QMainWindow):
