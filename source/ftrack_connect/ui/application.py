@@ -112,11 +112,13 @@ class PluginWarning(ConnectWidget):
         layout = QtWidgets.QVBoxLayout()
         layout.setContentsMargins(30, 0, 30, 0)
         self.setLayout(layout)
+        spacer = QtWidgets.QSpacerItem(0, 70, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        layout.addItem(spacer)
 
         icon_label = QtWidgets.QLabel()
-        icon = qta.icon("ph.rocket", color='#FFDD86', rotated=45)
+        icon = qta.icon("ph.rocket", color='#BF9AC9', rotated=45, scale_factor=0.7)
         icon_label.setPixmap(icon.pixmap(icon.actualSize(QtCore.QSize(180, 180))))
-        icon_label.setAlignment(QtCore.Qt.AlignCenter)
+        icon_label.setAlignment(QtCore.Qt.AlignCenter|QtCore.Qt.AlignTop)
 
         label_title = QtWidgets.QLabel(
             "<H1>Let's get started!</H1>"
@@ -124,10 +126,10 @@ class PluginWarning(ConnectWidget):
         label_title.setAlignment(QtCore.Qt.AlignCenter)
 
         label_text = QtWidgets.QLabel(
-            'To be able to get use of the connection application, '
+            'To be able to get use of the connect application, '
             'you will need to install the plugins for the integrations you would like to use.'
             '<br/><br/>'
-            '<b  style="color:#FFDD86;">Install the plugin manager</b> to get started.'
+            '<b  style="color:#BF9AC9;">Install the plugin manager</b> to get started.'
         )
         label_text.setAlignment(QtCore.Qt.AlignLeft)
         label_text.setWordWrap(True)
@@ -135,7 +137,7 @@ class PluginWarning(ConnectWidget):
         layout.addWidget(label_title, QtCore.Qt.AlignCenter)
         layout.addWidget(icon_label, QtCore.Qt.AlignCenter)
         layout.addWidget(label_text, QtCore.Qt.AlignCenter)
-        spacer = QtWidgets.QSpacerItem(100, 300, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        spacer = QtWidgets.QSpacerItem(0, 300, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         layout.addItem(spacer)
         # layout.addStretch()
 
