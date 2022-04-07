@@ -110,10 +110,11 @@ class PluginWarning(ConnectWidget):
         '''Instantiate the actions widget.'''
         super(PluginWarning, self).__init__(session, parent=parent)
         layout = QtWidgets.QVBoxLayout()
+        layout.setContentsMargins(30, 0, 30, 0)
         self.setLayout(layout)
 
         icon_label = QtWidgets.QLabel()
-        icon = qta.icon("mdi6.rocket-launch-outline", color='orange')
+        icon = qta.icon("ph.rocket", color='#FFDD86', rotated=45)
         icon_label.setPixmap(icon.pixmap(icon.actualSize(QtCore.QSize(180, 180))))
         icon_label.setAlignment(QtCore.Qt.AlignCenter)
 
@@ -125,14 +126,17 @@ class PluginWarning(ConnectWidget):
         label_text = QtWidgets.QLabel(
             'To be able to get use of the connection application, you will need to install the plugins for the integrations you would like to use'
             '<br/><br/>'
-            '<b>Install the plugin manager</b> to get started.'
+            '<b  style="color:#FFDD86;">Install the plugin manager</b> to get started.'
         )
-        label_text.setAlignment(QtCore.Qt.AlignCenter)
+        label_text.setAlignment(QtCore.Qt.AlignLeft)
         label_text.setWordWrap(True)
 
         layout.addWidget(label_title, QtCore.Qt.AlignCenter)
         layout.addWidget(icon_label, QtCore.Qt.AlignCenter)
         layout.addWidget(label_text, QtCore.Qt.AlignCenter)
+        spacer = QtWidgets.QSpacerItem(100, 300, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        layout.addItem(spacer)
+        # layout.addStretch()
 
 
 class Application(QtWidgets.QMainWindow):
