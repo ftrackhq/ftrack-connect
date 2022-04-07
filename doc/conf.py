@@ -106,6 +106,14 @@ intersphinx_mapping = {
         'http://rtd.ftrack.com/docs/ftrack-python-api/en/latest/',
         None,
     ),
+    'ftrack-connect-action-launcher-widget': (
+        'https://ftrack-connect-action-launcher-widget.readthedocs.io/en/latest/',
+        None,
+    ),
+    'ftrack-connect-publisher-widget': (
+        'https://ftrack-connect-publisher-widget.readthedocs.io/en/latest/',
+        None,
+    ),
 }
 
 
