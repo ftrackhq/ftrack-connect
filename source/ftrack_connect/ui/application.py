@@ -124,7 +124,8 @@ class PluginWarning(ConnectWidget):
         label_title.setAlignment(QtCore.Qt.AlignCenter)
 
         label_text = QtWidgets.QLabel(
-            'To be able to get use of the connection application, you will need to install the plugins for the integrations you would like to use'
+            'To be able to get use of the connection application, '
+            'you will need to install the plugins for the integrations you would like to use.'
             '<br/><br/>'
             '<b  style="color:#FFDD86;">Install the plugin manager</b> to get started.'
         )
