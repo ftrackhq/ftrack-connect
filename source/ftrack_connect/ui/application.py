@@ -82,6 +82,9 @@ class ConnectWidget(QtWidgets.QWidget):
     #: Signal to emit to request closing application.
     requestApplicationClose = QtCore.Signal(object)
 
+    #: Signal to emit to request connect to restart.
+    requestConnectRestart = QtCore.Signal(object)
+
     @property
     def session(self):
         '''Return current session.'''
@@ -847,6 +850,9 @@ class Application(QtWidgets.QMainWindow):
         )
         plugin.requestApplicationClose.connect(
             self._onWidgetRequestApplicationClose
+        )
+        plugin.requestConnectRestart.connect(
+            self.restart
         )
 
     def removePlugin(self, plugin):
