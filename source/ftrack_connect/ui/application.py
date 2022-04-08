@@ -4,7 +4,7 @@
 import os
 import platform
 import sys
-
+import zipfile
 import requests
 import requests.exceptions
 import uuid
@@ -12,6 +12,8 @@ import logging
 import weakref
 from operator import itemgetter
 import appdirs
+import urllib
+import tempfile
 import time
 
 from ftrack_connect.qt import QtCore, QtWidgets, QtGui
@@ -106,6 +108,30 @@ class WelcomePlugin(ConnectWidget):
 
     name = "Welcome"
 
+    def download(self, source_path):
+        '''Download provided *plugin* item.'''
+        zip_name = os.path.basename(source_path)
+        save_path = tempfile.gettempdir()
+        temp_path = os.path.join(save_path, zip_name)
+        logging.debug('Downloading {} to {}'.format(source_path, temp_path))
+
+        with urllib.request.urlopen(source_path) as dl_file:
+            with open(temp_path, 'wb') as out_file:
+                out_file.write(dl_file.read())
+        return temp_path
+
+    def install(self, source_path):
+        '''Install provided *plugin* item.'''
+
+        source_path = self.download(source_path)
+        plugin_name = os.path.basename(source_path).split('.zip')[0]
+        install_path = appdirs.user_data_dir('ftrack-connect-plugins', 'ftrack')
+        destination_path = os.path.join(install_path, plugin_name)
+        logging.debug('Installing {} to {}'.format(source_path, destination_path))
+
+        with zipfile.ZipFile(source_path, 'r') as zip_ref:
+            zip_ref.extractall(destination_path)
+
     def __init__(self, session, parent=None):
         '''Instantiate the actions widget.'''
         super(WelcomePlugin, self).__init__(session, parent=parent)
@@ -135,7 +161,7 @@ class WelcomePlugin(ConnectWidget):
         )
         install_button.setObjectName('primary')
 
-        label_text.setAlignment(QtCore.Qt.AlignLeft)
+        label_text.setAlignment(QtCore.Qt.AlignLeft| QtCore.Qt.AlignTop)
         label_text.setWordWrap(True)
 
         layout.addWidget(label_title, QtCore.Qt.AlignCenter | QtCore.Qt.AlignTop)
