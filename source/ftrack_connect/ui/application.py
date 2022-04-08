@@ -101,14 +101,14 @@ class ConnectWidget(QtWidgets.QWidget):
         return self.getName().lower().replace(' ', '.')
 
 
-class PluginWarning(ConnectWidget):
+class WelcomePlugin(ConnectWidget):
     '''Warning missing plugin widget.'''
 
     name = "Welcome"
 
     def __init__(self, session, parent=None):
         '''Instantiate the actions widget.'''
-        super(PluginWarning, self).__init__(session, parent=parent)
+        super(WelcomePlugin, self).__init__(session, parent=parent)
         layout = QtWidgets.QVBoxLayout()
         layout.setContentsMargins(30, 0, 30, 0)
         self.setLayout(layout)
@@ -118,25 +118,30 @@ class PluginWarning(ConnectWidget):
         icon_label = QtWidgets.QLabel()
         icon = qta.icon("ph.rocket", color='#BF9AC9', rotated=45, scale_factor=0.7)
         icon_label.setPixmap(icon.pixmap(icon.actualSize(QtCore.QSize(180, 180))))
-        icon_label.setAlignment(QtCore.Qt.AlignCenter|QtCore.Qt.AlignTop)
+        icon_label.setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignTop)
 
         label_title = QtWidgets.QLabel(
             "<H1>Let's get started!</H1>"
         )
-        label_title.setAlignment(QtCore.Qt.AlignCenter)
+        label_title.setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignTop)
 
         label_text = QtWidgets.QLabel(
             'To be able to get use of the connect application, '
             'you will need to install the plugins for the integrations you would like to use.'
             '<br/><br/>'
-            '<b  style="color:#BF9AC9;">Install the plugin manager</b> to get started.'
         )
+        install_button = QtWidgets.QPushButton(
+            'Install the plugin manager to get started.'
+        )
+        install_button.setObjectName('primary')
+
         label_text.setAlignment(QtCore.Qt.AlignLeft)
         label_text.setWordWrap(True)
 
-        layout.addWidget(label_title, QtCore.Qt.AlignCenter)
-        layout.addWidget(icon_label, QtCore.Qt.AlignCenter)
-        layout.addWidget(label_text, QtCore.Qt.AlignCenter)
+        layout.addWidget(label_title, QtCore.Qt.AlignCenter | QtCore.Qt.AlignTop)
+        layout.addWidget(icon_label, QtCore.Qt.AlignCenter | QtCore.Qt.AlignTop)
+        layout.addWidget(label_text, QtCore.Qt.AlignCenter | QtCore.Qt.AlignTop)
+        layout.addWidget(install_button)
         spacer = QtWidgets.QSpacerItem(0, 300, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         layout.addItem(spacer)
         # layout.addStretch()
@@ -732,7 +737,7 @@ class Application(QtWidgets.QMainWindow):
 
         responses = self.session.event_hub.publish(event, synchronous=True)
         if not responses:
-            widget_plugin = PluginWarning(self.session)
+            widget_plugin = WelcomePlugin(self.session)
             identifier = widget_plugin.getIdentifier()
             if not self.plugins.get(identifier):
                 self.plugins[identifier] = widget_plugin
