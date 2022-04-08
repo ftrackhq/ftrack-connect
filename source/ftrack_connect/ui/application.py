@@ -84,6 +84,9 @@ class ConnectWidget(QtWidgets.QWidget):
     #: Signal to emit to request closing application.
     requestApplicationClose = QtCore.Signal(object)
 
+    #: Signal to emit to request connect to restart.
+    requestConnectRestart = QtCore.Signal(object)
+
     @property
     def session(self):
         '''Return current session.'''
@@ -186,6 +189,40 @@ class Application(QtWidgets.QMainWindow):
     loginSignal = QtCore.Signal(object, object, object)
     loginSuccessSignal = QtCore.Signal()
 
+    def restart(self):
+        '''restart connect application'''
+        self.logger.info('Connect restarting....')
+        QtWidgets.QApplication.quit()
+        self._instance.__del__()
+
+        # Give enough time to ensure the lockfile has been removed
+        while os.path.exists(self._instance.lockfile):
+            time.sleep(0.1)
+        process = QtCore.QProcess()
+
+        path = QtCore.QCoreApplication.applicationFilePath()
+        args = QtCore.QCoreApplication.arguments()
+
+        # Check if Connect is frozen (cx_freeze) and act accordingly.
+        if not hasattr(sys, 'frozen'):
+            path = sys.executable
+        else:
+            args.pop(0)
+
+        status = -1
+
+        self.logger.debug(
+            f'Connect restarting with :: path: {path} argv: {args}'
+        )
+        try:
+            status = process.startDetached(path, args)
+        except Exception as error:
+            self.logger.exception(str(error))
+
+        self.logger.debug(f'Connect restarted with status {status}')
+
+        return status
+
     def ftrack_title_icon(self, theme=None):
         logo_path = ':ftrack/titlebar/logo'
         return logo_path
@@ -243,13 +280,13 @@ class Application(QtWidgets.QMainWindow):
         '''Return current session.'''
         return self._session
 
-    def __init__(self, theme='system'):
+    def __init__(self, theme='system', instance=None):
         '''Initialise the main application window.'''
         super(Application, self).__init__()
         self.logger = logging.getLogger(
             __name__ + '.' + self.__class__.__name__
         )
-
+        self._instance = instance
         self._session = None
         self.__connect_start_time = time.time()
 
@@ -738,6 +775,9 @@ class Application(QtWidgets.QMainWindow):
         )
 
         alwaysOnTopAction = QtWidgets.QAction('Always on top', self)
+        restartAction = QtWidgets.QAction(
+            'Restart', self, triggered=self.restart
+        )
         alwaysOnTopAction.setCheckable(True)
         alwaysOnTopAction.triggered[bool].connect(self.setAlwaysOnTop)
 
@@ -752,6 +792,7 @@ class Application(QtWidgets.QMainWindow):
 
         menu.addAction(logoutAction)
         menu.addSeparator()
+        menu.addAction(restartAction)
         menu.addAction(quitAction)
 
         return menu
@@ -877,6 +918,9 @@ class Application(QtWidgets.QMainWindow):
         )
         plugin.requestApplicationClose.connect(
             self._onWidgetRequestApplicationClose
+        )
+        plugin.requestConnectRestart.connect(
+            self.restart
         )
 
     def removePlugin(self, plugin):
