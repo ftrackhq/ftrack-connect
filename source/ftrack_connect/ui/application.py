@@ -134,9 +134,10 @@ class Application(QtWidgets.QMainWindow):
         self.logger.info('Connect restarting....')
         QtWidgets.QApplication.quit()
         self._instance.__del__()
+
+        # Give enough time to ensure the lockfile has been removed
         while os.path.exists(self._instance.lockfile):
             time.sleep(0.1)
-        # Give 2 sec to ensure the lockfile has been removed
         process = QtCore.QProcess()
 
         path = QtCore.QCoreApplication.applicationFilePath()
