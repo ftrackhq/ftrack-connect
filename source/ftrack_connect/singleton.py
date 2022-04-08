@@ -86,7 +86,9 @@ class SingleInstance(object):
         self.initialized = True
 
     def __del__(self):
+        logger.debug('Attempting to remove lockfile.')
         if not self.initialized:
+            logger.debug('Singleton not initialized.')
             return
         try:
             if sys.platform == 'win32':
@@ -97,6 +99,9 @@ class SingleInstance(object):
                 fcntl.lockf(self.fp, fcntl.LOCK_UN)
                 if os.path.isfile(self.lockfile):
                     os.unlink(self.lockfile)
+
+            logger.debug('Singleton {} removed.'.format(self.lockfile))
+
         except Exception as e:
             if logger:
                 logger.error(e)
