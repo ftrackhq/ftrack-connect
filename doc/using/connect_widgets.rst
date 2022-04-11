@@ -31,19 +31,6 @@ Default Connect widget example
 
 
 
-Managing plugins
-================
-
-
-From the top bar menu, widgets can be enabled and disabled.
-These settings will persists across connect restart.
-
-
-Connect widget management menu
-
-.. image:: /image/connect_widget_menu.png
-
-
 
 Installing plugins
 ==================
