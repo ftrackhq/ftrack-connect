@@ -8,8 +8,9 @@
 Release Notes
 *************
 
-.. releaes:: Upcoming
-    .. change:: added
+.. release:: Upcoming
+
+    .. change:: new
         :tags: SystemTray, API
 
         Allow connect to restart.
@@ -33,7 +34,7 @@ Release Notes
 
         Random crashes on discovering on null context.
 
-    .. change:: added
+    .. change:: new
         :tags: Module
 
         Provide ftrak_connect.qt module to abstract imported Qt modules.
@@ -76,22 +77,22 @@ Release Notes
 
         Context selection is changed to a list of assigned tasks.
 
-    .. change:: added
+    .. change:: new
         :tags: UX
 
         Indicator during discovery of actions.
 
-    .. change:: added
+    .. change:: new
         :tags: API
 
         Provide ConnectWidget Plugin with custom name attribute to render.
 
-    .. change:: added
+    .. change:: new
         :tags: API
 
         Improve ConnectWidget error logging.
 
-    .. change:: added
+    .. change:: new
         :tags: API
 
         Emit usage data for Connect session duration along version and os type.

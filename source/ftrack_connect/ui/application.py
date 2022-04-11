@@ -4,7 +4,6 @@
 import os
 import platform
 import sys
-import zipfile
 import requests
 import requests.exceptions
 import uuid
@@ -12,8 +11,6 @@ import logging
 import weakref
 from operator import itemgetter
 import appdirs
-import urllib
-import tempfile
 import time
 
 from ftrack_connect.qt import QtCore, QtWidgets, QtGui
@@ -35,11 +32,10 @@ from ftrack_connect.ui.widget import uncaught_error as _uncaught_error
 from ftrack_connect.ui.widget import tab_widget as _tab_widget
 from ftrack_connect.ui.widget import login as _login
 from ftrack_connect.ui.widget import about as _about
-from ftrack_connect.error import NotUniqueError as _NotUniqueError
 from ftrack_connect.ui import login_tools as _login_tools
 from ftrack_connect.ui.widget import configure_scenario as _scenario_widget
 import ftrack_connect.ui.config
-from ftrack_connect import __version__
+from ftrack_connect.plugin.welcome import WelcomePlugin
 
 
 class ConnectWidgetPlugin(object):
@@ -104,76 +100,6 @@ class ConnectWidget(QtWidgets.QWidget):
     def getIdentifier(self):
         '''Return identifier for widget.'''
         return self.getName().lower().replace(' ', '.')
-
-
-class WelcomePlugin(ConnectWidget):
-    '''Warning missing plugin widget.'''
-
-    name = "Welcome"
-
-    def download(self, source_path):
-        '''Download provided *plugin* item.'''
-        zip_name = os.path.basename(source_path)
-        save_path = tempfile.gettempdir()
-        temp_path = os.path.join(save_path, zip_name)
-        logging.debug('Downloading {} to {}'.format(source_path, temp_path))
-
-        with urllib.request.urlopen(source_path) as dl_file:
-            with open(temp_path, 'wb') as out_file:
-                out_file.write(dl_file.read())
-        return temp_path
-
-    def install(self, source_path):
-        '''Install provided *plugin* item.'''
-
-        source_path = self.download(source_path)
-        plugin_name = os.path.basename(source_path).split('.zip')[0]
-        install_path = appdirs.user_data_dir('ftrack-connect-plugins', 'ftrack')
-        destination_path = os.path.join(install_path, plugin_name)
-        logging.debug('Installing {} to {}'.format(source_path, destination_path))
-
-        with zipfile.ZipFile(source_path, 'r') as zip_ref:
-            zip_ref.extractall(destination_path)
-
-    def __init__(self, session, parent=None):
-        '''Instantiate the actions widget.'''
-        super(WelcomePlugin, self).__init__(session, parent=parent)
-        layout = QtWidgets.QVBoxLayout()
-        layout.setContentsMargins(30, 0, 30, 0)
-        self.setLayout(layout)
-        spacer = QtWidgets.QSpacerItem(0, 70, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        layout.addItem(spacer)
-
-        icon_label = QtWidgets.QLabel()
-        icon = qta.icon("ph.rocket", color='#BF9AC9', rotated=45, scale_factor=0.7)
-        icon_label.setPixmap(icon.pixmap(icon.actualSize(QtCore.QSize(180, 180))))
-        icon_label.setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignTop)
-
-        label_title = QtWidgets.QLabel(
-            "<H1>Let's get started!</H1>"
-        )
-        label_title.setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignTop)
-
-        label_text = QtWidgets.QLabel(
-            'To be able to get use of the connect application, '
-            'you will need to install the plugins for the integrations you would like to use.'
-            '<br/><br/>'
-        )
-        install_button = QtWidgets.QPushButton(
-            'Install the plugin manager to get started.'
-        )
-        install_button.setObjectName('primary')
-
-        label_text.setAlignment(QtCore.Qt.AlignLeft| QtCore.Qt.AlignTop)
-        label_text.setWordWrap(True)
-
-        layout.addWidget(label_title, QtCore.Qt.AlignCenter | QtCore.Qt.AlignTop)
-        layout.addWidget(icon_label, QtCore.Qt.AlignCenter | QtCore.Qt.AlignTop)
-        layout.addWidget(label_text, QtCore.Qt.AlignCenter | QtCore.Qt.AlignTop)
-        layout.addWidget(install_button)
-        spacer = QtWidgets.QSpacerItem(0, 300, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        layout.addItem(spacer)
-        # layout.addStretch()
 
 
 class Application(QtWidgets.QMainWindow):
@@ -1023,6 +949,8 @@ class Application(QtWidgets.QMainWindow):
                 os.makedirs(directory)
             except Exception:
                 raise
+
+        return directory
 
     def openDefaultPluginDirectory(self):
         '''Open default plugin directory in platform default file browser.'''
