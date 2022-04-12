@@ -21,7 +21,8 @@ Release Notes
         Remove publisher and launcher from connect codebase.
         Documentation can be found in:
 
-        * :doc:`publisher documentation <ftrack-connect-publisher-widget:using/publishing>`
+        * :ref:`Publisher documentation <ftrack-connect-publisher-widget:using/publishing>`
+        * :ref:`Launcher documentation <ftrack-connect-action-launcher-widget:using/actions>`
 
 
     .. change:: changed
