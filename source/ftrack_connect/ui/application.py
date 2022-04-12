@@ -15,6 +15,7 @@ import time
 import urllib
 import zipfile
 import json
+import tempfile
 from ftrack_connect.qt import QtCore, QtWidgets, QtGui
 
 import qtawesome as qta
