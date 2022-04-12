@@ -37,6 +37,7 @@ from ftrack_connect.ui.widget import about as _about
 from ftrack_connect.ui import login_tools as _login_tools
 from ftrack_connect.ui.widget import configure_scenario as _scenario_widget
 import ftrack_connect.ui.config
+from ftrack_connect.asynchronous import asynchronous
 
 
 class ConnectWidgetPlugin(object):
@@ -82,7 +83,7 @@ class ConnectWidget(QtWidgets.QWidget):
     requestApplicationClose = QtCore.Signal(object)
 
     #: Signal to emit to request connect to restart.
-    requestConnectRestart = QtCore.Signal(object)
+    requestConnectRestart = QtCore.Signal()
 
     @property
     def session(self):
@@ -108,6 +109,7 @@ class WelcomePlugin(ConnectWidget):
 
     name = "Welcome"
 
+    manager_installed = QtCore.Signal()
     # local variables for finding and installing plugin manager.
     install_path = appdirs.user_data_dir(
         'ftrack-connect-plugins', 'ftrack'
@@ -147,6 +149,7 @@ class WelcomePlugin(ConnectWidget):
 
             return url
 
+    @asynchronous
     def install(self):
         '''Install provided *plugin* item.'''
         plugin_path = self.discover_plugin_manager()
@@ -157,6 +160,12 @@ class WelcomePlugin(ConnectWidget):
 
         with zipfile.ZipFile(source_path, 'r') as zip_ref:
             zip_ref.extractall(destination_path)
+
+        self.manager_installed.emit()
+
+    def _on_manager_installed(self):
+        self.install_button.setVisible(False)
+        self.restart_button.setVisible(True)
 
     def __init__(self, session, parent=None):
         '''Instantiate the actions widget.'''
@@ -187,17 +196,29 @@ class WelcomePlugin(ConnectWidget):
         )
         self.install_button.setObjectName('primary')
 
-        label_text.setAlignment(QtCore.Qt.AlignLeft| QtCore.Qt.AlignTop)
+        self.restart_button = QtWidgets.QPushButton(
+            'Restart Now'
+        )
+
+        self.restart_button.setObjectName('primary')
+        self.restart_button.setVisible(False)
+
+        label_text.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
         label_text.setWordWrap(True)
 
         layout.addWidget(label_title, QtCore.Qt.AlignCenter | QtCore.Qt.AlignTop)
         layout.addWidget(icon_label, QtCore.Qt.AlignCenter | QtCore.Qt.AlignTop)
         layout.addWidget(label_text, QtCore.Qt.AlignCenter | QtCore.Qt.AlignTop)
         layout.addWidget(self.install_button)
+        layout.addWidget(self.restart_button)
+
         spacer = QtWidgets.QSpacerItem(0, 300, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         layout.addItem(spacer)
         self.install_button.clicked.connect(self.install)
         self.discover_plugin_manager()
+        self.manager_installed.connect(self._on_manager_installed)
+        self.restart_button.clicked.connect(self.requestConnectRestart.emit)
+
 
 
 class Application(QtWidgets.QMainWindow):
