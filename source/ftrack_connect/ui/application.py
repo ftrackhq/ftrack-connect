@@ -138,7 +138,6 @@ class WelcomePlugin(ConnectWidget):
             plugins_url = [plugin_url for plugin_url in data.get('integrations') if 'plugin-manager' in plugin_url]
             url = None
 
-            # TODO: DISABLE ONCE WE DECIDE WHERE TO PUT THE MANAGER TO DOWNLOAD
             if plugins_url:
                 url = plugins_url[0]
             else:
