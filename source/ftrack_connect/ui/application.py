@@ -135,17 +135,14 @@ class WelcomePlugin(ConnectWidget):
     def discover_plugin_manager(self):
         with urllib.request.urlopen(self.json_config_url) as url:
             data = json.loads(url.read().decode())
-            manager_url = data.get('manager')
             plugins_url = [plugin_url for plugin_url in data.get('integrations') if 'plugin-manager' in plugin_url]
             url = None
 
             # TODO: DISABLE ONCE WE DECIDE WHERE TO PUT THE MANAGER TO DOWNLOAD
             if plugins_url:
                 url = plugins_url[0]
-            elif manager_url:
-                url = manager_url
             else:
-                self.install_button.setDisabled(True)
+                self.install_button.setVisible(False)
 
             return url
 
