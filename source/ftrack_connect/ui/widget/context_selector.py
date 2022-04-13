@@ -28,8 +28,9 @@ class ContextSelector(QtWidgets.QWidget):
         self.entityBrowser = entityBrowser.EntityBrowser(self.session)
         self.entityBrowser.setMinimumWidth(600)
         self.entityPath = entityPath.EntityPath()
-        self.entityBrowseButton = QtWidgets.QPushButton('Browse')
-        applyTheme(self.entityBrowser, 'integration')
+        self.entityBrowseButton = QtWidgets.QPushButton(text='BROWSE')
+        self.entityBrowseButton.setObjectName('primary')
+
         layout = QtWidgets.QHBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
 

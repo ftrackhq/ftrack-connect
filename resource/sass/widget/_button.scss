@@ -29,8 +29,8 @@ QPushButton:disabled {
 }
 
 QPushButton#primary {
-    background-color: $brand-primary;
-    color: white;
+    //background-color: $brand-primary;
+    color: $brand-primary;
 }
 
 QPushButton#primary:hover {
