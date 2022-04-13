@@ -10,19 +10,18 @@ $color-purple-light-2: #F2EBF4;
 
 
 // Dark shades, from dark to lighter
-$color-dark-1: #232A2F;
-$color-dark-2: #282E34;
-$color-dark-3: #30363C;
-
+$color-dark-1: #131920;
+$color-dark-2: lighten($color-dark-1, 10%);
+$color-dark-3: lighten($color-dark-2, 10%);
 
 // Grays
 $gray-darker:           $color-dark-1; // #222
 $gray-dark:             $color-dark-1;   // #333
-$gray:                  $color-purple-light-1; // #555
+$gray:                  $color-dark-3; // #555
 $gray-light:            $color-dark-2;   // #999
-$gray-lighter:          $color-dark-3; // #eee
-$white-almost:          $color-dark-2;
-$white:                 $gray-lighter;
+$gray-lighter:          $color-dark-2; // #eee
+$white-almost:          $color-dark-1;
+$white:                 $color-dark-1;
 
 
 $color-green: #1CBC90;
@@ -38,7 +37,7 @@ $brand-info:            $color-blue;
 $brand-warning:         $color-yellow;
 $brand-danger:          $color-red;
 
-$body-bg:                       $gray-lighter;
+$body-bg:                       $color-dark-1;
 $text-color:                    white;
 $text-color-default:            white;
 $text-color-default-hover:      darken($text-color-default, 5%);
@@ -49,6 +48,5 @@ $text-color-drop-zone:          lighten($gray-light, 15%);
 $border-color:                  $gray-light;
 
 $overlay-bg:            $gray-dark;
-
 $inset-bg:              $gray-lighter;
 $inset-border-color:    $gray-light;
