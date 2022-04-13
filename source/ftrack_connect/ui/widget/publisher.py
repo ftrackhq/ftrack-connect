@@ -119,7 +119,7 @@ class Publisher(QtWidgets.QWidget):
         self.versionDescription = QtWidgets.QTextEdit()
         formLayout.addRow('Description', self.versionDescription)
 
-        publishButton = QtWidgets.QPushButton(text='Publish')
+        publishButton = QtWidgets.QPushButton(text='PUBLISH')
         publishButton.setObjectName('primary')
         publishButton.clicked.connect(self.publish)
 

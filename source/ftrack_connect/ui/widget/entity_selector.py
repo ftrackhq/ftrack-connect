@@ -61,6 +61,7 @@ class EntitySelector(QtWidgets.QStackedWidget):
         cancel_button = qta.icon('ftrack.cancel')
 
         self.discardEntityButton = QtWidgets.QPushButton()
+        self.discardEntityButton.setObjectName('primary')
         self.discardEntityButton.setIcon(cancel_button)
 
         self.discardEntityButton.setObjectName('entity-selector-remove-button')
