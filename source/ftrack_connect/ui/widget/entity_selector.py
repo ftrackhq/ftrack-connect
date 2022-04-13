@@ -42,7 +42,8 @@ class EntitySelector(QtWidgets.QStackedWidget):
             self._onEntityBrowserSelectionChanged
         )
 
-        self.entityBrowseButton = QtWidgets.QPushButton('Browse')
+        self.entityBrowseButton = QtWidgets.QPushButton('BROWSE')
+        self.entityBrowseButton.setObjectName('primary')
         self.entityBrowseButton.setMaximumWidth(150)
         self.assignedContextSelector = QtWidgets.QComboBox()
 

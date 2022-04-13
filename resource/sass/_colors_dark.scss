@@ -19,7 +19,7 @@ $gray-darker:           $color-dark-1; // #222
 $gray-dark:             $color-dark-1;   // #333
 $gray:                  $color-dark-3; // #555
 $gray-light:            $color-dark-2;   // #999
-$gray-lighter:          $color-dark-2; // #eee
+$gray-lighter:          $color-dark-1; // #eee
 $white-almost:          $color-dark-1;
 $white:                 $color-dark-1;
 
@@ -38,7 +38,7 @@ $brand-warning:         $color-yellow;
 $brand-danger:          $color-red;
 
 $body-bg:                       $color-dark-1;
-$text-color:                    darken(white, 10%);
+$text-color:                    darken(white, 5%);
 $text-color-default:            $text-color;
 $text-color-default-hover:      darken($text-color-default, 5%);
 $text-color-default-pressed:    darken($text-color-default, 5%);
