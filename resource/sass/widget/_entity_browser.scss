@@ -23,8 +23,8 @@ EntityBrowser QTabBar::tab:selected {
 
 
 EntityBrowser QTabBar::tab:hover {
-    background-color: darken($brand-primary, 5%);
-    border-color: darken($brand-primary, 10%);
+    background-color: $brand-primary;
+    border-color: $brand-primary;
 }
 
 
