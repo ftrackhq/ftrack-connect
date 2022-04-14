@@ -1,24 +1,24 @@
 QMenuBar {
-    background: $white;
+    background: $background-raised;
 }
 
 QMenu {
-    background: $white;
+    background: $background-raised;
 }
 
 QMenu::item {
-    background: $white;
+    background: $background-raised;
     border: 0px;
     padding: 5px;
-    color: $text-color;
+    color: $primary-color;
 }
 
 QMenu::item:selected:enabled {
-    background: $white;
+    background: $highlight-background;
 }
 
 QMenu::item:pressed:enabled {
-    background: $white;
+    background: $highlight-background;
 }
 
 QMenu::item:unchecked {

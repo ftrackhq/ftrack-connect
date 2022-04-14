@@ -1,16 +1,16 @@
 /** EntityBrowser */
 
 EntityBrowser QTabBar {
-    border: 1px solid $gray-light;
-    background: $white;
+    border: 1px solid $border;
+    background: $background-raised ;
 }
 
 
 EntityBrowser QTabBar::tab {
-    background: $brand-primary;
+    background: $primary-color ;
     min-width: 0px;
     padding: 2px 8px;
-    color: $color-white;
+    color: $body-background;
     border-radius: 3px;
     margin: 3px;
     margin-right: 0px;
@@ -18,13 +18,13 @@ EntityBrowser QTabBar::tab {
 
 
 EntityBrowser QTabBar::tab:selected {
-    color: $color-white;
+    color: $body-background;
 }
 
 
 EntityBrowser QTabBar::tab:hover {
-    background-color: $brand-primary;
-    border-color: $brand-primary;
+    background-color: $primary-color;
+    border-color: $border;
 }
 
 

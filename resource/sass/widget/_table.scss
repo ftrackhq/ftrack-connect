@@ -1,22 +1,22 @@
 /** Table */
 QTableView {
-    border: 1px solid #dadada;
+    border: 1px solid $border;
     outline: 0;
-    background: $white;
+    background: $body-background;
 
 }
 QTableView::item
 {
     border: 0px;
     padding: 5px;
-    background: $white;
-    color: $text-color;
+    background: $body-background;
+    color: $primary-color;
 }
 QTableView::item:selected
 {
-    background: $gray-lighter;
+    background: $highlight-background;
 }
 
 QHeaderView {
-    background-color: $gray-lighter;
+    background-color: $body-background;
 }

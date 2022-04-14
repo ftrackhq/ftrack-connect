@@ -1,51 +1,9 @@
-// TODO: Test and tweak the dark theme.
-
-// Primary brand colors
-$color-purple: #FFDD86;
-$color-purple-dark: darken($color-purple, 55%);
-$color-purple-light-1: lighten($color-purple, 20%);
-$color-purple-light-2: lighten($color-purple-light-1, 20%);
-
-
-
-// Dark shades, from dark to lighter
-$color-dark-1: #131920;
-$color-dark-2: lighten($color-dark-1, 10%);
-$color-dark-3: lighten($color-dark-2, 10%);
-
-// Grays
-$gray-darker:           $color-dark-1; // #222
-$gray-dark:             $color-dark-1;   // #333
-$gray:                  $color-dark-3; // #555
-$gray-light:            $color-dark-2;   // #999
-$gray-lighter:          $color-purple-dark; // #eee
-$white-almost:          $color-dark-1;
-$white:                 $color-dark-1;
-
-
-$color-green: #1CBC90;
-$color-blue: #3498DB;
-$color-orange: #E67E22;
-$color-yellow: #F1C500;
-$color-red: #E74C3C;
-$color-white: white;
-
-$brand-primary:         $color-purple;
-$brand-success:         $color-green;
-$brand-info:            $color-blue;
-$brand-warning:         $color-yellow;
-$brand-danger:          $color-red;
-
-$body-bg:                       $color-dark-1;
-$text-color:                    darken(white, 5%);
-$text-color-default:            darken($text-color, 15%);
-$text-color-default-hover:      darken($text-color-default, 5%);
-$text-color-default-pressed:    darken($text-color-default, 5%);
-$text-color-light:              white;
-$text-color-primary:            #548cd7;
-$text-color-drop-zone:          $text-color-default;
-$border-color:                  $gray-light;
-
-$overlay-bg:            $gray-dark;
-$inset-bg:              $gray-lighter;
-$inset-border-color:    $gray-light;
+$body-background : #131920;
+$background-raised : #131920;
+$primary-color : #FFDD86;
+$primary-text : rgba(255, 255, 255, 0.87);
+$secondary-text : rgba(255, 255, 255, 0.6);
+$muted-text : rgba(255, 255, 255, 0.38);
+$disabled : rgba(255, 255, 255, 0.25);
+$border : rgba(255, 255, 255, 0.1);
+$highlight-background : rgba(255, 255, 255, 0.05);

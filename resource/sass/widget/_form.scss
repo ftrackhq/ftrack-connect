@@ -1,6 +1,6 @@
 /** Form elements */
 QLabel {
-    color: $text-color;
+    color: $secondary-text ;
 }
 
 QLabel[title] {
@@ -8,35 +8,35 @@ QLabel[title] {
 }
 
 QComboBox {
-    border: 1px solid $input-border-color;
+    border: 1px solid $border;
     border-radius: 2px;
     padding: $input-padding;
-    background: $input-background;
-    selection-background-color: $input-border-color;
-    color: $text-color;
+    background: $background-raised;
+    selection-background-color: $highlight-background;
+    color: $primary-text;
 
     &:hover {
-        border-color: $input-border-color;
+        border-color: $border;
     }
 
     &:focus {
-        border: 1px solid $input-border-color-focus;
+        border: 1px solid $border;
     }
 }
 
 QTextEdit, QLineEdit  {
-    border: 1px solid $input-border-color;
+    border: 1px solid $border;
     border-radius: 2px;
     padding: $input-padding;
-    background: $input-background;
-    selection-background-color: $input-border-color;
-    color: $text-color;
+    background: $background-raised;
+    selection-background-color: $highlight-background;
+    color: $primary-text;
 
     &:hover {
-        border-color: $input-border-color;
+        border-color: $border;
     }
 
     &:focus {
-        border: 1px solid #33313F;
+        border: 1px solid $border;
     }
 }
