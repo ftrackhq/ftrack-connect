@@ -10,7 +10,7 @@ QFrame[ftrackDropZone] {
 }
 
 QFrame[ftrackDropZoneState='active'] {
-    border-color: $primary-color;
+    border-color: $success;
 }
 
 QFrame[ftrackDropZoneState='invalid'] {
