@@ -6,26 +6,24 @@ QPushButton {
     color: $text-color-default;
     padding: 4px;
     min-width: 80px;
-
 }
 
 QPushButton:hover {
-    border-color: darken($border-color, 5%);
+    border-color: $border-color;
     background-color: $gray-lighter;
     color: $text-color-default-hover;
 }
 
 QPushButton:pressed {
-    border-color: darken($border-color, 5%);
-    background-color: darken( $gray-lighter,  5%);
+    border-color: $border-color;
+    background-color: $gray-lighter;
     color: $text-color-default-pressed;
-
 }
 
 QPushButton:disabled {
-    border-color: darken($border-color, 10%);
+    border-color: $border-color;
     background-color: $gray-lighter;
-    color: lighten($text-color, 25%);
+    color: $text-color;
 }
 
 QPushButton#primary {
@@ -37,13 +35,13 @@ QPushButton#primary {
 QPushButton#primary:hover {
     background-color: $brand-primary;
     border-color: $brand-primary;
-    color: lighten($brand-primary, 90%);
+    color: $text-color;
 }
 
 QPushButton#primary:pressed {
-    background-color: darken($brand-primary, 5%);
-    border-color: darken($brand-primary, 5%);
-    color: lighten($brand-primary, 90%);
+    background-color: $brand-primary;
+    border-color: $brand-primary;
+    color: $text-color;
 }
 
 /** Flat button */
@@ -61,13 +59,13 @@ QToolButton {
 }
 
 QToolButton:hover {
-    border-color: darken($border-color, 5%);
+    border-color:$border-color;
     background-color:  $gray-lighter;
     color: white
 }
 
 QToolButton:pressed {
-    border-color: darken($border-color, 5%);
+    border-color: $border-color;
     background-color:  $gray-lighter;
     color: white
 }

@@ -14,11 +14,11 @@ QMenu::item {
 }
 
 QMenu::item:selected:enabled {
-    background: darken($white, 5%);
+    background: $white;
 }
 
 QMenu::item:pressed:enabled {
-    background: darken($white, 10%);
+    background: $white;
 }
 
 QMenu::item:unchecked {

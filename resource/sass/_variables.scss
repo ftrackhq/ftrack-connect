@@ -7,7 +7,7 @@ $font-family-base:        $font-family-roboto;
 
 // Input
 $input-background: $white;
-$input-border-color: darken($input-background, 10%);
+$input-border-color: $input-background;
 $input-border-color-focus: $brand-primary;
 $input-border-color-invalid: $brand-danger;
 $input-padding: 4px;
