@@ -12,9 +12,10 @@ QTableView::item
     background: $body-background;
     color: $primary-text;
 }
+
 QTableView::item:selected
 {
-    background: $highlight-background;
+    background: mix($body-background, $blend-color,95%);
 }
 
 QHeaderView {
