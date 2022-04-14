@@ -7,10 +7,11 @@ EntityBrowser QTabBar {
 
 
 EntityBrowser QTabBar::tab {
-    background: $primary-color ;
+    border: 1px solid $border;
+    background: $background-raised ;
     min-width: 0px;
     padding: 2px 8px;
-    color: $body-background;
+    color: $primary-text;
     border-radius: 3px;
     margin: 3px;
     margin-right: 0px;
@@ -18,13 +19,12 @@ EntityBrowser QTabBar::tab {
 
 
 EntityBrowser QTabBar::tab:selected {
-    color: $body-background;
+    background-color: $highlight-background;
 }
 
 
 EntityBrowser QTabBar::tab:hover {
-    background-color: $primary-color;
-    border-color: $border;
+    background-color: $highlight-background;
 }
 
 
