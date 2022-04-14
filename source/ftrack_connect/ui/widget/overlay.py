@@ -132,7 +132,7 @@ class BlockingOverlay(Overlay):
         self,
         parent,
         message='Processing',
-        icon=':ftrack/image/default/ftrackLogoGreyDark',
+        icon=':ftrack/titlebar/logo',
     ):
         '''Initialise with *parent*.
 
