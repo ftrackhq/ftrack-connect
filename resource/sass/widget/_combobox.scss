@@ -27,7 +27,7 @@ QComboBox QAbstractItemView::item {
 }
 
 QComboBox QAbstractItemView::item:selected {
-    background-color: $background-raised ;
+    background-color: $highlight-background ;
     color: $primary-text;
 }
 
