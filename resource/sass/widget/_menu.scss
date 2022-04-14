@@ -10,7 +10,7 @@ QMenu::item {
     background: $background-raised;
     border: 0px;
     padding: 5px;
-    color: $primary-color;
+    color: $primary-text;
 }
 
 QMenu::item:selected:enabled {
