@@ -8,7 +8,7 @@
     </qresource>
 
     <qresource prefix='ftrack/titlebar'>
-        <file alias='logo'>image/tray_icon.svg</file>
+        <file alias='logo'>image/main_icon.svg</file>
     </qresource>
 
 
