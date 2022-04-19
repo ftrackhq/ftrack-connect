@@ -1,0 +1,29 @@
+/** Table */
+QListView {
+    border: 1px solid $border;
+    outline: 0;
+    background: $body-background;
+
+}
+QListView::item
+{
+    border: 0px;
+    padding: 5px;
+    background: $body-background;
+    color: $primary-text;
+}
+
+QListView::item:selected
+{
+    background: mix($body-background, $blend-color,95%);
+}
+
+QListView::indicator:checked
+{
+    background: $primary-color;
+}
+
+QListView::indicator:unchecked
+{
+    background: mix($body-background, $blend-color,95%);
+}
