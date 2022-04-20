@@ -28,7 +28,7 @@ QListView::item:selected
 
 QListView::indicator:checked
 {
-    background: $primary-color;
+    image: theme-image('checkbox_checked');
 }
 
 QListView::indicator:unchecked
