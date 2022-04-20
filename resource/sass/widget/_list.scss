@@ -1,0 +1,46 @@
+/** Table */
+QListView {
+    border: 1px solid $border;
+    outline: 0;
+    background: $body-background;
+
+}
+QListView::item
+{
+    border: 0px;
+    padding: 5px;
+    background: $body-background;
+    color: $primary-text;
+}
+
+QListView::item:hover
+{
+    background-color: $highlight-background ;
+    color: $primary-text;
+}
+
+QListView::item:selected
+{
+    background-color: $highlight-background ;
+    color: $primary-text;
+}
+
+QListView::item:disabled
+{
+    color: mix($body-background, $blend-color,70%);
+}
+
+QListView::indicator:checked
+{
+    image: theme-image('checkbox_checked');
+}
+
+QListView::indicator:unchecked
+{
+    background: mix($body-background, $blend-color,95%);
+}
+
+QListView::indicator:hover:!checked
+{
+    background: $highlight-background;
+}

@@ -1,10 +1,10 @@
 /** Tooltips */
 
 QToolTip {
-    border: 1px solid $border-color;
+    border: 1px solid $border;
     border-radius: 2px;
-    background-color: $white;
-    color: $text-color;
+    background-color: $background-raised  ;
+    color: $primary-color ;
     // Note: Bug in Qt causes padding to be ignored in sizing on some platforms.
     padding: 3px;
 }

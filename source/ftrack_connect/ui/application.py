@@ -83,7 +83,7 @@ class ConnectWidget(QtWidgets.QWidget):
     requestApplicationClose = QtCore.Signal(object)
 
     #: Signal to emit to request connect to restart.
-    requestConnectRestart = QtCore.Signal(object)
+    requestConnectRestart = QtCore.Signal()
 
     @property
     def session(self):

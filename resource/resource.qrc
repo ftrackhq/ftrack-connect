@@ -1,27 +1,22 @@
 <RCC>
-    <qresource prefix='ftrack/image/default'>
-        <file alias='ftrackLogoGreyDark'>image/ftrack_icon_circle_dark.svg</file>
-        <file alias='ftrackLogoColor'>image/ftrack_icon_circle_light.svg</file>
-        <file alias='ftrackLogoWhite'>image/ftrack_icon_circle_white.svg</file>
-        <file alias='ftrackLogoLabelDark'>image/ftrack_logo_dark.svg</file>
-    </qresource>
-
     <qresource prefix='ftrack/image/light'>
-        <file alias='ftrackLogoColor'>image/ftrack_icon_circle_light.svg</file>
-        <file alias='ftrackLogoGreyDark'>image/ftrack_icon_circle_dark.svg</file>
-        <file alias='ftrackLogoLabelDark'>image/ftrack_logo_dark.svg</file>
         <file alias='downArrow'>image/arrow_down_light.svg</file>
+        <file alias='checkbox_unchecked'>image/checkbox/checkbox_unchecked.png</file>
+        <file alias='checkbox_checked'>image/checkbox/checkbox_checked.png</file>
+        <file alias='checkbox_unchecked_disabled'>image/checkbox/checkbox_unchecked_disabled.png</file>
+        <file alias='checkbox_checked_disabled'>image/checkbox/checkbox_checked_disabled.png</file>
     </qresource>
 
     <qresource prefix='ftrack/image/dark'>
-        <file alias='ftrackLogoColor'>image/ftrack_icon_circle_dark.svg</file>
-        <file alias='ftrackLogoGreyDark'>image/ftrack_icon_circle_light.svg</file>
-        <file alias='ftrackLogoLabelDark'>image/ftrack_logo_light.svg</file>
         <file alias='downArrow'>image/arrow_down_dark.svg</file>
+        <file alias='checkbox_unchecked'>image/checkbox/checkbox_unchecked.png</file>
+        <file alias='checkbox_checked'>image/checkbox/checkbox_checked.png</file>
+        <file alias='checkbox_unchecked_disabled'>image/checkbox/checkbox_unchecked_disabled.png</file>
+        <file alias='checkbox_checked_disabled'>image/checkbox/checkbox_checked_disabled.png</file>
     </qresource>
 
     <qresource prefix='ftrack/titlebar'>
-        <file alias='logo'>image/tray_icon.svg</file>
+        <file alias='logo'>image/main_icon.svg</file>
     </qresource>
 
 
@@ -45,7 +40,5 @@
         <file alias='medium'>font/Roboto-Medium.ttf</file>
         <file alias='ftrack'>font/ftrack-icon.ttf</file>
     </qresource>
-
-
 
 </RCC>

@@ -1,5 +1,5 @@
 QRadioButton {
-    color: $text-color-light;
+    color: $primary-text;
 }
 
 QRadioButton::indicator {
@@ -13,11 +13,8 @@ QRadioButton::indicator:unchecked:hover {}
 
 QRadioButton::indicator:unchecked:pressed {}
 
-QRadioButton::indicator:checked {
-}
+QRadioButton::indicator:checked {}
 
-QRadioButton::indicator:checked:hover {
-}
+QRadioButton::indicator:checked:hover {}
 
-QRadioButton::indicator:checked:pressed {
-}
+QRadioButton::indicator:checked:pressed {}

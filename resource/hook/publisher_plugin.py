@@ -68,7 +68,7 @@ class Publisher(ftrack_connect.ui.application.ConnectWidget):
         self.busyOverlay.hide()
         if success:
             self.blockingOverlay.setMessage(
-                'Publish finished!\n \n'
+                '<h2>Publish finished!</h2></br>'
                 'Select another task in ftrack or continue to publish using '
                 'current task.'
             )

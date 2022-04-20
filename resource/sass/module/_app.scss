@@ -1,6 +1,6 @@
 /** Application window */
 QMainWindow#ftrack-connect-window {
-    background: $white;
+    background: $body-background ;
 }
 
 QLabel#login-label {
@@ -18,7 +18,7 @@ QLabel#regular-label {
 
 QLabel#lead-label {
     font-size: 13px;
-    color: $text-color-drop-zone;
+    color: $secondary-text;
     font-weight: normal;
 }
  QPixmap{

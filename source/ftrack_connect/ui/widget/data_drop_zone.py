@@ -72,7 +72,7 @@ class DataDropZone(QtWidgets.QFrame):
         self._label = QtWidgets.QLabel('Drop files here or')
         layout.addWidget(self._label, alignment=bottomCenterAlignment)
 
-        self._browseButton = QtWidgets.QPushButton('Browse')
+        self._browseButton = QtWidgets.QPushButton('BROWSE')
         self._browseButton.setToolTip('Browse for file(s).')
         layout.addWidget(self._browseButton, alignment=topCenterAlignment)
 

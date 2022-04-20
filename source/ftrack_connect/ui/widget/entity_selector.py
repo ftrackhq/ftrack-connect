@@ -42,7 +42,7 @@ class EntitySelector(QtWidgets.QStackedWidget):
             self._onEntityBrowserSelectionChanged
         )
 
-        self.entityBrowseButton = QtWidgets.QPushButton('Browse')
+        self.entityBrowseButton = QtWidgets.QPushButton('BROWSE')
         self.entityBrowseButton.setMaximumWidth(150)
         self.assignedContextSelector = QtWidgets.QComboBox()
 
@@ -60,6 +60,7 @@ class EntitySelector(QtWidgets.QStackedWidget):
         cancel_button = qta.icon('ftrack.cancel')
 
         self.discardEntityButton = QtWidgets.QPushButton()
+        self.discardEntityButton.setObjectName('primary')
         self.discardEntityButton.setIcon(cancel_button)
 
         self.discardEntityButton.setObjectName('entity-selector-remove-button')
