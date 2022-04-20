@@ -13,10 +13,18 @@ QListView::item
     color: $primary-text;
 }
 
+QListView::item:hover
+{
+    background-color: $highlight-background ;
+    color: $primary-text;
+}
+
 QListView::item:selected
 {
-    background: mix($body-background, $blend-color,95%);
+    background-color: $highlight-background ;
+    color: $primary-text;
 }
+
 
 QListView::indicator:checked
 {
@@ -26,4 +34,9 @@ QListView::indicator:checked
 QListView::indicator:unchecked
 {
     background: mix($body-background, $blend-color,95%);
+}
+
+QListView::indicator:hover:!checked
+{
+    background: $highlight-background;
 }

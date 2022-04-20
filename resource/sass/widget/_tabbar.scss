@@ -21,6 +21,8 @@ QTabBar::tab {
     border-bottom: 3px solid $border;
 }
 
+
+
 QTabBar#application-tab-bar::tab:selected {
     background-position: bottom center;
     background-repeat: none;
