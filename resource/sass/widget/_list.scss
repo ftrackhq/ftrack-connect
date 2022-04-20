@@ -25,6 +25,10 @@ QListView::item:selected
     color: $primary-text;
 }
 
+QListView::item:disabled
+{
+    color: mix($body-background, $blend-color,70%);
+}
 
 QListView::indicator:checked
 {
