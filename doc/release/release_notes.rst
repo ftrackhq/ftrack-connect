@@ -9,6 +9,12 @@ Release Notes
 *************
 
 .. releaes:: Upcoming
+
+    .. change:: changed
+        :tags: Style
+
+        Review style and icons.
+
     .. change:: added
         :tags: SystemTray, API
 
