@@ -38,7 +38,7 @@ class Login(QtWidgets.QWidget):
         logo = QtWidgets.QLabel()
 
         logoPixmap = QtGui.QPixmap(
-            ':ftrack/image/default/ftrackLogoLabelDark'.format(theme)
+            ':ftrack/titlebar/logo'.format(theme)
         )
         logo.setPixmap(
             logoPixmap.scaled(
