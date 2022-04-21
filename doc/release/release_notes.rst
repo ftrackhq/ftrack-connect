@@ -19,6 +19,7 @@ Release Notes
         :tags: SystemTray, API
 
         Allow connect to restart.
+
     .. change:: changed
         :tags: Plugins
 

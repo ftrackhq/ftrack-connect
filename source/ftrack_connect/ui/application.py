@@ -173,7 +173,7 @@ class WelcomePlugin(ConnectWidget):
         layout.addItem(spacer)
 
         icon_label = QtWidgets.QLabel()
-        icon = qta.icon("ph.rocket", color='#BF9AC9', rotated=45, scale_factor=0.7)
+        icon = qta.icon("ph.rocket", color='#FFDD86', rotated=45, scale_factor=0.7)
         icon_label.setPixmap(icon.pixmap(icon.actualSize(QtCore.QSize(180, 180))))
         icon_label.setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignTop)
 
