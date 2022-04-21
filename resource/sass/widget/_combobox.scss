@@ -15,10 +15,10 @@ QComboBox::down-arrow {
 }
 
 QComboBox QAbstractItemView {
-    background: $input-background;
-    color: $text-color;
+    background: $background-raised ;
+    color: $primary-text ;
     outline: 0;
-    border: 1px solid $input-border-color;
+    border: 1px solid $border;
     border-radius: 2px;
 }
 
@@ -27,10 +27,10 @@ QComboBox QAbstractItemView::item {
 }
 
 QComboBox QAbstractItemView::item:selected {
-    background-color: $gray-lighter;
-    color: $text-color;
+    background-color: $highlight-background ;
+    color: $primary-text;
 }
 
 QComboBox[ftrackCurrentIndexIsDefault="true"] {
-    color: $text-color-light;
+    color: $primary-text;
 }

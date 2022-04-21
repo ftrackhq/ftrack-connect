@@ -38,7 +38,7 @@ class Login(QtWidgets.QWidget):
         logo = QtWidgets.QLabel()
 
         logoPixmap = QtGui.QPixmap(
-            ':ftrack/image/{}/ftrackLogoLabelDark'.format(theme)
+            ':ftrack/titlebar/logo'.format(theme)
         )
         logo.setPixmap(
             logoPixmap.scaled(
@@ -103,7 +103,7 @@ class Login(QtWidgets.QWidget):
         self.toggle_api_label.setObjectName('lead-label')
         self.toggle_api_label.setText(
             'Trouble signing in? '
-            '<a href="#" style="color: #935BA2;">Sign in with username and API key</a>'
+            '<a href="#" style="color: #FFDD86;">Sign in with username and API key</a>'
         )
         self.toggle_api_label.clicked.connect(self._toggle_credentials)
         layout.addWidget(

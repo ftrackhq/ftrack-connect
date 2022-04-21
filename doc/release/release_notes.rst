@@ -8,13 +8,17 @@
 Release Notes
 *************
 
-.. release:: Upcoming
+.. releaes:: Upcoming
+
+    .. change:: changed
+        :tags: Style
+
+        Review style and icons.
 
     .. change:: new
         :tags: SystemTray, API
 
         Allow connect to restart.
-
     .. change:: changed
         :tags: Plugins
 
@@ -22,8 +26,7 @@ Release Notes
         Documentation can be found in:
 
         * :ref:`Publisher documentation <ftrack-connect-publisher-widget:using/publishing>`
-        * :ref:`Launcher documentation <ftrack-connect-action-launcher-widget:using/actions>`
-
+        * :ref:`Launcher documentation <ftrack-connect-action-launcher-widget:using/actions>
 
     .. change:: changed
         :tags: Codestyle

@@ -1,6 +1,6 @@
-/** Test harness */
+** Test harness */
 
 QFrame#HarnessGuiController {
-    border: 2px inset $inset-border-color;
-    background-color: $inset-bg;
+    border: 2px inset $border;
+    background-color: $body-background;
 }
