@@ -49,3 +49,8 @@ QListView::indicator:hover:!checked
 {
     image: theme-image('checkbox_unchecked');
 }
+
+QListView::indicator:disabled
+{
+    image: theme-image('checkbox_unchecked_disabled');
+}
