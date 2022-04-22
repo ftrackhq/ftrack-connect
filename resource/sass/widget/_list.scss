@@ -30,6 +30,11 @@ QListView::item:disabled
     color: mix($body-background, $blend-color,70%);
 }
 
+QListView::indicator
+{
+    image: theme-image('checkbox_unchecked');
+}
+
 QListView::indicator:checked
 {
     image: theme-image('checkbox_checked');
