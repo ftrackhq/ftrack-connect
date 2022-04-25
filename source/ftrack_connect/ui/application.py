@@ -406,7 +406,7 @@ class Application(QtWidgets.QMainWindow):
     def showLoginWidget(self):
         '''Show the login widget.'''
         self._login_overlay = ftrack_connect.ui.widget.overlay.CancelOverlay(
-            self.loginWidget, message='Signing in'
+            self.loginWidget, message='<h2>Signing in<h2/>'
         )
 
         self._login_overlay.hide()

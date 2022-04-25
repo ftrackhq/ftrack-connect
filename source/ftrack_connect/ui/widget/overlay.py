@@ -163,6 +163,9 @@ class BlockingOverlay(Overlay):
         self.messageLabel = QtWidgets.QLabel()
         self.messageLabel.setWordWrap(True)
         self.messageLabel.setAlignment(QtCore.Qt.AlignCenter)
+
+        self.contentLayout.addSpacing(30)
+
         self.contentLayout.addWidget(self.messageLabel)
 
         self.setMessage(message)
@@ -209,7 +212,7 @@ class CancelOverlay(BusyOverlay):
         '''Initialise with *parent* and busy *message*.'''
         super(CancelOverlay, self).__init__(parent=parent, message=message)
 
-        self.contentLayout.addSpacing(10)
+        self.contentLayout.addSpacing(30)
 
         loginButton = QtWidgets.QPushButton(text='Cancel')
         loginButton.clicked.connect(self.hide)
