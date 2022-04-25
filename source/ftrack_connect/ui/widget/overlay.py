@@ -146,7 +146,7 @@ class BlockingOverlay(Overlay):
 
         self.content = QtWidgets.QFrame()
         self.content.setObjectName('content')
-        layout.addWidget(self.content, alignment=QtCore.Qt.AlignCenter)
+        layout.addWidget(self.content, alignment=QtCore.Qt.AlignCenter | QtCore.Qt.AlignTop)
 
         self.contentLayout = QtWidgets.QVBoxLayout()
         self.contentLayout.setContentsMargins(0, 0, 0, 0)
