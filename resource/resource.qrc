@@ -19,6 +19,12 @@
         <file alias='logo'>image/main_icon.svg</file>
     </qresource>
 
+    <qresource prefix='ftrack/connect/logo'>
+        <file alias='dark'>image/connect logo/ftrack Connect logo - dark theme.svg</file>
+        <file alias='light'>image/connect logo/ftrack Connect logo - light theme.svg</file>
+        <file alias='dark2x'>image/connect logo/ftrack Connect logo - dark theme@2x.svg</file>
+        <file alias='light2x'>image/connect logo/ftrack Connect logo - light theme@2x.svg</file>
+    </qresource>
 
     <qresource prefix='ftrack/logo'>
         <file alias='dark'>image/menu_bar_light.svg</file>

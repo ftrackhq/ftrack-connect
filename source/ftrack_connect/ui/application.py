@@ -36,6 +36,7 @@ from ftrack_connect.ui.widget import about as _about
 from ftrack_connect.error import NotUniqueError as _NotUniqueError
 from ftrack_connect.ui import login_tools as _login_tools
 from ftrack_connect.ui.widget import configure_scenario as _scenario_widget
+from ftrack_connect import usage
 import ftrack_connect.ui.config
 from ftrack_connect import __version__
 
@@ -214,7 +215,7 @@ class Application(QtWidgets.QMainWindow):
             - self.__connect_start_time,
         }
 
-        ftrack_connect.usage.send_event(
+        usage.send_event(
             self.session, 'USED-CONNECT', metadata, asynchronous=True
         )
 
