@@ -157,7 +157,7 @@ class BlockingOverlay(Overlay):
         if not isinstance(icon, QtGui.QIcon):
             pixmap = QtGui.QPixmap(icon)
         else:
-            pixmap = icon.pixmap(icon.actualSize(QtCore.QSize(180, 180)))
+            pixmap = icon.pixmap(icon.actualSize(QtCore.QSize(150, 150)))
 
         self.icon.setPixmap(pixmap)
         self.icon.setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignTop)
