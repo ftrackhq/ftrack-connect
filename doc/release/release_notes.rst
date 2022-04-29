@@ -10,6 +10,11 @@ Release Notes
 
 .. releaes:: Upcoming
 
+    .. change:: fixed
+        :tags: Publisher
+
+        Latest published assets are not always refreshing.
+
     .. change:: changed
         :tags: Style
 
