@@ -51,6 +51,7 @@ class ActionItem(QtWidgets.QWidget):
         multiple actions are specified.
         '''
         super(ActionItem, self).__init__(parent=parent)
+        # self.setObjectName('action-item')
         self._session = session
         self.logger = logging.getLogger(
             __name__ + '.' + self.__class__.__name__
@@ -85,7 +86,7 @@ class ActionItem(QtWidgets.QWidget):
                     self._label, actions[0].get('variant')
                 )
 
-            self._hoverIcon = 'play'
+            self._hoverIcon = None
             self._multiple = False
         else:
             self._hoverIcon = 'menu'
@@ -136,7 +137,8 @@ class ActionItem(QtWidgets.QWidget):
 
     def enterEvent(self, event):
         '''Show hover icon on mouse enter.'''
-        self._iconLabel.setIcon(qta.icon('mdi.{}'.format(self._hoverIcon)))
+        if self._hoverIcon:
+            self._iconLabel.setIcon(qta.icon('mdi.{}'.format(self._hoverIcon)))
 
     def leaveEvent(self, event):
         '''Reset action icon on mouse leave.'''

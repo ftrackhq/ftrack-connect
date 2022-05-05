@@ -18,6 +18,11 @@ Release Notes
     .. change:: changed
         :tags: Style
 
+        Review Dialogs styles.
+
+    .. change:: changed
+        :tags: Style
+
         Review style and icons.
 
     .. change:: added

@@ -117,6 +117,7 @@ class ActionIcon(Base):
     def __init__(self, parent=None, default_icon=None):
         '''Initialize action icon.'''
         super(ActionIcon, self).__init__(parent)
+        self.setObjectName('action-icon')
         self.setFrameStyle(QtWidgets.QFrame.NoFrame)
         self._default_icon = default_icon
 

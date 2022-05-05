@@ -1,3 +1,16 @@
 /** action */
 
 QAction#component-remove-action {}
+
+
+ActionItem QLabel#action-icon:hover {
+    color: $dark-blue;
+    background-color: mix($primary-color , $blend-color, 95%);
+    border-color: mix($primary-color , $blend-color, 95%);
+}
+
+ActionItem QLabel#action-icon:pressed {
+    color: $dark-blue;
+    background-color: mix($primary-color , $blend-color, 95%);
+    border-color: mix($primary-color , $blend-color, 95%);
+}
