@@ -126,6 +126,7 @@ class Publisher(QtWidgets.QWidget):
         layout.addWidget(
             publishButton, alignment=QtCore.Qt.AlignCenter, stretch=0
         )
+        self.entitySelector.forceUpdate()
 
     def setEntity(self, entity):
         '''Set current entity.'''
