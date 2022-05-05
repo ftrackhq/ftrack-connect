@@ -178,3 +178,7 @@ class EntitySelector(QtWidgets.QStackedWidget):
     def isValidBrowseSelection(self, entity):
         '''Return True if selected *entity* is valid.'''
         return True
+
+    def forceUpdate(self):
+        '''Force the emission of the entityChanged event with the current entity.'''
+        self.entityChanged.emit(self._entity)
