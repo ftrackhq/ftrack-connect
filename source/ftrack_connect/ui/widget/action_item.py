@@ -17,7 +17,7 @@ from ftrack_connect.ui.widget.thumbnail import ActionIcon
 load_icons(os.path.join(os.path.dirname(__file__), '..', '..', 'fonts'))
 
 
-class ActionItem(QtWidgets.QWidget):
+class ActionItem(QtWidgets.QFrame):
     '''Widget representing an action item.'''
 
     #: Emitted before an action is launched with action
@@ -51,14 +51,13 @@ class ActionItem(QtWidgets.QWidget):
         multiple actions are specified.
         '''
         super(ActionItem, self).__init__(parent=parent)
-        # self.setObjectName('action-item')
         self._session = session
         self.logger = logging.getLogger(
             __name__ + '.' + self.__class__.__name__
         )
 
         self.setMouseTracking(True)
-        self.setFixedSize(QtCore.QSize(75, 105))
+        self.setFixedSize(QtCore.QSize(75, 95))
         layout = QtWidgets.QVBoxLayout()
         layout.setAlignment(QtCore.Qt.AlignCenter)
         layout.setSpacing(0)
@@ -111,6 +110,8 @@ class ActionItem(QtWidgets.QWidget):
         self.setIcon(self._icon)
         if self._description:
             self.setToolTip(self._description)
+
+        self.setObjectName('action-item')
 
     def mouseReleaseEvent(self, event):
         '''Launch action on mouse release.
