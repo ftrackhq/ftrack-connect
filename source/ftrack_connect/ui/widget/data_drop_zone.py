@@ -153,8 +153,10 @@ class DataDropZone(QtWidgets.QFrame):
                         'folders are not supported. This will be enabled in a '
                         'later release of ftrack connect.'
                     )
+                    self._setDropZoneState('invalid')
                 QtWidgets.QMessageBox.warning(self, 'Invalid file', message)
 
+        self._setDropZoneState()
         return validPaths
 
     def clear(self):
