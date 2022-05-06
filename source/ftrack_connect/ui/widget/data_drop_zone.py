@@ -126,7 +126,7 @@ class DataDropZone(QtWidgets.QFrame):
         self.style().polish(self)
         self.update()
 
-    def _processMimeData(self, mimeData):
+    def _processMimeData(self, mimeData, raise_message=True):
         '''Return a list of valid filepaths.'''
         validPaths = []
 
@@ -145,19 +145,22 @@ class DataDropZone(QtWidgets.QFrame):
                 self.log.debug(u'Dropped file: {0}'.format(localPath))
             else:
                 self._setDropZoneState('invalid')
-                message = u'Invalid file: "{0}" is not a valid file.'.format(
-                    localPath
-                )
-                if os.path.isdir(localPath):
-                    message = (
-                        'Folders not supported.\n\nIn the current version, '
-                        'folders are not supported. This will be enabled in a '
-                        'later release of ftrack connect.'
+
+                if raise_message:
+                    message = u'Invalid file: "{0}" is not a valid file.'.format(
+                        localPath
                     )
+                    if os.path.isdir(localPath):
+                        message = (
+                            'Folders not supported.\n\nIn the current version, '
+                            'folders are not supported. This will be enabled in a '
+                            'later release of ftrack connect.'
+                        )
 
-                QtWidgets.QMessageBox.warning(self, 'Invalid file', message)
+                    QtWidgets.QMessageBox.warning(self, 'Invalid file', message)
 
-        self._setDropZoneState()
+                    self._setDropZoneState()
+
         return validPaths
 
     def clear(self):
@@ -169,8 +172,9 @@ class DataDropZone(QtWidgets.QFrame):
         '''Override dragEnterEvent and accept all events.'''
         event.setDropAction(QtCore.Qt.CopyAction)
         event.accept()
-        self._processMimeData(event.mimeData())
-        self._setDropZoneState('active')
+        files = self._processMimeData(event.mimeData(), raise_message=False)
+        if files:
+            self._setDropZoneState('active')
 
     def dragLeaveEvent(self, event):
         '''Override dragLeaveEvent and accept all events.'''
