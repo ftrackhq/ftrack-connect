@@ -4,7 +4,7 @@
 import os
 
 from ftrack_connect.qt import QtWidgets, QtCore, QtGui
-
+import qtawesome as qta
 import ftrack_connect.error
 
 # Thumbnail limits from ftrack server.
@@ -50,8 +50,9 @@ class ThumbnailDropZone(QtWidgets.QFrame):
         self.imageLabel = QtWidgets.QLabel()
         self.setDropZoneText()
         layout.addWidget(self.imageLabel, alignment=QtCore.Qt.AlignLeft)
-
+        cancel_icon = qta.icon('ftrack.cancel')
         self.removeButton = QtWidgets.QPushButton()
+        self.removeButton.setIcon(cancel_icon)
         self.removeButton.setObjectName('thumbnail-drop-zone-remove-button')
         self.removeButton.setVisible(False)
         self.removeButton.setFlat(True)
