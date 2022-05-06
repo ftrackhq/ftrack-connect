@@ -13,6 +13,11 @@ Release Notes
     .. change:: fixed
         :tags: Publisher
 
+        Add missing icons and set correct state for drop zone on folders.
+
+    .. change:: fixed
+        :tags: Publisher
+
         Latest published assets are not always refreshing.
 
     .. change:: changed
