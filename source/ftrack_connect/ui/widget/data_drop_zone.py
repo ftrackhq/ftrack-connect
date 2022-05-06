@@ -144,6 +144,7 @@ class DataDropZone(QtWidgets.QFrame):
                 validPaths.append(localPath)
                 self.log.debug(u'Dropped file: {0}'.format(localPath))
             else:
+                self._setDropZoneState('invalid')
                 message = u'Invalid file: "{0}" is not a valid file.'.format(
                     localPath
                 )
@@ -153,7 +154,7 @@ class DataDropZone(QtWidgets.QFrame):
                         'folders are not supported. This will be enabled in a '
                         'later release of ftrack connect.'
                     )
-                    self._setDropZoneState('invalid')
+
                 QtWidgets.QMessageBox.warning(self, 'Invalid file', message)
 
         self._setDropZoneState()
@@ -168,6 +169,7 @@ class DataDropZone(QtWidgets.QFrame):
         '''Override dragEnterEvent and accept all events.'''
         event.setDropAction(QtCore.Qt.CopyAction)
         event.accept()
+        self._processMimeData(event.mimeData())
         self._setDropZoneState('active')
 
     def dragLeaveEvent(self, event):
