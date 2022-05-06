@@ -85,7 +85,7 @@ class ActionItem(QtWidgets.QFrame):
                     self._label, actions[0].get('variant')
                 )
 
-            self._hoverIcon = None
+            self._hoverIcon = 'rocket'
             self._multiple = False
         else:
             self._hoverIcon = 'menu'
@@ -108,6 +108,7 @@ class ActionItem(QtWidgets.QFrame):
 
         self.setText(self._label)
         self.setIcon(self._icon)
+
         if self._description:
             self.setToolTip(self._description)
 
@@ -136,10 +137,15 @@ class ActionItem(QtWidgets.QFrame):
 
         self._launchAction(action)
 
+    def mousePressEvent(self, event):
+        super(ActionItem, self).mousePressEvent(event)
+        self.styleSheet()
+        self.setStyleSheet(self.styleSheet())
+
     def enterEvent(self, event):
         '''Show hover icon on mouse enter.'''
         if self._hoverIcon:
-            self._iconLabel.setIcon(qta.icon('mdi.{}'.format(self._hoverIcon)))
+            self._iconLabel.setIcon(qta.icon('mdi.{}'.format(self._hoverIcon), color='#FFCD45'))
 
     def leaveEvent(self, event):
         '''Reset action icon on mouse leave.'''
