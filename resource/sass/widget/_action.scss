@@ -7,11 +7,5 @@ QAction#component-remove-action {}
     border: 1px solid $border;
     border-radius: 2px;
     color: $dark-blue;
-    //background-color: $highlight-background;
-}
-.ActionItem:clicked {
-    border: 1px solid $border;
-    border-radius: 2px;
-    color: $dark-blue;
     background-color: $highlight-background;
 }

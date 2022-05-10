@@ -137,11 +137,6 @@ class ActionItem(QtWidgets.QFrame):
 
         self._launchAction(action)
 
-    # def mousePressEvent(self, event):
-    #     super(ActionItem, self).mousePressEvent(event)
-    #     self.styleSheet()
-    #     self.setStyleSheet(self.styleSheet())
-
     def enterEvent(self, event):
         '''Show hover icon on mouse enter.'''
         if self._hoverIcon:
