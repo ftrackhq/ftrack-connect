@@ -113,12 +113,20 @@ class ActionItem(QtWidgets.QFrame):
             self.setToolTip(self._description)
 
         self.setObjectName('action-item')
+        self.setState()
+
+    def setState(self, state='inactive'):
+        self.setProperty('state', state)
+        self.style().unpolish(self)
+        self.style().polish(self)
+        self.update()
 
     def mouseReleaseEvent(self, event):
         '''Launch action on mouse release.
 
         First show menu with variants if multiple actions are available.
         '''
+        self.setState('active')
         if self._multiple:
             self.logger.debug('Launching menu to select action variant')
             menu = QtWidgets.QMenu(self)
@@ -139,12 +147,14 @@ class ActionItem(QtWidgets.QFrame):
 
     def enterEvent(self, event):
         '''Show hover icon on mouse enter.'''
+        self.setState('active')
         if self._hoverIcon:
             self.setIcon(qta.icon('mdi.{}'.format(self._hoverIcon)))
 
     def leaveEvent(self, event):
         '''Reset action icon on mouse leave.'''
         self.setIcon(self._icon)
+        self.setState()
 
     def setText(self, text):
         '''Set *text* on text label.'''
