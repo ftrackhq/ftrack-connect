@@ -88,7 +88,7 @@ class ActionItem(QtWidgets.QFrame):
             self._hoverIcon = None
             self._multiple = False
         else:
-            self._hoverIcon = None
+            self._hoverIcon = 'menu'
             self._multiple = True
 
         self.action_icon = qta.icon('ftrack.actions')
@@ -140,7 +140,7 @@ class ActionItem(QtWidgets.QFrame):
     def enterEvent(self, event):
         '''Show hover icon on mouse enter.'''
         if self._hoverIcon:
-            self._iconLabel.setIcon(qta.icon('mdi.{}'.format(self._hoverIcon)))
+            self.setIcon(qta.icon('mdi.{}'.format(self._hoverIcon)))
 
     def leaveEvent(self, event):
         '''Reset action icon on mouse leave.'''
