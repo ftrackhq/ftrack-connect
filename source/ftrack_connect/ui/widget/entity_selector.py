@@ -12,6 +12,17 @@ from ftrack_connect.ui.widget import entity_browser as _entity_browser
 from ftrack_connect.asynchronous import asynchronous
 
 
+class ContextList(QtWidgets.QComboBox):
+    # https://forum.qt.io/topic/14676/how-can-i-keep-a-qcombobox-from-changing-width-due-to-contents/15
+    # force combo box to minimum size.
+
+    def sizeHint(self):
+        return self.minimumSizeHint()
+
+    def minimumSizeHint(self):
+        return QtCore.QSize(50, QtWidgets.QComboBox.minimumSizeHint(self).height())
+
+
 class EntitySelector(QtWidgets.QStackedWidget):
     '''Entity selector widget.'''
 
@@ -44,7 +55,7 @@ class EntitySelector(QtWidgets.QStackedWidget):
 
         self.entityBrowseButton = QtWidgets.QPushButton('BROWSE')
         self.entityBrowseButton.setMaximumWidth(150)
-        self.assignedContextSelector = QtWidgets.QComboBox()
+        self.assignedContextSelector = ContextList()
 
         selectionWidget.layout().addWidget(self.assignedContextSelector)
         selectionWidget.layout().addWidget(self.entityBrowseButton)
