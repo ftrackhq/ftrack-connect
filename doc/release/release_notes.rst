@@ -16,6 +16,11 @@ Release Notes
         Remove play button from action launch and review style.
 
     .. change:: fixed
+        :tags: UX
+
+        Interface expand on long context paths.
+
+    .. change:: fixed
         :tags: Publisher
 
         Add missing icons and set correct state for drop zone on folders.
