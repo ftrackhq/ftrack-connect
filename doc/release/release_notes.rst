@@ -10,6 +10,11 @@ Release Notes
 
 .. releaes:: Upcoming
 
+    .. change:: changed
+        :tags: Style
+
+        Remove play button from action launch and review style.
+
     .. change:: fixed
         :tags: UX
 

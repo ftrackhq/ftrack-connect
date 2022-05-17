@@ -3,14 +3,16 @@
 QAction#component-remove-action {}
 
 
-ActionItem QLabel#action-icon:hover {
+.ActionItem[state=inactive] {
+    //border: 1px solid $border;
+    //border-radius: 2px;
     color: $dark-blue;
-    background-color: mix($primary-color , $blend-color, 95%);
-    border-color: mix($primary-color , $blend-color, 95%);
+    //background-color: $background;
 }
 
-ActionItem QLabel#action-icon:pressed {
+.ActionItem[state=active] {
+    border: 1px solid $border;
+    border-radius: 2px;
     color: $dark-blue;
-    background-color: mix($primary-color , $blend-color, 95%);
-    border-color: mix($primary-color , $blend-color, 95%);
+    background-color: $highlight-background;
 }
