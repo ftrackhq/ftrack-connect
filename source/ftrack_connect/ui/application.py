@@ -36,6 +36,7 @@ from ftrack_connect.ui.widget import login as _login
 from ftrack_connect.ui.widget import about as _about
 from ftrack_connect.ui import login_tools as _login_tools
 from ftrack_connect.ui.widget import configure_scenario as _scenario_widget
+from ftrack_connect import usage
 import ftrack_connect.ui.config
 from ftrack_connect.asynchronous import asynchronous
 
@@ -312,7 +313,7 @@ class Application(QtWidgets.QMainWindow):
             - self.__connect_start_time,
         }
 
-        ftrack_connect.usage.send_event(
+        usage.send_event(
             self.session, 'USED-CONNECT', metadata, asynchronous=True
         )
 
@@ -503,7 +504,7 @@ class Application(QtWidgets.QMainWindow):
     def showLoginWidget(self):
         '''Show the login widget.'''
         self._login_overlay = ftrack_connect.ui.widget.overlay.CancelOverlay(
-            self.loginWidget, message='Signing in'
+            self.loginWidget, message='<h2>Signing in<h2/>'
         )
 
         self._login_overlay.hide()

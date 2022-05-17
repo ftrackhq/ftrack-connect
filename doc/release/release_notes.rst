@@ -13,6 +13,31 @@ Release Notes
     .. change:: changed
         :tags: Style
 
+        Remove play button from action launch and review style.
+
+    .. change:: fixed
+        :tags: UX
+
+        Interface expand on long context paths.
+
+    .. change:: fixed
+        :tags: Publisher
+
+        Add missing icons and set correct state for drop zone on folders.
+
+    .. change:: fixed
+        :tags: Publisher
+
+        Latest published assets are not always refreshing.
+
+    .. change:: changed
+        :tags: Style
+
+        Review Dialogs styles.
+
+    .. change:: changed
+        :tags: Style
+
         Review style and icons.
 
     .. change:: new

@@ -133,6 +133,7 @@ class BlockingOverlay(Overlay):
         parent,
         message='Processing',
         icon=':ftrack/titlebar/logo',
+        icon_size = 120
     ):
         '''Initialise with *parent*.
 
@@ -146,23 +147,31 @@ class BlockingOverlay(Overlay):
 
         self.content = QtWidgets.QFrame()
         self.content.setObjectName('content')
-        layout.addWidget(self.content, alignment=QtCore.Qt.AlignCenter)
+        layout.addWidget(self.content, alignment=QtCore.Qt.AlignCenter | QtCore.Qt.AlignTop)
 
         self.contentLayout = QtWidgets.QVBoxLayout()
         self.contentLayout.setContentsMargins(0, 0, 0, 0)
         self.content.setLayout(self.contentLayout)
-
+        self.icon_size = icon_size
         self.icon = QtWidgets.QLabel()
-        pixmap = QtGui.QPixmap(icon)
-        self.icon.setPixmap(
-            pixmap.scaledToHeight(36, mode=QtCore.Qt.SmoothTransformation)
-        )
-        self.icon.setAlignment(QtCore.Qt.AlignCenter)
-        self.contentLayout.addWidget(self.icon)
+
+        if not isinstance(icon, QtGui.QIcon):
+            pixmap = QtGui.QPixmap(icon).scaled(self.icon_size, self.icon_size, QtCore.Qt.KeepAspectRatio)
+        else:
+            pixmap = icon.pixmap(icon.actualSize(QtCore.QSize(self.icon_size, self.icon_size)))
+
+        self.icon.setPixmap(pixmap)
+        self.icon.setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignTop)
+
+        self.contentLayout.insertWidget(
+            1, self.icon, alignment=QtCore.Qt.AlignCenter)
 
         self.messageLabel = QtWidgets.QLabel()
         self.messageLabel.setWordWrap(True)
-        self.messageLabel.setAlignment(QtCore.Qt.AlignCenter)
+        self.messageLabel.setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignBottom)
+
+        self.contentLayout.addSpacing(30)
+
         self.contentLayout.addWidget(self.messageLabel)
 
         self.setMessage(message)
@@ -209,7 +218,7 @@ class CancelOverlay(BusyOverlay):
         '''Initialise with *parent* and busy *message*.'''
         super(CancelOverlay, self).__init__(parent=parent, message=message)
 
-        self.contentLayout.addSpacing(10)
+        self.contentLayout.addSpacing(30)
 
         loginButton = QtWidgets.QPushButton(text='Cancel')
         loginButton.clicked.connect(self.hide)

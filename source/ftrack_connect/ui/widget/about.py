@@ -23,7 +23,7 @@ class AboutDialog(QtWidgets.QDialog):
     '''About widget.'''
 
     def __init__(
-        self, parent, icon=':ftrack/image/default/ftrackLogoLabelDark'
+        self, parent, icon=':ftrack/connect/logo/dark2x'
     ):
         super(AboutDialog, self).__init__(parent)
         self.setWindowTitle('About connect')
@@ -35,7 +35,7 @@ class AboutDialog(QtWidgets.QDialog):
         self.icon = QtWidgets.QLabel()
         pixmap = QtGui.QPixmap(icon)
         self.icon.setPixmap(
-            pixmap.scaledToHeight(25, mode=QtCore.Qt.SmoothTransformation)
+            pixmap.scaledToHeight(50, mode=QtCore.Qt.SmoothTransformation)
         )
         self.icon.setAlignment(QtCore.Qt.AlignCenter)
         layout.addWidget(self.icon)
