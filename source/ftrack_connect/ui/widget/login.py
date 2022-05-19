@@ -86,6 +86,7 @@ class Login(QtWidgets.QWidget):
         label.setAlignment(QtCore.Qt.AlignCenter)
         label.setWordWrap(True)
 
+
         # Min height is required due to issue when word wrap is True and window
         # being resized which cases text to dissapear.
         label.setMinimumHeight(50)
@@ -110,7 +111,21 @@ class Login(QtWidgets.QWidget):
         layout.addWidget(
             self.toggle_api_label, alignment=QtCore.Qt.AlignCenter
         )
+
+        self.untoggle_api_label = ClickableLabel()
+        self.untoggle_api_label.setObjectName('lead-label')
+        self.untoggle_api_label.hide()
+        self.untoggle_api_label.setText(
+            'Trouble signing in? '
+            '<a href="#" style="color: #FFDD86;">Sign in with ftrack instance.</a>'
+        )
+        self.untoggle_api_label.clicked.connect(self._untoggle_credentials)
+        layout.addWidget(
+            self.untoggle_api_label, alignment=QtCore.Qt.AlignCenter
+        )
         layout.addSpacing(20)
+
+
 
     def on_set_error(self, error):
         '''Set the error text and disable the login widget.'''
@@ -129,3 +144,10 @@ class Login(QtWidgets.QWidget):
         self.apiKey.show()
         self.username.show()
         self.toggle_api_label.hide()
+        self.untoggle_api_label.show()
+
+    def _untoggle_credentials(self):
+        self.apiKey.hide()
+        self.username.hide()
+        self.toggle_api_label.show()
+        self.untoggle_api_label.hide()
