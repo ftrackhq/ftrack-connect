@@ -11,6 +11,11 @@ Release Notes
 .. releaes:: Upcoming
 
     .. change:: changed
+        :tags: Login
+
+        Provide link to get back on logging in through instance address.
+
+    .. change:: changed
         :tags: Style
 
         Remove play button from action launch and review style.
