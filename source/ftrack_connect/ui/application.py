@@ -19,6 +19,7 @@ import tempfile
 from ftrack_connect.qt import QtCore, QtWidgets, QtGui
 
 import qtawesome as qta
+from ftrack_connect import load_icons
 
 import ftrack_api
 import ftrack_api._centralized_storage_scenario
@@ -855,6 +856,7 @@ class Application(QtWidgets.QMainWindow):
             for ResponsePlugin in responses:
 
                 try:
+                    load_icons(os.path.join(os.path.dirname(__file__),  '..', 'fonts'))
                     widget_plugin = ResponsePlugin(self.session)
 
                 except Exception:
