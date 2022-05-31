@@ -135,6 +135,7 @@ class WelcomePlugin(ConnectWidget):
         return temp_path
 
     def discover_plugin_manager(self):
+        '''Provide url where to download the plugin manager from.'''
         with urllib.request.urlopen(self.json_config_url) as url:
             data = json.loads(url.read().decode())
             plugins_url = [plugin_url for plugin_url in data.get('integrations') if 'plugin-manager' in plugin_url]
