@@ -11,6 +11,11 @@ Release Notes
 .. releaes:: Upcoming
 
     .. change:: changed
+        :tags: Login
+
+        Provide link to get back on logging in through instance address.
+
+    .. change:: changed
         :tags: Style
 
         Remove play button from action launch and review style.
@@ -40,10 +45,19 @@ Release Notes
 
         Review style and icons.
 
-    .. change:: added
+    .. change:: new
         :tags: SystemTray, API
 
         Allow connect to restart.
+
+    .. change:: changed
+        :tags: Plugins
+
+        Remove publisher and launcher from connect codebase.
+        Documentation can be found in:
+
+        * :ref:`Publisher documentation <ftrack-connect-publisher-widget:using/publishing>`
+        * :ref:`Launcher documentation <ftrack-connect-action-launcher-widget:using/actions>
 
     .. change:: changed
         :tags: Codestyle
@@ -58,7 +72,7 @@ Release Notes
 
         Random crashes on discovering on null context.
 
-    .. change:: added
+    .. change:: new
         :tags: Module
 
         Provide ftrak_connect.qt module to abstract imported Qt modules.
@@ -101,22 +115,22 @@ Release Notes
 
         Context selection is changed to a list of assigned tasks.
 
-    .. change:: added
+    .. change:: new
         :tags: UX
 
         Indicator during discovery of actions.
 
-    .. change:: added
+    .. change:: new
         :tags: API
 
         Provide ConnectWidget Plugin with custom name attribute to render.
 
-    .. change:: added
+    .. change:: new
         :tags: API
 
         Improve ConnectWidget error logging.
 
-    .. change:: added
+    .. change:: new
         :tags: API
 
         Emit usage data for Connect session duration along version and os type.
