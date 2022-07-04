@@ -8,6 +8,13 @@
 Release Notes
 *************
 
+.. release:: Upcoming
+
+    .. change:: fixed
+        :tags: Linux
+
+        Application shortcut points to wrong executable.
+
 .. release:: 2.0.0-rc-6
     :date: 2022-06-01
 
