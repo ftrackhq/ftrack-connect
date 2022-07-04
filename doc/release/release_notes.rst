@@ -8,6 +8,14 @@
 Release Notes
 *************
 
+
+.. release:: Upcoming
+
+    .. change:: fixed
+        :tags: style
+
+        Variant are highlighted black on light style.
+
 .. release:: 2.0.0-rc-6
     :date: 2022-06-01
 
