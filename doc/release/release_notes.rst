@@ -8,6 +8,14 @@
 Release Notes
 *************
 
+
+.. release:: Upcoming
+
+    .. change:: changed
+        :tags: tray
+
+        Windows and Linux use color icon.
+
 .. release:: 2.0.0-rc-6
     :date: 2022-06-01
 
