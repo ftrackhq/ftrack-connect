@@ -132,9 +132,11 @@ class AboutDialog(QtWidgets.QDialog):
         application_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
 
         # ensure name is set correctly if the connect is packaged or from sources.
-        app_name = 'ftrack_connect_package'
-        if getattr(sys, 'frozen', False):
-            app_name = 'ftrack-connect'
+        is_frozen = getattr(sys, 'frozen', False)
+        print(f'app is frozen {is_frozen}')
+        app_name = 'ftrack-connect'
+        if is_frozen:
+            app_name = 'ftrack_connect'
 
         content = textwrap.dedent(
             '''\
@@ -142,9 +144,10 @@ class AboutDialog(QtWidgets.QDialog):
 
         [Desktop Entry]
         Type=Application
+        Version=2.0
         Icon={0}/logo.svg
-        Name=ftrack connect package
-        Comment=ftrack connect package
+        Name=ftrack connect
+        Comment=ftrack connect
         Exec={0}/{1}
         StartupNotify=true
         Terminal=false

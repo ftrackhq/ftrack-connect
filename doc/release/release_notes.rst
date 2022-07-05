@@ -8,13 +8,27 @@
 Release Notes
 *************
 
-
 .. release:: Upcoming
-
     .. change:: changed
         :tags: tray
 
         Windows and Linux use color icon.
+
+    .. change:: fixed
+        :tags: style
+
+        Variant are highlighted black on light style.
+
+    .. change:: fixed
+        :tags: Linux
+
+        Application shortcut points to wrong executable.
+
+    .. change:: fixed
+        :tags: UX
+
+        Path with unicode are not rendered spaced correctly.
+
 
 .. release:: 2.0.0-rc-6
     :date: 2022-06-01
