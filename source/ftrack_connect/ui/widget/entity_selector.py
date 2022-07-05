@@ -100,7 +100,7 @@ class EntitySelector(QtWidgets.QStackedWidget):
 
     def _getPath(self, entity):
         '''Return path to *entity*.'''
-        path = [e['name'] for e in entity.get('link', [])]
+        path = [e['name'].strip() for e in entity.get('link', [])]
         return ' / '.join(path)
 
     def _fetch_user_tasks(self, task_number=10):

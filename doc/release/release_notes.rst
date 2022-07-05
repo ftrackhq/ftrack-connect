@@ -8,6 +8,13 @@
 Release Notes
 *************
 
+.. release:: Upcoming
+
+    .. change:: fixed
+        :tags: UX
+
+        Path with unicode are not rendered spaced correctly.
+
 .. release:: 2.0.0-rc-6
     :date: 2022-06-01
 
