@@ -11,6 +11,11 @@ Release Notes
 .. release:: Upcoming
 
     .. change:: fixed
+        :tags: style
+
+        Variant are highlighted black on light style.
+
+    .. change:: fixed
         :tags: Linux
 
         Application shortcut points to wrong executable.
