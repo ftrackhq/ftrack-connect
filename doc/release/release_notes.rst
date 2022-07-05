@@ -11,6 +11,10 @@ Release Notes
 .. release:: Upcoming
 
     .. change:: fixed
+        :tags: UX
+
+        Path with unicode are not rendered spaced correctly.
+    .. change:: fixed
         :tags: Linux
 
         Application shortcut points to wrong executable.

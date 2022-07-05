@@ -24,7 +24,7 @@ class EntityPath(QtWidgets.QLineEdit):
         if not entity:
             return
 
-        names = [e['name'] for e in entity.get('link', [])]
+        names = [e['name'].strip() for e in entity.get('link', [])]
 
         self.path_ready.emit(names)
 
