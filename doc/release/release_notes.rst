@@ -14,6 +14,10 @@ Release Notes
         :tags: UX
 
         Path with unicode are not rendered spaced correctly.
+    .. change:: fixed
+        :tags: Linux
+
+        Application shortcut points to wrong executable.
 
 .. release:: 2.0.0-rc-6
     :date: 2022-06-01
