@@ -278,7 +278,7 @@ class Application(QtWidgets.QMainWindow):
         if platform.system() == 'Darwin':
             result_logo = logo_path.format('darwin/{}'.format(theme))
         else:
-            result_logo = logo_path.format(theme)
+            result_logo = self.ftrack_title_icon(theme)
 
         return result_logo
 

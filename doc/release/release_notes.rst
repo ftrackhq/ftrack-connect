@@ -9,6 +9,10 @@ Release Notes
 *************
 
 .. release:: Upcoming
+    .. change:: changed
+        :tags: tray
+
+        Windows and Linux use color icon.
 
     .. change:: fixed
         :tags: style
