@@ -8,7 +8,9 @@
 Release Notes
 *************
 
+
 .. release:: Upcoming
+
     .. change:: changed
         :tags: tray
 
@@ -80,7 +82,7 @@ Release Notes
         Documentation can be found in:
 
         * :ref:`Publisher documentation <ftrack-connect-publisher-widget:using/publishing>`
-        * :ref:`Launcher documentation <ftrack-connect-action-launcher-widget:using/actions>
+        * :ref:`Launcher documentation <ftrack-connect-action-launcher-widget:using/actions>`
 
     .. change:: changed
         :tags: Codestyle
@@ -217,7 +219,6 @@ Release Notes
 
         Cannot publish after a failed publish, and need to restart connect.
 
-
 .. release:: 2.0.0-rc-2
     :date: 2021-07-13
 
@@ -235,7 +236,7 @@ Release Notes
         Integrations are returned sorted by name in About page.
 
     .. change:: changed
-        :tags: ConnectWidetPlugin
+        :tags: ConnectWidgetPlugin
 
         Improve error handling.
 
@@ -246,7 +247,6 @@ Release Notes
         :tags: UI
 
         Allow connect to be always on top of other windows.
-
 
 .. release:: 2.0.0-beta-3
     :date: 2021-05-21
@@ -308,21 +308,32 @@ Release Notes
         :tags: code
 
         Port code to python3.
-        
+
 
 .. warning:: 
 
-    This is the last version supporting `ftrack-python-legacy-api <https://bitbucket.org/ftrack/ftrack-python-legacy-api>`_ / python 2.X and related modules and integrations.
+    This is the last version supporting `ftrack-python-legacy-api <https://bitbucket.org/
 
 
-.. release:: 1.1.9
+.. release:: 1.1.10
+    :date: 2021-05-21
+
+    .. change:: fixed
+        :tags: doc
+
+        Provide requirement file for RTD builds... release:: 1.1.9
     :date: 2021-03-11
 
     .. change:: fixed
         :tags: open_directory
 
         Opening component breaks on cloud paths.
- 
+
+    .. change:: fixed
+        :tags: Application launcher
+
+        Standalone installation does not correctly inject dependencies at application startup.
+
 
 .. release:: 1.1.8
     :date: 2020-01-21
@@ -346,12 +357,12 @@ Release Notes
 .. release:: 1.1.6
     :date: 2018-10-8
 
-    .. change:: changed
+  .. change:: changed
         :tags: Ui
 
         Update icons and style.
 
-    .. change:: fixed
+  .. change:: fixed
         :tags: Internal
 
         util.open_directory fails on Windows when path includes spaces.
@@ -359,17 +370,17 @@ Release Notes
 .. release:: 1.1.5
     :date: 2018-9-13
 
-    .. change:: fixed
+  .. change:: fixed
         :tags: Logging
 
         logger breaks with non ascii path.
 
-    .. change:: changed
+  .. change:: changed
         :tags: Logging
 
         Improve logging configuration.
 
-    .. change:: fixed
+  .. change:: fixed
         :tags: Ui
 
         Application versions are not correctly sorted.
@@ -488,6 +499,7 @@ Release Notes
         Changed from using legacy API locations to using locations from the
         ftrack-python-api. Make sure to read the migration notes before
         upgrading:
+        :ref:`release/migration/upcoming/developer_notes`
 
     .. change:: fixed
         :tags: Internal
@@ -498,6 +510,10 @@ Release Notes
         :tags: Publish
 
         The new api and locations are used for publishing.
+
+        .. seealso::
+
+            :ref:`Read more <release/migration/upcoming/developer_notes>`
 
     .. change:: changed
         :tags: Internal
@@ -884,7 +900,7 @@ Release Notes
         :tags: Developer, Tutorial
 
         Added tutorial on how to add you own custom applications and how
-        to modify the environment.
+        to modify the environment. :ref:`Read more <developing/tutorial/custom_applications>`
 
     .. change:: changed
         :tags: Publisher
