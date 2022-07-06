@@ -14,7 +14,7 @@ Release Notes
     .. change:: changed
         :tags: tray
 
-        Windows and Linux use color icon.
+        Windows and Linux use color icon in system tray.
 
     .. change:: fixed
         :tags: style
