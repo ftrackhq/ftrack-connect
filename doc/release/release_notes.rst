@@ -11,6 +11,11 @@ Release Notes
 
 .. release:: Upcoming
 
+    .. change:: fixed
+        :tags: UX
+
+        User's tasks include inactive projects.
+
     .. change:: changed
         :tags: tray
 

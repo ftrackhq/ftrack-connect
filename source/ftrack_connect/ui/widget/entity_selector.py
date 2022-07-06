@@ -112,9 +112,9 @@ class EntitySelector(QtWidgets.QStackedWidget):
         )
 
         assigned_tasks = self.session.query(
-            'select priority, assignments.resource.username, link, status.name from Task '
+            'select project, priority, assignments.resource.username, link, status.name from Task '
             'where assignments any (resource.username = "{0}") and '
-            'status.name not_in ("Omitted", "On Hold", "Completed") '
+            'status.name not_in ("Omitted", "On Hold", "Completed") and project.status is "active" '
             'order by priority.sort '
             'limit {1}'.format(self.session.api_user, task_number)
         ).all()
