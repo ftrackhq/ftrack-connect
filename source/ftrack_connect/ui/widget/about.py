@@ -141,14 +141,13 @@ class AboutDialog(QtWidgets.QDialog):
         content = textwrap.dedent(
             '''\
         #!/usr/bin/env xdg-open
-
         [Desktop Entry]
         Type=Application
-        Version=2.0
+        Version=1.0
         Icon={0}/logo.svg
-        Name=ftrack connect
-        Comment=ftrack connect
-        Exec={0}/{1}
+        Name=ftrack Connect
+        Comment=ftrack Connect
+        Exec="{0}/{1}"
         StartupNotify=true
         Terminal=false
         '''.format(
