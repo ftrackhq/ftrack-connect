@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-from QtExt import QtWidgets, QtCore, QtGui
+from ftrack_connect.qt import QtWidgets, QtCore, QtGui
 
 
 class LineEditIconButton(QtWidgets.QToolButton):
@@ -18,7 +18,7 @@ class LineEditIconButton(QtWidgets.QToolButton):
 
     def paintEvent(self, event):
         '''Handle paint *event*.'''
-        painter = QtWidgets.QPainter(self)
+        painter = QtGui.QPainter(self)
 
         # Note: isDown should ideally use the 'active' state, but in most styles
         # this has no proper feedback.
@@ -29,9 +29,7 @@ class LineEditIconButton(QtWidgets.QToolButton):
                 state = QtGui.QIcon.Selected
 
         iconPixmap = self.icon().pixmap(
-            QtCore.QSize(self.iconSize, self.iconSize),
-            state,
-            QtGui.QIcon.Off
+            QtCore.QSize(self.iconSize, self.iconSize), state, QtGui.QIcon.Off
         )
 
         iconRegion = QtCore.QRect(
@@ -49,12 +47,11 @@ class LineEdit(QtWidgets.QLineEdit):
         '''Initialise line edit.'''
         self._actionButtons = []
         self._iconSize = QtCore.QSize(
-            LineEditIconButton.iconSize + 2,
-            LineEditIconButton.iconSize + 2
+            LineEditIconButton.iconSize + 2, LineEditIconButton.iconSize + 2
         )
         self._iconRegion = QtCore.QSize(
             self._iconSize.width() + LineEditIconButton.iconMargin,
-            self._iconSize.height()
+            self._iconSize.height(),
         )
         super(LineEdit, self).__init__(*args, **kw)
 
@@ -70,7 +67,7 @@ class LineEdit(QtWidgets.QLineEdit):
             currentTextMargins.left(),
             currentTextMargins.top(),
             currentTextMargins.right() + self._iconRegion.width(),
-            currentTextMargins.bottom()
+            currentTextMargins.bottom(),
         )
 
     def removeAction(self, action):
@@ -96,7 +93,7 @@ class LineEdit(QtWidgets.QLineEdit):
             currentTextMargins.left(),
             currentTextMargins.top(),
             currentTextMargins.right() - self._iconRegion.width(),
-            currentTextMargins.bottom()
+            currentTextMargins.bottom(),
         )
 
     def resizeEvent(self, event):
@@ -110,9 +107,9 @@ class LineEdit(QtWidgets.QLineEdit):
         widgetGeometry = QtCore.QRect(
             QtCore.QPoint(
                 contentRegion.width() - self._iconRegion.width(),
-                (contentRegion.height() - self._iconRegion.height()) / 2
+                (contentRegion.height() - self._iconRegion.height()) / 2,
             ),
-            self._iconSize
+            self._iconSize,
         )
 
         for button in self._actionButtons:

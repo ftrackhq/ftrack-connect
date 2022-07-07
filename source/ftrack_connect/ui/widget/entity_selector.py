@@ -1,11 +1,26 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
 
-from QtExt import QtWidgets, QtCore, QtGui
-import ftrack
+import operator
+
+from ftrack_connect.qt import QtWidgets, QtCore, QtGui
+import qtawesome as qta
 
 from ftrack_connect.ui.widget import entity_path as _entity_path
 from ftrack_connect.ui.widget import entity_browser as _entity_browser
+
+from ftrack_connect.asynchronous import asynchronous
+
+
+class ContextList(QtWidgets.QComboBox):
+    # https://forum.qt.io/topic/14676/how-can-i-keep-a-qcombobox-from-changing-width-due-to-contents/15
+    # force combo box to minimum size.
+
+    def sizeHint(self):
+        return self.minimumSizeHint()
+
+    def minimumSizeHint(self):
+        return QtCore.QSize(50, QtWidgets.QComboBox.minimumSizeHint(self).height())
 
 
 class EntitySelector(QtWidgets.QStackedWidget):
@@ -13,29 +28,34 @@ class EntitySelector(QtWidgets.QStackedWidget):
 
     entityChanged = QtCore.Signal(object)
 
-    def __init__(self, *args, **kwargs):
-        '''Instantiate the entity selector widget.'''
-        super(EntitySelector, self).__init__(*args, **kwargs)
-        self._entity = None
+    @property
+    def session(self):
+        '''Return current session.'''
+        return self._session
 
+    def __init__(self, session, parent=None):
+        '''Instantiate the entity selector widget.'''
+        super(EntitySelector, self).__init__(parent=parent)
+        self._entity = None
+        self._user_tasks = []
+        self._session = session
         # Create widget used to select an entity.
         selectionWidget = QtWidgets.QFrame()
         selectionWidget.setLayout(QtWidgets.QHBoxLayout())
         selectionWidget.layout().setContentsMargins(0, 0, 0, 0)
         self.insertWidget(0, selectionWidget)
 
-        self.entityBrowser = _entity_browser.EntityBrowser(parent=self)
+        self.entityBrowser = _entity_browser.EntityBrowser(
+            self.session, parent=self
+        )
         self.entityBrowser.setMinimumSize(600, 400)
         self.entityBrowser.selectionChanged.connect(
             self._onEntityBrowserSelectionChanged
         )
 
-        self.entityBrowseButton = QtWidgets.QPushButton('Browse')
-
-        # TODO: Once the link is available through the API change this to a
-        # combo with assigned tasks.
-        self.assignedContextSelector = QtWidgets.QLineEdit()
-        self.assignedContextSelector.setReadOnly(True)
+        self.entityBrowseButton = QtWidgets.QPushButton('BROWSE')
+        self.entityBrowseButton.setMaximumWidth(150)
+        self.assignedContextSelector = ContextList()
 
         selectionWidget.layout().addWidget(self.assignedContextSelector)
         selectionWidget.layout().addWidget(self.entityBrowseButton)
@@ -48,14 +68,13 @@ class EntitySelector(QtWidgets.QStackedWidget):
 
         self.entityPath = _entity_path.EntityPath()
         presentationWidget.layout().addWidget(self.entityPath)
+        cancel_button = qta.icon('ftrack.cancel')
 
         self.discardEntityButton = QtWidgets.QPushButton()
-        removeIcon = QtGui.QIcon(
-            QtGui.QPixmap(':/ftrack/image/light/remove')
-        )
-        self.discardEntityButton.setIconSize(QtCore.QSize(20, 20))
-        self.discardEntityButton.setIcon(removeIcon)
-        self.discardEntityButton.setFixedWidth(20)
+        self.discardEntityButton.setObjectName('primary')
+        self.discardEntityButton.setIcon(cancel_button)
+
+        self.discardEntityButton.setObjectName('entity-selector-remove-button')
         self.discardEntityButton.clicked.connect(
             self._onDiscardEntityButtonClicked
         )
@@ -63,10 +82,54 @@ class EntitySelector(QtWidgets.QStackedWidget):
         presentationWidget.layout().addWidget(self.discardEntityButton)
 
         self.entityChanged.connect(self.entityPath.setEntity)
+        self.assignedContextSelector.currentIndexChanged.connect(
+            self.updateEntityPath
+        )
+
         self.entityChanged.connect(self._updateIndex)
+
         self.entityBrowseButton.clicked.connect(
             self._onEntityBrowseButtonClicked
         )
+        assigned_tasks = self._fetch_user_tasks()
+
+        if assigned_tasks:
+            self.assignedContextSelector.setCurrentIndex(1)
+        else:
+            self._onDiscardEntityButtonClicked()
+
+    def _getPath(self, entity):
+        '''Return path to *entity*.'''
+        path = [e['name'].strip() for e in entity.get('link', [])]
+        return ' / '.join(path)
+
+    def _fetch_user_tasks(self, task_number=10):
+        '''Update assigned list.'''
+        self._user_tasks = [None]  # add placeholder for fake label below
+        self.assignedContextSelector.clear()
+        self.assignedContextSelector.addItem(
+            '- Select a task or browse. - ', None
+        )
+
+        assigned_tasks = self.session.query(
+            'select project, priority, assignments.resource.username, link, status.name from Task '
+            'where assignments any (resource.username = "{0}") and '
+            'status.name not_in ("Omitted", "On Hold", "Completed") and project.status is "active" '
+            'order by priority.sort '
+            'limit {1}'.format(self.session.api_user, task_number)
+        ).all()
+
+        for task in assigned_tasks:
+            self.assignedContextSelector.addItem(self._getPath(task), task)
+            self._user_tasks.append(task)
+
+        return assigned_tasks
+
+    def updateEntityPath(self, index):
+        entity = self.assignedContextSelector.itemData(
+            index, QtCore.Qt.UserRole
+        )
+        self.setEntity(entity)
 
     def _updateIndex(self, entity):
         '''Update the widget when entity changes.'''
@@ -78,6 +141,8 @@ class EntitySelector(QtWidgets.QStackedWidget):
     def _onDiscardEntityButtonClicked(self):
         '''Handle discard entity button clicked.'''
         self.setEntity(None)
+        self.assignedContextSelector.setCurrentIndex(0)
+        self._fetch_user_tasks()
 
     def _onEntityBrowseButtonClicked(self):
         '''Handle entity browse button clicked.'''
@@ -85,12 +150,12 @@ class EntitySelector(QtWidgets.QStackedWidget):
         if self._entity is not None:
             location = []
             try:
-                parents = self._entity.getParents()
+                parents = self._entity['ancestors']
             except AttributeError:
                 pass
             else:
                 for parent in parents:
-                    location.append(parent.getId())
+                    location.append(parent['id'])
 
             location.reverse()
             self.entityBrowser.setLocation(location)
@@ -99,15 +164,7 @@ class EntitySelector(QtWidgets.QStackedWidget):
         if self.entityBrowser.exec_():
             selected = self.entityBrowser.selected()
             if selected:
-                # Translate new api entity to instance of ftrack.Task
-                # TODO: this should not be necessary once connect has been
-                # updated to use the new api.
-                if selected[0].entity_type == 'Project':
-                    entity = ftrack.Project(selected[0]['id'])
-                else:
-                    entity = ftrack.Task(selected[0]['id'])
-
-                self.setEntity(entity)
+                self.setEntity(selected[0])
             else:
                 self.setEntity(None)
 
@@ -132,3 +189,7 @@ class EntitySelector(QtWidgets.QStackedWidget):
     def isValidBrowseSelection(self, entity):
         '''Return True if selected *entity* is valid.'''
         return True
+
+    def forceUpdate(self):
+        '''Force the emission of the entityChanged event with the current entity.'''
+        self.entityChanged.emit(self._entity)

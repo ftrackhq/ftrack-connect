@@ -1,6 +1,6 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
-from QtExt import QtCore, QtWidgets
+from ftrack_connect.qt import QtCore, QtWidgets
 
 
 class FlowLayout(QtWidgets.QLayout):
@@ -65,8 +65,16 @@ class FlowLayout(QtWidgets.QLayout):
 
         for item in self.itemList:
             wid = item.widget()
-            spaceX = self.spacing() + wid.style().layoutSpacing(QtWidgets.QSizePolicy.PushButton, QtWidgets.QSizePolicy.PushButton, QtCore.Qt.Horizontal)
-            spaceY = self.spacing() + wid.style().layoutSpacing(QtWidgets.QSizePolicy.PushButton, QtWidgets.QSizePolicy.PushButton, QtCore.Qt.Vertical)
+            spaceX = self.spacing() + wid.style().layoutSpacing(
+                QtWidgets.QSizePolicy.PushButton,
+                QtWidgets.QSizePolicy.PushButton,
+                QtCore.Qt.Horizontal,
+            )
+            spaceY = self.spacing() + wid.style().layoutSpacing(
+                QtWidgets.QSizePolicy.PushButton,
+                QtWidgets.QSizePolicy.PushButton,
+                QtCore.Qt.Vertical,
+            )
             nextX = x + item.sizeHint().width() + spaceX
             if nextX - spaceX > rect.right() and lineHeight > 0:
                 x = rect.x()
@@ -75,7 +83,9 @@ class FlowLayout(QtWidgets.QLayout):
                 lineHeight = 0
 
             if not testOnly:
-                item.setGeometry(QtCore.QRect(QtCore.QPoint(x, y), item.sizeHint()))
+                item.setGeometry(
+                    QtCore.QRect(QtCore.QPoint(x, y), item.sizeHint())
+                )
 
             x = nextX
             lineHeight = max(lineHeight, item.sizeHint().height())
@@ -86,14 +96,14 @@ class FlowLayout(QtWidgets.QLayout):
 class ResizeScrollArea(QtWidgets.QScrollArea):
     '''A QScrollArea that propagates the resizing to any FlowLayout children.'''
 
-    def __init(self, parent=None):  
+    def __init(self, parent=None):
         QtWidgets.QScrollArea.__init__(self, parent)
 
     def resizeEvent(self, event):
         wrapper = self.findChild(QtWidgets.QWidget)
         flow = wrapper.findChild(FlowLayout)
-        
-        if wrapper and flow:            
+
+        if wrapper and flow:
             width = self.viewport().width()
             height = flow.heightForWidth(width)
             size = QtCore.QSize(width, height)
@@ -110,8 +120,14 @@ class ScrollingFlowWidget(QtWidgets.QWidget):
     Use its addWidget() method to flow children into it.
     '''
 
-    def __init__(self,parent=None):
-        super(ScrollingFlowWidget,self).__init__(parent)
+    @property
+    def session(self):
+        '''Return current session.'''
+        return self._session
+
+    def __init__(self, session, parent=None):
+        super(ScrollingFlowWidget, self).__init__(parent=parent)
+        self._session = session
         grid = QtWidgets.QGridLayout(self)
         scroll = ResizeScrollArea(parent)
         self._wrapper = QtWidgets.QWidget(scroll)

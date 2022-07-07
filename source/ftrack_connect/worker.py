@@ -3,7 +3,7 @@
 
 import sys
 
-from QtExt import QtCore
+from ftrack_connect.qt import QtCore
 
 
 class Worker(QtCore.QThread):
@@ -14,23 +14,23 @@ class Worker(QtCore.QThread):
 
         *args* should be a list of positional arguments and *kwargs* a
         mapping of keyword arguments to pass to the function on execution.
-        
+
         Store function call as self.result. If an exception occurs
         store as self.error.
 
         Example::
-        
+
             try:
                 worker = Worker(theQuestion, [42])
                 worker.start()
-        
+
                 while worker.isRunning():
                     app = QtGui.QApplication.instance()
                     app.processEvents()
-        
+
                 if worker.error:
                     raise worker.error[1], None, worker.error[2]
-        
+
             except Exception as error:
                 traceback.print_exc()
                 QtGui.QMessageBox.critical(
@@ -39,7 +39,7 @@ class Worker(QtCore.QThread):
                     'An unhandled error occurred:'
                     '\\n{0}'.format(error)
                 )
-        
+
         '''
         super(Worker, self).__init__(parent=parent)
         self.function = function

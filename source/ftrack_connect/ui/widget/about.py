@@ -4,11 +4,18 @@ import os
 import json
 import sys
 import textwrap
+import platform
+import ftrack_api
 
-from QtExt import QtCore, QtWidgets, QtGui
-
+from ftrack_connect.qt import (
+    QtCore,
+    QtWidgets,
+    QtGui,
+    __version__ as QtVersion,
+)
 
 from ftrack_connect.config import get_log_directory
+
 import ftrack_connect.util
 
 
@@ -16,8 +23,7 @@ class AboutDialog(QtWidgets.QDialog):
     '''About widget.'''
 
     def __init__(
-        self, parent,
-        icon=':ftrack/image/default/ftrackLogoLabelDark'
+        self, parent, icon=':ftrack/connect/logo/dark2x'
     ):
         super(AboutDialog, self).__init__(parent)
         self.setWindowTitle('About connect')
@@ -29,7 +35,7 @@ class AboutDialog(QtWidgets.QDialog):
         self.icon = QtWidgets.QLabel()
         pixmap = QtGui.QPixmap(icon)
         self.icon.setPixmap(
-            pixmap.scaledToHeight(25, mode=QtCore.Qt.SmoothTransformation)
+            pixmap.scaledToHeight(50, mode=QtCore.Qt.SmoothTransformation)
         )
         self.icon.setAlignment(QtCore.Qt.AlignCenter)
         layout.addWidget(self.icon)
@@ -52,7 +58,7 @@ class AboutDialog(QtWidgets.QDialog):
 
         layout.addWidget(self.loggingButton)
 
-        if sys.platform == 'linux2':
+        if 'linux' in sys.platform:
             self.createApplicationShortcutButton = QtWidgets.QPushButton(
                 'Create application shortcut'
             )
@@ -68,6 +74,12 @@ class AboutDialog(QtWidgets.QDialog):
         layout.addWidget(self.debugTextEdit)
 
     def _onDebugButtonClicked(self):
+        '''Handle debug button clicked.'''
+        self.debugButton.hide()
+        self.debugTextEdit.show()
+        self.adjustSize()
+
+    def _onWidgetButtonClicked(self):
         '''Handle debug button clicked.'''
         self.debugButton.hide()
         self.debugTextEdit.show()
@@ -95,7 +107,7 @@ class AboutDialog(QtWidgets.QDialog):
 
     def _onCreateApplicationShortcutClicked(self):
         '''Create a desktop entry for Connect.'''
-        if sys.platform != 'linux2':
+        if 'linux' not in sys.platform:
             return
 
         if os.path.realpath(__file__).startswith(os.path.expanduser('~')):
@@ -119,29 +131,38 @@ class AboutDialog(QtWidgets.QDialog):
 
         application_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
 
-        content = textwrap.dedent('''\
-        #!/usr/bin/env xdg-open
+        # ensure name is set correctly if the connect is packaged or from sources.
+        is_frozen = getattr(sys, 'frozen', False)
+        print(f'app is frozen {is_frozen}')
+        app_name = 'ftrack-connect'
+        if is_frozen:
+            app_name = 'ftrack_connect'
 
+        content = textwrap.dedent(
+            '''\
+        #!/usr/bin/env xdg-open
         [Desktop Entry]
         Type=Application
+        Version=1.0
         Icon={0}/logo.svg
-        Name=ftrack connect package
-        Comment=ftrack connect package
-        Exec={0}/ftrack_connect_package
+        Name=ftrack Connect
+        Comment=ftrack Connect
+        Exec="{0}/{1}"
         StartupNotify=true
         Terminal=false
-        '''.format(application_dir))
+        '''.format(
+                application_dir, app_name
+            )
+        )
 
         with open(filepath, 'w+') as f:
             f.write(content)
 
         messageBox = QtWidgets.QMessageBox(parent=self)
-        messageBox.setText(
-            u'Wrote shortcut file to: {0}.'.format(filepath)
-        )
+        messageBox.setText(u'Wrote shortcut file to: {0}.'.format(filepath))
         messageBox.exec_()
 
-    def setInformation(self, versionData, user, server):
+    def setInformation(self, versionData, user, server, widget_plugins):
         '''Set displayed *versionData*, *user*, *server*.'''
         core = [plugin for plugin in versionData if plugin.get('core')]
         plugins = [
@@ -149,34 +170,45 @@ class AboutDialog(QtWidgets.QDialog):
         ]
 
         coreTemplate = '''
-        <h4>Version:</h4>
-        <p>{core_versions}</p>
-        <h4>Server and user:</h4>
-        <p>{server}<br>
-        {user}<br></p>
+            <p><b>Connect: </b>{core_versions}</p>
+            <hr>
+            <p><b>Python API: </b>{api_versions}</p>
+            <p><b>PySide: </b>{pyside_version}</p>
+            <p><b>Qt: </b>{qt_version}</p>
+            <p><b>Python Version: </b>{python_version}</p>     
+            <p><b>Hostname: </b>{host}</p>
+            <p><b>Os: </b>{os}</p>
+            <hr>  
+            <p><b>Server: </b>{server}</p>
+            <p><b>User: </b>{user}</p>
         '''
-
         itemTemplate = '{name}: {version}<br>'
 
         coreVersions = ''
         for _core in core:
             coreVersions += itemTemplate.format(
-                name=_core['name'],
-                version=_core['version']
+                name=_core['name'], version=_core['version']
             )
 
         content = coreTemplate.format(
             core_versions=coreVersions,
             server=server,
-            user=user
+            user=user,
+            api_versions=ftrack_api.__version__,
+            pyside_version=QtVersion,
+            qt_version=QtCore.qVersion(),
+            python_version=sys.version,
+            host=platform.node(),
+            os=platform.platform(),
         )
 
         if plugins:
+            # deduplicate list of dictionary.
+            plugins = [dict(t) for t in {tuple(d.items()) for d in plugins}]
             pluginVersions = ''
             for _plugin in plugins:
                 pluginVersions += itemTemplate.format(
-                    name=_plugin['name'],
-                    version=_plugin['version']
+                    name=_plugin['name'], version=_plugin['version']
                 )
 
             content += '<h4>Plugins:</h4>{0}'.format(pluginVersions)

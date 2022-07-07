@@ -52,7 +52,9 @@ class SingleInstance(object):
                 .replace('\\', '-'),
                 flavor_id,
             )
-            self.lockfile = os.path.normpath(tempfile.gettempdir() + '/' + basename)
+            self.lockfile = os.path.normpath(
+                tempfile.gettempdir() + '/' + basename
+            )
 
         logger.debug('SingleInstance lockfile: {}'.format(self.lockfile))
         if sys.platform == 'win32':
@@ -61,13 +63,17 @@ class SingleInstance(object):
                 # previous execution was interrupted)
                 if os.path.exists(self.lockfile):
                     os.unlink(self.lockfile)
-                self.fd = os.open(self.lockfile, os.O_CREAT | os.O_EXCL | os.O_RDWR)
+                self.fd = os.open(
+                    self.lockfile, os.O_CREAT | os.O_EXCL | os.O_RDWR
+                )
             except OSError:
                 type, e, tb = sys.exc_info()
                 if e.errno == 13:
-                    logger.error('Another instance is already running, quitting.')
+                    logger.error(
+                        'Another instance is already running, quitting.'
+                    )
                     raise SingleInstanceException()
-                print e.errno
+                print(e.errno)
                 raise
         else:  # non Windows
             self.fp = open(self.lockfile, 'w')
@@ -80,7 +86,9 @@ class SingleInstance(object):
         self.initialized = True
 
     def __del__(self):
+        logger.debug('Attempting to remove lockfile.')
         if not self.initialized:
+            logger.debug('Singleton not initialized.')
             return
         try:
             if sys.platform == 'win32':
@@ -91,9 +99,12 @@ class SingleInstance(object):
                 fcntl.lockf(self.fp, fcntl.LOCK_UN)
                 if os.path.isfile(self.lockfile):
                     os.unlink(self.lockfile)
+
+            logger.debug('Singleton {} removed.'.format(self.lockfile))
+
         except Exception as e:
             if logger:
                 logger.error(e)
             else:
-                print 'Unloggable error: {0}'.format(e)
+                print('Unloggable error: {0}'.format(e))
             sys.exit(-1)

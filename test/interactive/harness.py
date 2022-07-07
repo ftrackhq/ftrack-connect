@@ -6,8 +6,8 @@ import logging
 import argparse
 import signal
 
-from PySide import QtGui
-
+from Qt import QtGui, QtWidgets, QtCore
+import ftrack_api
 import ftrack_connect.ui.theme
 
 
@@ -15,34 +15,35 @@ import ftrack_connect.ui.theme
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 
-class HarnessGui(QtGui.QDialog):
+class HarnessGui(QtWidgets.QDialog):
     '''Harness gui for widget.'''
 
-    def __init__(self, widget, controller=None, parent=None):
+    def __init__(self, session, widget, controller=None, parent=None):
         '''Initialise harness with *widget* and optional *controller*.'''
         super(HarnessGui, self).__init__(parent=parent)
-        self.setLayout(QtGui.QVBoxLayout())
+        self.session = session
+        self.setLayout(QtWidgets.QVBoxLayout())
 
         self.widget = widget
         self.layout().addWidget(self.widget, stretch=1)
 
         self.controller = controller
         if self.controller:
-            self.controlGroup = QtGui.QFrame()
+            self.controlGroup = QtWidgets.QFrame()
             self.controlGroup.setObjectName('HarnessGuiController')
             self.layout().addWidget(self.controlGroup, stretch=0)
 
-            controlGroupLayout = QtGui.QVBoxLayout()
+            controlGroupLayout = QtWidgets.QVBoxLayout()
             controlGroupLayout.setContentsMargins(0, 0, 0, 0)
             self.controlGroup.setLayout(controlGroupLayout)
 
             controlGroupLayout.addWidget(self.controller, stretch=0)
 
             self.controlGroup.setSizePolicy(
-                QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Maximum
+                QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Maximum
             )
 
-        self.layout().setSizeConstraint(QtGui.QLayout.SetMinAndMaxSize)
+        self.layout().setSizeConstraint(QtWidgets.QLayout.SetMinAndMaxSize)
 
 
 class Harness(object):
@@ -51,6 +52,9 @@ class Harness(object):
     Subclass this and implement constructWidget. Then call run.
 
     '''
+
+    def __init__(self):
+        self.session = ftrack_api.Session()
 
     def constructWidget(self):
         '''Return widget instance to test.'''
@@ -74,22 +78,28 @@ class Harness(object):
         # Allow setting of logging level from arguments.
         loggingLevels = {}
         for level in (
-            logging.NOTSET, logging.DEBUG, logging.INFO, logging.WARNING,
-            logging.ERROR, logging.CRITICAL
+            logging.NOTSET,
+            logging.DEBUG,
+            logging.INFO,
+            logging.WARNING,
+            logging.ERROR,
+            logging.CRITICAL,
         ):
             loggingLevels[logging.getLevelName(level).lower()] = level
 
         parser.add_argument(
-            '-v', '--verbosity',
+            '-v',
+            '--verbosity',
             help='Set the logging output verbosity.',
             choices=loggingLevels.keys(),
-            default='info'
+            default='info',
         )
         parser.add_argument(
-            '-t', '--theme',
+            '-t',
+            '--theme',
             help='Set the theme to use.',
             choices=['light', 'dark'],
-            default='light'
+            default='light',
         )
 
         namespace = parser.parse_args(arguments)
@@ -97,12 +107,12 @@ class Harness(object):
         logging.basicConfig(level=loggingLevels[namespace.verbosity])
 
         # Construct global application.
-        application = QtGui.QApplication(arguments)
+        application = QtWidgets.QApplication(arguments)
 
         # Construct test harness and apply theme.
         widget = self.constructWidget()
         controller = self.constructController(widget)
-        harnessGui = HarnessGui(widget, controller)
+        harnessGui = HarnessGui(self.session, widget, controller)
         ftrack_connect.ui.theme.applyTheme(harnessGui, namespace.theme)
 
         harnessGui.show()

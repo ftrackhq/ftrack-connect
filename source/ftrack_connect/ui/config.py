@@ -14,10 +14,7 @@ logger = logging.getLogger('ftrack_connect.ui.config')
 def get_config_file_path():
     '''Return config file path.'''
     config_file = os.path.join(
-        appdirs.user_data_dir(
-            'ftrack-connect', 'ftrack'
-        ),
-        'config.json'
+        appdirs.user_data_dir('ftrack-connect', 'ftrack'), 'config.json'
     )
 
     return config_file
@@ -29,7 +26,7 @@ def read_json_config():
     config = None
 
     if os.path.isfile(config_file):
-        logger.info(u'Reading config from {0}'.format(config_file))
+        logger.debug(u'Reading config from {0}'.format(config_file))
 
         with open(config_file, 'r') as file:
             try:

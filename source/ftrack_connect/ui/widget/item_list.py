@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-from QtExt import QtWidgets, QtCore
+from ftrack_connect.qt import QtWidgets, QtCore
 
 import ftrack_connect.ui.widget.list
 
@@ -27,7 +27,9 @@ class ItemList(QtWidgets.QFrame):
         super(ItemList, self).__init__(parent=parent)
 
         self.setLayout(QtWidgets.QVBoxLayout())
-        self.setFrameStyle(QtWidgets.QFrame.StyledPanel | QtWidgets.QFrame.NoFrame)
+        self.setFrameStyle(
+            QtWidgets.QFrame.StyledPanel | QtWidgets.QFrame.NoFrame
+        )
 
         # List
         self.list = ftrack_connect.ui.widget.list.List()

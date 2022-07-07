@@ -5,12 +5,11 @@
 
 import os
 
-from QtExt import QtWidgets, QtCore, QtGui
-import ftrack_api
+from ftrack_connect.qt import QtWidgets, QtCore, QtGui, QtCompat
+import qtawesome as qta
 
 import ftrack_connect.ui.model.entity_tree
 import ftrack_connect.ui.widget.overlay
-import ftrack_connect.session
 
 
 class EntityBrowser(QtWidgets.QDialog):
@@ -22,7 +21,7 @@ class EntityBrowser(QtWidgets.QDialog):
     #: Signal when selection changes. Pass new selection.
     selectionChanged = QtCore.Signal(object)
 
-    def __init__(self, root=None, parent=None):
+    def __init__(self, session, root=None, parent=None):
         '''Initialise browser with *root* entity.
 
         Use an empty *root* to start with list of projects.
@@ -35,7 +34,7 @@ class EntityBrowser(QtWidgets.QDialog):
         self._selected = []
         self._updatingNavigationBar = False
 
-        self._session = ftrack_connect.session.get_session()
+        self._session = session
 
         self._construct()
         self._postConstruction()
@@ -47,24 +46,23 @@ class EntityBrowser(QtWidgets.QDialog):
         self.headerLayout = QtWidgets.QHBoxLayout()
 
         self.navigationBar = QtWidgets.QTabBar()
+        self.navigationBar.setIconSize(QtCore.QSize(self.size() / 2))
         self.navigationBar.setExpanding(False)
         self.navigationBar.setDrawBase(False)
         self.headerLayout.addWidget(self.navigationBar, stretch=1)
 
+        up_button = qta.icon('mdi.chevron-up')
         self.navigateUpButton = QtWidgets.QToolButton()
+        self.navigateUpButton.setIcon(up_button)
+
         self.navigateUpButton.setObjectName('entity-browser-up-button')
-        self.navigateUpButton.setIcon(
-            QtGui.QIcon(':ftrack/image/light/upArrow')
-        )
         self.navigateUpButton.setToolTip('Navigate up a level.')
         self.headerLayout.addWidget(self.navigateUpButton)
 
+        reload_button = qta.icon('mdi6.sync')
         self.reloadButton = QtWidgets.QToolButton()
+        self.reloadButton.setIcon(reload_button)
         self.reloadButton.setObjectName('entity-browser-reload-button')
-
-        self.reloadButton.setIcon(
-            QtGui.QIcon(':ftrack/image/light/reload')
-        )
         self.reloadButton.setToolTip('Reload listing from server.')
         self.headerLayout.addWidget(self.reloadButton)
 
@@ -87,7 +85,7 @@ class EntityBrowser(QtWidgets.QDialog):
             root=ftrack_connect.ui.model.entity_tree.ItemFactory(
                 self._session, self._root
             ),
-            parent=self
+            parent=self,
         )
         proxy.setSourceModel(model)
         proxy.setDynamicSortFilter(True)
@@ -127,23 +125,14 @@ class EntityBrowser(QtWidgets.QDialog):
         self.model.sourceModel().loadStarted.connect(self._onLoadStarted)
         self.model.sourceModel().loadEnded.connect(self._onLoadEnded)
 
-        # Compatibility layer for PySide2/Qt5.
-        # Please see: https://github.com/mottosso/Qt.py/issues/72
-        # for more information.
-        try:
-            self.view.horizontalHeader().setResizeMode(
-                QtWidgets.QHeaderView.ResizeToContents
-            )
-            self.view.horizontalHeader().setResizeMode(
-                0, QtWidgets.QHeaderView.Stretch
-            )
-        except Exception:
-            self.view.horizontalHeader().setSectionResizeMode(
-                QtWidgets.QHeaderView.ResizeToContents
-            )
-            self.view.horizontalHeader().setSectionResizeMode(
-                0, QtWidgets.QHeaderView.Stretch
-            )
+        QtCompat.setSectionResizeMode(
+            self.view.horizontalHeader(),
+            QtWidgets.QHeaderView.ResizeToContents,
+        )
+
+        QtCompat.setSectionResizeMode(
+            self.view.horizontalHeader(), 0, QtWidgets.QHeaderView.Stretch
+        )
 
         self.acceptButton.clicked.connect(self.accept)
         self.cancelButton.clicked.connect(self.reject)
@@ -180,9 +169,8 @@ class EntityBrowser(QtWidgets.QDialog):
         '''
         # Ensure root children loaded in order to begin search.
         rootIndex = self.model.index(-1, -1)
-        if (
-            self.model.hasChildren(rootIndex)
-            and self.model.canFetchMore(rootIndex)
+        if self.model.hasChildren(rootIndex) and self.model.canFetchMore(
+            rootIndex
         ):
             self.model.fetchMore(rootIndex)
 
@@ -192,17 +180,14 @@ class EntityBrowser(QtWidgets.QDialog):
         matchingIndex = rootIndex
         searchIndex = self.model.index(0, 0)
         for identity in location:
-            matches = self.model.match(
-                searchIndex, role, identity
-            )
+            matches = self.model.match(searchIndex, role, identity)
             if not matches:
                 break
 
             matchingIndex = matches[0]
-            if (
-                self.model.hasChildren(matchingIndex)
-                and self.model.canFetchMore(matchingIndex)
-            ):
+            if self.model.hasChildren(
+                matchingIndex
+            ) and self.model.canFetchMore(matchingIndex):
                 self.model.fetchMore(matchingIndex)
 
             searchIndex = self.model.index(0, 0, parent=matchingIndex)
@@ -267,15 +252,11 @@ class EntityBrowser(QtWidgets.QDialog):
         index = self.view.rootIndex()
         while index.isValid():
             item = self.model.item(index)
-            entries.append(
-                dict(icon=item.icon, label=item.name, index=index)
-            )
+            entries.append(dict(icon=item.icon, label=item.name, index=index))
             index = self.model.parent(index)
 
         item = self.model.root
-        entries.append(
-            dict(icon=item.icon, label=item.name, index=None)
-        )
+        entries.append(dict(icon=item.icon, label=item.name, index=None))
 
         entries.reverse()
         for entry in entries:

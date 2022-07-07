@@ -17,6 +17,7 @@ def asynchronous(method):
             This is needed in threads because of
             https://sourceforge.net/tracker/?func=detail&atid=105470&aid=1230540&group_id=5470
             '''
+
             try:
                 method(*args, **kwargs)
             except (KeyboardInterrupt, SystemExit):
@@ -25,9 +26,7 @@ def asynchronous(method):
                 sys.excepthook(*sys.exc_info())
 
         thread = threading.Thread(
-            target=exceptHookWrapper,
-            args=args,
-            kwargs=kwargs
+            target=exceptHookWrapper, args=args, kwargs=kwargs
         )
         thread.start()
 

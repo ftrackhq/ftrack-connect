@@ -6,6 +6,7 @@ import os
 import subprocess
 import re
 import glob
+import shutil
 
 from pkg_resources import parse_version
 from setuptools import setup, find_packages, Command
@@ -16,46 +17,37 @@ from setuptools.command.test import test as TestCommand
 import distutils.dir_util
 import distutils
 import fileinput
-
-import pip
-
-if parse_version(pip.__version__) < parse_version('19.3.0'):
-    raise ValueError('Pip should be version 19.3.0 or higher')
-
-from pip._internal import main as pip_main
+from distutils.spawn import find_executable
+from pkg_resources import get_distribution, DistributionNotFound
 
 
-ROOT_PATH = os.path.dirname(
-    os.path.realpath(__file__)
-)
+ROOT_PATH = os.path.dirname(os.path.realpath(__file__))
 
-RESOURCE_PATH = os.path.join(
-    ROOT_PATH, 'resource'
-)
+RESOURCE_PATH = os.path.join(ROOT_PATH, 'resource')
 
-SOURCE_PATH = os.path.join(
-    ROOT_PATH, 'source'
-)
+SOURCE_PATH = os.path.join(ROOT_PATH, 'source')
 
-DISTRIBUTION_PATH = os.path.join(
-    ROOT_PATH, 'dist'
-)
+DISTRIBUTION_PATH = os.path.join(ROOT_PATH, 'dist')
 
 RESOURCE_TARGET_PATH = os.path.join(
     SOURCE_PATH, 'ftrack_connect', 'ui', 'resource.py'
 )
 
 README_PATH = os.path.join(os.path.dirname(__file__), 'README.rst')
-
 PACKAGES_PATH = os.path.join(os.path.dirname(__file__), 'source')
 
+FONTS_PATH = os.path.join(RESOURCE_PATH, 'font')
+FONTS_TARGET_PATH = os.path.join(SOURCE_PATH, 'ftrack_connect', 'fonts')
+
+
 # Read version from source.
-with open(os.path.join(
-    SOURCE_PATH, 'ftrack_connect', '_version.py'
-)) as _version_file:
-    VERSION = re.match(
-        r'.*__version__ = \'(.*?)\'', _version_file.read(), re.DOTALL
-    ).group(1)
+try:
+    release = get_distribution('ftrack-connect').version
+    # take major/minor/patch
+    VERSION = '.'.join(release.split('.')[:3])
+except DistributionNotFound:
+    # package is not installed
+    VERSION = 'Unknown version'
 
 
 # Custom commands.
@@ -71,26 +63,31 @@ class BuildResources(Command):
         '''Finalize options to be used.'''
         self.sass_path = os.path.join(RESOURCE_PATH, 'sass')
         self.css_path = RESOURCE_PATH
-        self.resource_source_path = os.path.join(
-            RESOURCE_PATH, 'resource.qrc'
-        )
+        self.resource_source_path = os.path.join(RESOURCE_PATH, 'resource.qrc')
         self.resource_target_path = RESOURCE_TARGET_PATH
 
     def _replace_imports_(self):
-        '''Replace imports in resource files to QtExt instead of QtCore.
+        '''Replace imports in resource files to Qt instead of QtCore.
 
         This allows the resource file to work with many different versions of
         Qt.
 
         '''
-        replace = 'from QtExt import QtCore'
-        for line in fileinput.input(self.resource_target_path, inplace=True):
-            if 'import QtCore' in line:
+        replace = r'from ftrack_connect.qt import QtCore'
+        for line in fileinput.input(
+            self.resource_target_path, inplace=True, mode='r'
+        ):
+            if r'import QtCore' in line:
                 # Calling print will yield a new line in the resource file.
-                print line.replace(line, replace)
+                sys.stdout.write(line.replace(line, replace))
             else:
-                # Calling print will yield a new line in the resource file.
-                print line
+                sys.stdout.write(line)
+
+    def _copy_fonts(self):
+        if os.path.exists(FONTS_TARGET_PATH):
+            shutil.rmtree(FONTS_TARGET_PATH)
+
+        shutil.copytree(FONTS_PATH, FONTS_TARGET_PATH)
 
     def run(self):
         '''Run build.'''
@@ -102,44 +99,42 @@ class BuildResources(Command):
                 'Check you have the pyScss Python package installed.'
             )
 
-        compiler = scss.Scss(
-            search_paths=[self.sass_path]
-        )
+        compiler = scss.Scss(search_paths=[self.sass_path])
 
-        themes = [
-            'style_light',
-            'style_dark'
-        ]
+        themes = ['style_light', 'style_dark']
         for theme in themes:
-            scss_source = os.path.join(self.sass_path, '{0}.scss'.format(theme))
+            scss_source = os.path.join(
+                self.sass_path, '{0}.scss'.format(theme)
+            )
             css_target = os.path.join(self.css_path, '{0}.css'.format(theme))
 
-            compiled = compiler.compile(
-                scss_file=scss_source
-            )
+            compiled = compiler.compile(scss_file=scss_source)
             with open(css_target, 'w') as file_handle:
                 file_handle.write(compiled)
                 print('Compiled {0}'.format(css_target))
 
         try:
-            pyside_rcc_command = 'pyside-rcc'
+            pyside_rcc_command = 'pyside2-rcc'
+            executable = None
 
-            # On Windows, pyside-rcc is not automatically available on the
-            # PATH so try to find it manually.
-            if sys.platform == 'win32':
-                import PySide
-                pyside_rcc_command = os.path.join(
-                    os.path.dirname(PySide.__file__),
-                    'pyside-rcc.exe'
-                )
+            # Check if the command for pyside*-rcc is in executable paths.
+            if find_executable(pyside_rcc_command):
+                executable = pyside_rcc_command
 
-            subprocess.check_call([
-                pyside_rcc_command,
+            if not executable:
+                raise IOError('Not executable found for pyside2-rcc ')
+
+            # Use the first occurrence if more than one is found.
+            cmd = [
+                executable,
                 '-o',
                 self.resource_target_path,
-                self.resource_source_path
-            ])
-        except (subprocess.CalledProcessError, OSError) as error:
+                self.resource_source_path,
+            ]
+            print('running : {}'.format(cmd))
+            subprocess.check_call(cmd)
+
+        except (subprocess.CalledProcessError, OSError):
             raise RuntimeError(
                 'Error compiling resource.py using pyside-rcc. Possibly '
                 'pyside-rcc could not be found. You might need to manually add '
@@ -147,6 +142,7 @@ class BuildResources(Command):
             )
 
         self._replace_imports_()
+        self._copy_fonts()
 
 
 class BuildEgg(BuildEggCommand):
@@ -186,8 +182,9 @@ class Clean(CleanCommand):
             os.remove(relative_resource_path)
         else:
             distutils.log.warn(
-                '\'{0}\' does not exist -- can\'t clean it'
-                .format(relative_resource_path)
+                '\'{0}\' does not exist -- can\'t clean it'.format(
+                    relative_resource_path
+                )
             )
 
         if self.all:
@@ -200,8 +197,9 @@ class Clean(CleanCommand):
                 )
             else:
                 distutils.log.warn(
-                    '\'{0}\' does not exist -- can\'t clean it'
-                    .format(relative_distribution_path)
+                    '\'{0}\' does not exist -- can\'t clean it'.format(
+                        relative_distribution_path
+                    )
                 )
 
         CleanCommand.run(self)
@@ -219,13 +217,20 @@ class PyTest(TestCommand):
     def run_tests(self):
         '''Import pytest and run.'''
         import pytest
+
         raise SystemExit(pytest.main(self.test_args))
 
+
+version_template = '''
+# :coding: utf-8
+# :copyright: Copyright (c) 2014-2020 ftrack
+
+__version__ = {version!r}
+'''
 
 # General configuration.
 configuration = dict(
     name='ftrack-connect',
-    version=VERSION,
     description='Core for ftrack connect.',
     long_description=open(README_PATH).read(),
     keywords='ftrack, connect, publish',
@@ -234,27 +239,34 @@ configuration = dict(
     author_email='support@ftrack.com',
     license='Apache License (2.0)',
     packages=find_packages(PACKAGES_PATH),
-    package_dir={
-        '': 'source'
+    include_package_data=True,
+    use_scm_version={
+        'write_to': 'source/ftrack_connect/_version.py',
+        'write_to_template': version_template,
+        'version_scheme': 'post-release',
     },
+    package_dir={'': 'source'},
     setup_requires=[
-        'qtext @ git+https://bitbucket.org/ftrack/qtext/get/0.2.2.zip#egg=qtext',
+        'PySide2 >=5, <6',
+        'Qt.py >=1.0.0, < 2',
         'pyScss >= 1.2.0, < 2',
-        'PySide >= 1.2.2, < 2',
-        'sphinx >= 1.2.2, < 2',
-        'sphinx_rtd_theme >= 0.1.6, < 2',
-        'lowdown >= 0.1.0, < 1'
+        'sphinx >= 1.8.5, < 4',
+        'sphinx_rtd_theme >= 0.1.6, < 1',
+        'lowdown >= 0.1.0, < 1',
+        'setuptools>=45.0.0',
+        'setuptools_scm',
     ],
     install_requires=[
-        'ftrack-python-legacy-api >=3, <4',
-        'ftrack-python-api >= 1, < 2',
-        'PySide >= 1.2.2, < 2',
-        'Riffle==0.3.0',
+        'clique==1.6.1',
+        'PySide2 >=5, <6',
+        'Riffle >= 1.0.1',
+        'ftrack-python-api',
         'arrow >= 0.4.6, < 1',
-        'appdirs == 1.4.0',
+        'appdirs >= 1.4, < 1.5',
         'requests >= 2, <3',
         'lowdown >= 0.1.0, < 1',
-        'qtext @ git+https://bitbucket.org/ftrack/qtext/get/0.2.2.zip#egg=qtext'
+        'Qt.py >=1.0.0, < 2',
+        'qtawesome',
     ],
     tests_require=['pytest >= 2.3.5, < 3'],
     cmdclass={
@@ -263,7 +275,7 @@ configuration = dict(
         'build_resources': BuildResources,
         'bdist_egg': BuildEgg,
         'clean': Clean,
-        'test': PyTest
+        'test': PyTest,
     },
     entry_points={
         'console_scripts': [
@@ -274,10 +286,16 @@ configuration = dict(
     data_files=[
         (
             'ftrack_connect_resource/hook',
-            glob.glob(os.path.join(RESOURCE_PATH, 'hook', '*.py'))
-        )
+            [
+                os.path.relpath(path)
+                for path in glob.glob(
+                    os.path.join(RESOURCE_PATH, 'hook', '*.py')
+                )
+            ],
+        ),
     ],
-    zip_safe=False
+    zip_safe=False,
+    python_requires=">=3, <4.0",
 )
 
 

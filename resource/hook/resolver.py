@@ -48,9 +48,7 @@ class Resolver(object):
 
             self.logger.debug(
                 u'No location name given, picked location {0!r} for '
-                u'{1!r}.'.format(
-                    location, component
-                )
+                u'{1!r}.'.format(location, component)
             )
 
             if location is None:
@@ -105,9 +103,7 @@ class Resolver(object):
 def register(session, **kw):
     '''Register hooks.'''
 
-    logger = logging.getLogger(
-        'ftrack_connect:resolver.register'
-    )
+    logger = logging.getLogger('ftrack_connect.resolver.register')
 
     # Validate that session is an instance of ftrack_api.session.Session. If
     # not, assume that register is being called from an old or incompatible API
@@ -120,22 +116,23 @@ def register(session, **kw):
         return
 
     built_in_locations = (
-        'ftrack.connect', 'ftrack.server', 'ftrack.unmanaged', 'ftrack.review',
-        'ftrack.origin'
+        'ftrack.connect',
+        'ftrack.server',
+        'ftrack.unmanaged',
+        'ftrack.review',
+        'ftrack.origin',
     )
 
     resolver = Resolver(
         session=session,
         filter_locations=(
             lambda location_name: location_name not in built_in_locations
-        )
+        ),
     )
 
     logger.info('Subscribing to topic ftrack.location.request-resolve')
     session.event_hub.subscribe(
         u'topic=ftrack.location.request-resolve '
-        u'and source.user.username="{0}"'.format(
-            session.api_user
-        ),
-        resolver
+        u'and source.user.username="{0}"'.format(session.api_user),
+        resolver,
     )

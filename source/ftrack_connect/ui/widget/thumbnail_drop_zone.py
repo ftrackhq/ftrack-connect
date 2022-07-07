@@ -3,19 +3,26 @@
 
 import os
 
-from QtExt import QtWidgets, QtCore, QtGui
-
+from ftrack_connect.qt import QtWidgets, QtCore, QtGui
+import qtawesome as qta
 import ftrack_connect.error
 
 # Thumbnail limits from ftrack server.
-THUMBNAIL_UPLOAD_MAX_SIZE = 10 * (1024 ** 2)  # 10 MiB in Bytes
+THUMBNAIL_UPLOAD_MAX_SIZE = 10 * (1024**2)  # 10 MiB in Bytes
 THUMBNAIL_UPLOAD_VALID_FILE_TYPES = (
-    'bmp', 'gif', 'jpeg', 'jpg', 'png', 'tif', 'tiff'
+    'bmp',
+    'gif',
+    'jpeg',
+    'jpg',
+    'png',
+    'tif',
+    'tiff',
 )
 
 
 class ConnectThumbnailValidationError(ftrack_connect.error.ConnectError):
     '''ftrack connect thumbnail validation error.'''
+
     pass
 
 
@@ -43,15 +50,12 @@ class ThumbnailDropZone(QtWidgets.QFrame):
         self.imageLabel = QtWidgets.QLabel()
         self.setDropZoneText()
         layout.addWidget(self.imageLabel, alignment=QtCore.Qt.AlignLeft)
-
-        # TODO: Add theme support.
-        removeIcon = QtGui.QIcon(
-            QtGui.QPixmap(':/ftrack/image/light/trash')
-        )
+        cancel_icon = qta.icon('ftrack.cancel')
         self.removeButton = QtWidgets.QPushButton()
+        self.removeButton.setIcon(cancel_icon)
+        self.removeButton.setObjectName('thumbnail-drop-zone-remove-button')
         self.removeButton.setVisible(False)
         self.removeButton.setFlat(True)
-        self.removeButton.setIcon(removeIcon)
         self.removeButton.clicked.connect(self.removeThumbnail)
         layout.addWidget(self.removeButton, alignment=QtCore.Qt.AlignRight)
 
@@ -149,11 +153,11 @@ class ThumbnailDropZone(QtWidgets.QFrame):
             'Replace thumbnail',
             'Do you want to replace the current thumbnail?',
             (
-                QtWidgets.QMessageBox.StandardButton.Yes |
-                QtWidgets.QMessageBox.StandardButton.No
-            )
+                QtWidgets.QMessageBox.StandardButton.Yes
+                | QtWidgets.QMessageBox.StandardButton.No
+            ),
         )
-        return (response == QtWidgets.QMessageBox.StandardButton.Yes)
+        return response == QtWidgets.QMessageBox.StandardButton.Yes
 
     def dropEvent(self, event):
         '''Validate and set thumbnail when a file is droppped.'''

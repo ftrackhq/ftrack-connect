@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-from QtExt import QtGui, QtCore, QtWidgets
+from ftrack_connect.qt import QtGui, QtCore, QtWidgets
 
 import ftrack_connect.ui.widget.indicator
 
@@ -21,7 +21,9 @@ class Overlay(QtWidgets.QFrame):
         '''Initialise overlay for target *parent*.'''
         super(Overlay, self).__init__(parent=parent)
         self.setObjectName('overlay')
-        self.setFrameStyle(QtWidgets.QFrame.StyledPanel | QtWidgets.QFrame.Plain)
+        self.setFrameStyle(
+            QtWidgets.QFrame.StyledPanel | QtWidgets.QFrame.Plain
+        )
 
         # Install global event filter that will deal with matching parent size
         # and disabling parent interaction when overlay is visible.
@@ -83,10 +85,7 @@ class Overlay(QtWidgets.QFrame):
             and event.type() == QtCore.QEvent.FocusIn
         ):
             parent = self.parent()
-            if (
-                isinstance(obj, QtWidgets.QWidget)
-                and parent.isAncestorOf(obj)
-            ):
+            if isinstance(obj, QtWidgets.QWidget) and parent.isAncestorOf(obj):
                 # Ensure the targeted object loses its focus.
                 obj.clearFocus()
 
@@ -113,10 +112,9 @@ class Overlay(QtWidgets.QFrame):
                     # Keep track of candidates to avoid infinite recursion.
                     seen.append(candidate)
 
-                    if (
-                        isinstance(candidate, QtWidgets.QWidget)
-                        and not parent.isAncestorOf(candidate)
-                    ):
+                    if isinstance(
+                        candidate, QtWidgets.QWidget
+                    ) and not parent.isAncestorOf(candidate):
                         candidate.setFocus(event.reason())
                         break
 
@@ -131,59 +129,50 @@ class BlockingOverlay(Overlay):
     '''Display a standard blocking overlay over another widget.'''
 
     def __init__(
-        self, parent, message='Processing',
-        icon=':ftrack/image/default/ftrackLogoGreyDark'
+        self,
+        parent,
+        message='Processing',
+        icon=':ftrack/titlebar/logo',
+        icon_size = 120
     ):
         '''Initialise with *parent*.
 
-         *message* is the message to display on the overlay.
+        *message* is the message to display on the overlay.
 
-         '''
-        super(BlockingOverlay, self).__init__(parent)
+        '''
+        super(BlockingOverlay, self).__init__(parent=parent)
         layout = QtWidgets.QVBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(layout)
 
         self.content = QtWidgets.QFrame()
         self.content.setObjectName('content')
-        layout.addWidget(
-            self.content, alignment=QtCore.Qt.AlignCenter
-        )
+        layout.addWidget(self.content, alignment=QtCore.Qt.AlignCenter | QtCore.Qt.AlignTop)
 
         self.contentLayout = QtWidgets.QVBoxLayout()
         self.contentLayout.setContentsMargins(0, 0, 0, 0)
         self.content.setLayout(self.contentLayout)
-
+        self.icon_size = icon_size
         self.icon = QtWidgets.QLabel()
-        pixmap = QtGui.QPixmap(icon)
-        self.icon.setPixmap(
-            pixmap.scaledToHeight(36, mode=QtCore.Qt.SmoothTransformation)
-        )
-        self.icon.setAlignment(QtCore.Qt.AlignCenter)
-        self.contentLayout.addWidget(self.icon)
+
+        if not isinstance(icon, QtGui.QIcon):
+            pixmap = QtGui.QPixmap(icon).scaled(self.icon_size, self.icon_size, QtCore.Qt.KeepAspectRatio)
+        else:
+            pixmap = icon.pixmap(icon.actualSize(QtCore.QSize(self.icon_size, self.icon_size)))
+
+        self.icon.setPixmap(pixmap)
+        self.icon.setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignTop)
+
+        self.contentLayout.insertWidget(
+            1, self.icon, alignment=QtCore.Qt.AlignCenter)
 
         self.messageLabel = QtWidgets.QLabel()
         self.messageLabel.setWordWrap(True)
-        self.messageLabel.setAlignment(QtCore.Qt.AlignCenter)
+        self.messageLabel.setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignBottom)
+
+        self.contentLayout.addSpacing(30)
+
         self.contentLayout.addWidget(self.messageLabel)
-
-        self.setStyleSheet('''
-            BlockingOverlay {
-                background-color: rgba(250, 250, 250, 200);
-                border: none;
-            }
-
-            BlockingOverlay QFrame#content {
-                padding: 0px;
-                border: 80px solid transparent;
-                background-color: transparent;
-                border-image: url(:ftrack/image/default/boxShadow) 140 stretch;
-            }
-
-            BlockingOverlay QLabel {
-                background: transparent;
-            }
-        ''')
 
         self.setMessage(message)
 
@@ -202,7 +191,7 @@ class BusyOverlay(BlockingOverlay):
 
     def __init__(self, parent, message='Processing'):
         '''Initialise with *parent* and busy *message*.'''
-        super(BusyOverlay, self).__init__(parent, message=message)
+        super(BusyOverlay, self).__init__(parent=parent, message=message)
 
         self.indicator = ftrack_connect.ui.widget.indicator.BusyIndicator()
         self.indicator.setFixedSize(85, 85)
@@ -227,9 +216,9 @@ class CancelOverlay(BusyOverlay):
 
     def __init__(self, parent, message='Processing'):
         '''Initialise with *parent* and busy *message*.'''
-        super(CancelOverlay, self).__init__(parent, message=message)
+        super(CancelOverlay, self).__init__(parent=parent, message=message)
 
-        self.contentLayout.addSpacing(10)
+        self.contentLayout.addSpacing(30)
 
         loginButton = QtWidgets.QPushButton(text='Cancel')
         loginButton.clicked.connect(self.hide)

@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-from PySide import QtGui
+from Qt import QtGui, QtWidgets, QtCore
 
 import ftrack_connect.ui.widget.overlay
 from harness import Harness
@@ -12,12 +12,14 @@ class WidgetHarness(Harness):
 
     def constructWidget(self):
         '''Return widget instance to test.'''
-        widget = QtGui.QFrame()
-        widget.setFrameStyle(QtGui.QFrame.StyledPanel | QtGui.QFrame.Plain)
-        layout = QtGui.QVBoxLayout()
+        widget = QtWidgets.QFrame()
+        widget.setFrameStyle(
+            QtWidgets.QFrame.StyledPanel | QtWidgets.QFrame.Plain
+        )
+        layout = QtWidgets.QVBoxLayout()
         widget.setLayout(layout)
         for index in range(5):
-            label = QtGui.QLineEdit('Label {0}'.format(index))
+            label = QtWidgets.QLineEdit('Label {0}'.format(index))
 
             if index == 3:
                 label.setDisabled(True)
@@ -25,10 +27,10 @@ class WidgetHarness(Harness):
 
             layout.addWidget(label)
 
-        textEdit = QtGui.QTextEdit('Text edit.')
+        textEdit = QtWidgets.QTextEdit('Text edit.')
         layout.addWidget(textEdit)
 
-        button = QtGui.QPushButton('Push Button')
+        button = QtWidgets.QPushButton('Push Button')
         button.setObjectName('primary')
         layout.addWidget(button)
 
@@ -40,34 +42,30 @@ class WidgetHarness(Harness):
 
     def constructController(self, widget):
         '''Return controller for *widget*.'''
-        controlWidget = QtGui.QWidget()
-        controlLayout = QtGui.QVBoxLayout()
+        controlWidget = QtWidgets.QWidget()
+        controlLayout = QtWidgets.QVBoxLayout()
         controlWidget.setLayout(controlLayout)
 
-        layout = QtGui.QHBoxLayout()
+        layout = QtWidgets.QHBoxLayout()
         controlLayout.addLayout(layout)
 
-        showButton = QtGui.QPushButton('Show')
+        showButton = QtWidgets.QPushButton('Show')
         layout.addWidget(showButton)
 
-        hideButton = QtGui.QPushButton('Hide')
+        hideButton = QtWidgets.QPushButton('Hide')
         layout.addWidget(hideButton)
 
         showButton.clicked.connect(widget.overlay.show)
         hideButton.clicked.connect(widget.overlay.hide)
 
-        messageEdit = QtGui.QLineEdit()
+        messageEdit = QtWidgets.QLineEdit()
         messageEdit.setPlaceholderText('Enter message to display')
         controlLayout.addWidget(messageEdit)
 
-        messageEdit.textChanged.connect(
-            widget.overlay.setMessage
-        )
+        messageEdit.textChanged.connect(widget.overlay.setMessage)
 
         return controlWidget
 
 
 if __name__ == '__main__':
-    raise SystemExit(
-        WidgetHarness().run()
-    )
+    raise SystemExit(WidgetHarness().run())

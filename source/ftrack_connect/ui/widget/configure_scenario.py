@@ -3,7 +3,9 @@
 
 import webbrowser
 
-from QtExt import QtWidgets, QtCore, QtSvg, QtGui
+from ftrack_connect.qt import QtWidgets, QtCore, QtSvg, QtGui
+
+import qtawesome as qta
 
 import ftrack_api.exception
 
@@ -37,16 +39,14 @@ class ConfigureScenario(QtWidgets.QWidget):
 
         layout.addSpacing(100)
 
-        svg_renderer = QtSvg.QSvgRenderer(':ftrack/image/default/cloud-done')
-        image = QtWidgets.QImage(50, 50, QtWidgets.QImage.Format_ARGB32)
-
-        # Set the ARGB to 0 to prevent rendering artifacts.
-        image.fill(0x00000000)
-
-        svg_renderer.render(QtGui.QPainter(image))
-
+        cloud_icon = qta.icon('ftrack.cloud-done')
         icon = QtWidgets.QLabel()
-        icon.setPixmap(QtGui.QPixmap.fromImage(image))
+        icon.setPixmap(
+            cloud_icon.pixmap(
+                QtCore.QSize(self.width() / 3, self.height() / 3)
+            )
+        )
+
         icon.setAlignment(QtCore.Qt.AlignCenter)
         icon.setObjectName('icon-label')
         layout.addWidget(icon)
@@ -124,8 +124,8 @@ class ConfigureScenario(QtWidgets.QWidget):
         label.setObjectName('green-link')
         label.setText(
             '<a style="color: #935BA2;" '
-            'href="{0}/doc/using/managing_versions/storage_scenario.html"> '
-            'Learn more about storage scenarios.'.format(session.server_url)
+            'href="https://help.ftrack.com/en/articles/1040436-configuring-file-storage"> '
+            'Learn more about storage scenarios.'
         )
         label.setAlignment(QtCore.Qt.AlignCenter)
         label.setOpenExternalLinks(True)
@@ -134,7 +134,7 @@ class ConfigureScenario(QtWidgets.QWidget):
 
         self._subscriber_identifier = session.event_hub.subscribe(
             'topic=ftrack.storage-scenario.configure-done',
-            self._complete_configuration
+            self._complete_configuration,
         )
         self._session = session
 

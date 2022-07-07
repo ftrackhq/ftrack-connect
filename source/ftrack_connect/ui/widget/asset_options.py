@@ -3,11 +3,13 @@
 
 import logging
 
-from QtExt import QtWidgets
+from ftrack_connect.qt import QtWidgets
 
 from ftrack_connect.error import NotUniqueError
 from ftrack_connect.ui.widget import asset_name_edit as _asset_name_edit
-from ftrack_connect.ui.widget import asset_type_selector as _asset_type_selector
+from ftrack_connect.ui.widget import (
+    asset_type_selector as _asset_type_selector,
+)
 from ftrack_connect.ui.widget import asset_selector as _asset_selector
 
 NEW_ASSET = 'NEW_ASSET'
@@ -24,14 +26,19 @@ class AssetOptions(object):
         labels / columns to line up.
     '''
 
-    def __init__(self, *args, **kwargs):
+    @property
+    def session(self):
+        '''Return current session.'''
+        return self._session
+
+    def __init__(self, session):
         '''Instantiate the asset options.'''
-        super(AssetOptions, self).__init__(*args, **kwargs)
+        super(AssetOptions, self).__init__()
 
         self.logger = logging.getLogger(
             __name__ + '.' + self.__class__.__name__
         )
-
+        self._session = session
         self._entity = None
         self._hasEditedName = False
 
@@ -43,24 +50,38 @@ class AssetOptions(object):
         self.newAssetButton.toggled.connect(self._onNewAssetToggled)
         self.radioButtonFrame.layout().addWidget(self.newAssetButton)
 
-        self.existingAssetButton = QtWidgets.QRadioButton('Version up existing')
+        self.existingAssetButton = QtWidgets.QRadioButton(
+            'Version up existing'
+        )
         self.existingAssetButton.toggled.connect(self._onExistingAssetToggled)
         self.radioButtonFrame.layout().addWidget(self.existingAssetButton)
 
-        self.existingAssetSelector = _asset_selector.AssetSelector()
-        self.assetTypeSelector = _asset_type_selector.AssetTypeSelector()
+        self.existingAssetSelector = _asset_selector.AssetSelector(
+            session=self.session
+        )
+        self.assetTypeSelector = _asset_type_selector.AssetTypeSelector(
+            session=self.session
+        )
         self.assetNameLineEdit = _asset_name_edit.AssetNameEdit(
-            self.existingAssetSelector, self.assetTypeSelector
+            self.session, self.existingAssetSelector, self.assetTypeSelector
         )
 
-        self.assetTypeSelector.currentIndexChanged.connect(self._onAssetTypeChanged)
+        self.assetTypeSelector.currentIndexChanged.connect(
+            self._onAssetTypeChanged
+        )
         self.assetNameLineEdit.textEdited.connect(self._onAssetNameEdited)
 
     def initializeFieldLabels(self, layout):
         '''Get labels for widgets in *layout* and set initial state.'''
-        self.assetNameLineEdit._fieldLabel = layout.labelForField(self.assetNameLineEdit)
-        self.existingAssetSelector._fieldLabel = layout.labelForField(self.existingAssetSelector)
-        self.assetTypeSelector._fieldLabel = layout.labelForField(self.assetTypeSelector)
+        self.assetNameLineEdit._fieldLabel = layout.labelForField(
+            self.assetNameLineEdit
+        )
+        self.existingAssetSelector._fieldLabel = layout.labelForField(
+            self.existingAssetSelector
+        )
+        self.assetTypeSelector._fieldLabel = layout.labelForField(
+            self.assetTypeSelector
+        )
         self._toggleFieldAndLabel(self.existingAssetSelector, False)
         self._toggleFieldAndLabel(self.assetTypeSelector, False)
         self._toggleFieldAndLabel(self.assetNameLineEdit, False)
@@ -74,7 +95,9 @@ class AssetOptions(object):
 
     def setAsset(self, asset=None):
         '''Select *asset*, add it to the selector if it does not exist.'''
-        self.logger.debug('Reloading assets for entity: {0}'.format(self._entity))
+        self.logger.debug(
+            'Reloading assets for entity: {0}'.format(self._entity)
+        )
         self.existingAssetSelector.loadAssets(self._entity, selectAsset=asset)
         self.existingAssetButton.setChecked(True)
 
@@ -87,10 +110,13 @@ class AssetOptions(object):
 
     def _onAssetTypeChanged(self, currentIndex):
         '''Update asset name when asset type changes, unless user has edited name.'''
-        assetType = self.assetTypeSelector.itemData(currentIndex)
+        assetTypeId = self.assetTypeSelector.itemData(currentIndex)
+        if not assetTypeId:
+            return
+
         if not self._hasEditedName:
-            assetName = assetType and assetType.getName() or ''
-            self.assetNameLineEdit.setText(assetName)
+            assetType = self.session.get('AssetType', assetTypeId)
+            self.assetNameLineEdit.setText(assetType['name'])
 
     def _toggleFieldAndLabel(self, field, toggled):
         '''Set visibility for *field* with attached label to *toggled*.'''

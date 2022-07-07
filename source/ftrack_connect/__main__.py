@@ -1,19 +1,21 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
+import sys
 import appdirs
 import argparse
 import logging
-import sys
 import signal
 import os
 import pkg_resources
+import qtawesome
 
-bindings = ['PySide', 'PySide2']
+bindings = ['PySide2']
 os.environ.setdefault('QT_PREFERRED_BINDING', os.pathsep.join(bindings))
 
-from QtExt import QtWidgets, QtCore
+from ftrack_connect.qt import QtWidgets, QtCore
 
+from ftrack_connect import load_icons
 import ftrack_connect.config
 import ftrack_connect.singleton
 
@@ -24,8 +26,8 @@ try:
         'FTRACK_EVENT_PLUGIN_PATH',
         pkg_resources.resource_filename(
             pkg_resources.Requirement.parse('ftrack-connect'),
-            'ftrack_connect_resource/hook'
-        )
+            'ftrack_connect_resource/hook',
+        ),
     )
 except pkg_resources.DistributionNotFound:
     # If part of a frozen package then distribution might not be found.
@@ -38,43 +40,50 @@ import ftrack_connect.ui.theme
 
 def main(arguments=None):
     '''ftrack connect.'''
-    if arguments is None:
-        arguments = []
 
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(prog='ftrack-connect')
 
     # Allow setting of logging level from arguments.
     loggingLevels = {}
+
     for level in (
-        logging.NOTSET, logging.DEBUG, logging.INFO, logging.WARNING,
-        logging.ERROR, logging.CRITICAL
+        logging.NOTSET,
+        logging.DEBUG,
+        logging.INFO,
+        logging.WARNING,
+        logging.ERROR,
+        logging.CRITICAL,
     ):
         loggingLevels[logging.getLevelName(level).lower()] = level
 
     parser.add_argument(
-        '-v', '--verbosity',
+        '-v',
+        '--verbosity',
         help='Set the logging output verbosity.',
         choices=loggingLevels.keys(),
-        default='warning'
+        default='warning',
     )
 
     parser.add_argument(
-        '-t', '--theme',
+        '-t',
+        '--theme',
         help='Set the theme to use.',
-        choices=['light', 'dark'],
-        default='light'
+        choices=['light', 'dark', 'system'],
+        default='system',
     )
 
     parser.add_argument(
-        '-s', '--silent',
+        '-s',
+        '--silent',
         help='Set the initial visibility of the connect window.',
-        action='store_true'
+        action='store_true',
     )
 
     parser.add_argument(
-        '-a', '--allow-multiple',
+        '-a',
+        '--allow-multiple',
         help='Skip lockfile to allow new instance of connect.',
-        action='store_true'
+        action='store_true',
     )
 
     namespace = parser.parse_args(arguments)
@@ -83,16 +92,16 @@ def main(arguments=None):
         'ftrack_connect', level=loggingLevels[namespace.verbosity]
     )
 
+    single_instance = None
     if not namespace.allow_multiple:
         lockfile = os.path.join(
-            appdirs.user_data_dir(
-                'ftrack-connect', 'ftrack'
-            ),
-            'lock'
+            appdirs.user_data_dir('ftrack-connect', 'ftrack'), 'lock'
         )
         logger = logging.getLogger('ftrack_connect')
         try:
-            si = ftrack_connect.singleton.SingleInstance('', lockfile)
+            single_instance = ftrack_connect.singleton.SingleInstance(
+                '', lockfile
+            )
         except ftrack_connect.singleton.SingleInstanceException:
             logger.error(
                 'Lockfile found: {}\nIs Connect already running?\nClose Connect,'
@@ -107,7 +116,14 @@ def main(arguments=None):
     if os.name == 'posix':
         QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_X11InitThreads)
 
+    # Ensure support for highdpi
+    QtCore.QCoreApplication.setAttribute(
+        QtCore.Qt.AA_EnableHighDpiScaling, True
+    )
+    QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
+
     # Construct global application.
+
     application = QtWidgets.QApplication([])
 
     application.setOrganizationName('ftrack')
@@ -115,11 +131,12 @@ def main(arguments=None):
     application.setQuitOnLastWindowClosed(False)
 
     # Enable ctrl+c to quit application when started from command line.
-    signal.signal(signal.SIGINT, signal.SIG_DFL)
+    signal.signal(signal.SIGINT, lambda sig, _: application.quit())
 
     # Construct main connect window and apply theme.
     connectWindow = ftrack_connect.ui.application.Application(
-        theme=namespace.theme
+        theme=str(namespace.theme),
+        instance=single_instance,
     )
 
     if namespace.silent:
@@ -129,11 +146,13 @@ def main(arguments=None):
     # reason, resetting the font here solves the sizing issue.
     font = application.font()
     application.setFont(font)
+    application.aboutToQuit.connect(connectWindow.emitConnectUsage)
+
+    icon_fonts = os.path.join(os.path.dirname(__file__), 'fonts')
+    load_icons(icon_fonts)
 
     return application.exec_()
 
 
 if __name__ == '__main__':
-    raise SystemExit(
-        main(sys.argv[1:])
-    )
+    raise SystemExit(main())

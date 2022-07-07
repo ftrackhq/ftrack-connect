@@ -13,15 +13,15 @@
 @import 'widget/_scrolling_flow_widget';
 @import 'widget/_componentlist';
 @import 'widget/_thumbnail_drop_zone';
-@import 'widget/_timer';
-@import 'widget/_time_log';
-@import 'widget/_time_log_list';
 @import 'widget/_overlay';
 @import 'widget/_entity_browser';
+@import 'widget/_entity_selector';
 @import 'widget/_tooltip';
 @import 'widget/_radiobutton';
+@import 'widget/_action';
+@import 'widget/_main';
+@import 'widget/_list';
 
 @import 'module/_app';
 @import 'module/_publisher';
-@import 'module/_time_tracker';
 @import 'module/_test';

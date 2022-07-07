@@ -1,20 +1,23 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2015 ftrack
-
-from QtExt import QtCore, QtWidgets
-
+import os
 import logging
 
-import ftrack
-import ftrack_api.event.base
+import qtawesome as qta
 
+from ftrack_connect.qt import QtCore, QtWidgets, QtGui
+
+import ftrack_api.event.base
+from ftrack_connect import load_icons
 import ftrack_connect.asynchronous
 from ftrack_connect.ui.widget.thumbnail import ActionIcon
-import ftrack_connect.session
+
+# We need to force load the icons or ftrack.<icon> won't be available
+# not sure why is the case, likely due to be in threded function.
+load_icons(os.path.join(os.path.dirname(__file__), '..', '..', 'fonts'))
 
 
-
-class ActionItem(QtWidgets.QWidget):
+class ActionItem(QtWidgets.QFrame):
     '''Widget representing an action item.'''
 
     #: Emitted before an action is launched with action
@@ -23,7 +26,12 @@ class ActionItem(QtWidgets.QWidget):
     #: Emitted after an action has been launched with action and results
     actionLaunched = QtCore.Signal(dict, list)
 
-    def __init__(self, actions, parent=None):
+    @property
+    def session(self):
+        '''Return current session.'''
+        return self._session
+
+    def __init__(self, session, actions, parent=None):
         '''Initialize action item with *actions*
 
         *actions* should be a list of action dictionaries with the same label.
@@ -34,7 +42,7 @@ class ActionItem(QtWidgets.QWidget):
         icon
             An URL to an image or one of the provided icons.
         variant
-            A variant of the action. Will be shown in the menu shown for 
+            A variant of the action. Will be shown in the menu shown for
             multiple actions, or as part of the label for a single action.
         description
             A optional description of the action to be shown on hover.
@@ -43,12 +51,13 @@ class ActionItem(QtWidgets.QWidget):
         multiple actions are specified.
         '''
         super(ActionItem, self).__init__(parent=parent)
+        self._session = session
         self.logger = logging.getLogger(
             __name__ + '.' + self.__class__.__name__
         )
 
         self.setMouseTracking(True)
-        self.setFixedSize(QtCore.QSize(80, 80))
+        self.setFixedSize(QtCore.QSize(75, 95))
         layout = QtWidgets.QVBoxLayout()
         layout.setAlignment(QtCore.Qt.AlignCenter)
         layout.setSpacing(0)
@@ -65,42 +74,59 @@ class ActionItem(QtWidgets.QWidget):
         self._variants = [
             u'{0} {1}'.format(
                 action.get('label', 'Untitled action'),
-                action.get('variant', '')
+                action.get('variant', ''),
             ).strip()
             for action in actions
         ]
 
         if len(actions) == 1:
             if actions[0].get('variant'):
-                self._label = u'{0} {1}'.format(self._label, actions[0].get('variant'))
+                self._label = u'{0} {1}'.format(
+                    self._label, actions[0].get('variant')
+                )
 
-            self._hoverIcon = 'play'
+            self._hoverIcon = None
             self._multiple = False
         else:
             self._hoverIcon = 'menu'
             self._multiple = True
 
-        self._iconLabel = ActionIcon(self)
+        self.action_icon = qta.icon('ftrack.actions')
+        self._iconLabel = ActionIcon(self, default_icon=self.action_icon)
         self._iconLabel.setAlignment(QtCore.Qt.AlignCenter)
-        self._iconLabel.setFixedSize(QtCore.QSize(80, 45))
+        self._iconLabel.setFixedSize(QtCore.QSize(75, 45))
         layout.addWidget(self._iconLabel)
 
         self._textLabel = QtWidgets.QLabel(self)
-        self._textLabel.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignTop)
+        self._textLabel.setAlignment(
+            QtCore.Qt.AlignHCenter | QtCore.Qt.AlignTop
+        )
+        self._textLabel.setContentsMargins(0, 5, 0, 0)
         self._textLabel.setWordWrap(True)
-        self._textLabel.setFixedSize(QtCore.QSize(80, 35))
+        self._textLabel.setFixedSize(QtCore.QSize(75, 55))
         layout.addWidget(self._textLabel)
 
         self.setText(self._label)
         self.setIcon(self._icon)
+
         if self._description:
             self.setToolTip(self._description)
 
+        self.setObjectName('action-item')
+        self.setState()
+
+    def setState(self, state='inactive'):
+        self.setProperty('state', state)
+        self.style().unpolish(self)
+        self.style().polish(self)
+        self.update()
+
     def mouseReleaseEvent(self, event):
-        '''Launch action on mouse release. 
+        '''Launch action on mouse release.
 
         First show menu with variants if multiple actions are available.
         '''
+        self.setState('active')
         if self._multiple:
             self.logger.debug('Launching menu to select action variant')
             menu = QtWidgets.QMenu(self)
@@ -109,7 +135,7 @@ class ActionItem(QtWidgets.QWidget):
                 action.setData(index)
                 menu.addAction(action)
 
-            result = menu.exec_(QtWidgets.QCursor.pos())
+            result = menu.exec_(QtGui.QCursor.pos())
             if result is None:
                 return
 
@@ -121,13 +147,14 @@ class ActionItem(QtWidgets.QWidget):
 
     def enterEvent(self, event):
         '''Show hover icon on mouse enter.'''
-        self._iconLabel.loadResource(
-            '{0}{1}'.format(':/ftrack/image/light/', self._hoverIcon)
-        )
+        self.setState('active')
+        if self._hoverIcon:
+            self.setIcon(qta.icon('mdi.{}'.format(self._hoverIcon)))
 
     def leaveEvent(self, event):
         '''Reset action icon on mouse leave.'''
         self.setIcon(self._icon)
+        self.setState()
 
     def setText(self, text):
         '''Set *text* on text label.'''
@@ -139,34 +166,26 @@ class ActionItem(QtWidgets.QWidget):
 
     def _launchAction(self, action):
         '''Launch *action* via event hub.'''
-        self.logger.info(u'Launching action: {0}'.format(action))
+        self.logger.debug(u'Launching action: {0}'.format(action))
         self.beforeActionLaunch.emit(action)
         self._publishLaunchActionEvent(action)
 
     @ftrack_connect.asynchronous.asynchronous
     def _publishLaunchActionEvent(self, action):
         '''Launch *action* asynchronously and emit *actionLaunched* when completed.'''
+
         try:
-            if action.is_new_api:
-                session = ftrack_connect.session.get_shared_session()
-                results = session.event_hub.publish(
-                    ftrack_api.event.base.Event(
-                        topic='ftrack.action.launch',
-                        data=action
-                    ),
-                    synchronous=True
-                )
-            else:
-                results = ftrack.EVENT_HUB.publish(
-                    ftrack.Event(
-                        topic='ftrack.action.launch',
-                        data=action
-                    ),
-                    synchronous=True
-                )
+            results = self.session.event_hub.publish(
+                ftrack_api.event.base.Event(
+                    topic='ftrack.action.launch', data=action
+                ),
+                synchronous=True,
+            )
 
         except Exception as error:
-            results = [{'success': False, 'message': 'Failed to launch action'}]
+            results = [
+                {'success': False, 'message': 'Failed to launch action'}
+            ]
             self.logger.warning(
                 u'Action launch failed with exception: {0}'.format(error)
             )

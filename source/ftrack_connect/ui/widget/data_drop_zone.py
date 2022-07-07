@@ -1,103 +1,52 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-import os
-import re
 import logging
+import os
 
-from QtExt import QtCore
-from QtExt import QtWidgets
-
-import riffle.browser
-import riffle.model
+from ftrack_connect.qt import QtCore
+from ftrack_connect.qt import QtWidgets
+import qtawesome as qta
 
 import clique
-import clique.collection
-import clique.sorted_set
+import riffle.browser
+from riffle.icon_factory import IconFactory, IconType
 
 
-def __init__(self, head, tail, padding, indexes=None):
-    '''Initialise collection.
-    *head* is the leading common part whilst *tail* is the trailing
-    common part.
-    *padding* specifies the "width" of the numerical component. An index
-    will be padded with zeros to fill this width. A *padding* of zero
-    implies no padding and width may be any size so long as no leading
-    zeros are present.
-    *indexes* can specify a set of numerical indexes to initially populate
-    the collection with.
-    .. note::
-        After instantiation, the ``indexes`` attribute cannot be set to a
-        new value using assignment::
-            >>> collection.indexes = [1, 2, 3]
-            AttributeError: Cannot set attribute defined as unsettable.
-        Instead, manipulate it directly::
-            >>> collection.indexes.clear()
-            >>> collection.indexes.update([1, 2, 3])
-    '''
-    super(clique.collection.Collection, self).__init__()
-    self.__dict__['indexes'] = clique.sorted_set.SortedSet()
-    try:
-        head = head.encode('utf-8')
-    except UnicodeDecodeError:
-        pass
+class CustomIconFactory(IconFactory):
+    def icon(self, specification):
+        '''Return appropriate icon for *specification*.
+        *specification* should be either:
+            * An instance of :py:class:`riffle.model.Item`
+            * One of the defined icon types (:py:class:`IconType`)
+        '''
+        if isinstance(specification, riffle.model.Item):
+            specification = self.type(specification)
 
-    try:
-        tail = tail.encode('utf-8')
-    except UnicodeDecodeError:
-        pass
+        icon = None
 
-    self._head = head
-    self._tail = tail
-    self.padding = padding
-    self._update_expression()
+        if specification == IconType.Computer:
+            icon = qta.icon('ftrack.computer')
 
-    if indexes is not None:
-        self.indexes.update(indexes)
+        elif specification == IconType.Mount:
+            icon = qta.icon('ftrack.dns')
 
-clique.collection.Collection.__init__ = __init__
+        elif specification == IconType.Directory:
+            icon = qta.icon('ftrack.folder')
+
+        elif specification == IconType.File:
+            icon = qta.icon('ftrack.file')
+
+        elif specification == IconType.Collection:
+            icon = qta.icon('ftrack.content-copy')
+
+        return icon
 
 
-def data(self, index, role):
-    '''Return data for *index* according to *role*.'''
-    if not index.isValid():
-        return None
-
-    column = index.column()
-    item = index.internalPointer()
-
-    if role == self.ITEM_ROLE:
-        return item
-
-    elif role == QtCore.Qt.DisplayRole:
-
-        if column == 0:
-            # Convert to unicode.
-            if isinstance(item.name, str):
-                return item.name.decode('utf-8')
-
-            return item.name
-        elif column == 1:
-            if item.size:
-                return item.size
-        elif column == 2:
-            return item.type
-        elif column == 3:
-            if item.modified is not None:
-                # Convert to unicode.
-                return item.modified.strftime('%c').decode('utf-8')
-
-    elif role ==  QtCore.Qt.DecorationRole:
-        if column == 0:
-            return self.iconFactory.icon(item)
-
-    elif role ==  QtCore.Qt.TextAlignmentRole:
-        if column == 1:
-            return  QtCore.Qt.AlignRight
-        else:
-            return  QtCore.Qt.AlignLeft
-
-riffle.model.Filesystem.data = data
+class CustomFilesystemBrowser(riffle.browser.FilesystemBrowser):
+    def _construct(self):
+        super(CustomFilesystemBrowser, self)._construct()
+        self._upButton.setIcon(qta.icon('mdi.chevron-up'))
 
 
 class DataDropZone(QtWidgets.QFrame):
@@ -121,16 +70,11 @@ class DataDropZone(QtWidgets.QFrame):
         topCenterAlignment = QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter
 
         self._label = QtWidgets.QLabel('Drop files here or')
-        layout.addWidget(
-            self._label,
-            alignment=bottomCenterAlignment
-        )
+        layout.addWidget(self._label, alignment=bottomCenterAlignment)
 
-        self._browseButton = QtWidgets.QPushButton('Browse')
+        self._browseButton = QtWidgets.QPushButton('BROWSE')
         self._browseButton.setToolTip('Browse for file(s).')
-        layout.addWidget(
-            self._browseButton, alignment=topCenterAlignment
-        )
+        layout.addWidget(self._browseButton, alignment=topCenterAlignment)
 
         self._setupConnections()
 
@@ -146,7 +90,9 @@ class DataDropZone(QtWidgets.QFrame):
         '''Show browse dialog and emit dataSelected signal on file select.'''
         # Recreate browser on each browse to avoid issues where files are
         # removed and also get rid of any caching issues.
-        dialog = riffle.browser.FilesystemBrowser(parent=self)
+        dialog = CustomFilesystemBrowser(
+            parent=self, iconFactory=CustomIconFactory()
+        )
         dialog.setMinimumSize(900, 500)
 
         if self._currentLocation:
@@ -158,7 +104,7 @@ class DataDropZone(QtWidgets.QFrame):
                 item = selected[0]
                 # Convert to unicode.
                 if isinstance(item, str):
-                    item = item.decode('utf-8')
+                    item = item
                 self.dataSelected.emit(item)
 
         # TODO: This is fragile and should probably be available as public
@@ -180,7 +126,7 @@ class DataDropZone(QtWidgets.QFrame):
         self.style().polish(self)
         self.update()
 
-    def _processMimeData(self, mimeData):
+    def _processMimeData(self, mimeData, raise_message=True):
         '''Return a list of valid filepaths.'''
         validPaths = []
 
@@ -188,7 +134,7 @@ class DataDropZone(QtWidgets.QFrame):
             QtWidgets.QMessageBox.warning(
                 self,
                 'Invalid file',
-                'Invalid file: the dropped item is not a valid file.'
+                'Invalid file: the dropped item is not a valid file.',
             )
             return validPaths
 
@@ -198,18 +144,22 @@ class DataDropZone(QtWidgets.QFrame):
                 validPaths.append(localPath)
                 self.log.debug(u'Dropped file: {0}'.format(localPath))
             else:
-                message = u'Invalid file: "{0}" is not a valid file.'.format(
-                    localPath
-                )
-                if os.path.isdir(localPath):
-                    message = (
-                        'Folders not supported.\n\nIn the current version, '
-                        'folders are not supported. This will be enabled in a '
-                        'later release of ftrack connect.'
+                self._setDropZoneState('invalid')
+
+                if raise_message:
+                    message = u'Invalid file: "{0}" is not a valid file.'.format(
+                        localPath
                     )
-                QtWidgets.QMessageBox.warning(
-                    self, 'Invalid file', message
-                )
+                    if os.path.isdir(localPath):
+                        message = (
+                            'Folders not supported.\n\nIn the current version, '
+                            'folders are not supported. This will be enabled in a '
+                            'later release of ftrack connect.'
+                        )
+
+                    QtWidgets.QMessageBox.warning(self, 'Invalid file', message)
+
+                    self._setDropZoneState()
 
         return validPaths
 
@@ -222,7 +172,9 @@ class DataDropZone(QtWidgets.QFrame):
         '''Override dragEnterEvent and accept all events.'''
         event.setDropAction(QtCore.Qt.CopyAction)
         event.accept()
-        self._setDropZoneState('active')
+        files = self._processMimeData(event.mimeData(), raise_message=False)
+        if files:
+            self._setDropZoneState('active')
 
     def dragLeaveEvent(self, event):
         '''Override dragLeaveEvent and accept all events.'''
@@ -235,9 +187,7 @@ class DataDropZone(QtWidgets.QFrame):
 
         # TODO: Allow hook into the dropEvent.
 
-        paths = self._processMimeData(
-            event.mimeData()
-        )
+        paths = self._processMimeData(event.mimeData())
 
         self.log.debug(u'Paths: {0}'.format(paths))
 
@@ -245,10 +195,7 @@ class DataDropZone(QtWidgets.QFrame):
         # frame sequences.
         framesPattern = clique.PATTERNS.get('frames')
         sequences, remainders = clique.assemble(
-            paths,
-            patterns=[
-                framesPattern
-            ]
+            paths, patterns=[framesPattern]
         )
 
         self.log.debug(u'Sequences: {0}'.format(sequences))

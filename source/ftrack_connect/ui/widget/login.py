@@ -1,7 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 
-from QtExt import QtWidgets, QtCore, QtGui
+from ftrack_connect.qt import QtWidgets, QtCore, QtGui
 
 
 class ClickableLabel(QtWidgets.QLabel):
@@ -16,6 +16,7 @@ class ClickableLabel(QtWidgets.QLabel):
 
 class Login(QtWidgets.QWidget):
     '''Login widget class.'''
+
     # Login signal with params url, username and API key.
     login = QtCore.Signal(object, object, object)
 
@@ -24,7 +25,9 @@ class Login(QtWidgets.QWidget):
 
     def __init__(self, *args, **kwargs):
         '''Instantiate the login widget.'''
-        super(Login, self).__init__(*args, **kwargs)
+        super(Login, self).__init__()
+
+        theme = kwargs.get("theme", "light")
 
         layout = QtWidgets.QVBoxLayout()
         layout.addSpacing(50)
@@ -33,12 +36,16 @@ class Login(QtWidgets.QWidget):
         self.setLayout(layout)
 
         logo = QtWidgets.QLabel()
-        logoPixmap = QtGui.QPixmap(':ftrack/image/default/ftrackLogoLabelDark')
+
+        logoPixmap = QtGui.QPixmap(
+            ':ftrack/connect/logo/{}2x'.format(theme)
+        )
+
         logo.setPixmap(
             logoPixmap.scaled(
-                QtCore.QSize(100, 100),
+                QtCore.QSize(200, 200),
                 QtCore.Qt.KeepAspectRatio,
-                QtCore.Qt.SmoothTransformation
+                QtCore.Qt.SmoothTransformation,
             )
         )
         layout.addWidget(logo, alignment=QtCore.Qt.AlignCenter)
@@ -79,6 +86,7 @@ class Login(QtWidgets.QWidget):
         label.setAlignment(QtCore.Qt.AlignCenter)
         label.setWordWrap(True)
 
+
         # Min height is required due to issue when word wrap is True and window
         # being resized which cases text to dissapear.
         label.setMinimumHeight(50)
@@ -97,11 +105,27 @@ class Login(QtWidgets.QWidget):
         self.toggle_api_label.setObjectName('lead-label')
         self.toggle_api_label.setText(
             'Trouble signing in? '
-            '<a href="#" style="color: #935BA2;">Sign in with username and API key</a>'
+            '<a href="#" style="color: #FFDD86;">Sign in with username and API key</a>'
         )
         self.toggle_api_label.clicked.connect(self._toggle_credentials)
-        layout.addWidget(self.toggle_api_label, alignment=QtCore.Qt.AlignCenter)
+        layout.addWidget(
+            self.toggle_api_label, alignment=QtCore.Qt.AlignCenter
+        )
+
+        self.untoggle_api_label = ClickableLabel()
+        self.untoggle_api_label.setObjectName('lead-label')
+        self.untoggle_api_label.hide()
+        self.untoggle_api_label.setText(
+            'Trouble signing in? '
+            '<a href="#" style="color: #FFDD86;">Sign in with ftrack instance.</a>'
+        )
+        self.untoggle_api_label.clicked.connect(self._untoggle_credentials)
+        layout.addWidget(
+            self.untoggle_api_label, alignment=QtCore.Qt.AlignCenter
+        )
         layout.addSpacing(20)
+
+
 
     def on_set_error(self, error):
         '''Set the error text and disable the login widget.'''
@@ -120,3 +144,10 @@ class Login(QtWidgets.QWidget):
         self.apiKey.show()
         self.username.show()
         self.toggle_api_label.hide()
+        self.untoggle_api_label.show()
+
+    def _untoggle_credentials(self):
+        self.apiKey.hide()
+        self.username.hide()
+        self.toggle_api_label.show()
+        self.untoggle_api_label.hide()

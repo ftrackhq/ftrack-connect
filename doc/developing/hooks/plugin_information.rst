@@ -12,8 +12,7 @@ window in :term:`ftrack connect` is opened.
 
 It can be used to return information about loaded plugins in
 :term:`ftrack connect`. Such as
-:ref:`application <developing/tutorial/custom_applications>` launchers or
-:ref:`actions <using/actions>.
+:ref:`actions <using/actions>`.
 
 Example event passed to hook::
 

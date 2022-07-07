@@ -10,7 +10,7 @@ import appdirs
 import ftrack_api.session
 
 
-logger = logging.getLogger('ftrack_connect:publish-components')
+logger = logging.getLogger('ftrack_connect.publish-components')
 
 
 def publish_components(event, session=None):
@@ -26,7 +26,7 @@ def publish_components(event, session=None):
         components_config = os.path.realpath(components_config)
 
         prefix = appdirs.user_data_dir(
-            os.path.join('ftrack-connect','data'), 'ftrack'
+            os.path.join('ftrack-connect', 'data'), 'ftrack'
         )
 
         # Ensure that config file is in the data folder to avoid situations
@@ -57,7 +57,7 @@ def publish_components(event, session=None):
         logger.exception('Failed to create components.')
         error_result = {
             'exception': type(error).__name__,
-            'content': str(error)
+            'content': str(error),
         }
     else:
         error_result = None
@@ -73,7 +73,7 @@ def subscribe(session):
         u'topic="{0}" and source.user.username="{1}"'.format(
             topic, session.api_user
         ),
-        functools.partial(publish_components, session=session)
+        functools.partial(publish_components, session=session),
     )
 
 

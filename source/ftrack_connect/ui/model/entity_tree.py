@@ -3,11 +3,10 @@
 #             Copyright (c) 2014 Martin Pengelly-Phillips
 # :notice: Derived from Riffle (https://github.com/4degrees/riffle)
 
-from QtExt import QtWidgets, QtCore, QtGui
-
-import ftrack_api
+from ftrack_connect.qt import QtWidgets, QtCore, QtGui
 
 import ftrack_connect.worker
+import qtawesome as qta
 
 
 def ItemFactory(session, entity):
@@ -21,13 +20,15 @@ def ItemFactory(session, entity):
 
     return Context(session, entity)
 
+
 class Item(object):
     '''Represent ftrack entity with consistent interface.'''
 
-    def __init__(self, entity):
+    def __init__(self, session, entity):
         '''Initialise item with *entity*.'''
         super(Item, self).__init__()
         self.entity = entity
+        self._session = session
 
         self.children = []
         self.parent = None
@@ -36,6 +37,19 @@ class Item(object):
     def __repr__(self):
         '''Return representation.'''
         return '<{0} {1}>'.format(self.__class__.__name__, self.entity)
+
+    @property
+    def session(self):
+        '''Return session of item.'''
+        return self._session
+
+    @property
+    def connect_theme(self):
+        '''Return connect theme of the session.'''
+        if self.session:
+            if hasattr(self.session, 'connect_theme'):
+                return self._session.connect_theme
+        return 'default'
 
     @property
     def id(self):
@@ -55,7 +69,9 @@ class Item(object):
     @property
     def icon(self):
         '''Return icon.'''
-        return QtGui.QIcon(':/ftrack/image/default/ftrackLogoGreyDark')
+        return QtGui.QIcon(
+            ':/ftrack/image/{}/ftrackLogoGreyDark'.format(self.connect_theme)
+        )
 
     @property
     def row(self):
@@ -144,7 +160,7 @@ class Root(Item):
     def __init__(self, session):
         '''Initialise item.'''
         self._session = session
-        super(Root, self).__init__(None)
+        super(Root, self).__init__(session, None)
 
     @property
     def name(self):
@@ -171,7 +187,7 @@ class Context(Item):
     def __init__(self, session, entity):
         '''Initialise item.'''
         self._session = session
-        super(Context, self).__init__(entity)
+        super(Context, self).__init__(session, entity)
 
     @property
     def type(self):
@@ -181,10 +197,12 @@ class Context(Item):
     @property
     def icon(self):
         '''Return icon.'''
-        icon = self.entity.get('object_type', {}).get('icon', 'default')
-        return QtGui.QIcon(
-            ':/ftrack/image/light/object_type/{0}'.format(icon)
-        )
+        icon = self.entity.get('object_type', {}).get('icon', 'file-alert')
+        icon = icon.replace('_', '-')
+        try:
+            return qta.icon('ftrack.{}'.format(icon))
+        except:
+            return qta.icon('mdi.{}'.format(icon))
 
     def _fetchChildren(self):
         '''Fetch and return new child items.'''
@@ -217,7 +235,12 @@ class Project(Context):
     @property
     def icon(self):
         '''Return icon.'''
-        return QtGui.QIcon(':/ftrack/image/light/project')
+        return qta.icon('ftrack.project')
+
+    @property
+    def name(self):
+        '''Return name of item.'''
+        return self.entity.get('full_name')
 
 
 class EntityTreeModel(QtCore.QAbstractItemModel):
@@ -240,6 +263,7 @@ class EntityTreeModel(QtCore.QAbstractItemModel):
         super(EntityTreeModel, self).__init__(parent=parent)
         self.root = root
         self.columns = ['Name', 'Type']
+        self._worker = None
 
     def rowCount(self, parent):
         '''Return number of children *parent* index has.'''
@@ -391,17 +415,19 @@ class EntityTreeModel(QtCore.QAbstractItemModel):
             self.loadStarted.emit()
             startIndex = len(item.children)
 
-            worker = ftrack_connect.worker.Worker(item.fetchChildren)
-            worker.start()
+            self._worker = ftrack_connect.worker.Worker(
+                item.fetchChildren, parent=self
+            )
+            self._worker.start()
 
-            while worker.isRunning():
+            while self._worker.isRunning():
                 app = QtWidgets.QApplication.instance()
                 app.processEvents()
 
-            if worker.error:
-                raise worker.error[1], None, worker.error[2]
+            if self._worker.error:
+                raise self._worker.error[1]
 
-            additionalChildren = worker.result
+            additionalChildren = self._worker.result
 
             endIndex = startIndex + len(additionalChildren) - 1
             if endIndex >= startIndex:
@@ -443,15 +469,13 @@ class EntityTreeProxyModel(QtCore.QSortFilterProxyModel):
             leftItem = sourceModel.item(left)
             rightItem = sourceModel.item(right)
 
-            if (
-                isinstance(leftItem, (Context, Project))
-                and not isinstance(rightItem, (Context, Project))
+            if isinstance(leftItem, (Context, Project)) and not isinstance(
+                rightItem, (Context, Project)
             ):
                 return self.sortOrder() == QtCore.Qt.AscendingOrder
 
-            elif (
-                not isinstance(leftItem, (Context, Project))
-                and isinstance(rightItem, (Context, Project))
+            elif not isinstance(leftItem, (Context, Project)) and isinstance(
+                rightItem, (Context, Project)
             ):
                 return self.sortOrder() == QtCore.Qt.DescendingOrder
 

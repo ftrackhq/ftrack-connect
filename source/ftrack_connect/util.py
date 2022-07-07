@@ -5,7 +5,7 @@ import os
 import subprocess
 import sys
 
-from QtExt import QtCore
+from ftrack_connect.qt import QtCore
 
 
 def open_directory(path):
@@ -33,7 +33,7 @@ def open_directory(path):
         # here avoids the auto-escaping that python introduces, which
         # seems to fail...
         subprocess.Popen('start "" "{0}"'.format(directory), shell=True)
-        
+
     elif sys.platform == 'darwin':
         if os.path.isfile(path):
             # File exists and can be opened with a selection.
@@ -49,6 +49,7 @@ def open_directory(path):
 # Invoke function in main UI thread.
 # Taken from:
 # http://stackoverflow.com/questions/10991991/pyside-easier-way-of-updating-gui-from-another-thread/12127115#12127115
+
 
 class InvokeEvent(QtCore.QEvent):
     '''Event.'''
@@ -72,12 +73,12 @@ class Invoker(QtCore.QObject):
 
         return True
 
+
 _invoker = Invoker()
 
 
 def invoke_in_main_thread(fn, *args, **kwargs):
     '''Invoke function *fn* with arguments.'''
     QtCore.QCoreApplication.postEvent(
-        _invoker,
-        InvokeEvent(fn, *args, **kwargs)
+        _invoker, InvokeEvent(fn, *args, **kwargs)
     )

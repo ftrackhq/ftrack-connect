@@ -8,16 +8,325 @@
 Release Notes
 *************
 
+
+.. release:: Upcoming
+
+    .. change:: fixed
+        :tags: UX
+
+        User's tasks include inactive projects.
+
+    .. change:: changed
+        :tags: tray
+
+        Windows and Linux use color icon in system tray.
+
+    .. change:: fixed
+        :tags: style
+
+        Variant are highlighted black on light style.
+
+    .. change:: fixed
+        :tags: Linux
+
+        Application shortcut points to wrong executable.
+
+    .. change:: fixed
+        :tags: UX
+
+        Path with unicode are not rendered spaced correctly.
+
+
+.. release:: 2.0.0-rc-6
+    :date: 2022-06-01
+
+    .. change:: changed
+        :tags: Login
+
+        Provide link to get back on logging in through instance address.
+
+    .. change:: changed
+        :tags: Style
+
+        Remove play button from action launch and review style.
+
+    .. change:: fixed
+        :tags: UX
+
+        Interface expand on long context paths.
+
+    .. change:: fixed
+        :tags: Publisher
+
+        Add missing icons and set correct state for drop zone on folders.
+
+    .. change:: fixed
+        :tags: Publisher
+
+        Latest published assets are not always refreshing.
+
+    .. change:: changed
+        :tags: Style
+
+        Review Dialogs styles.
+
+    .. change:: changed
+        :tags: Style
+
+        Review style and icons.
+
+    .. change:: new
+        :tags: SystemTray, API
+
+        Allow connect to restart.
+
+    .. change:: changed
+        :tags: Plugins
+
+        Remove publisher and launcher from connect codebase.
+        Documentation can be found in:
+
+        * :ref:`Publisher documentation <ftrack-connect-publisher-widget:using/publishing>`
+        * :ref:`Launcher documentation <ftrack-connect-action-launcher-widget:using/actions>`
+
+    .. change:: changed
+        :tags: Codestyle
+
+        Run black pass with flags : black --skip-string-normalization -l 79 . on Codebase.
+
+.. release:: 2.0.0-rc-5
+    :date: 2022-03-25
+
+    .. change:: fixed
+        :tags: Actions
+
+        Random crashes on discovering on null context.
+
+    .. change:: new
+        :tags: Module
+
+        Provide ftrak_connect.qt module to abstract imported Qt modules.
+        
+    .. change:: changed
+        :tags: Events
+
+        Sending of usage_events can now be batched.
+
+    .. change:: changed
+        :tags: About, Linux
+
+        Linux Desktop entry respect packaged or virtual environment paths.
+
+    .. change:: changed
+        :tags: UX
+
+        Add new icons set for Connect.
+
+    .. change:: changed
+        :tags: UX
+
+        Connect color theme respect system theme.
+
+.. release:: 2.0.0-rc-4
+    :date: 2022-01-15
+
+    .. change:: changed
+        :tags: UX
+
+        Assigned tasks are refreshed on cancel.
+
+    .. change:: changed
+        :tags: API
+
+        User's plugin folder is created at startup time.
+
+    .. change:: changed
+        :tags: UX
+
+        Context selection is changed to a list of assigned tasks.
+
+    .. change:: new
+        :tags: UX
+
+        Indicator during discovery of actions.
+
+    .. change:: new
+        :tags: API
+
+        Provide ConnectWidget Plugin with custom name attribute to render.
+
+    .. change:: new
+        :tags: API
+
+        Improve ConnectWidget error logging.
+
+    .. change:: new
+        :tags: API
+
+        Emit usage data for Connect session duration along version and os type.
+
+    .. change:: fixed
+        :tags: API
+
+        Storage scenario help points to dead link.
+
+    .. change:: changed
+        :tags: UX
+
+        Provide placeholder text in context selectors.
+
+    .. change:: fixed
+        :tags: UX
+
+        Menubar icon smaller on Mac.
+
+    .. change:: changed
+        :tags: UX
+
+        Update icon set to use font icons (material/ftrack icons) to ensure full hidpi support.
+
+    .. change:: changed
+        :tags: UX
+
+        Consolidate font using Roboto.
+
+    .. change:: changed
+        :tags: API
+
+        Remove `ftrack_connect.session` utility class, and `shared_session` usage.
+
+    .. change:: changed
+        :tags: Logging
+
+        Improve logging readability.
+
+    .. change:: new
+        :tags: API
+
+        Restore ftrack_connect.application module to provide environment variable helper methods.
+
+        .. note::
+
+            We provide for backward compatibility the method **prependPath** and **appendPath**, but these will likely be deprated at a later stage.
+            The use of newer methods **prepend_path** and **append_path** in the same module are preferred.
+
+
+.. release:: 2.0.0-rc-3
+    :date: 2021-09-23
+
+    .. change:: changed
+        :tags: Setup
+
+        Use latest api release version.
+
+    .. change:: fixed
+        :tags: API
+
+        Cannot publish after a failed publish, and need to restart connect.
+
+.. release:: 2.0.0-rc-2
+    :date: 2021-07-13
+
+    .. change:: changed
+        :tags: Documentation
+
+        Update with latest images.
+
+.. release:: 2.0.0-rc-1
+    :date: 2021-06-18
+
+    .. change:: changed
+        :tags: UI
+
+        Integrations are returned sorted by name in About page.
+
+    .. change:: changed
+        :tags: ConnectWidgetPlugin
+
+        Improve error handling.
+
+.. release:: 2.0.0-beta-4
+    :date: 2021-06-07
+
+    .. change:: new
+        :tags: UI
+
+        Allow connect to be always on top of other windows.
+
+.. release:: 2.0.0-beta-3
+    :date: 2021-05-21
+
+    .. change:: changed
+        :tags: API
+
+        Review ConnectWidgetPlugin base classes.
+
+
+.. release:: 2.0.0-beta-2
+    :date: 2021-03-18
+
+    .. change:: new
+        :tags: Ui
+
+        Provide ability to extend connect through ConnectWidgets plugins.
+
+
+.. release:: 2.0.0-beta-1
+    :date: 2021-03-11
+
+    .. change:: changed
+        :tags: Ui
+
+        Move to `Pyside2 <https://pypi.org/project/PySide2/>`_.
+
+    .. change:: changed
+        :tags: API
+
+        Remove `ftrack-python-legacy-api <https://bitbucket.org/ftrack/ftrack-python-legacy-api/src/master/>`_
+        dependency and dependent code.
+
+        .. warning::
+
+            Hooks using ftrack.EVENT_HANDLERS won't be discovered anymore.
+
+    .. change:: new
+        :tags: Ui
+
+        Replace `QtExt <https://bitbucket.org/ftrack/qtext>`_ with `Qt.py <https://github.com/mottosso/Qt.py>`_ module.
+
+    .. change:: changed
+        :tags: changed
+
+        Move connector integration codebase to `separate repository <https://bitbucket.org/ftrack/ftrack-connector-legacy>`_
+
+    .. change:: new
+        :tags: Setup
+
+        Use setuptool_scm to infer version.
+
+    .. change:: fixed
+        :tags: Application launcher
+
+        Standalone installation does not correctly inject dependencies at application startup.
+
+    .. change:: changed
+        :tags: code
+
+        Port code to python3.
+
+
+.. warning:: 
+
+    This is the last version supporting `ftrack-python-legacy-api <https://bitbucket.org/
+
+
 .. release:: 1.1.10
     :date: 2021-05-21
 
     .. change:: fixed
         :tags: doc
 
-        Provide requirement file for RTD builds.
-
-
-.. release:: 1.1.9
+        Provide requirement file for RTD builds... release:: 1.1.9
     :date: 2021-03-11
 
     .. change:: fixed

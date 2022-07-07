@@ -1,6 +1,6 @@
 /** Application window */
 QMainWindow#ftrack-connect-window {
-    background: $white;
+    background: $body-background ;
 }
 
 QLabel#login-label {
@@ -9,9 +9,8 @@ QLabel#login-label {
 
 QLabel#regular-label {
     font-size: 15px;
-    font-weight: light;
+    font-weight: normal;
 }
-
 
 * {
     font-family: $font-family-base;
@@ -19,6 +18,9 @@ QLabel#regular-label {
 
 QLabel#lead-label {
     font-size: 13px;
-    color: $gray-light;
-    font-weight: light;
+    color: $secondary-text;
+    font-weight: normal;
 }
+ QPixmap{
+     image: theme-image('ftrackLogoLabelDark');
+ }

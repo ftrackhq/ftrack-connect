@@ -2,10 +2,12 @@
 # :copyright: Copyright (c) 2015 ftrack
 
 import os
-import urllib2
 
-from QtExt import QtWidgets, QtCore, QtGui
-import ftrack
+import urllib
+import urllib.error
+import urllib.request
+
+from ftrack_connect.qt import QtWidgets, QtCore, QtGui
 import ftrack_connect.worker
 
 # Cache of thumbnail images.
@@ -17,7 +19,6 @@ class Base(QtWidgets.QLabel):
 
     def __init__(self, parent=None):
         super(Base, self).__init__(parent)
-
         self.thumbnailCache = {}
         self.setFrameStyle(QtWidgets.QFrame.StyledPanel)
         self.setAlignment(QtCore.Qt.AlignCenter)
@@ -66,8 +67,7 @@ class Base(QtWidgets.QLabel):
     def _scaleAndSetPixmap(self, pixmap):
         '''Scale and set *pixmap*.'''
         scaledPixmap = pixmap.scaledToWidth(
-            self.width(),
-            mode=QtCore.Qt.SmoothTransformation
+            self.width(), mode=QtCore.Qt.SmoothTransformation
         )
         self.setPixmap(scaledPixmap)
 
@@ -84,7 +84,7 @@ class Base(QtWidgets.QLabel):
         placeholder = self.placholderThumbnail
         try:
             response = opener_callback(url, timeout=timeout)
-        except urllib2.URLError:
+        except urllib.error.URLError:
             response = opener_callback(placeholder)
 
         return response
@@ -100,82 +100,26 @@ class Base(QtWidgets.QLabel):
             else:
                 httpHandle = 'http'
 
-            proxy = urllib2.ProxyHandler({httpHandle: ftrackProxy})
-            opener = urllib2.build_opener(proxy)
+            proxy = urllib.request.ProxyHandler({httpHandle: ftrackProxy})
+            opener = urllib.request.build_opener(proxy)
             response = self._safeDownload(url, opener.open)
             html = response.read()
         else:
-            response = self._safeDownload(url, urllib2.urlopen)
+            response = self._safeDownload(url, urllib.request.urlopen)
             html = response.read()
 
         return html
 
 
-class EllipseBase(Base):
-    '''Thumbnail which is drawn as an ellipse.'''
-
-    def paintEvent(self, event):
-        '''Override paint event to make round thumbnails.'''
-        painter = QtGui.QPainter(self)
-        painter.setRenderHints(
-            QtGui.QPainter.Antialiasing,
-            True
-        )
-
-        brush = QtGui.QBrush(
-            self.pixmap()
-        )
-
-        painter.setBrush(brush)
-
-        painter.setPen(
-            QtGui.QPen(
-                QtGui.QColor(0, 0, 0, 0)
-            )
-        )
-
-        painter.drawEllipse(
-            QtCore.QRectF(
-                0, 0,
-                self.width(), self.height()
-            )
-        )
-
-
-class User(EllipseBase):
-
-    def _download(self, reference):
-        '''Return thumbnail from *reference*.'''
-        url = ftrack.User(reference).getThumbnail()
-        return super(User, self)._download(url)
-
-
 class ActionIcon(Base):
     '''Widget to load action icons over HTTP.'''
 
-    #: Available icons on ftrack server.
-    AVAILABLE_ICONS = {
-        'hiero': '/application_icons/hiero.png',
-        'hieroplayer': '/application_icons/hieroplayer.png',
-        'nukex': '/application_icons/nukex.png',
-        'nuke': '/application_icons/nuke.png',
-        'nuke_studio': '/application_icons/nuke_studio.png',
-        'premiere': '/application_icons/premiere.png',
-        'maya': '/application_icons/maya.png',
-        'cinesync': '/application_icons/cinesync.png',
-        'photoshop': '/application_icons/photoshop.png',
-        'prelude': '/application_icons/prelude.png',
-        'after_effects': '/application_icons/after_effects.png',
-        '3ds_max': '/application_icons/3ds_max.png',
-        'cinema_4d': '/application_icons/cinema_4d.png',
-        'indesign': '/application_icons/indesign.png',
-        'illustrator': '/application_icons/illustrator.png'
-    }
-
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, default_icon=None):
         '''Initialize action icon.'''
         super(ActionIcon, self).__init__(parent)
+        self.setObjectName('action-icon')
         self.setFrameStyle(QtWidgets.QFrame.NoFrame)
+        self._default_icon = default_icon
 
     def setIcon(self, icon):
         '''Set *icon* to a supported icon or show the standard icon.
@@ -183,30 +127,33 @@ class ActionIcon(Base):
         *icon* may be one of the following.
 
             * A URL to load the image from starting with 'http'.
-            * One of the predefined icons in AVAILABLE_ICONS
         '''
-        if icon and icon[:4] == 'http':
+        if icon and isinstance(icon, QtGui.QIcon):
+            super(ActionIcon, self).setPixmap(
+                icon.pixmap(QtCore.QSize(self.width(), self.height()))
+            )
+
+        elif icon and icon[:4] == 'http':
             self.load(icon)
-
-        elif self.AVAILABLE_ICONS.get(icon):
-            url = os.environ['FTRACK_SERVER'] + self.AVAILABLE_ICONS[icon]
-            self.load(url)
-
         else:
-            self.loadResource(':/ftrack/image/light/action')
+            super(ActionIcon, self).setPixmap(
+                self._default_icon.pixmap(
+                    QtCore.QSize(self.width(), self.height())
+                )
+            )
 
     def loadResource(self, resource):
         '''Update current pixmap using *resource*.'''
-        pixmap = QtGui.QPixmap(
-            QtCore.QSize(self.width(), self.height())
-        )
+        pixmap = QtGui.QPixmap(QtCore.QSize(self.width(), self.height()))
         pixmap.load(resource)
         self._scaleAndSetPixmap(pixmap)
 
     def _scaleAndSetPixmap(self, pixmap):
         '''Scale *pixmap* to fit within current bounds'''
         scaledPixmap = pixmap.scaled(
-            self.width(), self.height(), QtCore.Qt.KeepAspectRatio,
-            QtCore.Qt.SmoothTransformation
+            self.width(),
+            self.height(),
+            QtCore.Qt.KeepAspectRatio,
+            QtCore.Qt.SmoothTransformation,
         )
         self.setPixmap(scaledPixmap)
