@@ -9,7 +9,8 @@ Release Notes
 *************
 
 
-.. release:: Upcoming
+.. release:: 2.0.0
+    :date: 2022-07-07
 
     .. change:: fixed
         :tags: UX
