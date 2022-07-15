@@ -14,7 +14,6 @@ from ftrack_connect.ui.widget.thumbnail import ActionIcon
 
 # We need to force load the icons or ftrack.<icon> won't be available
 # not sure why is the case, likely due to be in threded function.
-load_icons(os.path.join(os.path.dirname(__file__), '..', '..', 'fonts'))
 
 
 class ActionItem(QtWidgets.QFrame):
