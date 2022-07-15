@@ -1,6 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2016 ftrack
 
+import os
 import webbrowser
 
 from ftrack_connect.qt import QtWidgets, QtCore, QtSvg, QtGui
@@ -8,6 +9,11 @@ from ftrack_connect.qt import QtWidgets, QtCore, QtSvg, QtGui
 import qtawesome as qta
 
 import ftrack_api.exception
+from ftrack_connect import load_icons
+
+# We need to force load the icons or ftrack.<icon> won't be available
+# not sure why is the case, likely due to be in threded function.
+load_icons(os.path.join(os.path.dirname(__file__), '..', '..', 'fonts'))
 
 
 class ConfigureScenario(QtWidgets.QWidget):
