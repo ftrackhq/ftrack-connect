@@ -9,13 +9,17 @@ from ._version import __version__
 
 logger = logging.getLogger(__name__)
 
+_resource = {"loaded": False}
+
 
 def load_icons(font_folder):
     font_folder = os.path.abspath(font_folder)
-    logger.info(f'loading ftrack icon fonts from {font_folder}')
-    qta.load_font(
-        'ftrack',
-        'ftrack-icon.ttf',
-        'ftrack-icon-charmap.json',
-        directory=font_folder,
-    )
+    logger.info(f'loading ftrack icon fonts from {font_folder} : resource already loaded {_resource["loaded"]}')
+    if not _resource['loaded']:
+        qta.load_font(
+            'ftrack',
+            'ftrack-icon.ttf',
+            'ftrack-icon-charmap.json',
+            directory=font_folder,
+        )
+        _resource['loaded']=True

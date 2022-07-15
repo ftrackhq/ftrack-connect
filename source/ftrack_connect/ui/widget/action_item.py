@@ -8,7 +8,6 @@ import qtawesome as qta
 from ftrack_connect.qt import QtCore, QtWidgets, QtGui
 
 import ftrack_api.event.base
-from ftrack_connect import load_icons
 import ftrack_connect.asynchronous
 from ftrack_connect.ui.widget.thumbnail import ActionIcon
 
