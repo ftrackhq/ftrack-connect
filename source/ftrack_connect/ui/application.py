@@ -951,11 +951,7 @@ class Application(QtWidgets.QMainWindow):
         if name is None:
             name = plugin.getName()
 
-        icon = None
-        try:
-            icon = qta.icon(plugin.icon)
-        except Exception as err:
-            icon = QtGui.QIcon(plugin.icon)
+        icon = self._prep_tab_icon(plugin.icon)
 
         self.tabPanel.addTab(plugin, icon, name)
 
@@ -973,10 +969,19 @@ class Application(QtWidgets.QMainWindow):
             self.update_tab_icon
         )
 
+    def _prep_tab_icon(self, icon):
+        icon = None
+        try:
+            icon = qta.icon(icon)
+        except Exception as err:
+            icon = QtGui.QIcon(icon)
+        return icon
+
     def update_tab_icon(self, icon):
         widget = self.sender()
         widget_index = self.tabPanel.indexOf(widget)
-        self.tabePanel.setTabIcon(widget_index, icon)
+        new_icon = self._prep_tab_icon(icon)
+        self.tabPanel.setTabIcon(widget_index, new_icon)
 
     def removePlugin(self, plugin):
         '''Remove plugin registered with *identifier*.
