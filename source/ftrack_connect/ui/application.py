@@ -87,6 +87,9 @@ class ConnectWidget(QtWidgets.QWidget):
     #: Signal to emit to request connect to restart.
     requestConnectRestart = QtCore.Signal()
 
+    #: Signal to emit to request an icon update.
+    requestIconUpdate = QtCore.Signal(object)
+
     @property
     def session(self):
         '''Return current session.'''
@@ -217,7 +220,6 @@ class WelcomePlugin(ConnectWidget):
         self.discover_plugin_manager()
         self.manager_installed.connect(self._on_manager_installed)
         self.restart_button.clicked.connect(self.requestConnectRestart.emit)
-
 
 
 class Application(QtWidgets.QMainWindow):
@@ -967,6 +969,14 @@ class Application(QtWidgets.QMainWindow):
         plugin.requestConnectRestart.connect(
             self.restart
         )
+        plugin.requestIconUpdate.connect(
+            self.update_tab_icon
+        )
+
+    def update_tab_icon(self, icon):
+        widget = self.sender()
+        widget_index = self.tabPanel.indexOf(widget)
+        self.tabePanel.setTabIcon(widget_index, icon)
 
     def removePlugin(self, plugin):
         '''Remove plugin registered with *identifier*.
