@@ -55,7 +55,7 @@ class ActionItem(QtWidgets.QFrame):
         )
 
         self.setMouseTracking(True)
-        self.setFixedSize(QtCore.QSize(75, 95))
+        self.setFixedSize(QtCore.QSize(75, 105))
         layout = QtWidgets.QVBoxLayout()
         layout.setAlignment(QtCore.Qt.AlignCenter)
         layout.setSpacing(0)

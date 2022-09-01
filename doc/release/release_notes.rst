@@ -10,6 +10,10 @@ Release Notes
 
 
 .. release:: Upcoming
+    .. change:: fixed
+        :tags: UX
+
+        Action icons are being cut in task launcher.
 
     .. change:: fixed
         :tags: UX
