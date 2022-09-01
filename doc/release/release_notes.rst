@@ -10,12 +10,15 @@ Release Notes
 
 
 .. release:: Upcoming
-
     .. change:: fixed
         :tags: UX
 
         Action icons are being cut in task launcher.
 
+    .. change:: fixed
+        :tags: UX
+
+        Icons fonts are not correctly loaded during storage setup.
 
 .. release:: 2.0.0
     :date: 2022-07-07
