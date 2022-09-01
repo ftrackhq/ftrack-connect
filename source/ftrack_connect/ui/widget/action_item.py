@@ -8,13 +8,11 @@ import qtawesome as qta
 from ftrack_connect.qt import QtCore, QtWidgets, QtGui
 
 import ftrack_api.event.base
-from ftrack_connect import load_icons
 import ftrack_connect.asynchronous
 from ftrack_connect.ui.widget.thumbnail import ActionIcon
 
 # We need to force load the icons or ftrack.<icon> won't be available
 # not sure why is the case, likely due to be in threded function.
-load_icons(os.path.join(os.path.dirname(__file__), '..', '..', 'fonts'))
 
 
 class ActionItem(QtWidgets.QFrame):
