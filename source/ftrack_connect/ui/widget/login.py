@@ -1,5 +1,6 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
+import os
 
 from ftrack_connect.qt import QtWidgets, QtCore, QtGui
 
@@ -28,6 +29,7 @@ class Login(QtWidgets.QWidget):
         super(Login, self).__init__()
 
         theme = kwargs.get("theme", "light")
+        self.server_urls = kwargs.get("server_urls", None)
 
         layout = QtWidgets.QVBoxLayout()
         layout.addSpacing(50)
@@ -59,6 +61,7 @@ class Login(QtWidgets.QWidget):
         self.server = QtWidgets.QLineEdit()
         self.server.setPlaceholderText('Site name or custom domain URL')
         layout.addWidget(self.server)
+        self.server.setText(os.getenv('FTRACK_SERVER', ''))
 
         self.username = QtWidgets.QLineEdit()
         self.username.setPlaceholderText('User name')
@@ -125,6 +128,16 @@ class Login(QtWidgets.QWidget):
         )
         layout.addSpacing(20)
 
+        if self.server_urls:
+            self.server_completer = QtWidgets.QCompleter(
+                list(self.server_urls.keys()), self)
+            self.server_completer.setCompletionMode(
+                QtWidgets.QCompleter.PopupCompletion)
+            self.server.setCompleter(self.server_completer)
+            self.server_completer.activated.connect(self.server_url_chosen)
+            if os.getenv('FTRACK_SERVER', ''):
+                self.server_url_chosen()
+
 
 
     def on_set_error(self, error):
@@ -151,3 +164,32 @@ class Login(QtWidgets.QWidget):
         self.username.hide()
         self.toggle_api_label.show()
         self.untoggle_api_label.hide()
+
+    def server_url_chosen(self):
+        self._toggle_credentials()
+        credentials = self.server_urls[self.server.text()]
+        self.user_names = {}
+        for i in credentials["accounts"]:
+            self.user_names[i['api_user']] = i['api_key']
+            if i['api_user'] == credentials['last_used_api_user']:
+                self.username.setText(i['api_user'])
+                self.apiKey.setText(i['api_key'])
+        if self.user_names:
+            # this would prevent the user to be able to ever choose
+            # a different login then one that was specified
+            # if len(list(self.user_names.keys())) == 1:
+            #     self.handleLogin()
+            #     return
+            try:
+                self.user_completer.activated.disconnect(self.user_chosen)
+            except:
+                pass
+            self.user_completer = QtWidgets.QCompleter(
+                list(self.user_names.keys()), self)
+            self.user_completer.setCompletionMode(
+                QtWidgets.QCompleter.PopupCompletion)  # pylint: disable=line-too-long
+            self.username.setCompleter(self.user_completer)
+            self.user_completer.activated.connect(self.user_chosen)
+
+    def user_chosen(self):
+        self.apiKey.setText(self.user_names[self.username.text()])
