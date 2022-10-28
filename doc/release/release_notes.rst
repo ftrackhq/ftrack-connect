@@ -9,7 +9,7 @@ Release Notes
 *************
 
 .. release:: Upcoming
-    :date: 2022-10-28
+    :date:
 
     .. change:: changed
         :tags: UX, Login
