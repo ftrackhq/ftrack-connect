@@ -1,6 +1,7 @@
 # :coding: utf-8
 # :copyright: Copyright (c) 2014 ftrack
 import os
+import logging
 
 from ftrack_connect.qt import QtWidgets, QtCore, QtGui
 
@@ -27,7 +28,9 @@ class Login(QtWidgets.QWidget):
     def __init__(self, *args, **kwargs):
         '''Instantiate the login widget.'''
         super(Login, self).__init__()
-
+        self.logger = logging.getLogger(
+            __name__ + '.' + self.__class__.__name__
+        )
         theme = kwargs.get("theme", "light")
         self.server_urls = kwargs.get("server_urls", None)
 
@@ -57,6 +60,11 @@ class Login(QtWidgets.QWidget):
         label.setText('Sign in')
         label.setObjectName('login-label')
         layout.addWidget(label, alignment=QtCore.Qt.AlignCenter)
+
+        if os.getenv('FTRACK_SERVER', ''):
+            self.logger.warning('FTRACK_SERVER '
+                                'environment variable is set to {}'.format(
+                os.getenv('FTRACK_SERVER', '')))
 
         self.server = QtWidgets.QLineEdit()
         self.server.setPlaceholderText('Site name or custom domain URL')
@@ -108,7 +116,7 @@ class Login(QtWidgets.QWidget):
         self.toggle_api_label.setObjectName('lead-label')
         self.toggle_api_label.setText(
             'Trouble signing in? '
-            '<a href="#" style="color: #FFDD86;">Sign in with username and API key</a>'
+            '<a href="#" style="color: #FFDD86;">Sign in with username and API key.</a>'
         )
         self.toggle_api_label.clicked.connect(self._toggle_credentials)
         layout.addWidget(
@@ -129,6 +137,7 @@ class Login(QtWidgets.QWidget):
         layout.addSpacing(20)
 
         if self.server_urls:
+            self.logger.debug('Setting up Completer for server urls')
             self.server_completer = QtWidgets.QCompleter(
                 list(self.server_urls.keys()), self)
             self.server_completer.setCompletionMode(
@@ -175,6 +184,7 @@ class Login(QtWidgets.QWidget):
                 self.username.setText(i['api_user'])
                 self.apiKey.setText(i['api_key'])
         if self.user_names:
+            self.logger.debug('Setting up Completer for user names')
             # this would prevent the user to be able to ever choose
             # a different login then one that was specified
             # if len(list(self.user_names.keys())) == 1:
@@ -192,4 +202,5 @@ class Login(QtWidgets.QWidget):
             self.user_completer.activated.connect(self.user_chosen)
 
     def user_chosen(self):
+        self.logger.debug('Getting api key from Completer')
         self.apiKey.setText(self.user_names[self.username.text()])

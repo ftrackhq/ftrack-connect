@@ -24,7 +24,6 @@ from ftrack_connect import load_icons
 import ftrack_api
 import ftrack_api._centralized_storage_scenario
 import ftrack_api.event.base
-import ftrack_connect.usage
 import ftrack_connect
 import ftrack_connect.event_hub_thread as _event_hub_thread
 import ftrack_connect.error
@@ -305,19 +304,20 @@ class Application(QtWidgets.QMainWindow):
 
     def emitConnectUsage(self):
         '''Emit data to intercom to track Connect data usage'''
-        connect_stopped_time = time.time()
+        if self.session:
+            connect_stopped_time = time.time()
 
-        metadata = {
-            'label': 'ftrack-connect',
-            'version': ftrack_connect.__version__,
-            'os': platform.platform(),
-            'session-duration': connect_stopped_time
-            - self.__connect_start_time,
-        }
+            metadata = {
+                'label': 'ftrack-connect',
+                'version': ftrack_connect.__version__,
+                'os': platform.platform(),
+                'session-duration': connect_stopped_time
+                - self.__connect_start_time,
+            }
 
-        usage.send_event(
-            self.session, 'USED-CONNECT', metadata, asynchronous=True
-        )
+            usage.send_event(
+                self.session, 'USED-CONNECT', metadata, asynchronous=True
+            )
 
     @property
     def session(self):
@@ -1104,3 +1104,10 @@ class Application(QtWidgets.QMainWindow):
             return
 
         ftrack_connect.util.open_directory(self.defaultPluginDirectory)
+
+    def closeEvent(self, event):
+        '''Gracefully shutdown the QApplication if the user decides
+           to abort the login and just closes the widget.
+        '''
+        if not self.session:
+            QtWidgets.QApplication.quit()
