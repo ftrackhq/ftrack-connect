@@ -8,6 +8,25 @@
 Release Notes
 *************
 
+.. release:: 2.0.2
+    :date: 2022-10-28
+
+    .. change:: changed
+        :tags: UX, Login
+
+        Connect now stores multiple ftrack instance urls and potentially multiple accounts per url
+        These are offered through a Completer in the respective line edits
+
+    .. change:: changed
+        :tags: UX, Login
+
+        setting FTRACK_SERVER in the environment fills the url line edit
+
+    .. change:: changed
+        :tags: UX, Login
+
+        If the User chooses to close the login widget without login in the QApplication is now shutdown
+        Before the Application was running and consuming the lockfile
 
 .. release:: 2.0.1
     :date: 2022-09-01
