@@ -8,7 +8,7 @@
 Release Notes
 *************
 
-.. release:: 2.0.2
+.. release:: Upcoming
     :date: 2022-10-28
 
     .. change:: changed
