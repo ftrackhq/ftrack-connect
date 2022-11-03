@@ -439,6 +439,8 @@ class Application(QtWidgets.QMainWindow):
         if json_config:
             try:
                 if 'last_used_api_user' in json_config:
+                    # check for the new way to store logins per domain with
+                    # multiple accounts
                     for data in json_config['accounts']:
                         if data['api_user'] == json_config['last_used_api_user']:
                             credentials = {
@@ -447,6 +449,15 @@ class Application(QtWidgets.QMainWindow):
                                 'api_key': data['api_key'],
                             }
                             break
+                else:
+                    # this should be fired once before all is stored
+                    # per url
+                    data = json_config['accounts'][0]
+                    credentials = {
+                        'server_url': data['server_url'],
+                        'api_user': data['api_user'],
+                        'api_key': data['api_key'],
+                    }
             except Exception:
                 self.logger.debug(
                     u'No credentials were found in config: {0}.'.format(
