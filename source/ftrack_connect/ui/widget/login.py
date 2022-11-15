@@ -176,30 +176,31 @@ class Login(QtWidgets.QWidget):
 
     def server_url_chosen(self):
         self._toggle_credentials()
-        credentials = self.server_urls[self.server.text()]
-        self.user_names = {}
-        for i in credentials["accounts"]:
-            self.user_names[i['api_user']] = i['api_key']
-            if i['api_user'] == credentials['last_used_api_user']:
-                self.username.setText(i['api_user'])
-                self.apiKey.setText(i['api_key'])
-        if self.user_names:
-            self.logger.debug('Setting up Completer for user names')
-            # this would prevent the user to be able to ever choose
-            # a different login then one that was specified
-            # if len(list(self.user_names.keys())) == 1:
-            #     self.handleLogin()
-            #     return
-            try:
-                self.user_completer.activated.disconnect(self.user_chosen)
-            except:
-                pass
-            self.user_completer = QtWidgets.QCompleter(
-                list(self.user_names.keys()), self)
-            self.user_completer.setCompletionMode(
-                QtWidgets.QCompleter.PopupCompletion)  # pylint: disable=line-too-long
-            self.username.setCompleter(self.user_completer)
-            self.user_completer.activated.connect(self.user_chosen)
+        credentials = self.server_urls.get(self.server.text(), None)
+        if credentials:
+            self.user_names = {}
+            for i in credentials["accounts"]:
+                self.user_names[i['api_user']] = i['api_key']
+                if i['api_user'] == credentials['last_used_api_user']:
+                    self.username.setText(i['api_user'])
+                    self.apiKey.setText(i['api_key'])
+            if self.user_names:
+                self.logger.debug('Setting up Completer for user names')
+                # this would prevent the user to be able to ever choose
+                # a different login then one that was specified
+                # if len(list(self.user_names.keys())) == 1:
+                #     self.handleLogin()
+                #     return
+                try:
+                    self.user_completer.activated.disconnect(self.user_chosen)
+                except:
+                    pass
+                self.user_completer = QtWidgets.QCompleter(
+                    list(self.user_names.keys()), self)
+                self.user_completer.setCompletionMode(
+                    QtWidgets.QCompleter.PopupCompletion)  # pylint: disable=line-too-long
+                self.username.setCompleter(self.user_completer)
+                self.user_completer.activated.connect(self.user_chosen)
 
     def user_chosen(self):
         self.logger.debug('Getting api key from Completer')
