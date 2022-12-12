@@ -736,7 +736,7 @@ class Application(QtWidgets.QMainWindow):
         for apiPluginPath in os.environ.get(
             'FTRACK_EVENT_PLUGIN_PATH', ''
         ).split(os.pathsep):
-            if apiPluginPath not in plugin_paths:
+            if apiPluginPath and apiPluginPath not in plugin_paths:
                 plugin_paths.append(os.path.expandvars(apiPluginPath))
 
         for connectPluginPath in os.environ.get(
