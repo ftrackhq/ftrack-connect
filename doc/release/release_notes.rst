@@ -8,6 +8,12 @@
 Release Notes
 *************
 
+.. release:: Upcoming
+
+    .. change:: fixed
+        :tags: UI
+
+        Application crash on Windows 8.1.
 
 .. release:: 2.0.1
     :date: 2022-09-01
