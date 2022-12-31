@@ -288,11 +288,18 @@ class Application(QtWidgets.QMainWindow):
         if sys.platform == "darwin":
             from darkdetect import _mac_detect as stylemodule
 
-        elif sys.platform == "win32" and int(platform.release()) >= 10:
+        elif (
+                sys.platform == "win32"
+                and platform.release().isdigit()  # Windows 8.1 would result in '8.1' str
+                and int(platform.release()) >= 10
+        ):
             from darkdetect import _windows_detect as stylemodule
 
         elif sys.platform == "linux":
             from darkdetect import _linux_detect as stylemodule
+
+        else:
+            from darkdetect import _dummy as stylemodule
 
         current_theme = stylemodule.theme()
         if not current_theme:
