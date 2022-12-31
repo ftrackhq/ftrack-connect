@@ -14,6 +14,11 @@ Release Notes
         :tags: UI
 
         Application crash on Windows 8.1.
+        
+    .. change: fixed
+        :tags: API
+        
+        Assure all plugin paths are unique.
 
 .. release:: 2.0.1
     :date: 2022-09-01
