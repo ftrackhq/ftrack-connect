@@ -11,6 +11,8 @@ In order to contribute please follow these simple steps:
 1) Fork the repository on github.
 2) Create a branch on forked repository.
 3) Code your fix/improvement in the branch.
+4) Update doc/release/release_notes.rst with the changes (fixed, changed, new).
+   Do not include release version or data, these will be set at release time.
 4) Open a pull requests against our repository targeting the main branch.
 5) Let us know you have been contributing dropping a line to support[at]ftrack.com.
 

@@ -10,6 +10,11 @@ Release Notes
 
 .. release:: Upcoming
 
+    .. change:: changed
+        :tags: Docs
+
+        Update CONTRIBUTING.md to include release notes.
+
     .. change:: fixed
         :tags: UI
 
