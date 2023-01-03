@@ -743,7 +743,7 @@ class Application(QtWidgets.QMainWindow):
         for apiPluginPath in os.environ.get(
             'FTRACK_EVENT_PLUGIN_PATH', ''
         ).split(os.pathsep):
-            if apiPluginPath not in plugin_paths:
+            if apiPluginPath and apiPluginPath not in plugin_paths:
                 plugin_paths.append(os.path.expandvars(apiPluginPath))
 
         for connectPluginPath in os.environ.get(
@@ -753,13 +753,15 @@ class Application(QtWidgets.QMainWindow):
                 self._gatherPluginHooks(os.path.expandvars(connectPluginPath))
             )
 
+        plugin_paths = list(set(plugin_paths))
+
         self.logger.info(
             u'Connect plugin hooks directories: {0}'.format(
                 ', '.join(plugin_paths)
             )
         )
 
-        return list(plugin_paths)
+        return plugin_paths
 
     def _gatherPluginHooks(self, path):
         '''Return plugin hooks from *path*.'''
