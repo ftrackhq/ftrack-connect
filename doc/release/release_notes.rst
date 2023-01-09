@@ -9,7 +9,16 @@ Release Notes
 *************
 
 .. release:: Upcoming
-    :date:
+
+    .. change:: fixed
+        :tags: UI
+
+        Application crash on Windows 8.1.
+
+    .. change: fixed
+        :tags: API
+
+        Assure all plugin paths are unique.
 
     .. change:: changed
         :tags: UX, Login
