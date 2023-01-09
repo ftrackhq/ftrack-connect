@@ -24,7 +24,6 @@ from ftrack_connect import load_icons
 import ftrack_api
 import ftrack_api._centralized_storage_scenario
 import ftrack_api.event.base
-import ftrack_connect.usage
 import ftrack_connect
 import ftrack_connect.event_hub_thread as _event_hub_thread
 import ftrack_connect.error
@@ -312,19 +311,20 @@ class Application(QtWidgets.QMainWindow):
 
     def emitConnectUsage(self):
         '''Emit data to intercom to track Connect data usage'''
-        connect_stopped_time = time.time()
+        if self.session:
+            connect_stopped_time = time.time()
 
-        metadata = {
-            'label': 'ftrack-connect',
-            'version': ftrack_connect.__version__,
-            'os': platform.platform(),
-            'session-duration': connect_stopped_time
-            - self.__connect_start_time,
-        }
+            metadata = {
+                'label': 'ftrack-connect',
+                'version': ftrack_connect.__version__,
+                'os': platform.platform(),
+                'session-duration': connect_stopped_time
+                - self.__connect_start_time,
+            }
 
-        usage.send_event(
-            self.session, 'USED-CONNECT', metadata, asynchronous=True
-        )
+            usage.send_event(
+                self.session, 'USED-CONNECT', metadata, asynchronous=True
+            )
 
     @property
     def session(self):
@@ -368,7 +368,8 @@ class Application(QtWidgets.QMainWindow):
         self.move(50, 50)
 
         self._login_overlay = None
-        self.loginWidget = _login.Login(theme=self.theme())
+        self.loginWidget = _login.Login(theme=self.theme(),
+                                        server_urls = ftrack_connect.ui.config.get_all_server_url_configs())
         self.loginSignal.connect(self.loginWithCredentials)
         self.loginSuccessSignal.connect(self._post_login_settings)
         self.login()
@@ -425,6 +426,8 @@ class Application(QtWidgets.QMainWindow):
         config = ftrack_connect.ui.config.read_json_config()
 
         config['accounts'] = []
+        config['last_used_api_user'] = ''
+        config['last_used_server_url'] = ''
         ftrack_connect.ui.config.write_json_config(config)
 
         QtWidgets.QApplication.quit()
@@ -442,12 +445,26 @@ class Application(QtWidgets.QMainWindow):
         json_config = ftrack_connect.ui.config.read_json_config()
         if json_config:
             try:
-                data = json_config['accounts'][0]
-                credentials = {
-                    'server_url': data['server_url'],
-                    'api_user': data['api_user'],
-                    'api_key': data['api_key'],
-                }
+                if 'last_used_api_user' in json_config:
+                    # check for the new way to store logins per domain with
+                    # multiple accounts
+                    for data in json_config['accounts']:
+                        if data['api_user'] == json_config['last_used_api_user']:
+                            credentials = {
+                                'server_url': data['server_url'],
+                                'api_user': data['api_user'],
+                                'api_key': data['api_key'],
+                            }
+                            break
+                else:
+                    # this should be fired once before all is stored
+                    # per url
+                    data = json_config['accounts'][0]
+                    credentials = {
+                        'server_url': data['server_url'],
+                        'api_user': data['api_user'],
+                        'api_key': data['api_key'],
+                    }
             except Exception:
                 self.logger.debug(
                     u'No credentials were found in config: {0}.'.format(
@@ -475,9 +492,10 @@ class Application(QtWidgets.QMainWindow):
         '''Save API credentials to storage.'''
         # Clear QSettings since they should not be used any more.
         self._clear_qsettings()
+        self.setWindowTitle('ftrack Connect {}'.format(server_url))
 
         # Save the credentials.
-        json_config = ftrack_connect.ui.config.read_json_config()
+        json_config = ftrack_connect.ui.config.read_json_config(server_url)
 
         if not json_config:
             json_config = {}
@@ -486,16 +504,25 @@ class Application(QtWidgets.QMainWindow):
         # machine.
         if not 'id' in json_config:
             json_config['id'] = str(uuid.uuid4())
-
-        json_config['accounts'] = [
-            {
-                'server_url': server_url,
-                'api_user': api_user,
-                'api_key': api_key,
-            }
-        ]
-
-        ftrack_connect.ui.config.write_json_config(json_config)
+        if not 'accounts' in json_config:
+            json_config['accounts'] = [
+                {
+                    'server_url': server_url,
+                    'api_user': api_user,
+                    'api_key': api_key,
+                }
+            ]
+        else:
+            if not api_user in [x['api_user'] for x in json_config["accounts"]]:
+                json_config['accounts'].append(
+                    {
+                        'server_url': server_url,
+                        'api_user': api_user,
+                        'api_key': api_key,
+                    })
+        json_config['last_used_server_url'] = server_url
+        json_config['last_used_api_user'] = api_user
+        ftrack_connect.ui.config.write_json_config(json_config, domain=server_url)
 
     def login(self):
         '''Login using stored credentials or ask user for them.'''
@@ -509,6 +536,7 @@ class Application(QtWidgets.QMainWindow):
                 credentials['api_user'],
                 credentials['api_key'],
             )
+            self.setWindowTitle('ftrack Connect {}'.format(credentials['server_url']))
 
     def showLoginWidget(self):
         '''Show the login widget.'''
@@ -1096,3 +1124,10 @@ class Application(QtWidgets.QMainWindow):
             return
 
         ftrack_connect.util.open_directory(self.defaultPluginDirectory)
+
+    def closeEvent(self, event):
+        '''Gracefully shutdown the QApplication if the user decides
+           to abort the login and just closes the widget.
+        '''
+        if not self.session:
+            QtWidgets.QApplication.quit()

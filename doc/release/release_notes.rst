@@ -14,11 +14,28 @@ Release Notes
         :tags: UI
 
         Application crash on Windows 8.1.
-        
-    .. change: fixed
+
+    .. change:: fixed
         :tags: API
-        
+
         Assure all plugin paths are unique.
+
+    .. change:: changed
+        :tags: UX, Login
+
+        Connect now stores multiple ftrack instance urls and potentially multiple accounts per url
+        These are offered through a Completer in the respective line edits
+
+    .. change:: changed
+        :tags: UX, Login
+
+        setting FTRACK_SERVER in the environment fills the url line edit
+
+    .. change:: changed
+        :tags: UX, Login
+
+        If the User chooses to close the login widget without login in the QApplication is now shutdown
+        Before the Application was running and consuming the lockfile
 
 .. release:: 2.0.1
     :date: 2022-09-01
