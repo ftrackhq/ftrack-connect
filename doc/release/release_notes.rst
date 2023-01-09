@@ -15,7 +15,7 @@ Release Notes
 
         Application crash on Windows 8.1.
 
-    .. change: fixed
+    .. change:: fixed
         :tags: API
 
         Assure all plugin paths are unique.
