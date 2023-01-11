@@ -8,38 +8,36 @@ import logging
 import signal
 import os
 import pkg_resources
-import qtawesome
+import importlib
 
-bindings = ['PySide2']
-os.environ.setdefault('QT_PREFERRED_BINDING', os.pathsep.join(bindings))
-
-from ftrack_connect.qt import QtWidgets, QtCore
-
-from ftrack_connect import load_icons
-import ftrack_connect.config
-import ftrack_connect.singleton
-
-# Hooks use the ftrack event system. Set the FTRACK_EVENT_PLUGIN_PATH
-# to pick up the default hooks if it has not already been set.
-try:
-    os.environ.setdefault(
-        'FTRACK_EVENT_PLUGIN_PATH',
-        pkg_resources.resource_filename(
-            pkg_resources.Requirement.parse('ftrack-connect'),
-            'ftrack_connect_resource/hook',
-        ),
-    )
-except pkg_resources.DistributionNotFound:
-    # If part of a frozen package then distribution might not be found.
-    pass
-
-
-import ftrack_connect.ui.application
-import ftrack_connect.ui.theme
-
-
-def main(arguments=None):
+def main_connect(arguments=None):
     '''ftrack connect.'''
+
+    bindings = ['PySide2']
+    os.environ.setdefault('QT_PREFERRED_BINDING', os.pathsep.join(bindings))
+
+    from ftrack_connect.qt import QtWidgets, QtCore
+
+    from ftrack_connect import load_icons
+    import ftrack_connect.config
+    import ftrack_connect.singleton
+
+    # Hooks use the ftrack event system. Set the FTRACK_EVENT_PLUGIN_PATH
+    # to pick up the default hooks if it has not already been set.
+    try:
+        os.environ.setdefault(
+            'FTRACK_EVENT_PLUGIN_PATH',
+            pkg_resources.resource_filename(
+                pkg_resources.Requirement.parse('ftrack-connect'),
+                'ftrack_connect_resource/hook',
+            ),
+        )
+    except pkg_resources.DistributionNotFound:
+        # If part of a frozen package then distribution might not be found.
+        pass
+
+    import ftrack_connect.ui.application
+    import ftrack_connect.ui.theme
 
     parser = argparse.ArgumentParser(prog='ftrack-connect')
 
@@ -153,6 +151,19 @@ def main(arguments=None):
 
     return application.exec_()
 
+def main(arguments=None):
+
+    framework_standalone_module = None
+    for index,arg in enumerate(sys.argv):
+        if arg == '--run-framework-standalone':
+            run_framework_standalone = True
+            framework_standalone_module = sys.argv[index+1]
+            break
+
+    if framework_standalone_module:
+        importlib.import_module(framework_standalone_module, package=None)
+    else:
+        return main_connect(arguments)
 
 if __name__ == '__main__':
     raise SystemExit(main())
