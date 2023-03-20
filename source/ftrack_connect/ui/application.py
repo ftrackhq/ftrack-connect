@@ -278,7 +278,7 @@ class WelcomePlugin(ConnectWidget):
         layout.addItem(spacer)
         self.install_button.clicked.connect(self.install_plugins)
         self.install_plug_man_button.clicked.connect(
-            partial(self.install_plugins, plugin_names=['plugin_manager'])
+            partial(self.install_plugins, plugin_names=['plugin-manager'])
         )
         self.plugins_installed.connect(self._on_plugins_installed)
         self.installing.connect(self._on_plugins_installing)
