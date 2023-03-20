@@ -17,6 +17,7 @@ import zipfile
 import json
 import tempfile
 from ftrack_connect.qt import QtCore, QtWidgets, QtGui
+from functools import partial
 
 import qtawesome as qta
 from ftrack_connect import load_icons
@@ -111,7 +112,8 @@ class WelcomePlugin(ConnectWidget):
 
     name = "Welcome"
 
-    manager_installed = QtCore.Signal()
+    plugins_installed = QtCore.Signal()
+    installing = QtCore.Signal()
     # local variables for finding and installing plugin manager.
     install_path = appdirs.user_data_dir(
         'ftrack-connect-plugins', 'ftrack'
@@ -122,49 +124,73 @@ class WelcomePlugin(ConnectWidget):
         'https://download.ftrack.com/ftrack-connect/plugins.json'
     )
 
-    def download(self, source_path):
-        '''Download provided *plugin* item.'''
-        zip_name = os.path.basename(source_path)
-        save_path = tempfile.gettempdir()
-        temp_path = os.path.join(save_path, zip_name)
-        logging.debug('Downloading {} to {}'.format(source_path, temp_path))
+    def download_plugins(self, source_paths):
+        '''Download plugins from provided *source_paths* item.'''
+        temp_paths = []
+        self.overlay.setMessage("Downloaded 0/{} plugins.".format(len(source_paths)))
+        i = 1
+        for source_path in source_paths:
+            zip_name = os.path.basename(source_path)
+            save_path = tempfile.gettempdir()
+            temp_path = os.path.join(save_path, zip_name)
+            logging.debug('Downloading {} to {}'.format(source_path, temp_path))
 
-        with urllib.request.urlopen(source_path) as dl_file:
-            with open(temp_path, 'wb') as out_file:
-                out_file.write(dl_file.read())
-        return temp_path
+            with urllib.request.urlopen(source_path) as dl_file:
+                with open(temp_path, 'wb') as out_file:
+                    out_file.write(dl_file.read())
+            temp_paths.append(temp_path)
+            self.overlay.setMessage("Downloaded {}/{} plugins.".format(i, len(source_paths)))
+            i += 1
+        return temp_paths
 
-    def discover_plugin_manager(self):
-        '''Provide url where to download the plugin manager from.'''
+    def discover_plugins(self, plugin_names=None):
+        '''Provide urls where to download the given *plugin_names* if
+        *plugin_names* not provided, check for all plugins'''
         with urllib.request.urlopen(self.json_config_url) as url:
             data = json.loads(url.read().decode())
-            plugins_url = [plugin_url for plugin_url in data.get('integrations') if 'plugin-manager' in plugin_url]
-            url = None
-
-            if plugins_url:
-                url = plugins_url[0]
+            plugins_url = []
+            if plugin_names:
+                for plugin_name in plugin_names:
+                    plugins_url.extend([plugin_url for plugin_url in data.get('integrations') if plugin_name in plugin_url])
             else:
-                self.install_button.setVisible(False)
+                plugins_url = data.get('integrations')
 
-            return url
+            if not plugins_url:
+                self.install_button.setVisible(False)
+                self.install_plug_man_button.setVisible(False)
+
+            return plugins_url
 
     @asynchronous
-    def install(self):
-        '''Install provided *plugin* item.'''
-        plugin_path = self.discover_plugin_manager()
-        source_path = self.download(plugin_path)
-        plugin_name = os.path.basename(source_path).split('.zip')[0]
-        destination_path = os.path.join(self.install_path, plugin_name)
-        logging.debug('Installing {} to {}'.format(source_path, destination_path))
+    def install_plugins(self, plugin_names=None):
+        '''Install provided *plugin_names*. If no plugin_names install all them'''
+        self.installing.emit()
+        plugins_path = self.discover_plugins(plugin_names)
+        self.overlay.setMessage("Discovered {} plugins.".format(len(plugins_path)))
+        source_paths = self.download_plugins(plugins_path)
+        self.overlay.setMessage("Installed 0/{} plugins.".format(len(source_paths)))
+        i = 1
+        for source_path in source_paths:
 
-        with zipfile.ZipFile(source_path, 'r') as zip_ref:
-            zip_ref.extractall(destination_path)
+            plugin_name = os.path.basename(source_path).split('.zip')[0]
+            destination_path = os.path.join(self.install_path, plugin_name)
+            logging.debug('Installing {} to {}'.format(source_path, destination_path))
 
-        self.manager_installed.emit()
+            with zipfile.ZipFile(source_path, 'r') as zip_ref:
+                zip_ref.extractall(destination_path)
+            self.overlay.setMessage("Installed {}/{} plugins.".format(i, len(source_paths)))
+            i += 1
 
-    def _on_manager_installed(self):
+        self.plugins_installed.emit()
+
+    def _on_plugins_installed(self):
         self.install_button.setVisible(False)
+        self.install_plug_man_button.setVisible(False)
         self.restart_button.setVisible(True)
+        self.overlay.hide()
+
+    def _on_plugins_installing(self):
+        self.overlay.show()
 
     def __init__(self, session, parent=None):
         '''Instantiate the actions widget.'''
@@ -191,7 +217,10 @@ class WelcomePlugin(ConnectWidget):
             '<br/><br/>'
         )
         self.install_button = QtWidgets.QPushButton(
-            'Install the plugin manager to get started.'
+            'Install the plugin manager and all the available plugins.'
+        )
+        self.install_plug_man_button = QtWidgets.QPushButton(
+            'Install just the plugin manager.'
         )
         self.install_button.setObjectName('primary')
 
@@ -209,15 +238,21 @@ class WelcomePlugin(ConnectWidget):
         layout.addWidget(icon_label, QtCore.Qt.AlignCenter | QtCore.Qt.AlignTop)
         layout.addWidget(label_text, QtCore.Qt.AlignCenter | QtCore.Qt.AlignTop)
         layout.addWidget(self.install_button)
+        layout.addWidget(self.install_plug_man_button)
         layout.addWidget(self.restart_button)
 
         spacer = QtWidgets.QSpacerItem(0, 300, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         layout.addItem(spacer)
-        self.install_button.clicked.connect(self.install)
-        self.discover_plugin_manager()
-        self.manager_installed.connect(self._on_manager_installed)
+        self.install_button.clicked.connect(self.install_plugins)
+        self.install_plug_man_button.clicked.connect(partial(self.install_plugins, plugin_names=['plugin_manager']))
+        self.plugins_installed.connect(self._on_plugins_installed)
+        self.installing.connect(self._on_plugins_installing)
         self.restart_button.clicked.connect(self.requestConnectRestart.emit)
 
+        self.overlay = ftrack_connect.ui.widget.overlay.BusyOverlay(
+            self, message='Installing'
+        )
+        self.overlay.hide()
 
 
 class Application(QtWidgets.QMainWindow):
