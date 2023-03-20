@@ -115,31 +115,35 @@ class WelcomePlugin(ConnectWidget):
     plugins_installed = QtCore.Signal()
     installing = QtCore.Signal()
     # local variables for finding and installing plugin manager.
-    install_path = appdirs.user_data_dir(
-        'ftrack-connect-plugins', 'ftrack'
-    )
+    install_path = appdirs.user_data_dir('ftrack-connect-plugins', 'ftrack')
 
     json_config_url = os.environ.get(
         'FTRACK_CONNECT_JSON_PLUGINS_URL',
-        'https://download.ftrack.com/ftrack-connect/plugins.json'
+        'https://download.ftrack.com/ftrack-connect/plugins.json',
     )
 
     def download_plugins(self, source_paths):
         '''Download plugins from provided *source_paths* item.'''
         temp_paths = []
-        self.overlay.setMessage("Downloaded 0/{} plugins.".format(len(source_paths)))
+        self.overlay.setMessage(
+            "Downloaded 0/{} plugins.".format(len(source_paths))
+        )
         i = 1
         for source_path in source_paths:
             zip_name = os.path.basename(source_path)
             save_path = tempfile.gettempdir()
             temp_path = os.path.join(save_path, zip_name)
-            logging.debug('Downloading {} to {}'.format(source_path, temp_path))
+            logging.debug(
+                'Downloading {} to {}'.format(source_path, temp_path)
+            )
 
             with urllib.request.urlopen(source_path) as dl_file:
                 with open(temp_path, 'wb') as out_file:
                     out_file.write(dl_file.read())
             temp_paths.append(temp_path)
-            self.overlay.setMessage("Downloaded {}/{} plugins.".format(i, len(source_paths)))
+            self.overlay.setMessage(
+                "Downloaded {}/{} plugins.".format(i, len(source_paths))
+            )
             i += 1
         return temp_paths
 
@@ -151,7 +155,13 @@ class WelcomePlugin(ConnectWidget):
             plugins_url = []
             if plugin_names:
                 for plugin_name in plugin_names:
-                    plugins_url.extend([plugin_url for plugin_url in data.get('integrations') if plugin_name in plugin_url])
+                    plugins_url.extend(
+                        [
+                            plugin_url
+                            for plugin_url in data.get('integrations')
+                            if plugin_name in plugin_url
+                        ]
+                    )
             else:
                 plugins_url = data.get('integrations')
 
@@ -166,19 +176,26 @@ class WelcomePlugin(ConnectWidget):
         '''Install provided *plugin_names*. If no plugin_names install all them'''
         self.installing.emit()
         plugins_path = self.discover_plugins(plugin_names)
-        self.overlay.setMessage("Discovered {} plugins.".format(len(plugins_path)))
+        self.overlay.setMessage(
+            "Discovered {} plugins.".format(len(plugins_path))
+        )
         source_paths = self.download_plugins(plugins_path)
-        self.overlay.setMessage("Installed 0/{} plugins.".format(len(source_paths)))
+        self.overlay.setMessage(
+            "Installed 0/{} plugins.".format(len(source_paths))
+        )
         i = 1
         for source_path in source_paths:
-
             plugin_name = os.path.basename(source_path).split('.zip')[0]
             destination_path = os.path.join(self.install_path, plugin_name)
-            logging.debug('Installing {} to {}'.format(source_path, destination_path))
+            logging.debug(
+                'Installing {} to {}'.format(source_path, destination_path)
+            )
 
             with zipfile.ZipFile(source_path, 'r') as zip_ref:
                 zip_ref.extractall(destination_path)
-            self.overlay.setMessage("Installed {}/{} plugins.".format(i, len(source_paths)))
+            self.overlay.setMessage(
+                "Installed {}/{} plugins.".format(i, len(source_paths))
+            )
             i += 1
 
         self.plugins_installed.emit()
@@ -198,17 +215,24 @@ class WelcomePlugin(ConnectWidget):
         layout = QtWidgets.QVBoxLayout()
         layout.setContentsMargins(30, 0, 30, 0)
         self.setLayout(layout)
-        spacer = QtWidgets.QSpacerItem(0, 70, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        spacer = QtWidgets.QSpacerItem(
+            0,
+            70,
+            QtWidgets.QSizePolicy.Minimum,
+            QtWidgets.QSizePolicy.Expanding,
+        )
         layout.addItem(spacer)
 
         icon_label = QtWidgets.QLabel()
-        icon = qta.icon("ph.rocket", color='#FFDD86', rotated=45, scale_factor=0.7)
-        icon_label.setPixmap(icon.pixmap(icon.actualSize(QtCore.QSize(180, 180))))
+        icon = qta.icon(
+            "ph.rocket", color='#FFDD86', rotated=45, scale_factor=0.7
+        )
+        icon_label.setPixmap(
+            icon.pixmap(icon.actualSize(QtCore.QSize(180, 180)))
+        )
         icon_label.setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignTop)
 
-        label_title = QtWidgets.QLabel(
-            "<H1>Let's get started!</H1>"
-        )
+        label_title = QtWidgets.QLabel("<H1>Let's get started!</H1>")
         label_title.setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignTop)
 
         label_text = QtWidgets.QLabel(
@@ -224,9 +248,7 @@ class WelcomePlugin(ConnectWidget):
         )
         self.install_button.setObjectName('primary')
 
-        self.restart_button = QtWidgets.QPushButton(
-            'Restart Now'
-        )
+        self.restart_button = QtWidgets.QPushButton('Restart Now')
 
         self.restart_button.setObjectName('primary')
         self.restart_button.setVisible(False)
@@ -234,17 +256,30 @@ class WelcomePlugin(ConnectWidget):
         label_text.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
         label_text.setWordWrap(True)
 
-        layout.addWidget(label_title, QtCore.Qt.AlignCenter | QtCore.Qt.AlignTop)
-        layout.addWidget(icon_label, QtCore.Qt.AlignCenter | QtCore.Qt.AlignTop)
-        layout.addWidget(label_text, QtCore.Qt.AlignCenter | QtCore.Qt.AlignTop)
+        layout.addWidget(
+            label_title, QtCore.Qt.AlignCenter | QtCore.Qt.AlignTop
+        )
+        layout.addWidget(
+            icon_label, QtCore.Qt.AlignCenter | QtCore.Qt.AlignTop
+        )
+        layout.addWidget(
+            label_text, QtCore.Qt.AlignCenter | QtCore.Qt.AlignTop
+        )
         layout.addWidget(self.install_button)
         layout.addWidget(self.install_plug_man_button)
         layout.addWidget(self.restart_button)
 
-        spacer = QtWidgets.QSpacerItem(0, 300, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        spacer = QtWidgets.QSpacerItem(
+            0,
+            300,
+            QtWidgets.QSizePolicy.Minimum,
+            QtWidgets.QSizePolicy.Expanding,
+        )
         layout.addItem(spacer)
         self.install_button.clicked.connect(self.install_plugins)
-        self.install_plug_man_button.clicked.connect(partial(self.install_plugins, plugin_names=['plugin_manager']))
+        self.install_plug_man_button.clicked.connect(
+            partial(self.install_plugins, plugin_names=['plugin_manager'])
+        )
         self.plugins_installed.connect(self._on_plugins_installed)
         self.installing.connect(self._on_plugins_installing)
         self.restart_button.clicked.connect(self.requestConnectRestart.emit)
@@ -324,9 +359,9 @@ class Application(QtWidgets.QMainWindow):
             from darkdetect import _mac_detect as stylemodule
 
         elif (
-                sys.platform == "win32"
-                and platform.release().isdigit()  # Windows 8.1 would result in '8.1' str
-                and int(platform.release()) >= 10
+            sys.platform == "win32"
+            and platform.release().isdigit()  # Windows 8.1 would result in '8.1' str
+            and int(platform.release()) >= 10
         ):
             from darkdetect import _windows_detect as stylemodule
 
@@ -409,7 +444,6 @@ class Application(QtWidgets.QMainWindow):
         self.login()
 
     def _post_login_settings(self):
-
         if self.tray:
             self.tray.show()
 
@@ -899,14 +933,17 @@ class Application(QtWidgets.QMainWindow):
                 self.addPlugin(widget_plugin)
         else:
             for ResponsePlugin in responses:
-
                 try:
-                    load_icons(os.path.join(os.path.dirname(__file__),  '..', 'fonts'))
+                    load_icons(
+                        os.path.join(os.path.dirname(__file__), '..', 'fonts')
+                    )
                     widget_plugin = ResponsePlugin(self.session)
 
                 except Exception:
                     self.logger.exception(
-                        msg='Error while loading plugin : {}'.format(widget_plugin)
+                        msg='Error while loading plugin : {}'.format(
+                            widget_plugin
+                        )
                     )
                     continue
 
@@ -1008,9 +1045,7 @@ class Application(QtWidgets.QMainWindow):
         plugin.requestApplicationClose.connect(
             self._onWidgetRequestApplicationClose
         )
-        plugin.requestConnectRestart.connect(
-            self.restart
-        )
+        plugin.requestConnectRestart.connect(self.restart)
 
     def removePlugin(self, plugin):
         '''Remove plugin registered with *identifier*.

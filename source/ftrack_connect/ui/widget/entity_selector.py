@@ -20,7 +20,9 @@ class ContextList(QtWidgets.QComboBox):
         return self.minimumSizeHint()
 
     def minimumSizeHint(self):
-        return QtCore.QSize(50, QtWidgets.QComboBox.minimumSizeHint(self).height())
+        return QtCore.QSize(
+            50, QtWidgets.QComboBox.minimumSizeHint(self).height()
+        )
 
 
 class EntitySelector(QtWidgets.QStackedWidget):

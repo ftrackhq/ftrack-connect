@@ -24,7 +24,9 @@ class ConfigureScenario(QtWidgets.QWidget):
     def __init__(self, session):
         '''Instantiate the configure scenario widget.'''
         super(ConfigureScenario, self).__init__()
-        icons_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'fonts'))
+        icons_path = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), '..', '..', 'fonts')
+        )
         load_icons(icons_path)
 
         # Check if user has permissions to configure scenario.
