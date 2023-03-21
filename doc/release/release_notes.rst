@@ -10,6 +10,11 @@ Release Notes
 
 .. release:: Upcoming
 
+    .. change:: changed
+        :tags: Plugins
+
+        Install all plugins on first launch.
+
     .. change:: fixed
         :tags: UI
 
