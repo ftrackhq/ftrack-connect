@@ -58,7 +58,6 @@ class List(QtWidgets.QTableWidget):
         oldRow = self.indexOfWidget(widget)
 
         if oldRow:
-
             self.insertRow(newRow)
 
             # Collect the oldRow after insert to make sure we move the correct

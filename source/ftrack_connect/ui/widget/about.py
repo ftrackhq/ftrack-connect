@@ -22,9 +22,7 @@ import ftrack_connect.util
 class AboutDialog(QtWidgets.QDialog):
     '''About widget.'''
 
-    def __init__(
-        self, parent, icon=':ftrack/connect/logo/dark2x'
-    ):
+    def __init__(self, parent, icon=':ftrack/connect/logo/dark2x'):
         super(AboutDialog, self).__init__(parent)
         self.setWindowTitle('About connect')
         layout = QtWidgets.QVBoxLayout()

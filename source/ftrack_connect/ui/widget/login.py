@@ -37,9 +37,7 @@ class Login(QtWidgets.QWidget):
 
         logo = QtWidgets.QLabel()
 
-        logoPixmap = QtGui.QPixmap(
-            ':ftrack/connect/logo/{}2x'.format(theme)
-        )
+        logoPixmap = QtGui.QPixmap(':ftrack/connect/logo/{}2x'.format(theme))
 
         logo.setPixmap(
             logoPixmap.scaled(
@@ -86,7 +84,6 @@ class Login(QtWidgets.QWidget):
         label.setAlignment(QtCore.Qt.AlignCenter)
         label.setWordWrap(True)
 
-
         # Min height is required due to issue when word wrap is True and window
         # being resized which cases text to dissapear.
         label.setMinimumHeight(50)
@@ -124,8 +121,6 @@ class Login(QtWidgets.QWidget):
             self.untoggle_api_label, alignment=QtCore.Qt.AlignCenter
         )
         layout.addSpacing(20)
-
-
 
     def on_set_error(self, error):
         '''Set the error text and disable the login widget.'''

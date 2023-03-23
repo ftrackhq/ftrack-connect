@@ -11,7 +11,6 @@ class WidgetList(QtWidgets.QWidget):
         layout.addWidget(self.tablewidget)
 
     def add_plugins(self, plugins):
-
         for plugin_name, plugin_object in plugins.items():
             new_item = QtWidgets.QListWidgetItem(plugin_name)
             new_item.setData(QtCore.Qt.UserRole, plugin_object)
