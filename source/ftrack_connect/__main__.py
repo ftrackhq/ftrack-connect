@@ -11,7 +11,7 @@ import pkg_resources
 import importlib
 
 def main_connect(arguments=None):
-    '''ftrack connect.'''
+    '''Launch ftrack connect.'''
 
     bindings = ['PySide2']
     os.environ.setdefault('QT_PREFERRED_BINDING', os.pathsep.join(bindings))
@@ -152,15 +152,17 @@ def main_connect(arguments=None):
     return application.exec_()
 
 def main(arguments=None):
-
+    '''Main app entry point.'''
+    # Pre-parse arguments to check if we should run a framework standalone process
     framework_standalone_module = None
-    for index,arg in enumerate(sys.argv):
+    for index, arg in enumerate(sys.argv):
         if arg == '--run-framework-standalone':
-            run_framework_standalone = True
+            # (Unoffical feature) Run framework standalone process using Connect Python interpreter
             framework_standalone_module = sys.argv[index+1]
             break
 
     if framework_standalone_module:
+        # Execute the framework standalone module, expected to be available in the PYTHONPATH
         importlib.import_module(framework_standalone_module, package=None)
     else:
         return main_connect(arguments)
