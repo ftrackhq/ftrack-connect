@@ -8,7 +8,8 @@
 Release Notes
 *************
 
-.. release:: Upcoming
+.. release:: 2.0.2
+    :date: 2023-04-05
 
     .. change:: changed
         :tags: Plugins
