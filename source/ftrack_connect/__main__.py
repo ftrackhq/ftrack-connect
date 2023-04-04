@@ -162,7 +162,11 @@ def main(arguments=None):
             break
 
     if framework_standalone_module:
-        # Execute the framework standalone module, expected to be available in the PYTHONPATH
+        # Run the framework standalone module using Connect
+        # Connect package built executable does not bootstrap PYTHONPATH, make sure it is done properly
+        for p in os.environ.get('PYTHONPATH', []).split(os.pathsep):
+            if not p in sys.path:
+                sys.path.append(p)
         importlib.import_module(framework_standalone_module, package=None)
     else:
         return main_connect(arguments)
