@@ -1,6 +1,6 @@
 
 ..
-    :copyright: Copyright (c) 2014 ftrack
+    :copyright: Copyright (c) 2014-2023 ftrack
 
 .. _release/release_notes:
 
@@ -8,7 +8,7 @@
 Release Notes
 *************
 
-.. release:: 2.0.2
+.. release:: 2.1.0
     :date: 2023-04-05
 
     .. change:: changed
@@ -21,10 +21,10 @@ Release Notes
 
         Application crash on Windows 8.1.
         
-    .. change: fixed
+    .. change:: fixed
         :tags: API
         
-        Assure all plugin paths are unique.
+        Ensure all plugin paths are unique.
 
 .. release:: 2.0.1
     :date: 2022-09-01
