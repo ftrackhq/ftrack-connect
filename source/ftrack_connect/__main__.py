@@ -10,6 +10,7 @@ import os
 import pkg_resources
 import importlib
 
+
 def main_connect(arguments=None):
     '''Launch ftrack connect.'''
 
@@ -151,6 +152,7 @@ def main_connect(arguments=None):
 
     return application.exec_()
 
+
 def main(arguments=None):
     '''Main app entry point.'''
     # Pre-parse arguments to check if we should run a framework standalone process
@@ -158,7 +160,7 @@ def main(arguments=None):
     for index, arg in enumerate(sys.argv):
         if arg == '--run-framework-standalone':
             # (Unoffical feature) Run framework standalone process using Connect Python interpreter
-            framework_standalone_module = sys.argv[index+1]
+            framework_standalone_module = sys.argv[index + 1]
             break
 
     if framework_standalone_module:
@@ -170,6 +172,7 @@ def main(arguments=None):
         importlib.import_module(framework_standalone_module, package=None)
     else:
         return main_connect(arguments)
+
 
 if __name__ == '__main__':
     raise SystemExit(main())
