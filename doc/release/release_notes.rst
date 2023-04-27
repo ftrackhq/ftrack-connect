@@ -8,6 +8,15 @@
 Release Notes
 *************
 
+.. release:: 2.1.1
+    :date: 2023-04-27
+
+    .. change:: fix
+        :tags: Plugins
+
+        Limit packaging to prevent crashes on unexpected content in Connect plugin folder.
+
+
 .. release:: 2.1.0
     :date: 2023-04-05
 
