@@ -12,3 +12,4 @@ setuptools>=45.0.0
 qtawesome
 wheel
 darkdetect
+packaging<22

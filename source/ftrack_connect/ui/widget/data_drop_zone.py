@@ -147,8 +147,10 @@ class DataDropZone(QtWidgets.QFrame):
                 self._setDropZoneState('invalid')
 
                 if raise_message:
-                    message = u'Invalid file: "{0}" is not a valid file.'.format(
-                        localPath
+                    message = (
+                        u'Invalid file: "{0}" is not a valid file.'.format(
+                            localPath
+                        )
                     )
                     if os.path.isdir(localPath):
                         message = (
@@ -157,7 +159,9 @@ class DataDropZone(QtWidgets.QFrame):
                             'later release of ftrack connect.'
                         )
 
-                    QtWidgets.QMessageBox.warning(self, 'Invalid file', message)
+                    QtWidgets.QMessageBox.warning(
+                        self, 'Invalid file', message
+                    )
 
                     self._setDropZoneState()
 

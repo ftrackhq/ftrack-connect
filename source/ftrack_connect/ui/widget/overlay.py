@@ -133,7 +133,7 @@ class BlockingOverlay(Overlay):
         parent,
         message='Processing',
         icon=':ftrack/titlebar/logo',
-        icon_size = 120
+        icon_size=120,
     ):
         '''Initialise with *parent*.
 
@@ -147,7 +147,9 @@ class BlockingOverlay(Overlay):
 
         self.content = QtWidgets.QFrame()
         self.content.setObjectName('content')
-        layout.addWidget(self.content, alignment=QtCore.Qt.AlignCenter | QtCore.Qt.AlignTop)
+        layout.addWidget(
+            self.content, alignment=QtCore.Qt.AlignCenter | QtCore.Qt.AlignTop
+        )
 
         self.contentLayout = QtWidgets.QVBoxLayout()
         self.contentLayout.setContentsMargins(0, 0, 0, 0)
@@ -156,19 +158,26 @@ class BlockingOverlay(Overlay):
         self.icon = QtWidgets.QLabel()
 
         if not isinstance(icon, QtGui.QIcon):
-            pixmap = QtGui.QPixmap(icon).scaled(self.icon_size, self.icon_size, QtCore.Qt.KeepAspectRatio)
+            pixmap = QtGui.QPixmap(icon).scaled(
+                self.icon_size, self.icon_size, QtCore.Qt.KeepAspectRatio
+            )
         else:
-            pixmap = icon.pixmap(icon.actualSize(QtCore.QSize(self.icon_size, self.icon_size)))
+            pixmap = icon.pixmap(
+                icon.actualSize(QtCore.QSize(self.icon_size, self.icon_size))
+            )
 
         self.icon.setPixmap(pixmap)
         self.icon.setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignTop)
 
         self.contentLayout.insertWidget(
-            1, self.icon, alignment=QtCore.Qt.AlignCenter)
+            1, self.icon, alignment=QtCore.Qt.AlignCenter
+        )
 
         self.messageLabel = QtWidgets.QLabel()
         self.messageLabel.setWordWrap(True)
-        self.messageLabel.setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignBottom)
+        self.messageLabel.setAlignment(
+            QtCore.Qt.AlignCenter | QtCore.Qt.AlignBottom
+        )
 
         self.contentLayout.addSpacing(30)
 

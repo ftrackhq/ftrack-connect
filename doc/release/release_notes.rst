@@ -1,6 +1,6 @@
 
 ..
-    :copyright: Copyright (c) 2014 ftrack
+    :copyright: Copyright (c) 2014-2023 ftrack
 
 .. _release/release_notes:
 
@@ -8,7 +8,22 @@
 Release Notes
 *************
 
-.. release:: Upcoming
+.. release:: 2.1.1
+    :date: 2023-04-27
+
+    .. change:: fix
+        :tags: Plugins
+
+        Limit packaging to prevent crashes on unexpected content in Connect plugin folder.
+
+
+.. release:: 2.1.0
+    :date: 2023-04-05
+
+    .. change:: changed
+        :tags: Plugins
+
+        Install all plugins on first launch.
 
     .. change:: changed
         :tags: Docs
@@ -19,6 +34,11 @@ Release Notes
         :tags: UI
 
         Application crash on Windows 8.1.
+        
+    .. change:: fixed
+        :tags: API
+        
+        Ensure all plugin paths are unique.
 
 .. release:: 2.0.1
     :date: 2022-09-01

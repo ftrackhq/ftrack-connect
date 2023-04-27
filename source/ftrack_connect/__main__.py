@@ -8,38 +8,36 @@ import logging
 import signal
 import os
 import pkg_resources
-import qtawesome
+import importlib
 
-bindings = ['PySide2']
-os.environ.setdefault('QT_PREFERRED_BINDING', os.pathsep.join(bindings))
+def main_connect(arguments=None):
+    '''Launch ftrack connect.'''
 
-from ftrack_connect.qt import QtWidgets, QtCore
+    bindings = ['PySide2']
+    os.environ.setdefault('QT_PREFERRED_BINDING', os.pathsep.join(bindings))
 
-from ftrack_connect import load_icons
-import ftrack_connect.config
-import ftrack_connect.singleton
+    from ftrack_connect.qt import QtWidgets, QtCore
 
-# Hooks use the ftrack event system. Set the FTRACK_EVENT_PLUGIN_PATH
-# to pick up the default hooks if it has not already been set.
-try:
-    os.environ.setdefault(
-        'FTRACK_EVENT_PLUGIN_PATH',
-        pkg_resources.resource_filename(
-            pkg_resources.Requirement.parse('ftrack-connect'),
-            'ftrack_connect_resource/hook',
-        ),
-    )
-except pkg_resources.DistributionNotFound:
-    # If part of a frozen package then distribution might not be found.
-    pass
+    from ftrack_connect import load_icons
+    import ftrack_connect.config
+    import ftrack_connect.singleton
 
+    # Hooks use the ftrack event system. Set the FTRACK_EVENT_PLUGIN_PATH
+    # to pick up the default hooks if it has not already been set.
+    try:
+        os.environ.setdefault(
+            'FTRACK_EVENT_PLUGIN_PATH',
+            pkg_resources.resource_filename(
+                pkg_resources.Requirement.parse('ftrack-connect'),
+                'ftrack_connect_resource/hook',
+            ),
+        )
+    except pkg_resources.DistributionNotFound:
+        # If part of a frozen package then distribution might not be found.
+        pass
 
-import ftrack_connect.ui.application
-import ftrack_connect.ui.theme
-
-
-def main(arguments=None):
-    '''ftrack connect.'''
+    import ftrack_connect.ui.application
+    import ftrack_connect.ui.theme
 
     parser = argparse.ArgumentParser(prog='ftrack-connect')
 
@@ -153,6 +151,25 @@ def main(arguments=None):
 
     return application.exec_()
 
+def main(arguments=None):
+    '''Main app entry point.'''
+    # Pre-parse arguments to check if we should run a framework standalone process
+    framework_standalone_module = None
+    for index, arg in enumerate(sys.argv):
+        if arg == '--run-framework-standalone':
+            # (Unoffical feature) Run framework standalone process using Connect Python interpreter
+            framework_standalone_module = sys.argv[index+1]
+            break
+
+    if framework_standalone_module:
+        # Run the framework standalone module using Connect
+        # Connect package built executable does not bootstrap PYTHONPATH, make sure it is done properly
+        for p in os.environ.get('PYTHONPATH', []).split(os.pathsep):
+            if not p in sys.path:
+                sys.path.append(p)
+        importlib.import_module(framework_standalone_module, package=None)
+    else:
+        return main_connect(arguments)
 
 if __name__ == '__main__':
     raise SystemExit(main())
