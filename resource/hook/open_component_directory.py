@@ -120,7 +120,7 @@ class OpenComponentDirectoryAction(object):
             u'topic=ftrack.action.launch and '
             u'data.actionIdentifier="{0}" and '
             u'source.user.username="{1}" and '
-            u'data.host={2}'.format(
+            u'data.host="{2}"'.format(
                 self.identifier, self.session.api_user, platform.node()
             ),
             self.launch,
